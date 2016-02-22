@@ -1,0 +1,534 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C7CC36EA1C7AF17900B97149 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C7CC36E91C7AF17900B97149 /* main.m */; };
+		C7CC36ED1C7AF17900B97149 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C7CC36EC1C7AF17900B97149 /* AppDelegate.m */; };
+		C7CC36F01C7AF17900B97149 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C7CC36EF1C7AF17900B97149 /* ViewController.m */; };
+		C7CC36F31C7AF17900B97149 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C7CC36F11C7AF17900B97149 /* Main.storyboard */; };
+		C7CC36F51C7AF17900B97149 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C7CC36F41C7AF17900B97149 /* Assets.xcassets */; };
+		C7CC36F81C7AF17900B97149 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C7CC36F61C7AF17900B97149 /* LaunchScreen.storyboard */; };
+		C7CC37031C7AF17900B97149 /* basketBallRecorderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C7CC37021C7AF17900B97149 /* basketBallRecorderTests.m */; };
+		C7CC370E1C7AF17900B97149 /* basketBallRecorderUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = C7CC370D1C7AF17900B97149 /* basketBallRecorderUITests.m */; };
+		C7CC37221C7AFA5900B97149 /* BBRTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C7CC37211C7AFA5900B97149 /* BBRTableViewCell.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		C7CC36FF1C7AF17900B97149 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C7CC36DD1C7AF17900B97149 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C7CC36E41C7AF17900B97149;
+			remoteInfo = basketBallRecorder;
+		};
+		C7CC370A1C7AF17900B97149 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C7CC36DD1C7AF17900B97149 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C7CC36E41C7AF17900B97149;
+			remoteInfo = basketBallRecorder;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		C7CC36E51C7AF17900B97149 /* basketBallRecorder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = basketBallRecorder.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C7CC36E91C7AF17900B97149 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		C7CC36EB1C7AF17900B97149 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		C7CC36EC1C7AF17900B97149 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		C7CC36EE1C7AF17900B97149 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		C7CC36EF1C7AF17900B97149 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		C7CC36F21C7AF17900B97149 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		C7CC36F41C7AF17900B97149 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		C7CC36F71C7AF17900B97149 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		C7CC36F91C7AF17900B97149 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C7CC36FE1C7AF17900B97149 /* basketBallRecorderTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = basketBallRecorderTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C7CC37021C7AF17900B97149 /* basketBallRecorderTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = basketBallRecorderTests.m; sourceTree = "<group>"; };
+		C7CC37041C7AF17900B97149 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C7CC37091C7AF17900B97149 /* basketBallRecorderUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = basketBallRecorderUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C7CC370D1C7AF17900B97149 /* basketBallRecorderUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = basketBallRecorderUITests.m; sourceTree = "<group>"; };
+		C7CC370F1C7AF17900B97149 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C7CC37201C7AFA5900B97149 /* BBRTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BBRTableViewCell.h; sourceTree = "<group>"; };
+		C7CC37211C7AFA5900B97149 /* BBRTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BBRTableViewCell.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C7CC36E21C7AF17900B97149 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C7CC36FB1C7AF17900B97149 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C7CC37061C7AF17900B97149 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		C7CC36DC1C7AF17900B97149 = {
+			isa = PBXGroup;
+			children = (
+				C7CC36E71C7AF17900B97149 /* basketBallRecorder */,
+				C7CC37011C7AF17900B97149 /* basketBallRecorderTests */,
+				C7CC370C1C7AF17900B97149 /* basketBallRecorderUITests */,
+				C7CC36E61C7AF17900B97149 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C7CC36E61C7AF17900B97149 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C7CC36E51C7AF17900B97149 /* basketBallRecorder.app */,
+				C7CC36FE1C7AF17900B97149 /* basketBallRecorderTests.xctest */,
+				C7CC37091C7AF17900B97149 /* basketBallRecorderUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C7CC36E71C7AF17900B97149 /* basketBallRecorder */ = {
+			isa = PBXGroup;
+			children = (
+				C7CC36EB1C7AF17900B97149 /* AppDelegate.h */,
+				C7CC36EC1C7AF17900B97149 /* AppDelegate.m */,
+				C7CC36EE1C7AF17900B97149 /* ViewController.h */,
+				C7CC36EF1C7AF17900B97149 /* ViewController.m */,
+				C7CC37201C7AFA5900B97149 /* BBRTableViewCell.h */,
+				C7CC37211C7AFA5900B97149 /* BBRTableViewCell.m */,
+				C7CC36F11C7AF17900B97149 /* Main.storyboard */,
+				C7CC36F41C7AF17900B97149 /* Assets.xcassets */,
+				C7CC36F61C7AF17900B97149 /* LaunchScreen.storyboard */,
+				C7CC36F91C7AF17900B97149 /* Info.plist */,
+				C7CC36E81C7AF17900B97149 /* Supporting Files */,
+			);
+			path = basketBallRecorder;
+			sourceTree = "<group>";
+		};
+		C7CC36E81C7AF17900B97149 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				C7CC36E91C7AF17900B97149 /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		C7CC37011C7AF17900B97149 /* basketBallRecorderTests */ = {
+			isa = PBXGroup;
+			children = (
+				C7CC37021C7AF17900B97149 /* basketBallRecorderTests.m */,
+				C7CC37041C7AF17900B97149 /* Info.plist */,
+			);
+			path = basketBallRecorderTests;
+			sourceTree = "<group>";
+		};
+		C7CC370C1C7AF17900B97149 /* basketBallRecorderUITests */ = {
+			isa = PBXGroup;
+			children = (
+				C7CC370D1C7AF17900B97149 /* basketBallRecorderUITests.m */,
+				C7CC370F1C7AF17900B97149 /* Info.plist */,
+			);
+			path = basketBallRecorderUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C7CC36E41C7AF17900B97149 /* basketBallRecorder */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C7CC37121C7AF17900B97149 /* Build configuration list for PBXNativeTarget "basketBallRecorder" */;
+			buildPhases = (
+				C7CC36E11C7AF17900B97149 /* Sources */,
+				C7CC36E21C7AF17900B97149 /* Frameworks */,
+				C7CC36E31C7AF17900B97149 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = basketBallRecorder;
+			productName = basketBallRecorder;
+			productReference = C7CC36E51C7AF17900B97149 /* basketBallRecorder.app */;
+			productType = "com.apple.product-type.application";
+		};
+		C7CC36FD1C7AF17900B97149 /* basketBallRecorderTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C7CC37151C7AF17900B97149 /* Build configuration list for PBXNativeTarget "basketBallRecorderTests" */;
+			buildPhases = (
+				C7CC36FA1C7AF17900B97149 /* Sources */,
+				C7CC36FB1C7AF17900B97149 /* Frameworks */,
+				C7CC36FC1C7AF17900B97149 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C7CC37001C7AF17900B97149 /* PBXTargetDependency */,
+			);
+			name = basketBallRecorderTests;
+			productName = basketBallRecorderTests;
+			productReference = C7CC36FE1C7AF17900B97149 /* basketBallRecorderTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		C7CC37081C7AF17900B97149 /* basketBallRecorderUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C7CC37181C7AF17900B97149 /* Build configuration list for PBXNativeTarget "basketBallRecorderUITests" */;
+			buildPhases = (
+				C7CC37051C7AF17900B97149 /* Sources */,
+				C7CC37061C7AF17900B97149 /* Frameworks */,
+				C7CC37071C7AF17900B97149 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C7CC370B1C7AF17900B97149 /* PBXTargetDependency */,
+			);
+			name = basketBallRecorderUITests;
+			productName = basketBallRecorderUITests;
+			productReference = C7CC37091C7AF17900B97149 /* basketBallRecorderUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C7CC36DD1C7AF17900B97149 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0720;
+				ORGANIZATIONNAME = "Lin Chih-An";
+				TargetAttributes = {
+					C7CC36E41C7AF17900B97149 = {
+						CreatedOnToolsVersion = 7.2;
+						DevelopmentTeam = KRGS5BKS3M;
+					};
+					C7CC36FD1C7AF17900B97149 = {
+						CreatedOnToolsVersion = 7.2;
+						TestTargetID = C7CC36E41C7AF17900B97149;
+					};
+					C7CC37081C7AF17900B97149 = {
+						CreatedOnToolsVersion = 7.2;
+						TestTargetID = C7CC36E41C7AF17900B97149;
+					};
+				};
+			};
+			buildConfigurationList = C7CC36E01C7AF17900B97149 /* Build configuration list for PBXProject "basketBallRecorder" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = C7CC36DC1C7AF17900B97149;
+			productRefGroup = C7CC36E61C7AF17900B97149 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C7CC36E41C7AF17900B97149 /* basketBallRecorder */,
+				C7CC36FD1C7AF17900B97149 /* basketBallRecorderTests */,
+				C7CC37081C7AF17900B97149 /* basketBallRecorderUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C7CC36E31C7AF17900B97149 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C7CC36F81C7AF17900B97149 /* LaunchScreen.storyboard in Resources */,
+				C7CC36F51C7AF17900B97149 /* Assets.xcassets in Resources */,
+				C7CC36F31C7AF17900B97149 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C7CC36FC1C7AF17900B97149 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C7CC37071C7AF17900B97149 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C7CC36E11C7AF17900B97149 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C7CC36F01C7AF17900B97149 /* ViewController.m in Sources */,
+				C7CC36ED1C7AF17900B97149 /* AppDelegate.m in Sources */,
+				C7CC37221C7AFA5900B97149 /* BBRTableViewCell.m in Sources */,
+				C7CC36EA1C7AF17900B97149 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C7CC36FA1C7AF17900B97149 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C7CC37031C7AF17900B97149 /* basketBallRecorderTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C7CC37051C7AF17900B97149 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C7CC370E1C7AF17900B97149 /* basketBallRecorderUITests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C7CC37001C7AF17900B97149 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C7CC36E41C7AF17900B97149 /* basketBallRecorder */;
+			targetProxy = C7CC36FF1C7AF17900B97149 /* PBXContainerItemProxy */;
+		};
+		C7CC370B1C7AF17900B97149 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C7CC36E41C7AF17900B97149 /* basketBallRecorder */;
+			targetProxy = C7CC370A1C7AF17900B97149 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		C7CC36F11C7AF17900B97149 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C7CC36F21C7AF17900B97149 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		C7CC36F61C7AF17900B97149 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C7CC36F71C7AF17900B97149 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		C7CC37101C7AF17900B97149 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C7CC37111C7AF17900B97149 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		C7CC37131C7AF17900B97149 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				INFOPLIST_FILE = basketBallRecorder/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = org.linchihan.basketBallRecorder;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+			};
+			name = Debug;
+		};
+		C7CC37141C7AF17900B97149 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				INFOPLIST_FILE = basketBallRecorder/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = org.linchihan.basketBallRecorder;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+			};
+			name = Release;
+		};
+		C7CC37161C7AF17900B97149 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = basketBallRecorderTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = org.linchihan.basketBallRecorderTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/basketBallRecorder.app/basketBallRecorder";
+			};
+			name = Debug;
+		};
+		C7CC37171C7AF17900B97149 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = basketBallRecorderTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = org.linchihan.basketBallRecorderTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/basketBallRecorder.app/basketBallRecorder";
+			};
+			name = Release;
+		};
+		C7CC37191C7AF17900B97149 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = basketBallRecorderUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = org.linchihan.basketBallRecorderUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = basketBallRecorder;
+				USES_XCTRUNNER = YES;
+			};
+			name = Debug;
+		};
+		C7CC371A1C7AF17900B97149 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = basketBallRecorderUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = org.linchihan.basketBallRecorderUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = basketBallRecorder;
+				USES_XCTRUNNER = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C7CC36E01C7AF17900B97149 /* Build configuration list for PBXProject "basketBallRecorder" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C7CC37101C7AF17900B97149 /* Debug */,
+				C7CC37111C7AF17900B97149 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C7CC37121C7AF17900B97149 /* Build configuration list for PBXNativeTarget "basketBallRecorder" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C7CC37131C7AF17900B97149 /* Debug */,
+				C7CC37141C7AF17900B97149 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		C7CC37151C7AF17900B97149 /* Build configuration list for PBXNativeTarget "basketBallRecorderTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C7CC37161C7AF17900B97149 /* Debug */,
+				C7CC37171C7AF17900B97149 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		C7CC37181C7AF17900B97149 /* Build configuration list for PBXNativeTarget "basketBallRecorderUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C7CC37191C7AF17900B97149 /* Debug */,
+				C7CC371A1C7AF17900B97149 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C7CC36DD1C7AF17900B97149 /* Project object */;
+}
