@@ -21,7 +21,7 @@
             </objects>
             <point key="canvasLocation" x="-822" y="18"/>
         </scene>
-        <!--登入-->
+        <!--球員登入-->
         <scene sceneID="tne-QT-ifu">
             <objects>
                 <viewController id="BYZ-38-t0r" customClass="BBRLogViewController" sceneMemberID="viewController">
@@ -68,7 +68,7 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
-                    <navigationItem key="navigationItem" title="登入" id="ide-Of-R6B">
+                    <navigationItem key="navigationItem" title="球員登入" id="ide-Of-R6B">
                         <barButtonItem key="leftBarButtonItem" title="清除" id="Nco-91-dTP">
                             <connections>
                                 <action selector="clearButtonClicked:" destination="BYZ-38-t0r" id="P4f-1Y-jRD"/>
@@ -98,6 +98,8 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
+                    <toolbarItems/>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZKR-WI-5Fa" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

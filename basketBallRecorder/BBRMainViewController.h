@@ -8,7 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
-@interface BBRMainViewController : UIViewController
+@interface BBRMainViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
+@property UITableView *playerListTableView;
 @property NSArray* playerNoSet;
 @property int playerCount;
+@property int playerSelectedIndex;
+@property int zoneNo;
 @end

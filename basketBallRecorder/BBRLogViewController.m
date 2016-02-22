@@ -21,6 +21,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.BBRtableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 65, self.view.frame.size.width, self.view.frame.size.height-65)];
+    
     self.BBRtableView.delegate = self;
     self.BBRtableView.dataSource = self;
     
@@ -97,6 +98,7 @@
             title.text = @"背號";
             [cell addSubview:title];
         }
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
     }
     
@@ -116,14 +118,13 @@
     cell.numberTextField.textAlignment = NSTextAlignmentCenter;
     cell.numberTextField.delegate = self;
     [cell addSubview:cell.numberTextField];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [self.editingTextField resignFirstResponder];
-    UITableViewCell * cell = [tableView cellForRowAtIndexPath:indexPath];
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
