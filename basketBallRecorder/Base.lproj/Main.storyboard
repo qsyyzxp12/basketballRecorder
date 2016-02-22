@@ -24,7 +24,7 @@
         <!--登入-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="BBRLogViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -38,7 +38,7 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="106" id="Kao-xm-Xhs" customClass="BBRTableViewCell">
-                                        <rect key="frame" x="0.0" y="28" width="600" height="106"/>
+                                        <rect key="frame" x="0.0" y="92" width="600" height="106"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Kao-xm-Xhs" id="Cda-dK-1Yy">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="105"/>
@@ -71,15 +71,37 @@
                     <navigationItem key="navigationItem" title="登入" id="ide-Of-R6B">
                         <barButtonItem key="leftBarButtonItem" title="清除" id="Nco-91-dTP">
                             <connections>
-                                <action selector="clearButton:" destination="BYZ-38-t0r" id="Kq1-Fb-pDZ"/>
+                                <action selector="clearButtonClicked:" destination="BYZ-38-t0r" id="P4f-1Y-jRD"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" title="完成" id="c2z-wp-BTO"/>
+                        <barButtonItem key="rightBarButtonItem" title="完成" id="c2z-wp-BTO">
+                            <connections>
+                                <action selector="finishButtonClicked:" destination="BYZ-38-t0r" id="EnY-Dt-Pfb"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="240" y="113"/>
+            <point key="canvasLocation" x="-102" y="18"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="AWf-ME-Fgc">
+            <objects>
+                <viewController id="nlD-tb-rTD" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="fUg-d4-FCY"/>
+                        <viewControllerLayoutGuide type="bottom" id="ZYh-dB-5wG"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Fur-N5-fxY">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ZKR-WI-5Fa" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="566" y="18"/>
         </scene>
     </scenes>
 </document>

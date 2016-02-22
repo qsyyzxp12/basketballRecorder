@@ -6,16 +6,16 @@
 //  Copyright © 2016年 Lin Chih-An. All rights reserved.
 //
 
-#import "ViewController.h"
+#import "BBRLogViewController.h"
 #import "BBRTableViewCell.h"
 
 #define TITLE_CELL_HEIGHT 40
 #define CELL_HEIGHT 60
-@interface ViewController ()
+@interface BBRLogViewController ()
 
 @end
 
-@implementation ViewController
+@implementation BBRLogViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -29,7 +29,7 @@
 
 #pragma mark - action
 
-- (IBAction)clearButton:(id)sender {
+- (IBAction)clearButtonClicked:(id)sender {
 //    UITableViewCell *onecell = [tableView cellForRowAtIndexPath:indexPath];
     for (int i=1; i<21; i++)
     {
@@ -39,6 +39,8 @@
     }
 }
 
+- (IBAction)finishButtonClicked:(id)sender {
+}
 
 #pragma mark - tableView delegate
 

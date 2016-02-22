@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		C7CC36EA1C7AF17900B97149 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C7CC36E91C7AF17900B97149 /* main.m */; };
 		C7CC36ED1C7AF17900B97149 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C7CC36EC1C7AF17900B97149 /* AppDelegate.m */; };
-		C7CC36F01C7AF17900B97149 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C7CC36EF1C7AF17900B97149 /* ViewController.m */; };
+		C7CC36F01C7AF17900B97149 /* BBRLogViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C7CC36EF1C7AF17900B97149 /* BBRLogViewController.m */; };
 		C7CC36F31C7AF17900B97149 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C7CC36F11C7AF17900B97149 /* Main.storyboard */; };
 		C7CC36F51C7AF17900B97149 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C7CC36F41C7AF17900B97149 /* Assets.xcassets */; };
 		C7CC36F81C7AF17900B97149 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C7CC36F61C7AF17900B97149 /* LaunchScreen.storyboard */; };
@@ -40,8 +40,8 @@
 		C7CC36E91C7AF17900B97149 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		C7CC36EB1C7AF17900B97149 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		C7CC36EC1C7AF17900B97149 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		C7CC36EE1C7AF17900B97149 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		C7CC36EF1C7AF17900B97149 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		C7CC36EE1C7AF17900B97149 /* BBRLogViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BBRLogViewController.h; sourceTree = "<group>"; };
+		C7CC36EF1C7AF17900B97149 /* BBRLogViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BBRLogViewController.m; sourceTree = "<group>"; };
 		C7CC36F21C7AF17900B97149 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		C7CC36F41C7AF17900B97149 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C7CC36F71C7AF17900B97149 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -106,8 +106,8 @@
 			children = (
 				C7CC36EB1C7AF17900B97149 /* AppDelegate.h */,
 				C7CC36EC1C7AF17900B97149 /* AppDelegate.m */,
-				C7CC36EE1C7AF17900B97149 /* ViewController.h */,
-				C7CC36EF1C7AF17900B97149 /* ViewController.m */,
+				C7CC36EE1C7AF17900B97149 /* BBRLogViewController.h */,
+				C7CC36EF1C7AF17900B97149 /* BBRLogViewController.m */,
 				C7CC37201C7AFA5900B97149 /* BBRTableViewCell.h */,
 				C7CC37211C7AFA5900B97149 /* BBRTableViewCell.m */,
 				C7CC36F11C7AF17900B97149 /* Main.storyboard */,
@@ -276,7 +276,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C7CC36F01C7AF17900B97149 /* ViewController.m in Sources */,
+				C7CC36F01C7AF17900B97149 /* BBRLogViewController.m in Sources */,
 				C7CC36ED1C7AF17900B97149 /* AppDelegate.m in Sources */,
 				C7CC37221C7AFA5900B97149 /* BBRTableViewCell.m in Sources */,
 				C7CC36EA1C7AF17900B97149 /* main.m in Sources */,
@@ -511,6 +511,7 @@
 				C7CC37141C7AF17900B97149 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		C7CC37151C7AF17900B97149 /* Build configuration list for PBXNativeTarget "basketBallRecorderTests" */ = {
 			isa = XCConfigurationList;
@@ -519,6 +520,7 @@
 				C7CC37171C7AF17900B97149 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		C7CC37181C7AF17900B97149 /* Build configuration list for PBXNativeTarget "basketBallRecorderUITests" */ = {
 			isa = XCConfigurationList;
@@ -527,6 +529,7 @@
 				C7CC371A1C7AF17900B97149 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
