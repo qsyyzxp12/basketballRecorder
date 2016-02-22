@@ -7,6 +7,7 @@
 //
 
 #import "BBRLogViewController.h"
+#import "BBRMainViewController.h"
 #import "BBRTableViewCell.h"
 
 #define TITLE_CELL_HEIGHT 40
@@ -27,6 +28,27 @@
 
 }
 
+-(void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    NSMutableArray* playerNoSet = [NSMutableArray arrayWithCapacity:20];
+    int count = 0;
+    for (int i=1; i<21; i++)
+    {
+        NSIndexPath* indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+        BBRTableViewCell* cell = [self.BBRtableView cellForRowAtIndexPath:indexPath];
+        if(cell && ![cell.numberTextField.text isEqualToString:@""])
+        {
+            count++;
+            [playerNoSet addObject:cell.numberTextField.text];
+        }
+    }
+    
+    BBRMainViewController* mainViewCntler = [segue destinationViewController];
+    NSArray *resultArray = [playerNoSet sortedArrayUsingSelector:@selector(compare:)];
+    mainViewCntler.playerNoSet = resultArray;
+    mainViewCntler.playerCount = count;
+}
+
 #pragma mark - action
 
 - (IBAction)clearButtonClicked:(id)sender {
@@ -37,9 +59,6 @@
         BBRTableViewCell* cell = [self.BBRtableView cellForRowAtIndexPath:indexPath];
         cell.numberTextField.text = @"";
     }
-}
-
-- (IBAction)finishButtonClicked:(id)sender {
 }
 
 #pragma mark - tableView delegate

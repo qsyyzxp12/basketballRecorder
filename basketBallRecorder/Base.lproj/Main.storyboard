@@ -76,7 +76,7 @@
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="完成" id="c2z-wp-BTO">
                             <connections>
-                                <action selector="finishButtonClicked:" destination="BYZ-38-t0r" id="EnY-Dt-Pfb"/>
+                                <segue destination="nlD-tb-rTD" kind="show" id="QSr-No-DBL"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -85,10 +85,10 @@
             </objects>
             <point key="canvasLocation" x="-102" y="18"/>
         </scene>
-        <!--View Controller-->
+        <!--Main View Controller-->
         <scene sceneID="AWf-ME-Fgc">
             <objects>
-                <viewController id="nlD-tb-rTD" sceneMemberID="viewController">
+                <viewController id="nlD-tb-rTD" customClass="BBRMainViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="fUg-d4-FCY"/>
                         <viewControllerLayoutGuide type="bottom" id="ZYh-dB-5wG"/>
