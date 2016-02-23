@@ -29,7 +29,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
 //    NSLog(@"player count = %d", self.playerCount);
     self.navigationItem.title = @"記錄";
     self.playerSelectedIndex = 0;
@@ -442,19 +441,29 @@
 
 - (void) showAttackList
 {
-
+    UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"My Alert"
+                                                                   message:@"This is an alert."
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction * action) {}];
+    
+    [alert addAction:defaultAction];
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 - (void) viewWillAppear:(BOOL)animated
 {
-    self.navigationController.view.transform = CGAffineTransformMakeRotation(M_PI/2);
-    self.navigationController.view.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
+    [[UIDevice currentDevice] setValue:
+     [NSNumber numberWithInteger: UIInterfaceOrientationLandscapeLeft]
+                                forKey:@"orientation"];
 }
 
 - (void) viewWillDisappear:(BOOL)animated
 {
-    self.navigationController.view.transform = CGAffineTransformIdentity;
-    self.navigationController.view.frame = [UIScreen mainScreen].bounds;
+    [[UIDevice currentDevice] setValue:
+     [NSNumber numberWithInteger: UIInterfaceOrientationPortrait]
+                                forKey:@"orientation"];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -513,6 +522,8 @@
         if(self.zoneNo)
             [self showAttackList];
     }
+    else
+        self.playerSelectedIndex = 0;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
