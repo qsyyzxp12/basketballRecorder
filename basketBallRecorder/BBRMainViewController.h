@@ -14,4 +14,5 @@
 @property int playerCount;
 @property int playerSelectedIndex;
 @property int zoneNo;
+@property NSArray* zones;
 @end

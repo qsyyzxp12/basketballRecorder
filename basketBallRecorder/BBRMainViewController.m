@@ -35,15 +35,260 @@
     
     [self.view addSubview:self.playerListTableView];
     
-    UIImageView* backgroundImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"background.jpg"]];
-    backgroundImageView.frame = CGRectMake(100, 70, self.view.frame.size.height-120, self.view.frame.size.width-75);
-  //  backgroundImageView.backgroundColor = [UIColor redColor];
-    backgroundImageView.contentMode = UIViewContentModeScaleAspectFit;
-    [self.view addSubview:backgroundImageView];
+    [self drawPicture];
     
     /*    for(int i=0; i<self.playerCount; i++)
         NSLog(@"%@", [self.playerNoSet objectAtIndex:i]);
   */
+}
+
+- (void) drawPicture
+{
+    UIImageView* backgroundImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"background.jpg"]];
+    backgroundImageView.frame = CGRectMake(120, 70, self.view.frame.size.height-195, self.view.frame.size.width-75);
+    //backgroundImageView.backgroundColor = [UIColor redColor];
+    backgroundImageView.contentMode = UIViewContentModeScaleAspectFit;
+    [self.view addSubview:backgroundImageView];
+    
+    
+    NSMutableArray* zoneImageViewArray = [NSMutableArray arrayWithCapacity:11];
+    
+    //ZONE 1
+    UIImageView* zoneImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"zone1.png"] highlightedImage:[UIImage imageNamed:@"zone1-2.png"]];
+    
+    [zoneImageView sizeToFit];
+    zoneImageView.frame = CGRectMake(backgroundImageView.frame.origin.x+2, backgroundImageView.frame.origin.y+2, zoneImageView.frame.size.width*0.465, zoneImageView.frame.size.height*0.465);
+
+    zoneImageView.tag = 1;
+    
+    [zoneImageView setUserInteractionEnabled:YES];
+    UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc]
+                                                    initWithTarget:self
+                                                    action:@selector(zonePaned:)];
+    [tapGestureRecognizer setNumberOfTapsRequired:1];
+    [tapGestureRecognizer setNumberOfTouchesRequired:1];
+    [zoneImageView addGestureRecognizer:tapGestureRecognizer];
+    
+    [self.view addSubview:zoneImageView];
+    [zoneImageViewArray addObject:zoneImageView];
+    
+    //ZONE 2
+    CGPoint zonePosition = CGPointMake(zoneImageView.frame.origin.x+zoneImageView.frame.size.width+2, zoneImageView.frame.origin.y);
+    zoneImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"zone2.png"] highlightedImage:[UIImage imageNamed:@"zone2-2.png"]];
+    [zoneImageView sizeToFit];
+    zoneImageView.frame = CGRectMake(zonePosition.x, zonePosition.y, zoneImageView.frame.size.width*0.465, zoneImageView.frame.size.height*0.465);
+    
+    zoneImageView.tag = 2;
+    
+    [zoneImageView setUserInteractionEnabled:YES];
+    tapGestureRecognizer = [[UITapGestureRecognizer alloc]
+                                                    initWithTarget:self
+                                                    action:@selector(zonePaned:)];
+    [tapGestureRecognizer setNumberOfTapsRequired:1];
+    [tapGestureRecognizer setNumberOfTouchesRequired:1];
+    [zoneImageView addGestureRecognizer:tapGestureRecognizer];
+    
+    [self.view addSubview:zoneImageView];
+    [zoneImageViewArray addObject:zoneImageView];
+    
+    //ZONE 3
+    zonePosition = CGPointMake(zoneImageView.frame.origin.x+zoneImageView.frame.size.width+2, zoneImageView.frame.origin.y);
+    zoneImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"zone3.png"] highlightedImage:[UIImage imageNamed:@"zone3-2.png"]];
+    [zoneImageView sizeToFit];
+    zoneImageView.frame = CGRectMake(zonePosition.x, zonePosition.y, zoneImageView.frame.size.width*0.465, zoneImageView.frame.size.height*0.465);
+    
+    zoneImageView.tag = 3;
+    
+    [zoneImageView setUserInteractionEnabled:YES];
+    tapGestureRecognizer = [[UITapGestureRecognizer alloc]
+                                                     initWithTarget:self
+                                                     action:@selector(zonePaned:)];
+    [tapGestureRecognizer setNumberOfTapsRequired:1];
+    [tapGestureRecognizer setNumberOfTouchesRequired:1];
+    [zoneImageView addGestureRecognizer:tapGestureRecognizer];
+    
+    [self.view addSubview:zoneImageView];
+    [zoneImageViewArray addObject:zoneImageView];
+    
+    //ZONE 4
+    zonePosition = CGPointMake(zoneImageView.frame.origin.x+zoneImageView.frame.size.width+2, zoneImageView.frame.origin.y);
+    zoneImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"zone4.png"] highlightedImage:[UIImage imageNamed:@"zone4-2.png"]];
+    [zoneImageView sizeToFit];
+    zoneImageView.frame = CGRectMake(zonePosition.x, zonePosition.y, zoneImageView.frame.size.width*0.465-2, zoneImageView.frame.size.height*0.465);
+    
+    zoneImageView.tag = 4;
+    
+    [zoneImageView setUserInteractionEnabled:YES];
+    tapGestureRecognizer = [[UITapGestureRecognizer alloc]
+                            initWithTarget:self
+                            action:@selector(zonePaned:)];
+    [tapGestureRecognizer setNumberOfTapsRequired:1];
+    [tapGestureRecognizer setNumberOfTouchesRequired:1];
+    [zoneImageView addGestureRecognizer:tapGestureRecognizer];
+    
+    [self.view addSubview:zoneImageView];
+    [zoneImageViewArray addObject:zoneImageView];
+    
+    //ZONE 5
+    zonePosition = CGPointMake(zoneImageView.frame.origin.x+zoneImageView.frame.size.width+2, zoneImageView.frame.origin.y);
+    zoneImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"zone5.png"] highlightedImage:[UIImage imageNamed:@"zone5-2.png"]];
+    [zoneImageView sizeToFit];
+    zoneImageView.frame = CGRectMake(zonePosition.x, zonePosition.y, zoneImageView.frame.size.width*0.465, zoneImageView.frame.size.height*0.465);
+    
+    zoneImageView.tag = 5;
+    
+    [zoneImageView setUserInteractionEnabled:YES];
+    tapGestureRecognizer = [[UITapGestureRecognizer alloc]
+                            initWithTarget:self
+                            action:@selector(zonePaned:)];
+    [tapGestureRecognizer setNumberOfTapsRequired:1];
+    [tapGestureRecognizer setNumberOfTouchesRequired:1];
+    [zoneImageView addGestureRecognizer:tapGestureRecognizer];
+    
+    [self.view addSubview:zoneImageView];
+    [zoneImageViewArray addObject:zoneImageView];
+    
+    //ZONE 6
+    UIImageView* zone1 = [self.view viewWithTag:1];
+    zonePosition = CGPointMake(zone1.frame.origin.x, zone1.frame.origin.y+zone1.frame.size.height+2);
+    zoneImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"zone6.png"] highlightedImage:[UIImage imageNamed:@"zone6-2.png"]];
+    [zoneImageView sizeToFit];
+    zoneImageView.frame = CGRectMake(zonePosition.x, zonePosition.y, zoneImageView.frame.size.width*0.465, zoneImageView.frame.size.height*0.465-1);
+    
+    zoneImageView.tag = 6;
+    
+    [zoneImageView setUserInteractionEnabled:YES];
+    tapGestureRecognizer = [[UITapGestureRecognizer alloc]
+                            initWithTarget:self
+                            action:@selector(zonePaned:)];
+    [tapGestureRecognizer setNumberOfTapsRequired:1];
+    [tapGestureRecognizer setNumberOfTouchesRequired:1];
+    [zoneImageView addGestureRecognizer:tapGestureRecognizer];
+    
+    [self.view addSubview:zoneImageView];
+    [zoneImageViewArray addObject:zoneImageView];
+    
+    //ZONE 7
+    UIImageView* zone2 = [self.view viewWithTag:2];
+    zonePosition = CGPointMake(zone2.frame.origin.x, zone2.frame.origin.y+zone2.frame.size.height+2);
+    zoneImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"zone7.png"] highlightedImage:[UIImage imageNamed:@"zone7-2.png"]];
+    [zoneImageView sizeToFit];
+    zoneImageView.frame = CGRectMake(zonePosition.x, zonePosition.y, zoneImageView.frame.size.width*0.465, zoneImageView.frame.size.height*0.465);
+    
+    zoneImageView.tag = 7;
+    
+    [zoneImageView setUserInteractionEnabled:YES];
+    tapGestureRecognizer = [[UITapGestureRecognizer alloc]
+                            initWithTarget:self
+                            action:@selector(zonePaned:)];
+    [tapGestureRecognizer setNumberOfTapsRequired:1];
+    [tapGestureRecognizer setNumberOfTouchesRequired:1];
+    [zoneImageView addGestureRecognizer:tapGestureRecognizer];
+    
+    [self.view addSubview:zoneImageView];
+    [zoneImageViewArray addObject:zoneImageView];
+  
+    //ZONE 10
+    UIImageView* zone4 = [self.view viewWithTag:4];
+    zonePosition = CGPointMake(zone4.frame.origin.x, zone4.frame.origin.y+zone4.frame.size.height+2);
+    zoneImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"zone10.png"] highlightedImage:[UIImage imageNamed:@"zone10-2.png"]];
+    [zoneImageView sizeToFit];
+    zoneImageView.frame = CGRectMake(zonePosition.x, zonePosition.y, zoneImageView.frame.size.width*0.465-2, zoneImageView.frame.size.height*0.465-2);
+    
+    zoneImageView.tag = 10;
+    
+    [zoneImageView setUserInteractionEnabled:YES];
+    tapGestureRecognizer = [[UITapGestureRecognizer alloc]
+                            initWithTarget:self
+                            action:@selector(zonePaned:)];
+    [tapGestureRecognizer setNumberOfTapsRequired:1];
+    [tapGestureRecognizer setNumberOfTouchesRequired:1];
+    [zoneImageView addGestureRecognizer:tapGestureRecognizer];
+    
+    [self.view addSubview:zoneImageView];
+    [zoneImageViewArray addObject:zoneImageView];
+    
+    //ZONE 9
+    zonePosition = CGPointMake(zone4.frame.origin.x, zone4.frame.origin.y+zone4.frame.size.height+2);
+    zoneImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"zone9.png"] highlightedImage:[UIImage imageNamed:@"zone9-2.png"]];
+    [zoneImageView sizeToFit];
+    zoneImageView.frame = CGRectMake(zonePosition.x, zonePosition.y, zoneImageView.frame.size.width*0.465-1, zoneImageView.frame.size.height*0.465-1);
+    
+    zoneImageView.tag = 9;
+    
+    [zoneImageView setUserInteractionEnabled:YES];
+    tapGestureRecognizer = [[UITapGestureRecognizer alloc]
+                            initWithTarget:self
+                            action:@selector(zonePaned:)];
+    [tapGestureRecognizer setNumberOfTapsRequired:1];
+    [tapGestureRecognizer setNumberOfTouchesRequired:1];
+    [zoneImageView addGestureRecognizer:tapGestureRecognizer];
+    
+    [self.view addSubview:zoneImageView];
+    [zoneImageViewArray addObject:zoneImageView];
+    
+    //ZONE 11
+    UIImageView* zone3 = [self.view viewWithTag:3];
+    UIImageView* zone6 = [self.view viewWithTag:6];
+    zoneImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"zone11.png"] highlightedImage:[UIImage imageNamed:@"zone11-2.png"]];
+    [zoneImageView sizeToFit];
+    CGPoint zoneSize = CGPointMake(zoneImageView.frame.size.width*0.465-2, zoneImageView.frame.size.height*0.465-1);
+    zonePosition = CGPointMake(zone3.frame.origin.x+1, CGRectGetMaxY(zone6.frame)-zoneSize.y);
+    
+    zoneImageView.frame = CGRectMake(zonePosition.x, zonePosition.y, zoneSize.x, zoneSize.y);
+    
+    zoneImageView.tag = 11;
+    
+    [zoneImageView setUserInteractionEnabled:YES];
+    tapGestureRecognizer = [[UITapGestureRecognizer alloc]
+                            initWithTarget:self
+                            action:@selector(zonePaned:)];
+    [tapGestureRecognizer setNumberOfTapsRequired:1];
+    [tapGestureRecognizer setNumberOfTouchesRequired:1];
+    [zoneImageView addGestureRecognizer:tapGestureRecognizer];
+    
+    [self.view addSubview:zoneImageView];
+    [zoneImageViewArray addObject:zoneImageView];
+    
+    
+    //ZONE 8
+    zonePosition = CGPointMake(zone3.frame.origin.x, zone3.frame.origin.y+zone3.frame.size.height+2);
+    zoneImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"zone8.png"] highlightedImage:[UIImage imageNamed:@"zone8-2.png"]];
+    [zoneImageView sizeToFit];
+    zoneImageView.frame = CGRectMake(zonePosition.x+1, zonePosition.y, zoneImageView.frame.size.width*0.465-2, zoneImageView.frame.size.height*0.465);
+    
+    zoneImageView.tag = 8;
+    
+    [zoneImageView setUserInteractionEnabled:YES];
+    tapGestureRecognizer = [[UITapGestureRecognizer alloc]
+                            initWithTarget:self
+                            action:@selector(zonePaned:)];
+    [tapGestureRecognizer setNumberOfTapsRequired:1];
+    [tapGestureRecognizer setNumberOfTouchesRequired:1];
+    [zoneImageView addGestureRecognizer:tapGestureRecognizer];
+    
+    [self.view addSubview:zoneImageView];
+    [zoneImageViewArray addObject:zoneImageView];
+}
+
+- (void) zonePaned:(UIPanGestureRecognizer*) recognizer
+{
+    if([recognizer.view isKindOfClass:[UIImageView class]])
+    {
+        if(!((UIImageView*)recognizer.view).highlighted)
+        {
+            if((int)recognizer.view.tag != self.zoneNo && self.zoneNo)
+                [(UIImageView*)[self.view viewWithTag:self.zoneNo] setHighlighted:NO];
+            self.zoneNo = (int)recognizer.view.tag;
+            [(UIImageView*)recognizer.view setHighlighted:YES];
+        }
+        else
+        {
+            self.zoneNo = 0;
+            [(UIImageView*)recognizer.view setHighlighted:NO];
+        }
+    }
+    NSLog(@"select zone %d", self.zoneNo);
 }
 
 - (void) viewWillAppear:(BOOL)animated
