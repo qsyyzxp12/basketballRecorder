@@ -501,13 +501,42 @@
     
     UIAlertAction* yesAction = [UIAlertAction actionWithTitle:@"YES" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
+            NSMutableDictionary* playerData = [self.playerDataArray objectAtIndex:self.playerSelectedIndex-1];
+            int attackTryCount = [[playerData objectForKey:self.keyForTryCount] floatValue];
+            int attackScoreCount = [[playerData objectForKey:self.keyForScoreCount] floatValue];
+            NSString* tryCountStr = [NSString stringWithFormat:@"%d", attackTryCount+1];
+            NSString* scoreCountStr = [NSString stringWithFormat:@"%d", attackScoreCount+1];
             
+            [playerData setObject:tryCountStr forKey:self.keyForTryCount];
+            [playerData setObject:scoreCountStr forKey:self.keyForScoreCount];
+            
+            NSString* keyForZoneTryCount = [NSString stringWithFormat:@"zone%dTryCount", self.zoneNo];
+            NSString* keyForZoneScoreCount =[NSString stringWithFormat:@"zone%dScoreCount", self.zoneNo];
+            float zoneTryCount = [[playerData objectForKey:keyForZoneTryCount] floatValue];
+            float zoneScoreCount = [[playerData objectForKey:keyForZoneScoreCount] floatValue];
+            tryCountStr = [NSString stringWithFormat:@"%d", (int)zoneTryCount + 1];
+            scoreCountStr = [NSString stringWithFormat:@"%d", (int)zoneScoreCount + 1];
+            
+            NSLog(@"xxxx %@:%@", keyForZoneScoreCount, tryCountStr);
+            [playerData setObject:tryCountStr forKey:keyForZoneTryCount];
+            [playerData setObject:scoreCountStr forKey:keyForZoneScoreCount];
+            
+            self.zoneNo = 0;
         }];
     UIAlertAction* noAction = [UIAlertAction actionWithTitle:@"NO" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
+            NSMutableDictionary* playerData = [self.playerDataArray objectAtIndex:self.playerSelectedIndex-1];
+            float tryCount = [[playerData objectForKey:self.keyForTryCount] floatValue];
+            NSString* tryCountStr = [NSString stringWithFormat:@"%d", (int)tryCount+1];
+            
+            [playerData setObject:tryCountStr forKey:self.keyForTryCount];
+            
+            self.zoneNo = 0;
         }];
     UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * action)
-                                   {}];
+        {
+            self.zoneNo = 0;
+        }];
     
     [scoreOrNotAlert addAction:yesAction];
     [scoreOrNotAlert addAction:noAction];
@@ -617,7 +646,6 @@
     
     
     [(UIImageView*)[self.view viewWithTag:self.zoneNo] setHighlighted:NO];
-    self.zoneNo = 0;
 }
 
 - (void) viewWillAppear:(BOOL)animated
@@ -693,10 +721,12 @@
         NSDictionary* playerData = [self.playerDataArray objectAtIndex:self.playerSelectedIndex-1];
         for(int i=1; i<12; i++)
         {
-            float zone1TryCount = [(NSString*)[playerData objectForKey:@"zone1TryCount"] floatValue];
-            float zone1ScoreCount = [(NSString*)[playerData objectForKey:@"zone1ScoreCount"] floatValue];
-            ((UILabel*)[self.view viewWithTag:(i*100+2)]).text = [NSString stringWithFormat:@"%d/%d", (int)zone1ScoreCount, (int)zone1TryCount];
-            ((UILabel*)[self.view viewWithTag:(i*100+1)]).text = [NSString stringWithFormat:@"%d%c", (int)((zone1ScoreCount/zone1TryCount)*100), '%'];
+            NSString* keyForTryCount = [NSString stringWithFormat:@"zone%dTryCount", i];
+            NSString* keyForScoreCount = [NSString stringWithFormat:@"zone%dScoreCount", i];
+            float zoneTryCount = [(NSString*)[playerData objectForKey:keyForTryCount] floatValue];
+            float zoneScoreCount = [(NSString*)[playerData objectForKey:keyForScoreCount] floatValue];
+            ((UILabel*)[self.view viewWithTag:(i*100+2)]).text = [NSString stringWithFormat:@"%d/%d", (int)zoneScoreCount, (int)zoneTryCount];
+            ((UILabel*)[self.view viewWithTag:(i*100+1)]).text = [NSString stringWithFormat:@"%d%c", (int)((zoneScoreCount/zoneTryCount)*100), '%'];
         }
         
         NSLog(@"select player index = %d", self.playerSelectedIndex);
