@@ -29,7 +29,7 @@
     if (tableViewHeight > self.view.frame.size.height)
         tableViewHeight = self.view.frame.size.height;
     
-    self.playerListTableView = [[UITableView alloc] initWithFrame:CGRectMake(20, 0, CELL_WIDTH, tableViewHeight)];
+    self.playerListTableView = [[UITableView alloc] initWithFrame:CGRectMake(20, 5, CELL_WIDTH, tableViewHeight)];
     self.playerListTableView.delegate = self;
     self.playerListTableView.dataSource = self;
     
@@ -269,6 +269,79 @@
     
     [self.view addSubview:zoneImageView];
     [zoneImageViewArray addObject:zoneImageView];
+    
+    //Draw Label for zone1
+    UILabel* hitRateLabel = [[UILabel alloc] initWithFrame:CGRectMake(zone1.frame.origin.x, zone1.frame.origin.y + zone1.frame.size.height*0.1, zone1.frame.size.width, 23)];
+    hitRateLabel.textAlignment = NSTextAlignmentCenter;
+    hitRateLabel.text = @"0%";
+    hitRateLabel.tag = 101;
+    UILabel* gradeLabel = [[UILabel alloc] initWithFrame:CGRectMake(hitRateLabel.frame.origin.x, CGRectGetMaxY(hitRateLabel.frame), CGRectGetWidth(hitRateLabel.frame), 23)];
+    gradeLabel.textAlignment = NSTextAlignmentCenter;
+    gradeLabel.tag = 102;
+    gradeLabel.text = @"0/0";
+    [self.view addSubview:hitRateLabel];
+    [self.view addSubview:gradeLabel];
+    
+    //Draw Label for zone2
+    hitRateLabel = [[UILabel alloc] initWithFrame:CGRectMake(zone2.frame.origin.x, zone2.frame.origin.y + zone2.frame.size.height*0.1, zone2.frame.size.width, 23)];
+    hitRateLabel.textAlignment = NSTextAlignmentCenter;
+    hitRateLabel.text = @"0%";
+    hitRateLabel.tag = 201;
+    gradeLabel = [[UILabel alloc] initWithFrame:CGRectMake(hitRateLabel.frame.origin.x, CGRectGetMaxY(hitRateLabel.frame), CGRectGetWidth(hitRateLabel.frame), 23)];
+    gradeLabel.textAlignment = NSTextAlignmentCenter;
+    gradeLabel.tag = 202;
+    gradeLabel.text = @"0/0";
+    [self.view addSubview:hitRateLabel];
+    [self.view addSubview:gradeLabel];
+    
+    //Draw Label for zone3
+    hitRateLabel = [[UILabel alloc] initWithFrame:CGRectMake(zone3.frame.origin.x, zone3.frame.origin.y + zone3.frame.size.height*0.1, zone3.frame.size.width, 23)];
+    hitRateLabel.textAlignment = NSTextAlignmentCenter;
+    hitRateLabel.text = @"0%";
+    hitRateLabel.tag = 301;
+    gradeLabel = [[UILabel alloc] initWithFrame:CGRectMake(hitRateLabel.frame.origin.x, CGRectGetMaxY(hitRateLabel.frame), CGRectGetWidth(hitRateLabel.frame), 23)];
+    gradeLabel.textAlignment = NSTextAlignmentCenter;
+    gradeLabel.tag = 302;
+    gradeLabel.text = @"0/0";
+    [self.view addSubview:hitRateLabel];
+    [self.view addSubview:gradeLabel];
+    
+    //Draw Label for zone4
+    hitRateLabel = [[UILabel alloc] initWithFrame:CGRectMake(zone4.frame.origin.x, zone4.frame.origin.y + zone4.frame.size.height*0.1, zone4.frame.size.width, 23)];
+    hitRateLabel.textAlignment = NSTextAlignmentCenter;
+    hitRateLabel.text = @"0%";
+    hitRateLabel.tag = 401;
+    gradeLabel = [[UILabel alloc] initWithFrame:CGRectMake(hitRateLabel.frame.origin.x, CGRectGetMaxY(hitRateLabel.frame), CGRectGetWidth(hitRateLabel.frame), 23)];
+    gradeLabel.textAlignment = NSTextAlignmentCenter;
+    gradeLabel.tag = 402;
+    gradeLabel.text = @"0/0";
+    [self.view addSubview:hitRateLabel];
+    [self.view addSubview:gradeLabel];
+    
+    //Draw Label for zone5
+    UIImageView* zone5 = [self.view viewWithTag:5];
+    hitRateLabel = [[UILabel alloc] initWithFrame:CGRectMake(zone5.frame.origin.x, zone5.frame.origin.y + zone5.frame.size.height*0.1, zone5.frame.size.width, 23)];
+    hitRateLabel.textAlignment = NSTextAlignmentCenter;
+    hitRateLabel.text = @"0%";
+    hitRateLabel.tag = 501;
+    gradeLabel = [[UILabel alloc] initWithFrame:CGRectMake(hitRateLabel.frame.origin.x, CGRectGetMaxY(hitRateLabel.frame), zone5.frame.size.width, 23)];
+    gradeLabel.textAlignment = NSTextAlignmentCenter;
+    gradeLabel.tag = 502;
+    gradeLabel.text = @"0/0";
+    [self.view addSubview:hitRateLabel];
+    [self.view addSubview:gradeLabel];
+    
+    //Draw Label for zone6
+    hitRateLabel = [[UILabel alloc] initWithFrame:CGRectMake(zone6.frame.origin.x, zone6.frame.origin.y+zone6.frame.size.height*0.6, zone6.frame.size.width/2, 23)];
+    hitRateLabel.textAlignment = NSTextAlignmentCenter;
+    hitRateLabel.text = @"0%";
+    hitRateLabel.tag = 601;
+    gradeLabel = [[UILabel alloc] initWithFrame:CGRectMake(hitRateLabel.frame.origin.x, CGRectGetMaxY(hitRateLabel.frame), zone6.frame.size.width/2, 23)];
+    gradeLabel.textAlignment = NSTextAlignmentCenter;
+    gradeLabel.tag = 602;
+    gradeLabel.text = @"0/0";
+    [self.view addSubview:hitRateLabel];
+    [self.view addSubview:gradeLabel];
 }
 
 - (void) zonePaned:(UIPanGestureRecognizer*) recognizer
@@ -281,6 +354,8 @@
                 [(UIImageView*)[self.view viewWithTag:self.zoneNo] setHighlighted:NO];
             self.zoneNo = (int)recognizer.view.tag;
             [(UIImageView*)recognizer.view setHighlighted:YES];
+            if(self.playerSelectedIndex)
+                [self showAttackList];
         }
         else
         {
@@ -289,6 +364,11 @@
         }
     }
     NSLog(@"select zone %d", self.zoneNo);
+}
+
+- (void) showAttackList
+{
+
 }
 
 - (void) viewWillAppear:(BOOL)animated
@@ -353,7 +433,12 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if(indexPath.row)
+    {
         self.playerSelectedIndex = (int)indexPath.row;
+        NSLog(@"select player index = %d", self.playerSelectedIndex);
+        if(self.zoneNo)
+            [self showAttackList];
+    }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
