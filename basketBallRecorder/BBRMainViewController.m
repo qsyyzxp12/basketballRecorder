@@ -517,7 +517,6 @@
             tryCountStr = [NSString stringWithFormat:@"%d", (int)zoneTryCount + 1];
             scoreCountStr = [NSString stringWithFormat:@"%d", (int)zoneScoreCount + 1];
             
-            NSLog(@"xxxx %@:%@", keyForZoneScoreCount, tryCountStr);
             [playerData setObject:tryCountStr forKey:keyForZoneTryCount];
             [playerData setObject:scoreCountStr forKey:keyForZoneScoreCount];
             
@@ -530,6 +529,15 @@
             NSString* tryCountStr = [NSString stringWithFormat:@"%d", (int)tryCount+1];
             
             [playerData setObject:tryCountStr forKey:self.keyForTryCount];
+            
+            NSString* keyForZoneTryCount = [NSString stringWithFormat:@"zone%dTryCount", self.zoneNo];
+            NSString* keyForZoneScoreCount =[NSString stringWithFormat:@"zone%dScoreCount", self.zoneNo];
+            float zoneTryCount = [[playerData objectForKey:keyForZoneTryCount] floatValue];
+            float zoneScoreCount = [[playerData objectForKey:keyForZoneScoreCount] floatValue];
+            tryCountStr = [NSString stringWithFormat:@"%d", (int)zoneTryCount + 1];
+            NSString* scoreCountStr = [NSString stringWithFormat:@"%d", (int)zoneScoreCount];
+            
+            [playerData setObject:tryCountStr forKey:keyForZoneTryCount];
             
             self.zoneNo = 0;
         }];
