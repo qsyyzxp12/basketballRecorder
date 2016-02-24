@@ -76,10 +76,13 @@
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="完成" id="c2z-wp-BTO">
                             <connections>
-                                <segue destination="nlD-tb-rTD" kind="show" id="QSr-No-DBL"/>
+                                <action selector="finishButtonClicked:" destination="BYZ-38-t0r" id="7th-dg-LnW"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <segue destination="nlD-tb-rTD" kind="show" identifier="showMainController" id="kiT-7J-pL3"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>

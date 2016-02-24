@@ -27,32 +27,49 @@
     
     [self.view addSubview:self.BBRtableView];
 
+    self.textFieldArray = [NSMutableArray arrayWithCapacity:20];
+    for (int i=0; i<20; i++)
+        [self.textFieldArray setObject:@"" atIndexedSubscript:i];
 }
 
 -(void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    NSMutableArray* playerNoSet = [NSMutableArray arrayWithCapacity:20];
-    int count = 0;
+    BBRMainViewController* mainViewCntler = [segue destinationViewController];
+    NSArray *resultArray = [self.playerNoSet sortedArrayUsingSelector:@selector(compare:)];
+    mainViewCntler.playerNoSet = resultArray;
+    mainViewCntler.playerCount = self.playerCount;
+}
+
+#pragma mark - action
+
+- (IBAction)finishButtonClicked:(id)sender
+{
+    self.playerNoSet = [NSMutableArray arrayWithCapacity:20];
+    self.playerCount = 0;
     for (int i=1; i<21; i++)
     {
         NSIndexPath* indexPath = [NSIndexPath indexPathForRow:i inSection:0];
         BBRTableViewCell* cell = [self.BBRtableView cellForRowAtIndexPath:indexPath];
         if(cell && ![cell.numberTextField.text isEqualToString:@""])
         {
-            count++;
-            [playerNoSet addObject:cell.numberTextField.text];
+            self.playerCount++;
+            [self.playerNoSet addObject:cell.numberTextField.text];
         }
     }
     
-    BBRMainViewController* mainViewCntler = [segue destinationViewController];
-    NSArray *resultArray = [playerNoSet sortedArrayUsingSelector:@selector(compare:)];
-    mainViewCntler.playerNoSet = resultArray;
-    mainViewCntler.playerCount = count;
+    if(self.playerCount < 5)
+    {
+        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"人數小於5人" message:nil preferredStyle: UIAlertControllerStyleAlert];
+        UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action){}];
+        [alert addAction:okAction];
+        [self presentViewController:alert animated:YES completion:nil];
+    }
+    else
+        [self performSegueWithIdentifier:@"showMainController" sender:nil];
 }
 
-#pragma mark - action
-
-- (IBAction)clearButtonClicked:(id)sender {
+- (IBAction)clearButtonClicked:(id)sender
+{
 //    UITableViewCell *onecell = [tableView cellForRowAtIndexPath:indexPath];
     for (int i=1; i<21; i++)
     {
@@ -76,6 +93,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+//    NSLog(@"indexPath = %ld", (long)indexPath.row);
     if(indexPath.row == 0)
     {
         BBRTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"title"];
@@ -104,6 +122,7 @@
     
 
     BBRTableViewCell* cell = [[BBRTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
+
     cell.layer.borderWidth = 1;
 
     cell.indexLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, CELL_HEIGHT, CELL_HEIGHT)];
@@ -115,7 +134,9 @@
             
     cell.numberTextField = [[UITextField alloc] initWithFrame:CGRectMake(CELL_HEIGHT, 0, tableView.frame.size.width-CELL_HEIGHT, CELL_HEIGHT)];
     cell.numberTextField.layer.borderWidth = 1;
+    cell.numberTextField.tag = indexPath.row;
     cell.numberTextField.textAlignment = NSTextAlignmentCenter;
+    cell.numberTextField.text = [self.textFieldArray objectAtIndex:indexPath.row-1];
     cell.numberTextField.delegate = self;
     [cell addSubview:cell.numberTextField];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -139,6 +160,14 @@
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
     return [textField resignFirstResponder];
+}
+
+- (BOOL)textFieldShouldEndEditing:(UITextField *)textField
+{
+    NSLog(@"textField.text = %@, textField.tag-1 = %ld", textField.text, textField.tag-1);
+    [self.textFieldArray setObject:textField.text atIndexedSubscript:textField.tag-1];
+    NSLog(@"%@", self.textFieldArray);
+    return YES;
 }
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField

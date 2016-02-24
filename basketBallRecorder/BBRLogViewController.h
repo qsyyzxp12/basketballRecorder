@@ -11,5 +11,8 @@
 @interface BBRLogViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate>
 @property UITableView *BBRtableView;
 @property UITextField *editingTextField;
+@property NSMutableArray* textFieldArray;
+@property int playerCount;
+@property NSMutableArray* playerNoSet;
 @end
 
