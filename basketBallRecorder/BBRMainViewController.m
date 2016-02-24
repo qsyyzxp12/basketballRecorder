@@ -8,6 +8,8 @@
 
 #import "BBRMainViewController.h"
 #import "BBRTableViewCell.h"
+#import "BBRDataTableViewController.h"
+
 #define TITLE_CELL_HEIGHT 30
 #define CELL_HEIGHT 40
 #define CELL_WIDTH 60
@@ -34,6 +36,7 @@
     for(int i=0; i<self.playerCount; i++)
     {
         NSMutableDictionary* playerDataItem = [[NSMutableDictionary alloc] init];
+        [playerDataItem setObject:[self.playerNoSet objectAtIndex:i] forKey:@"no"];
         [playerDataItem setObject:@"0" forKey:@"zone1TryCount"];
         [playerDataItem setObject:@"0" forKey:@"zone1ScoreCount"];
         [playerDataItem setObject:@"0" forKey:@"zone2TryCount"];
@@ -113,11 +116,26 @@
 - (void) rightBarButtonClicked
 {
     self.navigationItem.rightBarButtonItem.title = @"表格";
+    self.navigationItem.rightBarButtonItem.action = @selector(showDataTable);
     self.navigationItem.title = @"記錄完成";
     for(int i=1; i<13; i++)
     {
         UIImageView* zone = (UIImageView*)[self.view viewWithTag:i];
         [zone setUserInteractionEnabled:NO];
+    }
+}
+
+- (void) showDataTable
+{
+    [self performSegueWithIdentifier:@"showDataTable" sender:nil];
+}
+
+- (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if([segue.identifier isEqualToString:@"showDataTable"])
+    {
+        BBRDataTableViewController* tableViewController = [segue destinationViewController];
+        tableViewController.playerDataArray = self.playerDataArray;
     }
 }
 
