@@ -29,12 +29,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-//    NSLog(@"player count = %d", self.playerCount);
- /*   self.shotRecord = malloc(sizeof(int)*self.playerCount);
-    bzero(self.shotRecord, sizeof(int)*self.playerCount);
-    self.layupRecord = malloc(sizeof(int)*self.playerCount);
-    bzero(self.layupRecord, sizeof(int)*self.playerCount);
-  */
+
     self.playerDataArray = [NSMutableArray arrayWithCapacity:self.playerCount];
     for(int i=0; i<self.playerCount; i++)
     {
@@ -92,6 +87,11 @@
     }
     
     self.navigationItem.title = @"記錄";
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] init];
+    self.navigationItem.rightBarButtonItem.title = @"完成";
+    self.navigationItem.rightBarButtonItem.target = self;
+    self.navigationItem.rightBarButtonItem.action = @selector(rightBarButtonClicked);
+    
     self.playerSelectedIndex = 0;
     self.zoneNo = 0;
     
@@ -108,6 +108,17 @@
     [self drawPicture];
     
     [self constructAlertControllers];
+}
+
+- (void) rightBarButtonClicked
+{
+    self.navigationItem.rightBarButtonItem.title = @"表格";
+    self.navigationItem.title = @"記錄完成";
+    for(int i=1; i<13; i++)
+    {
+        UIImageView* zone = (UIImageView*)[self.view viewWithTag:i];
+        [zone setUserInteractionEnabled:NO];
+    }
 }
 
 - (void) constructAlertControllers

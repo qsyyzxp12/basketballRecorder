@@ -15,7 +15,6 @@
 @property int playerSelectedIndex;
 @property int zoneNo;
 @property NSMutableArray* playerDataArray;
-@property NSArray* zones;
 @property NSString* keyForScoreCount;
 @property NSString* keyForTryCount;
 @property UIAlertController* scoreOrNotAlert;
