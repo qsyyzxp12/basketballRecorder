@@ -18,4 +18,6 @@
 @property NSArray* zones;
 @property NSString* keyForScoreCount;
 @property NSString* keyForTryCount;
+@property UIAlertController* scoreOrNotAlert;
+@property UIAlertController* attackWayAlert;
 @end
