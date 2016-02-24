@@ -8,7 +8,6 @@
 
 #import "BBRMainViewController.h"
 #import "BBRTableViewCell.h"
-#import "BBRDataTableViewController.h"
 
 #define TITLE_CELL_HEIGHT 30
 #define CELL_HEIGHT 40
@@ -22,6 +21,11 @@
 #define TOP_PADDING_RATE2 0.3       //for zone 3
 #define TOP_PADDING_RATE3 0.6       //for zone 6, 10
 #define TOP_PADDING_RATE4 0         //for zone 8
+#define NO_TABLEVIEW_TAG -1
+#define PLAYER_GRADE_TABLEVIEW_TAG -2
+#define PLAYER_GRADE_TABLECELL_HEIGHT 30
+#define BACKGROUND_IMAGEVIEW_TAG -3
+#define BAR_HEIGHT 33
 
 @interface BBRMainViewController ()
 
@@ -32,6 +36,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
+    self.attackWaySet = [[NSArray alloc] initWithObjects:@"單打", @"定點投籃", @"PS", @"PC", @"PR", @"PPS", @"PPC", @"Catch&Shoot", @"快攻", @"低位單打", @"二波進攻", @"切入", @"空切", @"罰球", nil];
+    self.attackWayKeySet = [[NSArray alloc] initWithObjects:@"isolationTryCount", @"isolationScoreCount", @"spotUpTryCount", @"spotUpScoreCount", @"PSTryCount", @"PSScoreCount", @"PCTryCount", @"PCScoreCount", @"PRTryCount", @"PRScoreCount", @"PPSTryCount", @"PPSScoreCount", @"PPCTryCount", @"PPCScoreCount", @"CSTryCount", @"CSScoreCount", @"fastBreakTryCount", @"fastBreakScoreCount", @"lowPostTryCount", @"lowPostScoreCount", @"secondTryCount", @"secondScoreCount", @"driveTryCount", @"driveScoreCount", @"cutTryCount", @"cutScoreCount", @"zone12TryCount", @"zone12ScoreCount", nil];
+    
     self.playerDataArray = [NSMutableArray arrayWithCapacity:self.playerCount];
     for(int i=0; i<self.playerCount; i++)
     {
@@ -61,30 +68,11 @@
         [playerDataItem setObject:@"0" forKey:@"zone11ScoreCount"];
         [playerDataItem setObject:@"0" forKey:@"zone12TryCount"];
         [playerDataItem setObject:@"0" forKey:@"zone12ScoreCount"];
-        [playerDataItem setObject:@"0" forKey:@"isolationTryCount"];
-        [playerDataItem setObject:@"0" forKey:@"isolationScoreCount"];
-        [playerDataItem setObject:@"0" forKey:@"spotUpTryCount"];
-        [playerDataItem setObject:@"0" forKey:@"spotUpScoreCount"];
-        [playerDataItem setObject:@"0" forKey:@"PSTryCount"];
-        [playerDataItem setObject:@"0" forKey:@"PSScoreCount"];
-        [playerDataItem setObject:@"0" forKey:@"PCTryCount"];
-        [playerDataItem setObject:@"0" forKey:@"PCScoreCount"];
-        [playerDataItem setObject:@"0" forKey:@"PPSTryCount"];
-        [playerDataItem setObject:@"0" forKey:@"PPSScoreCount"];
-        [playerDataItem setObject:@"0" forKey:@"PRTryCount"];
-        [playerDataItem setObject:@"0" forKey:@"PRScoreCount"];
-        [playerDataItem setObject:@"0" forKey:@"CSTryCount"];
-        [playerDataItem setObject:@"0" forKey:@"CSScoreCount"];
-        [playerDataItem setObject:@"0" forKey:@"fastBreakTryCount"];
-        [playerDataItem setObject:@"0" forKey:@"fastBreakScoreCount"];
-        [playerDataItem setObject:@"0" forKey:@"lowPostTryCount"];
-        [playerDataItem setObject:@"0" forKey:@"lowPostScoreCount"];
-        [playerDataItem setObject:@"0" forKey:@"secondTryCount"];
-        [playerDataItem setObject:@"0" forKey:@"secondScoreCount"];
-        [playerDataItem setObject:@"0" forKey:@"driveTryCount"];
-        [playerDataItem setObject:@"0" forKey:@"driveScoreCount"];
-        [playerDataItem setObject:@"0" forKey:@"cutTryCount"];
-        [playerDataItem setObject:@"0" forKey:@"cutScoreCount"];
+        for (int j=0; j<26; j=j+2)
+        {
+            [playerDataItem setObject:@"0" forKey:[self.attackWayKeySet objectAtIndex:j]];
+            [playerDataItem setObject:@"0" forKey:[self.attackWayKeySet objectAtIndex:j+1]];
+        }
         [playerDataItem setObject:@"0" forKey:@"totalScoreGet"];
         [self.playerDataArray addObject:playerDataItem];
     }
@@ -105,6 +93,7 @@
     self.playerListTableView = [[UITableView alloc] initWithFrame:CGRectMake(20, 5, CELL_WIDTH, tableViewHeight)];
     self.playerListTableView.delegate = self;
     self.playerListTableView.dataSource = self;
+    self.playerListTableView.tag = NO_TABLEVIEW_TAG;
     
     [self.view addSubview:self.playerListTableView];
     
@@ -115,9 +104,15 @@
 
 - (void) rightBarButtonClicked
 {
-    self.navigationItem.rightBarButtonItem.title = @"表格";
-    self.navigationItem.rightBarButtonItem.action = @selector(showDataTable);
-    self.navigationItem.title = @"記錄完成";
+    [self updatePlayerData];
+    self.navigationItem.rightBarButtonItem.title = @"進攻分類";
+    self.navigationItem.rightBarButtonItem.action = @selector(showPlayerDataTable);
+    self.navigationItem.title = @"成績";
+    
+    [self hideZone12orNot:NO];
+    
+    if([self.view viewWithTag:PLAYER_GRADE_TABLEVIEW_TAG])
+        [[self.view viewWithTag:PLAYER_GRADE_TABLEVIEW_TAG] removeFromSuperview];
     for(int i=1; i<13; i++)
     {
         UIImageView* zone = (UIImageView*)[self.view viewWithTag:i];
@@ -125,18 +120,30 @@
     }
 }
 
-- (void) showDataTable
+-(void)showPlayerDataTable
 {
-    [self performSegueWithIdentifier:@"showDataTable" sender:nil];
+    self.navigationItem.rightBarButtonItem.title = @"區域分類";
+    self.navigationItem.rightBarButtonItem.action = @selector(rightBarButtonClicked);
+
+    [self hideZone12orNot:YES];
+    
+    if(!self.playerDataTableView)
+    {
+        self.playerDataTableView = [[UITableView alloc] initWithFrame:[self.view viewWithTag:BACKGROUND_IMAGEVIEW_TAG].frame];
+        self.playerDataTableView.tag = PLAYER_GRADE_TABLEVIEW_TAG;
+        self.playerDataTableView.delegate = self;
+        self.playerDataTableView.dataSource = self;
+    }
+    [self.view addSubview:self.playerDataTableView];
+    [self.playerDataTableView reloadData];
 }
 
-- (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+-(void)hideZone12orNot:(BOOL)yesOrNo
 {
-    if([segue.identifier isEqualToString:@"showDataTable"])
-    {
-        BBRDataTableViewController* tableViewController = [segue destinationViewController];
-        tableViewController.playerDataArray = self.playerDataArray;
-    }
+    [self.view viewWithTag:12].hidden = yesOrNo;
+    [self.view viewWithTag:1201].hidden = yesOrNo;
+    [self.view viewWithTag:1202].hidden = yesOrNo;
+    [self.view viewWithTag:1203].hidden = yesOrNo;
 }
 
 - (void) constructAlertControllers
@@ -328,7 +335,12 @@
 - (void) drawPicture
 {
     UIImageView* backgroundImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"background.jpg"]];
-    backgroundImageView.frame = CGRectMake(120, 70, BACKGROUND_WIDTH, BACKGROUND_HEIGHT);
+    
+    CGFloat x = (self.view.frame.size.height- CGRectGetMaxX(self.playerListTableView.frame) - BACKGROUND_WIDTH)/3 + CGRectGetMaxX(self.playerListTableView.frame);
+    CGFloat y = (self.view.frame.size.width - BAR_HEIGHT - BACKGROUND_HEIGHT)/2 + BAR_HEIGHT;
+    
+    backgroundImageView.frame = CGRectMake(x, y, BACKGROUND_WIDTH, BACKGROUND_HEIGHT);
+    backgroundImageView.tag = BACKGROUND_IMAGEVIEW_TAG;
     
     backgroundImageView.contentMode = UIViewContentModeScaleAspectFit;
     [self.view addSubview:backgroundImageView];
@@ -694,6 +706,7 @@
     UILabel* penaltyZone = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(backgroundImageView.frame)+5, CGRectGetMaxY(backgroundImageView.frame)-80, 60, RECORD_LABEL_HEIGHT)];
     penaltyZone.textAlignment = NSTextAlignmentCenter;
     penaltyZone.layer.borderWidth = 1;
+    penaltyZone.tag = 1203;
     penaltyZone.text = @"罰球";
     
     UIImageView* tapView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"zone1.png"] highlightedImage:[UIImage imageNamed:@"zone1-2.png"]];
@@ -803,7 +816,12 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return (self.playerCount + 1);
+    if (tableView.tag == NO_TABLEVIEW_TAG)
+    {
+       return (self.playerCount + 1);
+    }
+    //if(tableview.tag == PLAYER_GRADE_TABLEVIEW_TAG)
+    return 16;
 }
 
 - (NSInteger) numberOfSectionsInTableView:(UITableView *)tableView
@@ -813,6 +831,36 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if(tableView.tag == NO_TABLEVIEW_TAG)
+    {
+        if(indexPath.row == 0)
+        {
+            BBRTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"title"];
+            if(!cell)
+            {
+                cell = [[BBRTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"title"];
+                cell.layer.borderWidth = 1;
+                UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, CELL_WIDTH, TITLE_CELL_HEIGHT)];
+                label.textAlignment = NSTextAlignmentCenter;
+                label.backgroundColor = [UIColor lightGrayColor];
+                label.text = @"背號";
+                [cell addSubview:label];
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            }
+            return cell;
+        }
+        
+        BBRTableViewCell* cell = [[BBRTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
+        cell.layer.borderWidth = 1;
+        UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, CELL_WIDTH, CELL_HEIGHT)];
+        label.textAlignment = NSTextAlignmentCenter;
+        label.text = [NSString stringWithFormat:@"%@", [self.playerNoSet objectAtIndex:indexPath.row-1]];
+        [cell addSubview:label];
+        cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+        
+        return cell;
+    }
+    //if(tableview.tag == PLAYER_GRADE_TABLEVIEW_TAG)
     if(indexPath.row == 0)
     {
         BBRTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"title"];
@@ -820,48 +868,88 @@
         {
             cell = [[BBRTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"title"];
             cell.layer.borderWidth = 1;
-            UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, CELL_WIDTH, TITLE_CELL_HEIGHT)];
-            label.textAlignment = NSTextAlignmentCenter;
-            label.backgroundColor = [UIColor lightGrayColor];
-            label.text = @"背號";
+            UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width*0.3, PLAYER_GRADE_TABLECELL_HEIGHT)];
             [cell addSubview:label];
+            
+            UILabel* label2 = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(label.frame), label.frame.origin.y, tableView.frame.size.width*0.7, PLAYER_GRADE_TABLECELL_HEIGHT)];
+            label2.textAlignment = NSTextAlignmentCenter;
+            label2.layer.borderWidth = 1;
+            label2.text = @"成績";
+            [cell addSubview:label2];
+            
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
         }
         return cell;
     }
-    
+    NSDictionary* playerData;
+    if(self.playerSelectedIndex)
+        playerData = [self.playerDataArray objectAtIndex:self.playerSelectedIndex-1];
     BBRTableViewCell* cell = [[BBRTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
     cell.layer.borderWidth = 1;
-    UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, CELL_WIDTH, CELL_HEIGHT)];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    
+    UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width*0.3, PLAYER_GRADE_TABLECELL_HEIGHT)];
     label.textAlignment = NSTextAlignmentCenter;
-    label.text = [NSString stringWithFormat:@"%@", [self.playerNoSet objectAtIndex:indexPath.row-1]];
-    [cell addSubview:label];
-    cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+    
+    UILabel* label2 = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(label.frame), label.frame.origin.y, tableView.frame.size.width*0.7, PLAYER_GRADE_TABLECELL_HEIGHT)];
+    label2.textAlignment = NSTextAlignmentCenter;
+    label2.layer.borderWidth = 1;
 
+    
+    if(indexPath.row < 15)
+    {
+        label.text = [self.attackWaySet objectAtIndex:indexPath.row-1];
+        if(!self.playerSelectedIndex)
+            label2.text = @"0/0";
+        else
+            label2.text = [NSString stringWithFormat:@"%@/%@", [playerData objectForKey:[self.attackWayKeySet objectAtIndex:(indexPath.row-1)*2]], [playerData objectForKey:[self.attackWayKeySet objectAtIndex:(indexPath.row-1)*2 + 1]]];
+    }
+    else
+    {
+        label.text = @"總得分";
+        if(!self.playerSelectedIndex)
+            label2.text = @"0";
+        else
+            label2.text = [NSString stringWithFormat:@"%@", [playerData objectForKey:@"totalScoreGet"]];
+    }
+    [cell addSubview:label];
+    [cell addSubview:label2];
+    
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if(indexPath.row)
+    if(tableView.tag == NO_TABLEVIEW_TAG)
     {
-        self.playerSelectedIndex = (int)indexPath.row;
+        if(indexPath.row)
+        {
+            self.playerSelectedIndex = (int)indexPath.row;
         
-        NSLog(@"select player index = %d", self.playerSelectedIndex);
-        if(self.zoneNo)
-            [self showAttackList];
-    }
-    else
-        self.playerSelectedIndex = 0;
+            NSLog(@"select player index = %d", self.playerSelectedIndex);
+            if(self.zoneNo)
+                [self showAttackList];
+        }
+        else
+            self.playerSelectedIndex = 0;
     
-    [self updatePlayerData];
+        if([self.view viewWithTag:PLAYER_GRADE_TABLEVIEW_TAG])
+            [(UITableView*)[self.view viewWithTag:PLAYER_GRADE_TABLEVIEW_TAG] reloadData];
+        else
+            [self updatePlayerData];
+    }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if(!indexPath.row)
-        return TITLE_CELL_HEIGHT;
-    return CELL_HEIGHT;
+    if(tableView.tag == NO_TABLEVIEW_TAG)
+    {
+        if(!indexPath.row)
+            return TITLE_CELL_HEIGHT;
+        return CELL_HEIGHT;
+    }
+    //if(tableview.tag == PLAYER_GRADE_TABLEVIEW_TAG)
+    return PLAYER_GRADE_TABLECELL_HEIGHT;
 }
 
 

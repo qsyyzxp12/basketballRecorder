@@ -10,11 +10,14 @@
 
 @interface BBRMainViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 @property UITableView *playerListTableView;
+@property UITableView *playerDataTableView;
+@property NSMutableArray* playerDataArray;
+@property NSArray* attackWaySet;
+@property NSArray* attackWayKeySet;
 @property NSArray* playerNoSet;
 @property int playerCount;
 @property int playerSelectedIndex;
 @property int zoneNo;
-@property NSMutableArray* playerDataArray;
 @property NSString* keyForScoreCount;
 @property NSString* keyForTryCount;
 @property UIAlertController* scoreOrNotAlert;
