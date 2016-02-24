@@ -77,6 +77,8 @@
         BBRTableViewCell* cell = [self.BBRtableView cellForRowAtIndexPath:indexPath];
         cell.numberTextField.text = @"";
     }
+    for (int i=0; i<20; i++)
+        [self.textFieldArray setObject:@"" atIndexedSubscript:i];
 }
 
 #pragma mark - tableView delegate
@@ -164,9 +166,7 @@
 
 - (BOOL)textFieldShouldEndEditing:(UITextField *)textField
 {
-    NSLog(@"textField.text = %@, textField.tag-1 = %ld", textField.text, textField.tag-1);
     [self.textFieldArray setObject:textField.text atIndexedSubscript:textField.tag-1];
-    NSLog(@"%@", self.textFieldArray);
     return YES;
 }
 

@@ -118,6 +118,8 @@
         UIImageView* zone = (UIImageView*)[self.view viewWithTag:i];
         [zone setUserInteractionEnabled:NO];
     }
+    if (self.zoneNo)
+        ((UIImageView*)[self.view viewWithTag:self.zoneNo]).highlighted = NO;
 }
 
 -(void)showPlayerDataTable
