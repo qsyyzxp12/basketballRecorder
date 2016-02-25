@@ -926,11 +926,19 @@
 - (void) showAttackList
 {
     if(self.zoneNo != 12)
-        [self presentViewController:self.attackWayAlert animated:YES completion:nil];
+    {
+        [self presentViewController:self.attackWayAlert animated:YES completion:^
+        {
+            [(UIImageView*)[self.view viewWithTag:self.zoneNo] setHighlighted:NO];
+        }];
+    }
     else
-        [self presentViewController:self.madeOrNotAlert animated:YES completion:nil];
-    
-    [(UIImageView*)[self.view viewWithTag:self.zoneNo] setHighlighted:NO];
+    {
+        [self presentViewController:self.madeOrNotAlert animated:YES completion:^
+        {
+            [(UIImageView*)[self.view viewWithTag:self.zoneNo] setHighlighted:NO];
+        }];
+    }
 }
 
 - (void) updatePlayerData
