@@ -44,19 +44,18 @@
 
 - (IBAction)finishButtonClicked:(id)sender
 {
+    [self.editingTextField resignFirstResponder];
     self.playerNoSet = [NSMutableArray arrayWithCapacity:20];
     self.playerCount = 0;
-    for (int i=1; i<21; i++)
+    for (NSString* noStr in self.textFieldArray)
     {
-        NSIndexPath* indexPath = [NSIndexPath indexPathForRow:i inSection:0];
-        BBRTableViewCell* cell = [self.BBRtableView cellForRowAtIndexPath:indexPath];
-        if(cell && ![cell.numberTextField.text isEqualToString:@""])
+        if (![noStr isEqualToString:@""])
         {
+            [self.playerNoSet addObject:noStr];
             self.playerCount++;
-            [self.playerNoSet addObject:cell.numberTextField.text];
         }
     }
-    
+/*
     if(self.playerCount < 5)
     {
         UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"人數小於5人" message:nil preferredStyle: UIAlertControllerStyleAlert];
@@ -65,7 +64,7 @@
         [self presentViewController:alert animated:YES completion:nil];
     }
     else
-        [self performSegueWithIdentifier:@"showMainController" sender:nil];
+*/        [self performSegueWithIdentifier:@"showMainController" sender:nil];
 }
 
 - (IBAction)clearButtonClicked:(id)sender

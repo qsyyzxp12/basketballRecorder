@@ -27,6 +27,11 @@
 #define BACKGROUND_IMAGEVIEW_TAG -3
 #define BAR_HEIGHT 33
 
+#define KEY_FOR_ATTEMPT_COUNT @"attempCount"
+#define KEY_FOR_MADE_COUNT @"madeCOunt"
+#define KEY_FOR_FOUL_COUNT @"foulCount"
+#define KEY_FOR_TURN_OVER_COUNT @"turnOverCount"
+
 @interface BBRMainViewController ()
 
 @end
@@ -37,42 +42,35 @@
     [super viewDidLoad];
 
     self.attackWaySet = [[NSArray alloc] initWithObjects:@"單打", @"定點投籃", @"PS", @"PC", @"PR", @"PPS", @"PPC", @"Catch&Shoot", @"快攻", @"低位單打", @"二波進攻", @"切入", @"空切", @"罰球", nil];
-    self.attackWayKeySet = [[NSArray alloc] initWithObjects:@"isolationTryCount", @"isolationScoreCount", @"spotUpTryCount", @"spotUpScoreCount", @"PSTryCount", @"PSScoreCount", @"PCTryCount", @"PCScoreCount", @"PRTryCount", @"PRScoreCount", @"PPSTryCount", @"PPSScoreCount", @"PPCTryCount", @"PPCScoreCount", @"CSTryCount", @"CSScoreCount", @"fastBreakTryCount", @"fastBreakScoreCount", @"lowPostTryCount", @"lowPostScoreCount", @"secondTryCount", @"secondScoreCount", @"driveTryCount", @"driveScoreCount", @"cutTryCount", @"cutScoreCount", @"zone12TryCount", @"zone12ScoreCount", nil];
+    self.attackWayKeySet = [[NSArray alloc] initWithObjects:
+                            @"isolation", @"spotUp", @"PS", @"PC", @"PR", @"PPS", @"PPC", @"CS",
+                            @"fastBreak", @"lowPost", @"second", @"drive", @"cut", nil];
     
     self.playerDataArray = [NSMutableArray arrayWithCapacity:self.playerCount];
     for(int i=0; i<self.playerCount; i++)
     {
         NSMutableDictionary* playerDataItem = [[NSMutableDictionary alloc] init];
         [playerDataItem setObject:[self.playerNoSet objectAtIndex:i] forKey:@"no"];
-        [playerDataItem setObject:@"0" forKey:@"zone1TryCount"];
-        [playerDataItem setObject:@"0" forKey:@"zone1ScoreCount"];
-        [playerDataItem setObject:@"0" forKey:@"zone2TryCount"];
-        [playerDataItem setObject:@"0" forKey:@"zone2ScoreCount"];
-        [playerDataItem setObject:@"0" forKey:@"zone3TryCount"];
-        [playerDataItem setObject:@"0" forKey:@"zone3ScoreCount"];
-        [playerDataItem setObject:@"0" forKey:@"zone4TryCount"];
-        [playerDataItem setObject:@"0" forKey:@"zone4ScoreCount"];
-        [playerDataItem setObject:@"0" forKey:@"zone5TryCount"];
-        [playerDataItem setObject:@"0" forKey:@"zone5ScoreCount"];
-        [playerDataItem setObject:@"0" forKey:@"zone6TryCount"];
-        [playerDataItem setObject:@"0" forKey:@"zone6ScoreCount"];
-        [playerDataItem setObject:@"0" forKey:@"zone7TryCount"];
-        [playerDataItem setObject:@"0" forKey:@"zone7ScoreCount"];
-        [playerDataItem setObject:@"0" forKey:@"zone8TryCount"];
-        [playerDataItem setObject:@"0" forKey:@"zone8ScoreCount"];
-        [playerDataItem setObject:@"0" forKey:@"zone9TryCount"];
-        [playerDataItem setObject:@"0" forKey:@"zone9ScoreCount"];
-        [playerDataItem setObject:@"0" forKey:@"zone10TryCount"];
-        [playerDataItem setObject:@"0" forKey:@"zone10ScoreCount"];
-        [playerDataItem setObject:@"0" forKey:@"zone11TryCount"];
-        [playerDataItem setObject:@"0" forKey:@"zone11ScoreCount"];
-        [playerDataItem setObject:@"0" forKey:@"zone12TryCount"];
-        [playerDataItem setObject:@"0" forKey:@"zone12ScoreCount"];
-        for (int j=0; j<26; j=j+2)
+        
+        for(int k=0; k<12; k++)
         {
-            [playerDataItem setObject:@"0" forKey:[self.attackWayKeySet objectAtIndex:j]];
-            [playerDataItem setObject:@"0" forKey:[self.attackWayKeySet objectAtIndex:j+1]];
+            NSMutableDictionary* madeOrAttempt = [[NSMutableDictionary alloc] init];
+            [madeOrAttempt setObject:@"0" forKey:KEY_FOR_MADE_COUNT];
+            [madeOrAttempt setObject:@"0" forKey:KEY_FOR_ATTEMPT_COUNT];
+            
+            NSString* zoneKey = [NSString stringWithFormat:@"zone%d", k+1];
+            [playerDataItem setObject:madeOrAttempt forKey:zoneKey];
         }
+        for (int j=0; j<13; j++)
+        {
+            NSMutableDictionary* result2 = [[NSMutableDictionary alloc] init];
+            [result2 setObject:@"0" forKey:KEY_FOR_MADE_COUNT];
+            [result2 setObject:@"0" forKey:KEY_FOR_ATTEMPT_COUNT];
+            [result2 setObject:@"0" forKey:KEY_FOR_FOUL_COUNT];
+            [result2 setObject:@"0" forKey:KEY_FOR_TURN_OVER_COUNT];
+            [playerDataItem setObject:result2 forKey:[self.attackWayKeySet objectAtIndex:j]];
+        }
+        
         [playerDataItem setObject:@"0" forKey:@"totalScoreGet"];
         [self.playerDataArray addObject:playerDataItem];
     }
@@ -151,34 +149,35 @@
 - (void) constructAlertControllers
 {
     self.scoreOrNotAlert =
-    [UIAlertController alertControllerWithTitle:@"得分" message:nil preferredStyle: UIAlertControllerStyleAlert];
+    [UIAlertController alertControllerWithTitle:@"結果" message:nil preferredStyle: UIAlertControllerStyleAlert];
     
-    UIAlertAction* yesAction = [UIAlertAction actionWithTitle:@"YES" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+    UIAlertAction* yesAction = [UIAlertAction actionWithTitle:@"得分" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
             NSMutableDictionary* playerData = [self.playerDataArray objectAtIndex:self.playerSelectedIndex-1];
-            NSString *tryCountStr, *scoreCountStr;
+            int attemptCount, madeCount;
             if(self.zoneNo != 12)
             {
                 //更新進攻方式分類的成績
-                int attackTryCount = [[playerData objectForKey:self.keyForTryCount] floatValue];
-                int attackScoreCount = [[playerData objectForKey:self.keyForScoreCount] floatValue];
-                tryCountStr = [NSString stringWithFormat:@"%d", attackTryCount+1];
-                scoreCountStr = [NSString stringWithFormat:@"%d", attackScoreCount+1];
+                NSMutableDictionary* attackData = [playerData objectForKey:self.keyForSearch];
+                attemptCount = [[attackData objectForKey:KEY_FOR_ATTEMPT_COUNT] floatValue];
+                madeCount = [[attackData objectForKey:KEY_FOR_MADE_COUNT] floatValue];
                 
-                [playerData setObject:tryCountStr forKey:self.keyForTryCount];
-                [playerData setObject:scoreCountStr forKey:self.keyForScoreCount];
+                [attackData setObject:[NSString stringWithFormat:@"%d", attemptCount+1] forKey:KEY_FOR_ATTEMPT_COUNT];
+                [attackData setObject:[NSString stringWithFormat:@"%d", madeCount+1] forKey:KEY_FOR_MADE_COUNT];
+                
+                [playerData setObject:attackData forKey:self.keyForSearch];
             }
             
             //更新區域分類的成績
-            NSString* keyForZoneTryCount = [NSString stringWithFormat:@"zone%dTryCount", self.zoneNo];
-            NSString* keyForZoneScoreCount =[NSString stringWithFormat:@"zone%dScoreCount", self.zoneNo];
-            float zoneTryCount = [[playerData objectForKey:keyForZoneTryCount] floatValue];
-            float zoneScoreCount = [[playerData objectForKey:keyForZoneScoreCount] floatValue];
-            tryCountStr = [NSString stringWithFormat:@"%d", (int)zoneTryCount + 1];
-            scoreCountStr = [NSString stringWithFormat:@"%d", (int)zoneScoreCount + 1];
-                                    
-            [playerData setObject:tryCountStr forKey:keyForZoneTryCount];
-            [playerData setObject:scoreCountStr forKey:keyForZoneScoreCount];
+            NSString* keyForZone = [NSString stringWithFormat:@"zone%d", self.zoneNo];
+            NSMutableDictionary* zoneData = [playerData objectForKey:keyForZone];
+            attemptCount = [[zoneData objectForKey:KEY_FOR_ATTEMPT_COUNT] floatValue];
+            madeCount = [[playerData objectForKey:KEY_FOR_MADE_COUNT] floatValue];
+            
+            [zoneData setObject:[NSString stringWithFormat:@"%d", attemptCount + 1] forKey:KEY_FOR_ATTEMPT_COUNT];
+            [zoneData setObject:[NSString stringWithFormat:@"%d", madeCount+1] forKey:KEY_FOR_MADE_COUNT];
+            
+            [playerData setObject:zoneData forKey:keyForZone];
             
             //更新得分成績
             int totalScoreGet = [[playerData objectForKey:@"totalScoreGet"] intValue];
@@ -200,25 +199,27 @@
             self.zoneNo = 0;
             NSLog(@"%@", self.playerDataArray);
         }];
-    UIAlertAction* noAction = [UIAlertAction actionWithTitle:@"NO" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+    UIAlertAction* noAction = [UIAlertAction actionWithTitle:@"沒得分" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
             NSMutableDictionary* playerData = [self.playerDataArray objectAtIndex:self.playerSelectedIndex-1];
-            NSString* tryCountStr;
+            int attemptCount;
             //更新進攻方式分類的成績
             if(self.zoneNo != 12)
             {
-                float tryCount = [[playerData objectForKey:self.keyForTryCount] floatValue];
-                tryCountStr = [NSString stringWithFormat:@"%d", (int)tryCount+1];
-
-                [playerData setObject:tryCountStr forKey:self.keyForTryCount];
+                NSMutableDictionary* attackData = [playerData objectForKey:self.keyForSearch];
+                attemptCount = [[attackData objectForKey:KEY_FOR_ATTEMPT_COUNT] intValue];
+                [attackData setObject:[NSString stringWithFormat:@"%d", attemptCount+1] forKey:KEY_FOR_ATTEMPT_COUNT];
+                [playerData setObject:attackData forKey:self.keyForSearch];
             }
 
             //更新區域分類的成績
-            NSString* keyForZoneTryCount = [NSString stringWithFormat:@"zone%dTryCount", self.zoneNo];
-            float zoneTryCount = [[playerData objectForKey:keyForZoneTryCount] floatValue];
-            tryCountStr = [NSString stringWithFormat:@"%d", (int)zoneTryCount + 1];
+            
+            NSString* keyForZone = [NSString stringWithFormat:@"zone%d", self.zoneNo];
+            NSMutableDictionary* zoneData = [playerData objectForKey:keyForZone];
+            attemptCount = [[zoneData objectForKey:KEY_FOR_ATTEMPT_COUNT] intValue];
+            [zoneData setObject:[NSString stringWithFormat:@"%d", attemptCount + 1] forKey:@"attempCount"];
                                    
-            [playerData setObject:tryCountStr forKey:keyForZoneTryCount];
+            [playerData setObject:zoneData forKey:keyForZone];
             
             //Update UI
             [self updatePlayerData];
@@ -226,13 +227,19 @@
             self.zoneNo = 0;
             NSLog(@"%@", self.playerDataArray);
         }];
-    UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * action)
+    UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action)
         {
             self.zoneNo = 0;
         }];
     
+    UIAlertAction* foulAction = [UIAlertAction actionWithTitle:@"犯規" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action){}];
+    
+    UIAlertAction* turnOverAction = [UIAlertAction actionWithTitle:@"失誤" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action){}];
+    
     [self.scoreOrNotAlert addAction:yesAction];
     [self.scoreOrNotAlert addAction:noAction];
+    [self.scoreOrNotAlert addAction:turnOverAction];
+    [self.scoreOrNotAlert addAction:foulAction];
     [self.scoreOrNotAlert addAction:cancelAction];
     
     
@@ -241,80 +248,67 @@
     
     UIAlertAction* isolationAction = [UIAlertAction actionWithTitle:@"單打" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
                                       {
-                                          self.keyForTryCount = @"isolationTryCount";
-                                          self.keyForScoreCount = @"isolationScoreCount";
+                                          self.keyForSearch = @"isolation";
                                           [self presentViewController:self.scoreOrNotAlert animated:YES completion:nil];
                                       }];
     UIAlertAction* spotUpAction = [UIAlertAction actionWithTitle:@"定點投籃" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
                                    {
-                                       self.keyForTryCount = @"spotUpTryCount";
-                                       self.keyForScoreCount = @"spotUpScoreCount";
+                                       self.keyForSearch = @"spotUp";
                                        [self presentViewController:self.scoreOrNotAlert animated:YES completion:nil];
                                    }];
     UIAlertAction* psAction = [UIAlertAction actionWithTitle:@"PS" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
                                {
-                                   self.keyForTryCount = @"PSTryCount";
-                                   self.keyForScoreCount = @"PSScoreCount";
+                                   self.keyForSearch = @"PS";
                                    [self presentViewController:self.scoreOrNotAlert animated:YES completion:nil];
                                }];
     UIAlertAction* pcAction = [UIAlertAction actionWithTitle:@"PC" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
                                {
-                                   self.keyForTryCount = @"PCTryCount";
-                                   self.keyForScoreCount = @"PCScoreCount";
+                                   self.keyForSearch = @"PC";
                                    [self presentViewController:self.scoreOrNotAlert animated:YES completion:nil];
                                }];
     UIAlertAction* prAction = [UIAlertAction actionWithTitle:@"PR" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
                                {
-                                   self.keyForTryCount = @"PRTryCount";
-                                   self.keyForScoreCount = @"PRScoreCount";
+                                   self.keyForSearch = @"PR";
                                    [self presentViewController:self.scoreOrNotAlert animated:YES completion:nil];
                                }];
     UIAlertAction* ppsAction = [UIAlertAction actionWithTitle:@"PPS" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
                                 {
-                                    self.keyForTryCount = @"PPSTryCount";
-                                    self.keyForScoreCount = @"PPSScoreCount";
+                                    self.keyForSearch = @"PPS";
                                     [self presentViewController:self.scoreOrNotAlert animated:YES completion:nil];
                                 }];
     UIAlertAction* ppcAction = [UIAlertAction actionWithTitle:@"PPC" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
                                 {
-                                    self.keyForTryCount = @"PPCTryCount";
-                                    self.keyForScoreCount = @"PPCScoreCount";
+                                    self.keyForSearch = @"PPC";
                                     [self presentViewController:self.scoreOrNotAlert animated:YES completion:nil];
                                 }];
     UIAlertAction* catchShootAction = [UIAlertAction actionWithTitle:@"Catch&Shoot" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
-                                       {
-                                           self.keyForTryCount = @"CSTryCount";
-                                           self.keyForScoreCount = @"CSScoreCount";
-                                           [self presentViewController:self.scoreOrNotAlert animated:YES completion:nil];
-                                       }];
+                                {
+                                    self.keyForSearch = @"CS";
+                                    [self presentViewController:self.scoreOrNotAlert animated:YES completion:nil];
+                                }];
     UIAlertAction* fastBreakAction = [UIAlertAction actionWithTitle:@"快攻" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
-                                      {
-                                          self.keyForTryCount = @"fastBreakTryCount";
-                                          self.keyForScoreCount = @"fastBreakScoreCount";
-                                          [self presentViewController:self.scoreOrNotAlert animated:YES completion:nil];
-                                      }];
+                                {
+                                    self.keyForSearch = @"fastBreak";
+                                    [self presentViewController:self.scoreOrNotAlert animated:YES completion:nil];
+                                }];
     UIAlertAction* lowPostAction = [UIAlertAction actionWithTitle:@"低位單打" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
-                                    {
-                                        self.keyForTryCount = @"lowPostTryCount";
-                                        self.keyForScoreCount = @"lowPostScoreCount";
-                                        [self presentViewController:self.scoreOrNotAlert animated:YES completion:nil];
-                                    }];
+                                {
+                                    self.keyForSearch = @"lowPost";
+                                    [self presentViewController:self.scoreOrNotAlert animated:YES completion:nil];
+                                }];
     UIAlertAction* secondAction = [UIAlertAction actionWithTitle:@"二波進攻" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
                                    {
-                                       self.keyForTryCount = @"secondTryCount";
-                                       self.keyForScoreCount = @"secontScoreCount";
+                                       self.keyForSearch = @"second";
                                        [self presentViewController:self.scoreOrNotAlert animated:YES completion:nil];
                                    }];
     UIAlertAction* driveAction = [UIAlertAction actionWithTitle:@"切入" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
                                   {
-                                      self.keyForTryCount = @"driveTryCount";
-                                      self.keyForScoreCount = @"driveScoreCount";
+                                      self.keyForSearch = @"drive";
                                       [self presentViewController:self.scoreOrNotAlert animated:YES completion:nil];
                                   }];
     UIAlertAction* cutAction = [UIAlertAction actionWithTitle:@"空切" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
                                 {
-                                    self.keyForTryCount = @"cutTryCount";
-                                    self.keyForScoreCount = @"cutScoreCount";
+                                    self.keyForSearch = @"cut";
                                     [self presentViewController:self.scoreOrNotAlert animated:YES completion:nil];
                                 }];
     
@@ -709,7 +703,7 @@
     penaltyZone.textAlignment = NSTextAlignmentCenter;
     penaltyZone.layer.borderWidth = 1;
     penaltyZone.tag = 1203;
-    penaltyZone.text = @"罰球";
+    penaltyZone.text = @"加罰";
     
     UIImageView* tapView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"zone1.png"] highlightedImage:[UIImage imageNamed:@"zone1-2.png"]];
     tapView.frame = penaltyZone.frame;
@@ -777,12 +771,12 @@
         NSDictionary* playerData = [self.playerDataArray objectAtIndex:self.playerSelectedIndex-1];
         for(int i=1; i<13; i++)
         {
-            NSString* keyForTryCount = [NSString stringWithFormat:@"zone%dTryCount", i];
-            NSString* keyForScoreCount = [NSString stringWithFormat:@"zone%dScoreCount", i];
-            float zoneTryCount = [(NSString*)[playerData objectForKey:keyForTryCount] floatValue];
-            float zoneScoreCount = [(NSString*)[playerData objectForKey:keyForScoreCount] floatValue];
-            ((UILabel*)[self.view viewWithTag:(i*100+2)]).text = [NSString stringWithFormat:@"%d/%d", (int)zoneScoreCount, (int)zoneTryCount];
-            ((UILabel*)[self.view viewWithTag:(i*100+1)]).text = [NSString stringWithFormat:@"%d%c", (int)((zoneScoreCount/zoneTryCount)*100), '%'];
+            NSString* keyForZone = [NSString stringWithFormat:@"zone%d", i];
+            NSDictionary* zoneData = [playerData objectForKey:keyForZone];
+            float zoneAttemptCount = [(NSString*)[zoneData objectForKey:KEY_FOR_ATTEMPT_COUNT] floatValue];
+            float zoneMadeCount = [(NSString*)[zoneData objectForKey:KEY_FOR_MADE_COUNT] floatValue];
+            ((UILabel*)[self.view viewWithTag:(i*100+2)]).text = [NSString stringWithFormat:@"%d/%d", (int)zoneMadeCount, (int)zoneAttemptCount];
+            ((UILabel*)[self.view viewWithTag:(i*100+1)]).text = [NSString stringWithFormat:@"%d%c", (int)((zoneMadeCount/zoneAttemptCount)*100), '%'];
         }
     }
     else
@@ -896,15 +890,32 @@
     UILabel* label2 = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(label.frame), label.frame.origin.y, tableView.frame.size.width*0.7, PLAYER_GRADE_TABLECELL_HEIGHT)];
     label2.textAlignment = NSTextAlignmentCenter;
     label2.layer.borderWidth = 1;
-
+/*
+    self.attackWaySet = [[NSArray alloc] initWithObjects:@"單打", @"定點投籃", @"PS", @"PC", @"PR", @"PPS", @"PPC", @"Catch&Shoot", @"快攻", @"低位單打", @"二波進攻", @"切入", @"空切", @"罰球", nil];
+    self.attackWayKeySet = [[NSArray alloc] initWithObjects:
+                            @"isolation", @"spotUp", @"PS", @"PC", @"PR", @"PPS", @"PPC", @"CS",
+                            @"fastBreak", @"lowPost", @"second", @"drive", @"cut", nil];
     
+    */
     if(indexPath.row < 15)
     {
         label.text = [self.attackWaySet objectAtIndex:indexPath.row-1];
         if(!self.playerSelectedIndex)
             label2.text = @"0/0";
         else
-            label2.text = [NSString stringWithFormat:@"%@/%@", [playerData objectForKey:[self.attackWayKeySet objectAtIndex:(indexPath.row-1)*2]], [playerData objectForKey:[self.attackWayKeySet objectAtIndex:(indexPath.row-1)*2 + 1]]];
+        {
+            if(indexPath.row < 14)
+            {
+                NSDictionary* attackData = [playerData objectForKey:[self.attackWayKeySet objectAtIndex:indexPath.row-1]];
+                label2.text = [NSString stringWithFormat:@"%@/%@", [attackData objectForKey:KEY_FOR_MADE_COUNT], [attackData objectForKey:KEY_FOR_ATTEMPT_COUNT]];
+        
+            }
+            else
+            {
+                NSDictionary* bonusData = [playerData objectForKey:@"zone12"];
+                label2.text = [NSString stringWithFormat:@"%@/%@", [bonusData objectForKey:KEY_FOR_MADE_COUNT], [bonusData objectForKey:KEY_FOR_ATTEMPT_COUNT]];
+            }
+        }
     }
     else
     {

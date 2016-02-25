@@ -18,8 +18,7 @@
 @property int playerCount;
 @property int playerSelectedIndex;
 @property int zoneNo;
-@property NSString* keyForScoreCount;
-@property NSString* keyForTryCount;
+@property NSString* keyForSearch;
 @property UIAlertController* scoreOrNotAlert;
 @property UIAlertController* attackWayAlert;
 @end
