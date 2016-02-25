@@ -19,6 +19,10 @@
 @property int playerSelectedIndex;
 @property int zoneNo;
 @property NSString* keyForSearch;
-@property UIAlertController* scoreOrNotAlert;
+@property UIAlertController* madeOrNotAlert;
 @property UIAlertController* attackWayAlert;
+@property UIAlertController* resultAlert;
+@property UIAlertController* bonusAlertFor2Chance;
+@property UIAlertController* bonusAlertFor3Chance;
+@property UIAlertController* andOneAlert;
 @end
