@@ -55,7 +55,7 @@
     
     self.quarterNo = 0;
     
-    NSLog(@"playerCount = %d", self.playerCount);
+//    NSLog(@"playerCount = %d", self.playerCount);
     
     self.playerDataArray = [NSMutableArray arrayWithCapacity:5];
     for(int l=0; l<5; l++)
@@ -96,7 +96,7 @@
         }
         [self.playerDataArray addObject:quarterData];
     }
-    NSLog(@"%@", self.playerDataArray);
+     NSLog(@"%@", self.playerDataArray);
     
     self.navigationItem.title = @"第一節";
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] init];
@@ -852,8 +852,8 @@
 {
     self.backgroundImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"background.jpg"]];
     
-    CGFloat x = (self.view.frame.size.height- CGRectGetMaxX(self.playerListTableView.frame) - BACKGROUND_WIDTH)/3 + CGRectGetMaxX(self.playerListTableView.frame);
-    CGFloat y = (self.view.frame.size.width - BAR_HEIGHT - BACKGROUND_HEIGHT)/2 + BAR_HEIGHT;
+    CGFloat x = (self.view.frame.size.width- CGRectGetMaxX(self.playerListTableView.frame) - BACKGROUND_WIDTH)/3 + CGRectGetMaxX(self.playerListTableView.frame);
+    CGFloat y = (self.view.frame.size.height - BAR_HEIGHT - BACKGROUND_HEIGHT)/2 + BAR_HEIGHT;
     
     self.backgroundImageView.frame = CGRectMake(x, y, BACKGROUND_WIDTH, BACKGROUND_HEIGHT);
     self.backgroundImageView.tag = BACKGROUND_IMAGEVIEW_TAG;
@@ -1271,7 +1271,7 @@
         }
     }
     
-    NSLog(@"select zone %d", self.zoneNo);
+//    NSLog(@"select zone %d", self.zoneNo);
 }
 
 - (void) showAttackList
@@ -1316,21 +1316,6 @@
             ((UILabel*)[self.view viewWithTag:(i*100+1)]).text = @"0%";
         }
     }
-}
-
-- (void) viewWillAppear:(BOOL)animated
-{
-    [[UIDevice currentDevice] setValue:
-     [NSNumber numberWithInteger: UIInterfaceOrientationLandscapeLeft]
-                                forKey:@"orientation"];
-}
-
-- (void) viewWillDisappear:(BOOL)animated
-{
-    [[UIDevice currentDevice] setValue:
-     [NSNumber numberWithInteger: UIInterfaceOrientationPortrait]
-                                forKey:@"orientation"];
-    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -1537,7 +1522,7 @@
         {
             self.playerSelectedIndex = (int)indexPath.row;
         
-            NSLog(@"select player index = %d", self.playerSelectedIndex);
+//            NSLog(@"select player index = %d", self.playerSelectedIndex);
             if(self.zoneNo)
                 [self showAttackList];
         }
