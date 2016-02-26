@@ -18,6 +18,7 @@
 @property int playerCount;
 @property int playerSelectedIndex;
 @property int zoneNo;
+@property int quarterNo;
 @property NSString* keyForSearch;
 @property UIAlertController* madeOrNotAlert;
 @property UIAlertController* attackWayAlert;
@@ -25,4 +26,6 @@
 @property UIAlertController* bonusAlertFor2Chance;
 @property UIAlertController* bonusAlertFor3Chance;
 @property UIAlertController* andOneAlert;
+@property UIImageView* backgroundImageView;
+@property BOOL isShowZoneGrade;
 @end
