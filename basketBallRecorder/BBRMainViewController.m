@@ -12,6 +12,7 @@
 #define TITLE_CELL_HEIGHT 30
 #define CELL_HEIGHT 40
 #define CELL_WIDTH 60
+
 #define BACKGROUND_WIDTH 373
 #define BACKGROUND_HEIGHT 245
 #define IMAGE_SCALE 0.465
@@ -45,6 +46,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
+    self.isShowZoneGrade = YES;
+    
     self.attackWaySet = [[NSArray alloc] initWithObjects:@"單打", @"定點投籃", @"PS", @"PC", @"PR", @"PPS", @"PPC", @"Catch&Shoot", @"快攻", @"低位單打", @"二波進攻", @"切入", @"空切", @"加罰", nil];
     self.attackWayKeySet = [[NSArray alloc] initWithObjects:
                             @"isolation", @"spotUp", @"PS", @"PC", @"PR", @"PPS", @"PPC", @"CS",
@@ -52,14 +55,21 @@
     
     self.quarterNo = 0;
     
+    NSLog(@"playerCount = %d", self.playerCount);
+    
     self.playerDataArray = [NSMutableArray arrayWithCapacity:5];
     for(int l=0; l<5; l++)
     {
-        NSMutableArray* quarterData = [NSMutableArray arrayWithCapacity:self.playerCount];
-        for(int i=0; i<self.playerCount; i++)
+        NSMutableArray* quarterData = [NSMutableArray arrayWithCapacity:self.playerCount+1];
+        for(int i=0; i<self.playerCount+1; i++)
         {
             NSMutableDictionary* playerDataItem = [[NSMutableDictionary alloc] init];
-            [playerDataItem setObject:[self.playerNoSet objectAtIndex:i] forKey:@"no"];
+            
+            if(i < [self.playerNoSet count])
+                [playerDataItem setObject:[self.playerNoSet objectAtIndex:i] forKey:@"no"];
+            else
+                [playerDataItem setObject:@"Team" forKey:@"no"];
+            
             [playerDataItem setObject:[NSString stringWithFormat:@"%d", l+1] forKey:@"QUARTER"];
             for(int k=0; k<12; k++)
             {
@@ -70,7 +80,7 @@
                 NSString* zoneKey = [NSString stringWithFormat:@"zone%d", k+1];
                 [playerDataItem setObject:madeOrAttempt forKey:zoneKey];
             }
-            for (int j=0; j<13; j++)
+            for (int j=0; j<[self.attackWayKeySet count]; j++)
             {
                 NSMutableDictionary* result2 = [[NSMutableDictionary alloc] init];
                 [result2 setObject:@"0" forKey:KEY_FOR_MADE_COUNT];
@@ -97,11 +107,11 @@
     self.playerSelectedIndex = 0;
     self.zoneNo = 0;
     
-    int tableViewHeight = TITLE_CELL_HEIGHT + CELL_HEIGHT * self.playerCount+65;
-    if (tableViewHeight > self.view.frame.size.height)
-        tableViewHeight = self.view.frame.size.height;
+    int tableViewHeight = TITLE_CELL_HEIGHT + CELL_HEIGHT * (self.playerCount+1) + BAR_HEIGHT;
+    if (tableViewHeight + 30 > self.view.frame.size.width)
+        tableViewHeight = self.view.frame.size.width - 30;
     
-    self.playerListTableView = [[UITableView alloc] initWithFrame:CGRectMake(20, 5, CELL_WIDTH, tableViewHeight)];
+    self.playerListTableView = [[UITableView alloc] initWithFrame:CGRectMake(20, 20, CELL_WIDTH, tableViewHeight)];
     self.playerListTableView.delegate = self;
     self.playerListTableView.dataSource = self;
     self.playerListTableView.tag = NO_TABLEVIEW_TAG;
@@ -132,7 +142,6 @@
 
 - (void) finishButtonClicked
 {
-    [self updatePlayerData];
     self.isShowZoneGrade = YES;
     self.quarterNo = 0;
     
@@ -148,17 +157,78 @@
     if (self.zoneNo)
         ((UIImageView*)[self.view viewWithTag:self.zoneNo]).highlighted = NO;
     
+    //Caculate the Total Score of the Team
+    NSMutableArray* totalGrade = [self.playerDataArray objectAtIndex:4];
+    NSMutableDictionary* totalGradeOfTeam = [totalGrade objectAtIndex:self.playerCount];
+
+    for(int i=1; i<=12; i++)
+    {
+        NSString* keyForZone = [NSString stringWithFormat:@"zone%d", i];
+        int madeCount = 0, attemptCount = 0;
+        for(int j=0; j<self.playerCount; j++)
+        {
+            NSDictionary* totalGradeOfPlayer = [totalGrade objectAtIndex:j];
+            NSDictionary* zoneGrade = [totalGradeOfPlayer objectForKey:keyForZone];
+            madeCount += [[zoneGrade objectForKey:KEY_FOR_MADE_COUNT] intValue];
+            attemptCount += [[zoneGrade objectForKey:KEY_FOR_ATTEMPT_COUNT] intValue];
+        }
+        
+        NSMutableDictionary* zoneGradeOfTotalGradeOfTeam = [totalGradeOfTeam objectForKey:keyForZone];
+        [zoneGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", madeCount] forKey:KEY_FOR_MADE_COUNT];
+        [zoneGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", attemptCount] forKey:KEY_FOR_ATTEMPT_COUNT];
+        
+        [totalGradeOfTeam setObject:zoneGradeOfTotalGradeOfTeam forKey:keyForZone];
+    }
+    
+    for (int i=0; i<[self.attackWayKeySet count]; i++)
+    {
+        NSString* keyForOffense = [self.attackWayKeySet objectAtIndex:i];
+        int madeCount = 0, attemptCount = 0, foulCount = 0, turnOverCount = 0, scoreGet = 0;
+        for(int j=0; j<self.playerCount; j++)
+        {
+            NSDictionary* totalGradeOfPlayer = [totalGrade objectAtIndex:j];
+            NSDictionary* offenseGrade = [totalGradeOfPlayer objectForKey:keyForOffense];
+            madeCount += [[offenseGrade objectForKey:KEY_FOR_MADE_COUNT] intValue];
+            attemptCount += [[offenseGrade objectForKey:KEY_FOR_ATTEMPT_COUNT] intValue];
+            foulCount += [[offenseGrade objectForKey:KEY_FOR_FOUL_COUNT] intValue];
+            turnOverCount += [[offenseGrade objectForKey:KEY_FOR_TURN_OVER_COUNT] intValue];
+            scoreGet += [[offenseGrade objectForKey:KEY_FOR_SCORE_GET] intValue];
+        }
+        
+        NSMutableDictionary* offenseGradeOfTotalGradeOfTeam = [totalGradeOfTeam objectForKey:keyForOffense];
+        [offenseGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", madeCount] forKey:KEY_FOR_MADE_COUNT];
+        [offenseGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", attemptCount] forKey:KEY_FOR_ATTEMPT_COUNT];
+        [offenseGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", foulCount] forKey:KEY_FOR_FOUL_COUNT];
+        [offenseGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", turnOverCount] forKey:KEY_FOR_TURN_OVER_COUNT];
+        [offenseGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", scoreGet] forKey:KEY_FOR_SCORE_GET];
+        
+        [totalGradeOfTeam setObject:offenseGradeOfTotalGradeOfTeam forKey:keyForOffense];
+    }
+    
+    int totalScore = 0;
+    for(int i=0; i<self.playerCount; i++)
+    {
+        NSDictionary* totalGradeOfPlayer = [totalGrade objectAtIndex:i];
+        totalScore += [[totalGradeOfPlayer objectForKey:@"totalScoreGet"] intValue];
+    }
+    
+    [totalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", totalScore] forKey:@"totalScoreGet"];
+    
+    //Update Zone Grade;
+    [self updatePlayerData];
+    
+    //Add Two Arrow for Quarter change
     UIButton* lastQuarterButton = [[UIButton alloc] init];
     [lastQuarterButton setImage:[UIImage imageNamed:@"leftArrow.png"] forState:UIControlStateNormal];
     [lastQuarterButton sizeToFit];
-    lastQuarterButton.frame = CGRectMake(self.backgroundImageView.frame.origin.x-lastQuarterButton.frame.size.width*0.25-10, self.backgroundImageView.frame.origin.y+20, lastQuarterButton.frame.size.width*0.25, lastQuarterButton.frame.size.height*0.25);
+    lastQuarterButton.frame = CGRectMake(self.backgroundImageView.frame.origin.x-lastQuarterButton.frame.size.width*0.25-5, self.backgroundImageView.frame.origin.y+20, lastQuarterButton.frame.size.width*0.25, lastQuarterButton.frame.size.height*0.25);
     [lastQuarterButton addTarget:self action:@selector(gradeOfLastQuarterButtonClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:lastQuarterButton];
     
     UIButton* nextQuarterButton = [[UIButton alloc] init];
     [nextQuarterButton setImage:[UIImage imageNamed:@"rightArrow.png"] forState:UIControlStateNormal];
     [nextQuarterButton sizeToFit];
-    nextQuarterButton.frame = CGRectMake(CGRectGetMaxX(self.backgroundImageView.frame)+10, self.backgroundImageView.frame.origin.y+20, nextQuarterButton.frame.size.width*0.25, nextQuarterButton.frame.size.height*0.25);
+    nextQuarterButton.frame = CGRectMake(CGRectGetMaxX(self.backgroundImageView.frame)+5, self.backgroundImageView.frame.origin.y+20, nextQuarterButton.frame.size.width*0.25, nextQuarterButton.frame.size.height*0.25);
     [nextQuarterButton addTarget:self action:@selector(gradeOfNextQuaterButtonClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:nextQuarterButton];
 }
@@ -261,14 +331,18 @@
     
     UIAlertAction* onePointAction = [UIAlertAction actionWithTitle:@"1分" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
-            //Update the Quarter Grade
+            //Update the Quarter Grade of the Player
             NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:self.quarterNo];
             NSMutableDictionary* playerData = [quarterGrade objectAtIndex:self.playerSelectedIndex-1];
             [self increaseOffenseScoreGetToPlayerData:playerData by:1];
             
-            //Update the Total Grade
-            NSMutableArray* totalGrade = [self.playerDataArray objectAtIndex:4];
-            playerData = [totalGrade objectAtIndex:self.playerSelectedIndex-1];
+            //Update the Team's Total Grade
+            NSMutableDictionary* teamGrade = [quarterGrade objectAtIndex:self.playerCount];
+            [self increaseOffenseScoreGetToPlayerData:teamGrade by:1];
+            
+            //Update the Player's Total Grade
+            NSMutableArray* totalGradeOfPlayer = [self.playerDataArray objectAtIndex:4];
+            playerData = [totalGradeOfPlayer objectAtIndex:self.playerSelectedIndex-1];
             [self increaseOffenseScoreGetToPlayerData:playerData by:1];
             
             self.zoneNo = 0;
@@ -276,14 +350,18 @@
     
     UIAlertAction* twoPointAction = [UIAlertAction actionWithTitle:@"2分" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
-            //Update the Quarter Grade
+            //Update the Quarter Grade of the Player
             NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:self.quarterNo];
             NSMutableDictionary* playerData = [quarterGrade objectAtIndex:self.playerSelectedIndex-1];
             [self increaseOffenseScoreGetToPlayerData:playerData by:2];
+           
+            //Update the Team's Total Grade
+            NSMutableDictionary* teamGrade = [quarterGrade objectAtIndex:self.playerCount];
+            [self increaseOffenseScoreGetToPlayerData:teamGrade by:2];
             
-            //Update the Total Grade
-            NSMutableArray* totalGrade = [self.playerDataArray objectAtIndex:4];
-            playerData = [totalGrade objectAtIndex:self.playerSelectedIndex-1];
+            //Update the Player's Total Grade
+            NSMutableArray* totalGradeOfPlayer = [self.playerDataArray objectAtIndex:4];
+            playerData = [totalGradeOfPlayer objectAtIndex:self.playerSelectedIndex-1];
             [self increaseOffenseScoreGetToPlayerData:playerData by:2];
             
             self.zoneNo = 0;
@@ -291,14 +369,18 @@
     
     UIAlertAction* threePointAction = [UIAlertAction actionWithTitle:@"3分" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
-            //Update the Quarter Grade
+            //Update the Quarter Grade of the Player
             NSMutableArray* quarterGrade= [self.playerDataArray objectAtIndex:self.quarterNo];
             NSMutableDictionary* playerData = [quarterGrade objectAtIndex:self.playerSelectedIndex-1];
             [self increaseOffenseScoreGetToPlayerData:playerData by:3];
             
-            //Update the Total Grade
-            NSMutableArray* totalGrade = [self.playerDataArray objectAtIndex:4];
-            playerData = [totalGrade objectAtIndex:self.playerSelectedIndex-1];
+            //Update the Team's Total Grade
+            NSMutableDictionary* teamGrade = [quarterGrade objectAtIndex:self.playerCount];
+            [self increaseOffenseScoreGetToPlayerData:teamGrade by:3];
+            
+            //Update the Player's Total Grade
+            NSMutableArray* totalGradeOfPlayer = [self.playerDataArray objectAtIndex:4];
+            playerData = [totalGradeOfPlayer objectAtIndex:self.playerSelectedIndex-1];
             [self increaseOffenseScoreGetToPlayerData:playerData by:3];
             
             self.zoneNo = 0;
@@ -322,28 +404,33 @@
     //And One Alert
     self.andOneAlert = [UIAlertController alertControllerWithTitle:@"罰球結果" message:nil preferredStyle: UIAlertControllerStyleAlert];
     
-    UIAlertAction* attemptAction = [UIAlertAction actionWithTitle:@"進球" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+    UIAlertAction* attemptAction = [UIAlertAction actionWithTitle:@"沒進" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
             self.zoneNo = 0;
         }];
     
-    UIAlertAction* madeAction = [UIAlertAction actionWithTitle:@"沒進" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+    UIAlertAction* madeAction = [UIAlertAction actionWithTitle:@"進球" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
-            //Update the Quarter Grade
+            //Update the Quarter Grade of the Player
             NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:self.quarterNo];
             NSMutableDictionary* playerData = [quarterGrade objectAtIndex:self.playerSelectedIndex-1];
             [self increaseOffenseScoreGetToPlayerData:playerData by:1];
             
-            //Update the Total Grade
-            NSMutableArray* totalGrade = [self.playerDataArray objectAtIndex:4];
-            playerData = [totalGrade objectAtIndex:self.playerSelectedIndex-1];
+            //Update the Team's Total Grade
+            NSMutableDictionary* teamGrade = [quarterGrade objectAtIndex:self.playerCount];
+            [self increaseOffenseScoreGetToPlayerData:teamGrade by:1];
+            
+            //Update the Player's Total Grade
+            NSMutableArray* totalGradeOfPlayer = [self.playerDataArray objectAtIndex:4];
+            playerData = [totalGradeOfPlayer objectAtIndex:self.playerSelectedIndex-1];
             [self increaseOffenseScoreGetToPlayerData:playerData by:1];
             
             self.zoneNo = 0;
         }];
     
-    [self.andOneAlert addAction:attemptAction];
     [self.andOneAlert addAction:madeAction];
+    [self.andOneAlert addAction:attemptAction];
+
     
     //Result & Made or Not Alert
     self.resultAlert = [UIAlertController alertControllerWithTitle:@"結果" message:nil preferredStyle: UIAlertControllerStyleAlert];
@@ -351,7 +438,7 @@
     
     UIAlertAction* yesAction = [UIAlertAction actionWithTitle:@"進球" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
-            //Update the Quarter Grade
+            //Update the Quarter Grade of the Player
             NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:self.quarterNo];
             NSMutableDictionary* playerData = [quarterGrade objectAtIndex:self.playerSelectedIndex-1];
             
@@ -378,9 +465,22 @@
             }
             [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:offset];
             
-            //Update the Total Grade
-            NSMutableArray* totalGrade = [self.playerDataArray objectAtIndex:4];
-            playerData = [totalGrade objectAtIndex:self.playerSelectedIndex-1];
+            //Update the Team's Total Grade
+            NSMutableDictionary* teamGrade = [quarterGrade objectAtIndex:self.playerCount];
+            
+                //更新進攻方式分類成績
+            if(self.zoneNo != 12)
+                [self updateOffenseGradeForOneMadeToPlayerData:teamGrade];
+            
+                //更新區域分類的成績
+            [self updateZoneGradeForOneMadeToPlayerData:teamGrade];
+            
+                //更新得分成績
+            [self updateTotalScoreOnePlayerGetToPlayerData:teamGrade withScore:offset];
+            
+            //Update the Player's Total Grade
+            NSMutableArray* totalGradeOfPlayer = [self.playerDataArray objectAtIndex:4];
+            playerData = [totalGradeOfPlayer objectAtIndex:self.playerSelectedIndex-1];
             
                 //更新進攻方式分類成績
             if(self.zoneNo != 12)
@@ -397,26 +497,36 @@
         }];
     UIAlertAction* noAction = [UIAlertAction actionWithTitle:@"出手" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
-            //Update the Quarter Grade
+            //Update the Quarter Grade of the Player
             NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:self.quarterNo];
             NSMutableDictionary* playerData = [quarterGrade objectAtIndex:self.playerSelectedIndex-1];
             
-            //更新進攻方式分類的成績
+                //更新進攻方式分類的成績
             if(self.zoneNo != 12)
                 [self updateOffenseGradeForOneAttempToPlayerData:playerData];
 
-            //更新區域分類的成績
+                //更新區域分類的成績
             [self updateZoneGradeForOndeAttemptToPlayerData:playerData];
             
-            //Update the Total Grade
-            NSMutableArray* totalGrade = [self.playerDataArray objectAtIndex:4];
-            playerData = [totalGrade objectAtIndex:self.playerSelectedIndex-1];
+            //Update the Team's Total Grade
+            NSMutableDictionary* teamData = [quarterGrade objectAtIndex:self.playerCount];
             
-            //更新進攻方式分類的成績
+                //更新進攻方式分類的成績
+            if(self.zoneNo != 12)
+                [self updateOffenseGradeForOneAttempToPlayerData:teamData];
+            
+                //更新區域分類的成績
+            [self updateZoneGradeForOndeAttemptToPlayerData:teamData];
+            
+            //Update the Player's Total Grade
+            NSMutableArray* totalGradeOfPlayer = [self.playerDataArray objectAtIndex:4];
+            playerData = [totalGradeOfPlayer objectAtIndex:self.playerSelectedIndex-1];
+            
+                //更新進攻方式分類的成績
             if(self.zoneNo != 12)
                 [self updateOffenseGradeForOneAttempToPlayerData:playerData];
             
-            //更新區域分類的成績
+                //更新區域分類的成績
             [self updateZoneGradeForOndeAttemptToPlayerData:playerData];
             
             self.zoneNo = 0;
@@ -425,16 +535,22 @@
     
     UIAlertAction* foulAction = [UIAlertAction actionWithTitle:@"犯規" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action)
         {
-            //Update the Quarter Grade
+            //Update the Quarter Grade of the Player
             NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:self.quarterNo];
             NSMutableDictionary* playerData = [quarterGrade objectAtIndex:self.playerSelectedIndex-1];
             
                 //更新進攻方式分類的成績
             [self updateOffenseGradeForOneFoulToPlayerData:playerData];
             
-            //Update the Total Grade
-            NSMutableArray* totalGrade = [self.playerDataArray objectAtIndex:4];
-            playerData = [totalGrade objectAtIndex:self.playerSelectedIndex-1];
+            //Update the Team's Total Grade
+            NSMutableDictionary* teamGrade = [quarterGrade objectAtIndex:self.playerCount];
+            
+                //更新進攻方式分類的成績
+            [self updateOffenseGradeForOneFoulToPlayerData:teamGrade];
+            
+            //Update the Player's Total Grade
+            NSMutableArray* totalGradeOfPlayer = [self.playerDataArray objectAtIndex:4];
+            playerData = [totalGradeOfPlayer objectAtIndex:self.playerSelectedIndex-1];
             
                 //更新進攻方式分類的成績
             [self updateOffenseGradeForOneFoulToPlayerData:playerData];
@@ -455,7 +571,7 @@
     
     UIAlertAction* andOneAction = [UIAlertAction actionWithTitle:@"進算加罰" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action)
         {
-            //Update the Quarter Grade
+            //Update the Quarter Grade of the Player
             NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:self.quarterNo];
             NSMutableDictionary* playerData = [quarterGrade objectAtIndex:self.playerSelectedIndex-1];
             
@@ -466,9 +582,19 @@
                 //更新區域分類的成績
             [self updateZoneGradeForOneMadeToPlayerData:playerData];
             
-            //Update the Total Grade
-            NSMutableArray* totalGrade = [self.playerDataArray objectAtIndex:4];
-            playerData = [totalGrade objectAtIndex:self.playerSelectedIndex-1];
+            //Update the Team's Total Grade
+            NSMutableDictionary* teamGrade = [quarterGrade objectAtIndex:self.playerCount];
+            
+                //更新進攻方式分類的成績
+            [self updateOffenseGradeForOneMadeToPlayerData:teamGrade];
+            [self updateOffenseGradeForOneFoulToPlayerData:teamGrade];
+            
+                //更新區域分類的成績
+            [self updateZoneGradeForOneMadeToPlayerData:teamGrade];
+            
+            //Update the Player's Total Grade
+            NSMutableArray* totalGradeOfPlayer = [self.playerDataArray objectAtIndex:4];
+            playerData = [totalGradeOfPlayer objectAtIndex:self.playerSelectedIndex-1];
             
                 //更新進攻方式分類的成績
             [self updateOffenseGradeForOneMadeToPlayerData:playerData];
@@ -482,16 +608,22 @@
     
     UIAlertAction* turnOverAction = [UIAlertAction actionWithTitle:@"失誤" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action)
         {
-            //Update the Quarter Grade
+            //Update the Quarter Grade of the Player
             NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:self.quarterNo];
             NSMutableDictionary* playerData = [quarterGrade objectAtIndex:self.playerSelectedIndex-1];
             
             //更新進攻方式分類的成績
             [self updateOffenseGradeForOneTurnOverToPlayerData:playerData];
             
-            //Update the Total Grade
-            NSMutableArray* totalGrade = [self.playerDataArray objectAtIndex:4];
-            playerData = [totalGrade objectAtIndex:self.playerSelectedIndex-1];
+            //Update the Team's Total Grade
+            NSMutableDictionary* teamGrade = [quarterGrade objectAtIndex:self.playerCount];
+            
+            //更新進攻方式分類的成績
+            [self updateOffenseGradeForOneTurnOverToPlayerData:teamGrade];
+            
+            //Update the Player's Total Grade
+            NSMutableArray* totalGradeOfPlayer = [self.playerDataArray objectAtIndex:4];
+            playerData = [totalGradeOfPlayer objectAtIndex:self.playerSelectedIndex-1];
             
             //更新進攻方式分類的成績
             [self updateOffenseGradeForOneTurnOverToPlayerData:playerData];
@@ -1107,7 +1239,7 @@
                 [(UIImageView*)[self.view viewWithTag:self.zoneNo] setHighlighted:NO];
             self.zoneNo = (int)recognizer.view.tag;
             [(UIImageView*)recognizer.view setHighlighted:YES];
-            if(self.playerSelectedIndex)
+            if(self.playerSelectedIndex && self.playerSelectedIndex != self.playerCount+1)
                 [self showAttackList];
         }
         else
@@ -1189,7 +1321,7 @@
 {
     if (tableView.tag == NO_TABLEVIEW_TAG)
     {
-       return (self.playerCount + 1);
+       return (self.playerCount + 2); //One for title, the other one for team grade
     }
     //if(tableview.tag == PLAYER_GRADE_TABLEVIEW_TAG)
     return 16;
@@ -1217,6 +1349,21 @@
                 label.text = @"背號";
                 [cell addSubview:label];
                 cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            }
+            return cell;
+        }
+        else if(indexPath.row == self.playerCount+1)
+        {
+            BBRTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Team"];
+            if(!cell)
+            {
+                cell = [[BBRTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Team"];
+                cell.layer.borderWidth = 1;
+                UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, CELL_WIDTH, CELL_HEIGHT)];
+                label.textAlignment = NSTextAlignmentCenter;
+                label.text = @"全隊";
+                [cell addSubview:label];
+                cell.selectionStyle = UITableViewCellSelectionStyleBlue;
             }
             return cell;
         }
@@ -1374,7 +1521,7 @@
         else
             self.playerSelectedIndex = 0;
     
-        if([self.view viewWithTag:PLAYER_GRADE_TABLEVIEW_TAG])
+        if(!self.isShowZoneGrade)
             [(UITableView*)[self.view viewWithTag:PLAYER_GRADE_TABLEVIEW_TAG] reloadData];
         else
             [self updatePlayerData];
