@@ -45,7 +45,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
+    
     self.isShowZoneGrade = YES;
     
     self.attackWaySet = [[NSArray alloc] initWithObjects:@"單打", @"定點投籃", @"PS", @"PC", @"PR", @"PPS", @"PPC", @"Catch&Shoot", @"快攻", @"低位單打", @"二波進攻", @"切入", @"空切", @"加罰", nil];
@@ -118,9 +118,31 @@
     
     [self.view addSubview:self.playerListTableView];
     
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] init];
+    self.navigationItem.leftBarButtonItem.title = @"＜球員登入";
+    self.navigationItem.leftBarButtonItem.target = self;
+    self.navigationItem.leftBarButtonItem.action = @selector(backButtonClicked);
+    
     [self drawPicture];
     
     [self constructAlertControllers];
+    
+    
+}
+
+-(void)backButtonClicked
+{
+    UIAlertController* backAlert = [UIAlertController alertControllerWithTitle:@"注意" message:@"返回後目前紀錄的資料都將消失，確定要返回嗎？" preferredStyle: UIAlertControllerStyleAlert];
+    
+    UIAlertAction* yesAction = [UIAlertAction actionWithTitle:@"是" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action)
+        {
+            [self.navigationController popToRootViewControllerAnimated:YES];
+        }];
+    UIAlertAction* noAction = [UIAlertAction actionWithTitle:@"否" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action){}];
+    [backAlert addAction:yesAction];
+    [backAlert addAction:noAction];
+    
+    [self presentViewController:backAlert animated:YES completion:nil];
 }
 
 -(void) nextQuarterButtonClicked
@@ -1308,6 +1330,7 @@
     [[UIDevice currentDevice] setValue:
      [NSNumber numberWithInteger: UIInterfaceOrientationPortrait]
                                 forKey:@"orientation"];
+    
 }
 
 - (void)didReceiveMemoryWarning {
