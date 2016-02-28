@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "basketBallRecorder/BBRLogViewController.m"
-            timestampString = "478334965.793765"
+            timestampString = "478339680.840774"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "151"
-            endingLineNumber = "151"
+            startingLineNumber = "152"
+            endingLineNumber = "152"
             landmarkName = "-tableView:cellForRowAtIndexPath:"
             landmarkType = "5">
          </BreakpointContent>
@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "basketBallRecorder/BBRMainViewController.m"
-            timestampString = "478339222.423574"
+            timestampString = "478339541.273481"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "212"
-            endingLineNumber = "212"
+            startingLineNumber = "205"
+            endingLineNumber = "205"
             landmarkName = "-finishButtonClicked"
             landmarkType = "5">
          </BreakpointContent>

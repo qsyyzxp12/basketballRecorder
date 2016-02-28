@@ -96,6 +96,7 @@
 - (IBAction)finishButtonClicked:(id)sender
 {
     [self.editingTextField resignFirstResponder];
+    self.lastRecordQuarter = 0;
     self.playerNoSet = [NSMutableArray arrayWithCapacity:20];
     self.playerCount = 0;
     for (NSString* noStr in self.textFieldArray)

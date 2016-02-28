@@ -43,10 +43,6 @@
 
 @implementation BBRMainViewController
 
--(void) viewWillAppear:(BOOL)animated
-{
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -98,9 +94,6 @@
     self.playerNoSet = [resultPlistDic objectForKey:KEY_FOR_PLAYER_NO_SET];
     self.quarterNo = [[resultPlistDic objectForKey:KEY_FOR_LAST_RECORD_QUARTER] intValue] - 1;
     self.playerCount = (int)[self.playerNoSet count];
-    
-    NSLog(@"quarter No = %d", self.quarterNo);
-    NSLog(@"%@", self.playerNoSet);
     
     if(self.quarterNo == 0)
         self.navigationItem.title = @"第一節";
@@ -1412,7 +1405,6 @@
 {
     if(tableView.tag == NO_TABLEVIEW_TAG)
     {
-        NSLog(@" player no set = %@", self.playerNoSet);
         if(indexPath.row == 0)
         {
             BBRTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"title"];
