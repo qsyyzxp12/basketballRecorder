@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		C7AB3CE81C7F5E2600DA23A6 /* leftArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = C7AB3CE41C7F5E2600DA23A6 /* leftArrow.png */; };
 		C7AB3CEA1C7F5E2600DA23A6 /* rightArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = C7AB3CE61C7F5E2600DA23A6 /* rightArrow.png */; };
+		C7AB3CEC1C82B10D00DA23A6 /* Result.plist in Resources */ = {isa = PBXBuildFile; fileRef = C7AB3CEB1C82B10D00DA23A6 /* Result.plist */; };
 		C7CC36EA1C7AF17900B97149 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C7CC36E91C7AF17900B97149 /* main.m */; };
 		C7CC36ED1C7AF17900B97149 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C7CC36EC1C7AF17900B97149 /* AppDelegate.m */; };
 		C7CC36F01C7AF17900B97149 /* BBRLogViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C7CC36EF1C7AF17900B97149 /* BBRLogViewController.m */; };
@@ -64,6 +65,7 @@
 /* Begin PBXFileReference section */
 		C7AB3CE41C7F5E2600DA23A6 /* leftArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = leftArrow.png; sourceTree = "<group>"; };
 		C7AB3CE61C7F5E2600DA23A6 /* rightArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rightArrow.png; sourceTree = "<group>"; };
+		C7AB3CEB1C82B10D00DA23A6 /* Result.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Result.plist; sourceTree = "<group>"; };
 		C7CC36E51C7AF17900B97149 /* basketBallRecorder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = basketBallRecorder.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C7CC36E91C7AF17900B97149 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		C7CC36EB1C7AF17900B97149 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -170,6 +172,7 @@
 				C7CC36F41C7AF17900B97149 /* Assets.xcassets */,
 				C7CC36F61C7AF17900B97149 /* LaunchScreen.storyboard */,
 				C7CC36F91C7AF17900B97149 /* Info.plist */,
+				C7AB3CEB1C82B10D00DA23A6 /* Result.plist */,
 				C7CC36E81C7AF17900B97149 /* Supporting Files */,
 			);
 			path = basketBallRecorder;
@@ -340,6 +343,7 @@
 			files = (
 				C7F5525A1C7C5066005CB9EC /* zone4-2.png in Resources */,
 				C7F552591C7C5066005CB9EC /* zone3-2.png in Resources */,
+				C7AB3CEC1C82B10D00DA23A6 /* Result.plist in Resources */,
 				C7F5525B1C7C5066005CB9EC /* zone5-2.png in Resources */,
 				C7CC37391C7B7F1600B97149 /* zone6.png in Resources */,
 				C7F552611C7C5066005CB9EC /* zone11-2.png in Resources */,

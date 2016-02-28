@@ -12,6 +12,7 @@
 
 #define TITLE_CELL_HEIGHT 40
 #define CELL_HEIGHT 60
+
 @interface BBRLogViewController ()
 
 @end
@@ -30,6 +31,55 @@
     self.textFieldArray = [NSMutableArray arrayWithCapacity:20];
     for (int i=0; i<20; i++)
         [self.textFieldArray setObject:@"" atIndexedSubscript:i];
+    
+    [self constructAlertController];
+    
+    NSFileManager* fm = [[NSFileManager alloc] init];
+    NSString* src = [[NSBundle mainBundle] pathForResource:@"Result" ofType:@"plist"];
+    NSString* resultPlistPath = [NSString stringWithFormat:@"%@/Documents/Result.plist", NSHomeDirectory()];
+    
+    self.lastRecordQuarter = ZERO;
+    
+    if(![fm fileExistsAtPath:resultPlistPath])
+        [fm copyItemAtPath:src toPath:resultPlistPath error:nil];
+    else
+    {
+//        [fm removeItemAtPath:resultPlistPath error:nil];
+        NSMutableDictionary* resultPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:resultPlistPath];
+        self.lastRecordQuarter = [[resultPlistDic objectForKey:KEY_FOR_LAST_RECORD_QUARTER] intValue];
+    }
+    NSLog(@"%d", self.lastRecordQuarter);
+
+    
+    if(self.lastRecordQuarter == ZERO);
+    else if(self.lastRecordQuarter == END)
+        [self presentViewController:self.cleanStatusAlert animated:YES completion:nil];
+    else
+        [self presentViewController:self.dirtyStatusAlert animated:YES completion:nil];
+}
+
+-(void) constructAlertController
+{
+    self.dirtyStatusAlert = [UIAlertController alertControllerWithTitle:@"注意" message:@"上次的紀錄尚未完成，是否要繼續記錄？" preferredStyle: UIAlertControllerStyleAlert];
+    
+    self.cleanStatusAlert = [UIAlertController alertControllerWithTitle:@"注意" message:@"是否恢復上次比賽結果？" preferredStyle: UIAlertControllerStyleAlert];
+    
+    UIAlertAction* yesAction = [UIAlertAction actionWithTitle:@"要" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+        {
+            self.loadOldGrade = YES;
+            [self performSegueWithIdentifier:@"showMainController" sender:nil];
+        }];
+    UIAlertAction* noAction = [UIAlertAction actionWithTitle:@"不要" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action)
+        {
+            self.lastRecordQuarter = ZERO;
+            self.loadOldGrade = NO;
+        }];
+    
+    [self.dirtyStatusAlert addAction:yesAction];
+    [self.dirtyStatusAlert addAction:noAction];
+    
+    [self.cleanStatusAlert addAction:yesAction];
+    [self.cleanStatusAlert addAction:noAction];
 }
 
 -(void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -38,6 +88,7 @@
     NSArray *resultArray = [self.playerNoSet sortedArrayUsingSelector:@selector(compare:)];
     mainViewCntler.playerNoSet = resultArray;
     mainViewCntler.playerCount = self.playerCount;
+    mainViewCntler.lastRecorderQuarter = self.lastRecordQuarter;
 }
 
 #pragma mark - action

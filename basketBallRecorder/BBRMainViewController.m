@@ -43,20 +43,83 @@
 
 @implementation BBRMainViewController
 
+-(void) viewWillAppear:(BOOL)animated
+{
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.resultPlistPath = [NSString stringWithFormat:@"%@/Documents/Result.plist", NSHomeDirectory()];
     self.isShowZoneGrade = YES;
-    
+    self.playerSelectedIndex = 0;
+    self.zoneNo = 0;
+    self.quarterNo = 0;
     self.attackWaySet = [[NSArray alloc] initWithObjects:@"單打", @"定點投籃", @"PS", @"PC", @"PR", @"PPS", @"PPC", @"Catch&Shoot", @"快攻", @"低位單打", @"二波進攻", @"切入", @"空切", @"加罰", nil];
     self.attackWayKeySet = [[NSArray alloc] initWithObjects:
                             @"isolation", @"spotUp", @"PS", @"PC", @"PR", @"PPS", @"PPC", @"CS",
                             @"fastBreak", @"lowPost", @"second", @"drive", @"cut", nil];
     
-    self.quarterNo = 0;
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] init];
+    self.navigationItem.rightBarButtonItem.title = @"下一節";
+    self.navigationItem.rightBarButtonItem.target = self;
+    self.navigationItem.rightBarButtonItem.action = @selector(nextQuarterButtonClicked);
     
-//    NSLog(@"playerCount = %d", self.playerCount);
+    if(self.lastRecorderQuarter == ZERO)
+        [self newPlayerGradeDataStruct];
+    else
+        [self reloadPlayerGradeDataStruct];
+
     
+    int tableViewHeight = TITLE_CELL_HEIGHT + CELL_HEIGHT * (self.playerCount+1) + BAR_HEIGHT;
+    if (tableViewHeight + 30 > self.view.frame.size.width)
+        tableViewHeight = self.view.frame.size.width - 30;
+    
+    self.playerListTableView = [[UITableView alloc] initWithFrame:CGRectMake(20, 20, CELL_WIDTH, tableViewHeight)];
+    self.playerListTableView.delegate = self;
+    self.playerListTableView.dataSource = self;
+    self.playerListTableView.tag = NO_TABLEVIEW_TAG;
+    
+    [self.view addSubview:self.playerListTableView];
+    
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] init];
+    self.navigationItem.leftBarButtonItem.title = @"＜球員登入";
+    self.navigationItem.leftBarButtonItem.target = self;
+    self.navigationItem.leftBarButtonItem.action = @selector(backButtonClicked);
+    
+    [self drawPicture];
+    [self constructAlertControllers];
+}
+
+-(void) reloadPlayerGradeDataStruct
+{
+    NSMutableDictionary* resultPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.resultPlistPath];
+    self.playerDataArray = [resultPlistDic objectForKey:@"Grade"];
+    self.playerNoSet = [resultPlistDic objectForKey:KEY_FOR_PLAYER_NO_SET];
+    self.quarterNo = [[resultPlistDic objectForKey:KEY_FOR_LAST_RECORD_QUARTER] intValue] - 1;
+    self.playerCount = (int)[self.playerNoSet count];
+    
+    NSLog(@"quarter No = %d", self.quarterNo);
+    NSLog(@"%@", self.playerNoSet);
+    
+    if(self.quarterNo == 0)
+        self.navigationItem.title = @"第一節";
+    else if (self.quarterNo == 1)
+        self.navigationItem.title = @"第二節";
+    else if(self.quarterNo == 2)
+        self.navigationItem.title = @"第三節";
+    else if(self.quarterNo == 3)
+    {
+        self.navigationItem.title = @"第四節";
+        self.navigationItem.rightBarButtonItem.title = @"完成";
+        self.navigationItem.rightBarButtonItem.action = @selector(finishButtonClicked);
+    }
+    else
+        [self finishButtonClicked];
+}
+
+-(void) newPlayerGradeDataStruct
+{
     self.playerDataArray = [NSMutableArray arrayWithCapacity:5];
     for(int l=0; l<5; l++)
     {
@@ -96,38 +159,17 @@
         }
         [self.playerDataArray addObject:quarterData];
     }
-     NSLog(@"%@", self.playerDataArray);
+    
+    NSLog(@"%@", self.playerDataArray);
+    
+    NSMutableDictionary* resultPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.resultPlistPath];
+    [resultPlistDic setObject:[NSNumber numberWithInt:FIRST] forKey:KEY_FOR_LAST_RECORD_QUARTER];
+    [resultPlistDic setObject:self.playerDataArray forKey:@"Grade"];
+    [resultPlistDic setObject:self.playerNoSet forKey:KEY_FOR_PLAYER_NO_SET];
+    
+    [resultPlistDic writeToFile:self.resultPlistPath atomically:YES];
     
     self.navigationItem.title = @"第一節";
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] init];
-    self.navigationItem.rightBarButtonItem.title = @"下一節";
-    self.navigationItem.rightBarButtonItem.target = self;
-    self.navigationItem.rightBarButtonItem.action = @selector(nextQuarterButtonClicked);
-    
-    self.playerSelectedIndex = 0;
-    self.zoneNo = 0;
-    
-    int tableViewHeight = TITLE_CELL_HEIGHT + CELL_HEIGHT * (self.playerCount+1) + BAR_HEIGHT;
-    if (tableViewHeight + 30 > self.view.frame.size.width)
-        tableViewHeight = self.view.frame.size.width - 30;
-    
-    self.playerListTableView = [[UITableView alloc] initWithFrame:CGRectMake(20, 20, CELL_WIDTH, tableViewHeight)];
-    self.playerListTableView.delegate = self;
-    self.playerListTableView.dataSource = self;
-    self.playerListTableView.tag = NO_TABLEVIEW_TAG;
-    
-    [self.view addSubview:self.playerListTableView];
-    
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] init];
-    self.navigationItem.leftBarButtonItem.title = @"＜球員登入";
-    self.navigationItem.leftBarButtonItem.target = self;
-    self.navigationItem.leftBarButtonItem.action = @selector(backButtonClicked);
-    
-    [self drawPicture];
-    
-    [self constructAlertControllers];
-    
-    
 }
 
 -(void)backButtonClicked
@@ -150,6 +192,11 @@
     self.quarterNo++;
     [self updatePlayerData];
     
+    NSMutableDictionary* resultPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.resultPlistPath];
+    [resultPlistDic setObject:[NSNumber numberWithInt:self.quarterNo+1] forKey:KEY_FOR_LAST_RECORD_QUARTER];
+    
+    [resultPlistDic writeToFile:self.resultPlistPath atomically:YES];
+    
     if (self.quarterNo == 1)
         self.navigationItem.title = @"第二節";
     else if(self.quarterNo == 2)
@@ -164,6 +211,11 @@
 
 - (void) finishButtonClicked
 {
+    NSMutableDictionary* resultPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.resultPlistPath];
+    [resultPlistDic setObject:[NSNumber numberWithInt:5] forKey:KEY_FOR_LAST_RECORD_QUARTER];
+    
+    [resultPlistDic writeToFile:self.resultPlistPath atomically:YES];
+    
     self.isShowZoneGrade = YES;
     self.quarterNo = 0;
     
@@ -340,6 +392,14 @@
     [self.view viewWithTag:1203].hidden = yesOrNo;
 }
 
+-(void)updateResultPlist
+{
+    NSMutableDictionary* resultPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.resultPlistPath];
+    [resultPlistDic setObject:self.playerDataArray forKey:@"Grade"];
+    
+    [resultPlistDic writeToFile:self.resultPlistPath atomically:YES];
+}
+
 - (void) constructAlertControllers
 {
     //Bonus alert
@@ -367,6 +427,7 @@
             playerData = [totalGradeOfPlayer objectAtIndex:self.playerSelectedIndex-1];
             [self increaseOffenseScoreGetToPlayerData:playerData by:1];
             
+            [self updateResultPlist];
             self.zoneNo = 0;
         }];
     
@@ -386,6 +447,7 @@
             playerData = [totalGradeOfPlayer objectAtIndex:self.playerSelectedIndex-1];
             [self increaseOffenseScoreGetToPlayerData:playerData by:2];
             
+            [self updateResultPlist];
             self.zoneNo = 0;
         }];
     
@@ -405,6 +467,7 @@
             playerData = [totalGradeOfPlayer objectAtIndex:self.playerSelectedIndex-1];
             [self increaseOffenseScoreGetToPlayerData:playerData by:3];
             
+            [self updateResultPlist];
             self.zoneNo = 0;
         }];
     
@@ -447,6 +510,7 @@
             playerData = [totalGradeOfPlayer objectAtIndex:self.playerSelectedIndex-1];
             [self increaseOffenseScoreGetToPlayerData:playerData by:1];
             
+            [self updateResultPlist];
             self.zoneNo = 0;
         }];
     
@@ -514,6 +578,7 @@
                 //更新得分成績
             [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:offset];
             
+            [self updateResultPlist];
             self.zoneNo = 0;
             NSLog(@"%@", self.playerDataArray);
         }];
@@ -551,6 +616,7 @@
                 //更新區域分類的成績
             [self updateZoneGradeForOndeAttemptToPlayerData:playerData];
             
+            [self updateResultPlist];
             self.zoneNo = 0;
             NSLog(@"%@", self.playerDataArray);
         }];
@@ -588,6 +654,7 @@
                     break;
             }
             
+            [self updateResultPlist];
             self.zoneNo = 0;
         }];
     
@@ -650,6 +717,7 @@
             //更新進攻方式分類的成績
             [self updateOffenseGradeForOneTurnOverToPlayerData:playerData];
             
+            [self updateResultPlist];
             self.zoneNo = 0;
         }];
     
@@ -1344,6 +1412,7 @@
 {
     if(tableView.tag == NO_TABLEVIEW_TAG)
     {
+        NSLog(@" player no set = %@", self.playerNoSet);
         if(indexPath.row == 0)
         {
             BBRTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"title"];

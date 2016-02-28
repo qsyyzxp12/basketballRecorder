@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "BBRLogViewController.h"
 
 @interface BBRMainViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 @property UITableView *playerListTableView;
@@ -28,4 +29,6 @@
 @property UIAlertController* andOneAlert;
 @property UIImageView* backgroundImageView;
 @property BOOL isShowZoneGrade;
+@property LastRecordQuarter lastRecorderQuarter;
+@property NSString* resultPlistPath;
 @end
