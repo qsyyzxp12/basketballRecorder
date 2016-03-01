@@ -1430,10 +1430,18 @@
         {
             NSString* keyForZone = [NSString stringWithFormat:@"zone%d", i];
             NSDictionary* zoneData = [playerData objectForKey:keyForZone];
+            
             float zoneAttemptCount = [(NSString*)[zoneData objectForKey:KEY_FOR_ATTEMPT_COUNT] floatValue];
             float zoneMadeCount = [(NSString*)[zoneData objectForKey:KEY_FOR_MADE_COUNT] floatValue];
+            
             ((UILabel*)[self.view viewWithTag:(i*100+2)]).text = [NSString stringWithFormat:@"%d/%d", (int)zoneMadeCount, (int)zoneAttemptCount];
-            ((UILabel*)[self.view viewWithTag:(i*100+1)]).text = [NSString stringWithFormat:@"%d%c", (int)((zoneMadeCount/zoneAttemptCount)*100), '%'];
+            
+            if(zoneAttemptCount)
+            {
+                ((UILabel*)[self.view viewWithTag:(i*100+1)]).text = [NSString stringWithFormat:@"%d%c", (int)((zoneMadeCount/zoneAttemptCount)*100), '%'];
+            }
+            else
+                ((UILabel*)[self.view viewWithTag:(i*100+1)]).text = @"0%";
         }
     }
     else
@@ -1661,6 +1669,7 @@
             [(UITableView*)[self.view viewWithTag:PLAYER_GRADE_TABLEVIEW_TAG] reloadData];
         else
             [self updatePlayerData];
+
     }
 }
 
