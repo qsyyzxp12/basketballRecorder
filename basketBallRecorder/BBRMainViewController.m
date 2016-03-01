@@ -46,7 +46,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.resultPlistPath = [NSString stringWithFormat:@"%@/Documents/tmp.plist", NSHomeDirectory()];
+    self.tmpPlistPath = [NSString stringWithFormat:@"%@/Documents/tmp.plist", NSHomeDirectory()];
     self.isShowZoneGrade = YES;
     self.playerSelectedIndex = 0;
     self.zoneNo = 0;
@@ -61,10 +61,19 @@
     self.navigationItem.rightBarButtonItem.target = self;
     self.navigationItem.rightBarButtonItem.action = @selector(nextQuarterButtonClicked);
     
-    if(self.lastRecorderQuarter == ZERO)
-        [self newPlayerGradeDataStruct];
+    if(self.isTmpPlistExist)
+        [self reloadPlayerGradeFromTmpPlist];
+    else if(self.showOldRecordNo)
+        [self reloadPlayerGradeFromRecordPlist];
     else
-        [self reloadPlayerGradeDataStruct];
+    {
+        [self newPlayerGradeDataStruct];
+        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] init];
+        self.navigationItem.leftBarButtonItem.title = @"＜球員登入";
+        self.navigationItem.leftBarButtonItem.target = self;
+        self.navigationItem.leftBarButtonItem.action = @selector(backButtonClicked);
+    }
+        
     
     int tableViewHeight = TITLE_CELL_HEIGHT + CELL_HEIGHT * (self.playerCount+1) + BAR_HEIGHT;
     if (tableViewHeight + 30 > self.view.frame.size.width)
@@ -77,11 +86,6 @@
     
     [self.view addSubview:self.playerListTableView];
     
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] init];
-    self.navigationItem.leftBarButtonItem.title = @"＜球員登入";
-    self.navigationItem.leftBarButtonItem.target = self;
-    self.navigationItem.leftBarButtonItem.action = @selector(backButtonClicked);
-    
     [self drawPicture];
     [self constructAlertControllers];
     
@@ -89,12 +93,28 @@
         [self finishButtonClicked];
 }
 
--(void) reloadPlayerGradeDataStruct
+-(void) reloadPlayerGradeFromRecordPlist
 {
-    NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.resultPlistPath];
+    NSString* recordPlistPath = [NSString stringWithFormat:@"%@/Documents/record.plist", NSHomeDirectory()];
+    NSArray* recordPlistArray = [NSArray arrayWithContentsOfFile:recordPlistPath];
+    NSDictionary* dataDic = [recordPlistArray objectAtIndex:self.showOldRecordNo-1 ];
+    self.playerDataArray = [dataDic objectForKey:KEY_FOR_GRADE];
+    self.playerNoSet = [dataDic objectForKey:KEY_FOR_PLAYER_NO_SET];
+    self.quarterNo = 4;
+    self.playerCount = (int)[self.playerNoSet count];
+    
+    self.navigationItem.rightBarButtonItem.title = @"進攻分類";
+    self.navigationItem.rightBarButtonItem.action = @selector(showOffenseGrade);
+    self.navigationItem.title = @"第一節成績";
+
+}
+
+-(void) reloadPlayerGradeFromTmpPlist
+{
+    NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
     self.playerDataArray = [tmpPlistDic objectForKey:KEY_FOR_GRADE];
     self.playerNoSet = [tmpPlistDic objectForKey:KEY_FOR_PLAYER_NO_SET];
-    self.quarterNo = self.lastRecorderQuarter - 1;
+    self.quarterNo = [[tmpPlistDic objectForKey:KEY_FOR_LAST_RECORD_QUARTER] intValue];
     self.playerCount = (int)[self.playerNoSet count];
     
     if(self.quarterNo == 0)
@@ -155,12 +175,20 @@
     
     NSLog(@"%@", self.playerDataArray);
     
-    NSMutableDictionary* resultPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.resultPlistPath];
-    [resultPlistDic setObject:[NSNumber numberWithInt:FIRST] forKey:KEY_FOR_LAST_RECORD_QUARTER];
-    [resultPlistDic setObject:self.playerDataArray forKey:@"Grade"];
-    [resultPlistDic setObject:self.playerNoSet forKey:KEY_FOR_PLAYER_NO_SET];
+    NSString* src = [[NSBundle mainBundle] pathForResource:@"tmp" ofType:@"plist"];
+    NSFileManager* fm = [[NSFileManager alloc] init];
     
-    [resultPlistDic writeToFile:self.resultPlistPath atomically:YES];
+    if(![fm fileExistsAtPath:self.tmpPlistPath])
+        [fm copyItemAtPath:src toPath:self.tmpPlistPath error:nil];
+    
+    NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
+    
+    [tmpPlistDic setObject:[NSNumber numberWithInt:1] forKey:KEY_FOR_LAST_RECORD_QUARTER];
+    [tmpPlistDic setObject:self.playerDataArray forKey:KEY_FOR_GRADE];
+    [tmpPlistDic setObject:self.playerNoSet forKey:KEY_FOR_PLAYER_NO_SET];
+    [tmpPlistDic setObject:self.recordName forKey:KEY_FOR_NAME];
+    
+    [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
     
     self.navigationItem.title = @"第一節";
 }
@@ -171,11 +199,15 @@
     
     UIAlertAction* yesAction = [UIAlertAction actionWithTitle:@"是" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action)
         {
-            [self.navigationController popToRootViewControllerAnimated:YES];
+            [self.navigationController popViewControllerAnimated:YES];
         }];
     UIAlertAction* noAction = [UIAlertAction actionWithTitle:@"否" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action){}];
     [backAlert addAction:yesAction];
     [backAlert addAction:noAction];
+    
+    NSFileManager* fm = [[NSFileManager alloc] init];
+    if([fm fileExistsAtPath:self.tmpPlistPath])
+        [fm removeItemAtPath:self.tmpPlistPath error:nil];
     
     [self presentViewController:backAlert animated:YES completion:nil];
 }
@@ -185,10 +217,10 @@
     self.quarterNo++;
     [self updatePlayerData];
     
-    NSMutableDictionary* resultPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.resultPlistPath];
-    [resultPlistDic setObject:[NSNumber numberWithInt:self.quarterNo+1] forKey:KEY_FOR_LAST_RECORD_QUARTER];
+    NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
+    [tmpPlistDic setObject:[NSNumber numberWithInt:self.quarterNo+1] forKey:KEY_FOR_LAST_RECORD_QUARTER];
     
-    [resultPlistDic writeToFile:self.resultPlistPath atomically:YES];
+    [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
     
     if (self.quarterNo == 1)
         self.navigationItem.title = @"第二節";
@@ -204,10 +236,10 @@
 
 - (void) finishButtonClicked
 {
-    NSMutableDictionary* resultPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.resultPlistPath];
-    [resultPlistDic setObject:[NSNumber numberWithInt:5] forKey:KEY_FOR_LAST_RECORD_QUARTER];
+    NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
+    [tmpPlistDic setObject:[NSNumber numberWithInt:5] forKey:KEY_FOR_LAST_RECORD_QUARTER];
     
-    [resultPlistDic writeToFile:self.resultPlistPath atomically:YES];
+    [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
     
     self.isShowZoneGrade = YES;
     
@@ -302,6 +334,37 @@
     nextQuarterButton.frame = CGRectMake(CGRectGetMaxX(self.backgroundImageView.frame)+5, self.backgroundImageView.frame.origin.y+20, nextQuarterButton.frame.size.width*0.25, nextQuarterButton.frame.size.height*0.25);
     [nextQuarterButton addTarget:self action:@selector(gradeOfNextQuaterButtonClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:nextQuarterButton];
+    
+    //Update Record.plist
+    if(!self.showOldRecordNo)
+    {
+        NSString* recordPlistPath = [NSString stringWithFormat:@"%@/Documents/record.plist", NSHomeDirectory()];
+        NSMutableArray* recordPlistArray = [NSMutableArray arrayWithContentsOfFile:recordPlistPath];
+        
+        NSLog(@"%@, %@, %@", self.playerDataArray, self.playerNoSet, self.recordName);
+        
+        NSMutableDictionary* newItem = [[NSMutableDictionary alloc] init];
+        [newItem setObject:[NSNumber numberWithInt:5] forKey:KEY_FOR_LAST_RECORD_QUARTER];
+        [newItem setObject:self.playerDataArray forKey:KEY_FOR_GRADE];
+        [newItem setObject:self.playerNoSet forKey:KEY_FOR_PLAYER_NO_SET];
+        [newItem setObject:self.recordName forKey:KEY_FOR_NAME];
+        
+        if([recordPlistArray count] < 5)
+            [recordPlistArray addObject:newItem];
+        else
+        {
+            for(int i=0; i<4; i++)
+                [recordPlistArray setObject:[recordPlistArray objectAtIndex:i+1] atIndexedSubscript:i];
+            [recordPlistArray setObject:newItem atIndexedSubscript:4];
+        }
+        
+        [recordPlistArray writeToFile:recordPlistPath atomically:YES];
+        
+        //Remove tmp.plist
+        NSFileManager* fm = [[NSFileManager alloc] init];
+        if([fm fileExistsAtPath:self.tmpPlistPath])
+            [fm removeItemAtPath:self.tmpPlistPath error:nil];
+    }
 }
 
 -(void)gradeOfNextQuaterButtonClicked
@@ -389,12 +452,12 @@
     [self.view viewWithTag:1203].hidden = yesOrNo;
 }
 
--(void)updateResultPlist
+-(void)updateTmpPlist
 {
-    NSMutableDictionary* resultPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.resultPlistPath];
-    [resultPlistDic setObject:self.playerDataArray forKey:@"Grade"];
+    NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
+    [tmpPlistDic setObject:self.playerDataArray forKey:KEY_FOR_GRADE];
     
-    [resultPlistDic writeToFile:self.resultPlistPath atomically:YES];
+    [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
 }
 
 - (void) constructAlertControllers
@@ -424,7 +487,7 @@
             playerData = [totalGradeOfPlayer objectAtIndex:self.playerSelectedIndex-1];
             [self increaseOffenseScoreGetToPlayerData:playerData by:1];
             
-            [self updateResultPlist];
+            [self updateTmpPlist];
             self.zoneNo = 0;
         }];
     
@@ -444,7 +507,7 @@
             playerData = [totalGradeOfPlayer objectAtIndex:self.playerSelectedIndex-1];
             [self increaseOffenseScoreGetToPlayerData:playerData by:2];
             
-            [self updateResultPlist];
+            [self updateTmpPlist];
             self.zoneNo = 0;
         }];
     
@@ -464,7 +527,7 @@
             playerData = [totalGradeOfPlayer objectAtIndex:self.playerSelectedIndex-1];
             [self increaseOffenseScoreGetToPlayerData:playerData by:3];
             
-            [self updateResultPlist];
+            [self updateTmpPlist];
             self.zoneNo = 0;
         }];
     
@@ -507,7 +570,7 @@
             playerData = [totalGradeOfPlayer objectAtIndex:self.playerSelectedIndex-1];
             [self increaseOffenseScoreGetToPlayerData:playerData by:1];
             
-            [self updateResultPlist];
+            [self updateTmpPlist];
             self.zoneNo = 0;
         }];
     
@@ -575,7 +638,7 @@
                 //更新得分成績
             [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:offset];
             
-            [self updateResultPlist];
+            [self updateTmpPlist];
             self.zoneNo = 0;
             NSLog(@"%@", self.playerDataArray);
         }];
@@ -613,7 +676,7 @@
                 //更新區域分類的成績
             [self updateZoneGradeForOndeAttemptToPlayerData:playerData];
             
-            [self updateResultPlist];
+            [self updateTmpPlist];
             self.zoneNo = 0;
             NSLog(@"%@", self.playerDataArray);
         }];
@@ -651,7 +714,7 @@
                     break;
             }
             
-            [self updateResultPlist];
+            [self updateTmpPlist];
             self.zoneNo = 0;
         }];
     
@@ -714,7 +777,7 @@
             //更新進攻方式分類的成績
             [self updateOffenseGradeForOneTurnOverToPlayerData:playerData];
             
-            [self updateResultPlist];
+            [self updateTmpPlist];
             self.zoneNo = 0;
         }];
     
@@ -1588,7 +1651,7 @@
             self.playerSelectedIndex = (int)indexPath.row;
         
 //            NSLog(@"select player index = %d", self.playerSelectedIndex);
-            if(self.zoneNo)
+            if(self.zoneNo && indexPath.row != self.playerCount+1)
                 [self showAttackList];
         }
         else

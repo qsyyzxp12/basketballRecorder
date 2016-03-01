@@ -11,17 +11,18 @@
 #define KEY_FOR_LAST_RECORD_QUARTER @"LastRecordQuarter"
 #define KEY_FOR_PLAYER_NO_SET @"PlayerNoSet"
 #define KEY_FOR_GRADE @"Grade"
-
-typedef enum {ZERO, FIRST, SECOND, THIRD, FORTH, END} LastRecordQuarter;
+#define KEY_FOR_NAME @"Name"
 
 @interface BBRMenuViewController : UIViewController
 @property (weak, nonatomic) IBOutlet UIButton *addNewCompetitionButton;
 @property (weak, nonatomic) IBOutlet UIButton *lastCompetitionButton;
-@property (weak, nonatomic) IBOutlet UIButton *lastTwoCompetionButton;
+@property (weak, nonatomic) IBOutlet UIButton *lastTwoCompetitionButton;
 @property (weak, nonatomic) IBOutlet UIButton *lastThreeCompetitionButton;
 @property (weak, nonatomic) IBOutlet UIButton *lastFourCompetitionButton;
 @property (weak, nonatomic) IBOutlet UIButton *lastFiveCompetitionButton;
+@property NSArray* buttonArray;
 
 @property UIAlertController* dirtyStatusAlert;
-@property int lastRecordQuarter;
+@property BOOL isTmpPlistExist;
+@property int buttonClickedNo;
 @end

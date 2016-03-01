@@ -30,6 +30,8 @@
 @property UIAlertController* andOneAlert;
 @property UIImageView* backgroundImageView;
 @property BOOL isShowZoneGrade;
-@property LastRecordQuarter lastRecorderQuarter;
-@property NSString* resultPlistPath;
+@property NSString* tmpPlistPath;
+@property BOOL isTmpPlistExist;
+@property NSString* recordName;
+@property int showOldRecordNo;
 @end

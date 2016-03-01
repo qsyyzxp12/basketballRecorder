@@ -14,5 +14,6 @@
 @property NSMutableArray* textFieldArray;
 @property int playerCount;
 @property NSMutableArray* playerNoSet;
+@property NSString* recordName;
 @end
 

@@ -32,6 +32,33 @@
     self.textFieldArray = [NSMutableArray arrayWithCapacity:20];
     for (int i=0; i<20; i++)
         [self.textFieldArray setObject:@"" atIndexedSubscript:i];
+    
+    UIAlertController* nameAlert = [UIAlertController alertControllerWithTitle:@"比賽隊伍" message:@"" preferredStyle:UIAlertControllerStyleAlert];
+
+    UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"完成" style:UIAlertActionStyleDefault
+        handler:^(UIAlertAction *action)
+        {
+            UITextField *teamName = nameAlert.textFields.firstObject;
+            UITextField *anotherTeamName = nameAlert.textFields.lastObject;
+            self.recordName = [NSString stringWithFormat:@"%@ vs %@", teamName.text, anotherTeamName.text];
+        }];
+    UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action)
+        {
+            [self.navigationController popToRootViewControllerAnimated:YES];
+        }];
+    
+    [nameAlert addTextFieldWithConfigurationHandler:^(UITextField *textField)
+     {
+         textField.placeholder = @"你的隊伍名稱";
+     }];
+    [nameAlert addTextFieldWithConfigurationHandler:^(UITextField *textField)
+     {
+         textField.placeholder = @"對手隊伍名稱";
+     }];
+    [nameAlert addAction:okAction];
+    [nameAlert addAction:cancelAction];
+    
+    [self presentViewController:nameAlert animated:YES completion:nil];
 }
 
 -(void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -40,7 +67,8 @@
     NSArray *resultArray = [self.playerNoSet sortedArrayUsingSelector:@selector(compare:)];
     mainViewCntler.playerNoSet = resultArray;
     mainViewCntler.playerCount = self.playerCount;
-    mainViewCntler.lastRecorderQuarter = ZERO;
+    mainViewCntler.recordName = self.recordName;
+    NSLog(@"record name = %@", self.recordName);
 }
 
 #pragma mark - action
@@ -67,9 +95,12 @@
         [self presentViewController:alert animated:YES completion:nil];
     }
     else
-*/        [self performSegueWithIdentifier:@"showMainController" sender:nil];
+*/
+    
+    [self performSegueWithIdentifier:@"showMainController" sender:nil];
 }
 
+/*
 - (IBAction)clearButtonClicked:(id)sender
 {
 //    UITableViewCell *onecell = [tableView cellForRowAtIndexPath:indexPath];
@@ -82,7 +113,7 @@
     for (int i=0; i<20; i++)
         [self.textFieldArray setObject:@"" atIndexedSubscript:i];
 }
-
+*/
 #pragma mark - tableView delegate
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
