@@ -46,7 +46,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.resultPlistPath = [NSString stringWithFormat:@"%@/Documents/Result.plist", NSHomeDirectory()];
+    self.resultPlistPath = [NSString stringWithFormat:@"%@/Documents/tmp.plist", NSHomeDirectory()];
     self.isShowZoneGrade = YES;
     self.playerSelectedIndex = 0;
     self.zoneNo = 0;
@@ -65,7 +65,6 @@
         [self newPlayerGradeDataStruct];
     else
         [self reloadPlayerGradeDataStruct];
-
     
     int tableViewHeight = TITLE_CELL_HEIGHT + CELL_HEIGHT * (self.playerCount+1) + BAR_HEIGHT;
     if (tableViewHeight + 30 > self.view.frame.size.width)
@@ -85,14 +84,17 @@
     
     [self drawPicture];
     [self constructAlertControllers];
+    
+    if(self.quarterNo == 4)
+        [self finishButtonClicked];
 }
 
 -(void) reloadPlayerGradeDataStruct
 {
-    NSMutableDictionary* resultPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.resultPlistPath];
-    self.playerDataArray = [resultPlistDic objectForKey:@"Grade"];
-    self.playerNoSet = [resultPlistDic objectForKey:KEY_FOR_PLAYER_NO_SET];
-    self.quarterNo = [[resultPlistDic objectForKey:KEY_FOR_LAST_RECORD_QUARTER] intValue] - 1;
+    NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.resultPlistPath];
+    self.playerDataArray = [tmpPlistDic objectForKey:KEY_FOR_GRADE];
+    self.playerNoSet = [tmpPlistDic objectForKey:KEY_FOR_PLAYER_NO_SET];
+    self.quarterNo = self.lastRecorderQuarter - 1;
     self.playerCount = (int)[self.playerNoSet count];
     
     if(self.quarterNo == 0)
@@ -107,8 +109,6 @@
         self.navigationItem.rightBarButtonItem.title = @"完成";
         self.navigationItem.rightBarButtonItem.action = @selector(finishButtonClicked);
     }
-    else
-        [self finishButtonClicked];
 }
 
 -(void) newPlayerGradeDataStruct
@@ -210,7 +210,6 @@
     [resultPlistDic writeToFile:self.resultPlistPath atomically:YES];
     
     self.isShowZoneGrade = YES;
-    self.quarterNo = 0;
     
     self.navigationItem.rightBarButtonItem.title = @"進攻分類";
     self.navigationItem.rightBarButtonItem.action = @selector(showOffenseGrade);
@@ -224,63 +223,68 @@
     if (self.zoneNo)
         ((UIImageView*)[self.view viewWithTag:self.zoneNo]).highlighted = NO;
     
-    //Caculate the Total Score of the Team
-    NSMutableArray* totalGrade = [self.playerDataArray objectAtIndex:4];
-    NSMutableDictionary* totalGradeOfTeam = [totalGrade objectAtIndex:self.playerCount];
-
-    for(int i=1; i<=12; i++)
+    if(self.quarterNo == 4)
     {
-        NSString* keyForZone = [NSString stringWithFormat:@"zone%d", i];
-        int madeCount = 0, attemptCount = 0;
-        for(int j=0; j<self.playerCount; j++)
+        //Caculate the Total Score of the Team
+        NSMutableArray* totalGrade = [self.playerDataArray objectAtIndex:4];
+        NSMutableDictionary* totalGradeOfTeam = [totalGrade objectAtIndex:self.playerCount];
+        
+        for(int i=1; i<=12; i++)
         {
-            NSDictionary* totalGradeOfPlayer = [totalGrade objectAtIndex:j];
-            NSDictionary* zoneGrade = [totalGradeOfPlayer objectForKey:keyForZone];
-            madeCount += [[zoneGrade objectForKey:KEY_FOR_MADE_COUNT] intValue];
-            attemptCount += [[zoneGrade objectForKey:KEY_FOR_ATTEMPT_COUNT] intValue];
+            NSString* keyForZone = [NSString stringWithFormat:@"zone%d", i];
+            int madeCount = 0, attemptCount = 0;
+            for(int j=0; j<self.playerCount; j++)
+            {
+                NSDictionary* totalGradeOfPlayer = [totalGrade objectAtIndex:j];
+                NSDictionary* zoneGrade = [totalGradeOfPlayer objectForKey:keyForZone];
+                madeCount += [[zoneGrade objectForKey:KEY_FOR_MADE_COUNT] intValue];
+                attemptCount += [[zoneGrade objectForKey:KEY_FOR_ATTEMPT_COUNT] intValue];
+            }
+            
+            NSMutableDictionary* zoneGradeOfTotalGradeOfTeam = [totalGradeOfTeam objectForKey:keyForZone];
+            [zoneGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", madeCount] forKey:KEY_FOR_MADE_COUNT];
+            [zoneGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", attemptCount] forKey:KEY_FOR_ATTEMPT_COUNT];
+            
+            [totalGradeOfTeam setObject:zoneGradeOfTotalGradeOfTeam forKey:keyForZone];
         }
         
-        NSMutableDictionary* zoneGradeOfTotalGradeOfTeam = [totalGradeOfTeam objectForKey:keyForZone];
-        [zoneGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", madeCount] forKey:KEY_FOR_MADE_COUNT];
-        [zoneGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", attemptCount] forKey:KEY_FOR_ATTEMPT_COUNT];
-        
-        [totalGradeOfTeam setObject:zoneGradeOfTotalGradeOfTeam forKey:keyForZone];
-    }
-    
-    for (int i=0; i<[self.attackWayKeySet count]; i++)
-    {
-        NSString* keyForOffense = [self.attackWayKeySet objectAtIndex:i];
-        int madeCount = 0, attemptCount = 0, foulCount = 0, turnOverCount = 0, scoreGet = 0;
-        for(int j=0; j<self.playerCount; j++)
+        for (int i=0; i<[self.attackWayKeySet count]; i++)
         {
-            NSDictionary* totalGradeOfPlayer = [totalGrade objectAtIndex:j];
-            NSDictionary* offenseGrade = [totalGradeOfPlayer objectForKey:keyForOffense];
-            madeCount += [[offenseGrade objectForKey:KEY_FOR_MADE_COUNT] intValue];
-            attemptCount += [[offenseGrade objectForKey:KEY_FOR_ATTEMPT_COUNT] intValue];
-            foulCount += [[offenseGrade objectForKey:KEY_FOR_FOUL_COUNT] intValue];
-            turnOverCount += [[offenseGrade objectForKey:KEY_FOR_TURN_OVER_COUNT] intValue];
-            scoreGet += [[offenseGrade objectForKey:KEY_FOR_SCORE_GET] intValue];
+            NSString* keyForOffense = [self.attackWayKeySet objectAtIndex:i];
+            int madeCount = 0, attemptCount = 0, foulCount = 0, turnOverCount = 0, scoreGet = 0;
+            for(int j=0; j<self.playerCount; j++)
+            {
+                NSDictionary* totalGradeOfPlayer = [totalGrade objectAtIndex:j];
+                NSDictionary* offenseGrade = [totalGradeOfPlayer objectForKey:keyForOffense];
+                madeCount += [[offenseGrade objectForKey:KEY_FOR_MADE_COUNT] intValue];
+                attemptCount += [[offenseGrade objectForKey:KEY_FOR_ATTEMPT_COUNT] intValue];
+                foulCount += [[offenseGrade objectForKey:KEY_FOR_FOUL_COUNT] intValue];
+                turnOverCount += [[offenseGrade objectForKey:KEY_FOR_TURN_OVER_COUNT] intValue];
+                scoreGet += [[offenseGrade objectForKey:KEY_FOR_SCORE_GET] intValue];
+            }
+            
+            NSMutableDictionary* offenseGradeOfTotalGradeOfTeam = [totalGradeOfTeam objectForKey:keyForOffense];
+            [offenseGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", madeCount] forKey:KEY_FOR_MADE_COUNT];
+            [offenseGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", attemptCount] forKey:KEY_FOR_ATTEMPT_COUNT];
+            [offenseGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", foulCount] forKey:KEY_FOR_FOUL_COUNT];
+            [offenseGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", turnOverCount] forKey:KEY_FOR_TURN_OVER_COUNT];
+            [offenseGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", scoreGet] forKey:KEY_FOR_SCORE_GET];
+            
+            [totalGradeOfTeam setObject:offenseGradeOfTotalGradeOfTeam forKey:keyForOffense];
         }
         
-        NSMutableDictionary* offenseGradeOfTotalGradeOfTeam = [totalGradeOfTeam objectForKey:keyForOffense];
-        [offenseGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", madeCount] forKey:KEY_FOR_MADE_COUNT];
-        [offenseGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", attemptCount] forKey:KEY_FOR_ATTEMPT_COUNT];
-        [offenseGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", foulCount] forKey:KEY_FOR_FOUL_COUNT];
-        [offenseGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", turnOverCount] forKey:KEY_FOR_TURN_OVER_COUNT];
-        [offenseGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", scoreGet] forKey:KEY_FOR_SCORE_GET];
+        int totalScore = 0;
+        for(int i=0; i<self.playerCount; i++)
+        {
+            NSDictionary* totalGradeOfPlayer = [totalGrade objectAtIndex:i];
+            totalScore += [[totalGradeOfPlayer objectForKey:@"totalScoreGet"] intValue];
+        }
         
-        [totalGradeOfTeam setObject:offenseGradeOfTotalGradeOfTeam forKey:keyForOffense];
+        [totalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", totalScore] forKey:@"totalScoreGet"];
+        
     }
     
-    int totalScore = 0;
-    for(int i=0; i<self.playerCount; i++)
-    {
-        NSDictionary* totalGradeOfPlayer = [totalGrade objectAtIndex:i];
-        totalScore += [[totalGradeOfPlayer objectForKey:@"totalScoreGet"] intValue];
-    }
-    
-    [totalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", totalScore] forKey:@"totalScoreGet"];
-    
+    self.quarterNo = 0;
     //Update Zone Grade;
     [self updatePlayerData];
     

@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "BBRLogViewController.h"
+#import "BBRMenuViewController.h"
 
 @interface BBRMainViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 @property UITableView *playerListTableView;

@@ -14,12 +14,69 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
-                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="dPx-uI-4Ml"/>
+                        <segue destination="PnF-Fq-esl" kind="relationship" relationship="rootViewController" id="yBP-qa-nV5"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="10f-PG-2tK" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-822" y="18"/>
+            <point key="canvasLocation" x="-1618" y="18"/>
+        </scene>
+        <!--比賽紀錄-->
+        <scene sceneID="5vc-Ag-dc7">
+            <objects>
+                <viewController id="PnF-Fq-esl" customClass="BBRMenuViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="oKP-HW-ftg"/>
+                        <viewControllerLayoutGuide type="bottom" id="OhE-A2-zSm"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="aBp-pQ-dyQ">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VZ9-4U-4Jy">
+                                <rect key="frame" x="277" y="200" width="46" height="30"/>
+                                <state key="normal" title="Button"/>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ul1-EA-RTw">
+                                <rect key="frame" x="277" y="256" width="46" height="30"/>
+                                <state key="normal" title="Button"/>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="W6x-Be-lP5">
+                                <rect key="frame" x="277" y="316" width="46" height="30"/>
+                                <state key="normal" title="Button"/>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MFb-5G-4bd">
+                                <rect key="frame" x="277" y="371" width="46" height="30"/>
+                                <state key="normal" title="Button"/>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="55d-v9-y3d">
+                                <rect key="frame" x="277" y="425" width="46" height="30"/>
+                                <state key="normal" title="Button"/>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rjR-Pi-Q9y">
+                                <rect key="frame" x="277" y="154" width="45" height="30"/>
+                                <state key="normal" title="新比賽"/>
+                                <connections>
+                                    <segue destination="BYZ-38-t0r" kind="show" identifier="showLogVIewController" id="7fX-W2-OnV"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="比賽紀錄" id="Jw3-mK-xJj"/>
+                    <connections>
+                        <outlet property="addNewCompetitionButton" destination="rjR-Pi-Q9y" id="BNM-Gy-dYV"/>
+                        <outlet property="lastCompetitionButton" destination="VZ9-4U-4Jy" id="psu-sw-EMW"/>
+                        <outlet property="lastFiveCompetitionButton" destination="55d-v9-y3d" id="ehI-mN-SZj"/>
+                        <outlet property="lastFourCompetitionButton" destination="MFb-5G-4bd" id="1v4-15-NvR"/>
+                        <outlet property="lastThreeCompetitionButton" destination="W6x-Be-lP5" id="m8h-Sh-cwg"/>
+                        <outlet property="lastTwoCompetionButton" destination="Ul1-EA-RTw" id="kip-Ze-g3y"/>
+                        <segue destination="nlD-tb-rTD" kind="show" identifier="showMainViewController" id="S2w-8f-xfv"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="vR1-iG-3Fw" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-858" y="18"/>
         </scene>
         <!--球員登入-->
         <scene sceneID="tne-QT-ifu">
@@ -109,7 +166,10 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZKR-WI-5Fa" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="579" y="18"/>
+            <point key="canvasLocation" x="-489" y="990"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="S2w-8f-xfv"/>
+    </inferredMetricsTieBreakers>
 </document>
