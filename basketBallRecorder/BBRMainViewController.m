@@ -51,7 +51,17 @@
     self.playerSelectedIndex = 0;
     self.zoneNo = 0;
     self.quarterNo = 0;
-    self.attackWaySet = [[NSArray alloc] initWithObjects:@"單打", @"定點投籃", @"PS", @"PC", @"PR", @"PPS", @"PPC", @"Catch&Shoot", @"快攻", @"低位單打", @"二波進攻", @"切入", @"空切", @"加罰", nil];
+/*
+    self.zoneNoOfLastRecord = 0;
+    self.playerNoOfLastRecord = 0;
+    self.offenseWayOfLastRecord = 0;
+    self.attemptInLastRecord = 0;
+    self.madeInLastRecord = 0;
+    self.foulInLastRecord = 0;
+    self.turnOverInLastRecord = 0;
+    self.scoreGotInLastRecord = 0;
+*/    
+    self.attackWaySet = [[NSArray alloc] initWithObjects:@"Isolation", @"Spot Up", @"PS", @"PC", @"PR", @"PPS", @"PPC", @"Catch&Shoot", @"Fast Break", @"Low Post", @"Second", @"Drive", @"Cut", @"Bonus", nil];
     self.attackWayKeySet = [[NSArray alloc] initWithObjects:
                             @"isolation", @"spotUp", @"PS", @"PC", @"PR", @"PPS", @"PPC", @"CS",
                             @"fastBreak", @"lowPost", @"second", @"drive", @"cut", nil];
@@ -76,8 +86,8 @@
         
     
     int tableViewHeight = TITLE_CELL_HEIGHT + CELL_HEIGHT * (self.playerCount+1) + BAR_HEIGHT;
-    if (tableViewHeight + 30 > self.view.frame.size.width)
-        tableViewHeight = self.view.frame.size.width - 30;
+    if (tableViewHeight + 30 > self.view.frame.size.height)
+        tableViewHeight = self.view.frame.size.height - 30;
     
     self.playerListTableView = [[UITableView alloc] initWithFrame:CGRectMake(20, 20, CELL_WIDTH, tableViewHeight)];
     self.playerListTableView.delegate = self;
@@ -549,12 +559,12 @@
     //And One Alert
     self.andOneAlert = [UIAlertController alertControllerWithTitle:@"罰球結果" message:nil preferredStyle: UIAlertControllerStyleAlert];
     
-    UIAlertAction* attemptAction = [UIAlertAction actionWithTitle:@"沒進" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+    UIAlertAction* attemptAction = [UIAlertAction actionWithTitle:@"Attempt" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
             self.zoneNo = 0;
         }];
     
-    UIAlertAction* madeAction = [UIAlertAction actionWithTitle:@"進球" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+    UIAlertAction* madeAction = [UIAlertAction actionWithTitle:@"Made" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
             //Update the Quarter Grade of the Player
             NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:self.quarterNo];
@@ -582,7 +592,7 @@
     self.resultAlert = [UIAlertController alertControllerWithTitle:@"結果" message:nil preferredStyle: UIAlertControllerStyleAlert];
     self.madeOrNotAlert = [UIAlertController alertControllerWithTitle:@"結果" message:nil preferredStyle: UIAlertControllerStyleAlert];
     
-    UIAlertAction* yesAction = [UIAlertAction actionWithTitle:@"進球" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+    UIAlertAction* yesAction = [UIAlertAction actionWithTitle:@"Made" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
             //Update the Quarter Grade of the Player
             NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:self.quarterNo];
@@ -642,7 +652,7 @@
             self.zoneNo = 0;
             NSLog(@"%@", self.playerDataArray);
         }];
-    UIAlertAction* noAction = [UIAlertAction actionWithTitle:@"出手" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+    UIAlertAction* noAction = [UIAlertAction actionWithTitle:@"Attempt" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
             //Update the Quarter Grade of the Player
             NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:self.quarterNo];
@@ -681,7 +691,7 @@
             NSLog(@"%@", self.playerDataArray);
         }];
     
-    UIAlertAction* foulAction = [UIAlertAction actionWithTitle:@"犯規" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action)
+    UIAlertAction* foulAction = [UIAlertAction actionWithTitle:@"Foul" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action)
         {
             //Update the Quarter Grade of the Player
             NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:self.quarterNo];
@@ -718,7 +728,7 @@
             self.zoneNo = 0;
         }];
     
-    UIAlertAction* andOneAction = [UIAlertAction actionWithTitle:@"進算加罰" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action)
+    UIAlertAction* andOneAction = [UIAlertAction actionWithTitle:@"And One" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action)
         {
             //Update the Quarter Grade of the Player
             NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:self.quarterNo];
@@ -755,7 +765,7 @@
             [self presentViewController:self.andOneAlert animated:YES completion:nil];
         }];
     
-    UIAlertAction* turnOverAction = [UIAlertAction actionWithTitle:@"失誤" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action)
+    UIAlertAction* turnOverAction = [UIAlertAction actionWithTitle:@"Turn Over" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action)
         {
             //Update the Quarter Grade of the Player
             NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:self.quarterNo];
@@ -795,12 +805,12 @@
     self.attackWayAlert = [UIAlertController alertControllerWithTitle:@"進攻方式"
                                         message:nil preferredStyle:UIAlertControllerStyleAlert];
     
-    UIAlertAction* isolationAction = [UIAlertAction actionWithTitle:@"單打" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+    UIAlertAction* isolationAction = [UIAlertAction actionWithTitle:@"Isolation" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
                                       {
                                           self.keyForSearch = @"isolation";
                                           [self presentViewController:self.resultAlert animated:YES completion:nil];
                                       }];
-    UIAlertAction* spotUpAction = [UIAlertAction actionWithTitle:@"定點投籃" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+    UIAlertAction* spotUpAction = [UIAlertAction actionWithTitle:@"Spot Up" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
                                    {
                                        self.keyForSearch = @"spotUp";
                                        [self presentViewController:self.resultAlert animated:YES completion:nil];
@@ -835,27 +845,27 @@
                                     self.keyForSearch = @"CS";
                                     [self presentViewController:self.resultAlert animated:YES completion:nil];
                                 }];
-    UIAlertAction* fastBreakAction = [UIAlertAction actionWithTitle:@"快攻" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+    UIAlertAction* fastBreakAction = [UIAlertAction actionWithTitle:@"Fast Break" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
                                 {
                                     self.keyForSearch = @"fastBreak";
                                     [self presentViewController:self.resultAlert animated:YES completion:nil];
                                 }];
-    UIAlertAction* lowPostAction = [UIAlertAction actionWithTitle:@"低位單打" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+    UIAlertAction* lowPostAction = [UIAlertAction actionWithTitle:@"Low Post" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
                                 {
                                     self.keyForSearch = @"lowPost";
                                     [self presentViewController:self.resultAlert animated:YES completion:nil];
                                 }];
-    UIAlertAction* secondAction = [UIAlertAction actionWithTitle:@"二波進攻" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+    UIAlertAction* secondAction = [UIAlertAction actionWithTitle:@"Second" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
                                    {
                                        self.keyForSearch = @"second";
                                        [self presentViewController:self.resultAlert animated:YES completion:nil];
                                    }];
-    UIAlertAction* driveAction = [UIAlertAction actionWithTitle:@"切入" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+    UIAlertAction* driveAction = [UIAlertAction actionWithTitle:@"Drive" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
                                   {
                                       self.keyForSearch = @"drive";
                                       [self presentViewController:self.resultAlert animated:YES completion:nil];
                                   }];
-    UIAlertAction* cutAction = [UIAlertAction actionWithTitle:@"空切" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+    UIAlertAction* cutAction = [UIAlertAction actionWithTitle:@"Cut" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
                                 {
                                     self.keyForSearch = @"cut";
                                     [self presentViewController:self.resultAlert animated:YES completion:nil];

@@ -34,4 +34,14 @@
 @property BOOL isTmpPlistExist;
 @property NSString* recordName;
 @property int showOldRecordNo;
+/*
+@property int zoneNoOfLastRecord;
+@property int playerNoOfLastRecord;
+@property int offenseWayOfLastRecord;
+@property BOOL attemptInLastRecord;
+@property BOOL madeInLastRecord;
+@property BOOL foulInLastRecord;
+@property BOOL turnOverInLastRecord;
+@property int scoreGotInLastRecord;
+ */
 @end
