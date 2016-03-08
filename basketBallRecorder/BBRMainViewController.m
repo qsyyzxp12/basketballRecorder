@@ -236,6 +236,7 @@
 
 - (void) finishButtonClicked
 {
+    self.quarterNo++;
     NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
     [tmpPlistDic setObject:[NSNumber numberWithInt:5] forKey:KEY_FOR_LAST_RECORD_QUARTER];
     
@@ -666,11 +667,6 @@
             
             [self updateTmpPlist];
             self.zoneNo = 0;
-            
-            NSLog(@"%@", self.playerDataArray[0]);
-            NSLog(@"xxxxxxxxxxxxxxxxxxxxxxxxxxx");
-            
-            NSLog(@"%@", self.OldPlayerDataArray[0]);
         }];
     UIAlertAction* noAction = [UIAlertAction actionWithTitle:@"Attempt" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
@@ -1026,7 +1022,6 @@
 
 -(void) updateTotalScoreOnePlayerGetToPlayerData:(NSMutableDictionary*) playerData withScore:(int)score
 {
-    NSLog(@"zoneNo = %d", self.zoneNo);
     int totalScoreGet = [[playerData objectForKey:@"totalScoreGet"] intValue];
     NSString* totalScoreGetStr = [NSString stringWithFormat:@"%d", totalScoreGet+score];
     
@@ -1438,6 +1433,8 @@
     //Undo Button
     UIButton* undoButton = [[UIButton alloc] init];
     [undoButton setFrame:CGRectMake(CGRectGetMinX(bonusZone.frame), CGRectGetMinY(self.backgroundImageView.frame), bonusZone.frame.size.width, bonusZone.frame.size.height)];
+    undoButton.layer.borderWidth = 1;
+    undoButton.layer.cornerRadius = 5;
     [undoButton setTitle:@"Undo" forState:UIControlStateNormal];
     [undoButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [undoButton addTarget:self action:@selector(undoButtonClicked) forControlEvents:UIControlEventTouchUpInside];
