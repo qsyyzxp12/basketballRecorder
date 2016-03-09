@@ -243,6 +243,7 @@
     [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
     
     self.isShowZoneGrade = YES;
+    self.undoButton.hidden = YES;
     
     self.navigationItem.rightBarButtonItem.title = @"進攻分類";
     self.navigationItem.rightBarButtonItem.action = @selector(showOffenseGrade);
@@ -1431,14 +1432,14 @@
     [self.view addSubview:gradeLabel];
     
     //Undo Button
-    UIButton* undoButton = [[UIButton alloc] init];
-    [undoButton setFrame:CGRectMake(CGRectGetMinX(bonusZone.frame), CGRectGetMinY(self.backgroundImageView.frame), bonusZone.frame.size.width, bonusZone.frame.size.height)];
-    undoButton.layer.borderWidth = 1;
-    undoButton.layer.cornerRadius = 5;
-    [undoButton setTitle:@"Undo" forState:UIControlStateNormal];
-    [undoButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    [undoButton addTarget:self action:@selector(undoButtonClicked) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:undoButton];
+    self.undoButton = [[UIButton alloc] init];
+    [self.undoButton setFrame:CGRectMake(CGRectGetMinX(bonusZone.frame), CGRectGetMinY(self.backgroundImageView.frame), bonusZone.frame.size.width, bonusZone.frame.size.height)];
+    self.undoButton.layer.borderWidth = 1;
+    self.undoButton.layer.cornerRadius = 5;
+    [self.undoButton setTitle:@"Undo" forState:UIControlStateNormal];
+    [self.undoButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [self.undoButton addTarget:self action:@selector(undoButtonClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.undoButton];
 }
 
 -(void) undoButtonClicked
