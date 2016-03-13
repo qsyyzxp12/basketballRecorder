@@ -86,7 +86,7 @@
             self.playerCount++;
         }
     }
-/*
+
     if(self.playerCount < 5)
     {
         UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"人數小於5人" message:nil preferredStyle: UIAlertControllerStyleAlert];
@@ -95,7 +95,6 @@
         [self presentViewController:alert animated:YES completion:nil];
     }
     else
-*/
     
     [self performSegueWithIdentifier:@"showMainController" sender:nil];
 }

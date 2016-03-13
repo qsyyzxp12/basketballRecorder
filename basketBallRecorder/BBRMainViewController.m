@@ -52,10 +52,10 @@
     self.zoneNo = 0;
     self.quarterNo = 0;
   
-    self.attackWaySet = [[NSArray alloc] initWithObjects:@"Isolation", @"Spot Up", @"PS", @"PC", @"PR", @"PPS", @"PPC", @"Catch&Shoot", @"Fast Break", @"Low Post", @"Second", @"Drive", @"Cut", @"Bonus", nil];
+    self.attackWaySet = [[NSArray alloc] initWithObjects:@"Isolation", @"Spot Up", @"PS", @"PC", @"PR", @"PPS", @"PPC", @"Catch&Shoot", @"Fast Break", @"Low Post", @"High Post", @"Second", @"Drive", @"Cut", @"Bonus", nil];
     self.attackWayKeySet = [[NSArray alloc] initWithObjects:
                             @"isolation", @"spotUp", @"PS", @"PC", @"PR", @"PPS", @"PPC", @"CS",
-                            @"fastBreak", @"lowPost", @"second", @"drive", @"cut", nil];
+                            @"fastBreak", @"lowPost", @"highPost", @"second", @"drive", @"cut", nil];
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] init];
     self.navigationItem.rightBarButtonItem.title = @"下一節";
@@ -342,8 +342,6 @@
     {
         NSString* recordPlistPath = [NSString stringWithFormat:@"%@/Documents/record.plist", NSHomeDirectory()];
         NSMutableArray* recordPlistArray = [NSMutableArray arrayWithContentsOfFile:recordPlistPath];
-        
-        NSLog(@"%@, %@, %@", self.playerDataArray, self.playerNoSet, self.recordName);
         
         NSMutableDictionary* newItem = [[NSMutableDictionary alloc] init];
         [newItem setObject:[NSNumber numberWithInt:5] forKey:KEY_FOR_LAST_RECORD_QUARTER];
@@ -899,6 +897,11 @@
                                     self.keyForSearch = @"lowPost";
                                     [self presentViewController:self.resultAlert animated:YES completion:nil];
                                 }];
+    UIAlertAction* highPostAction = [UIAlertAction actionWithTitle:@"High Post" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+                                    {
+                                        self.keyForSearch = @"highPost";
+                                        [self presentViewController:self.resultAlert animated:YES completion:nil];
+                                    }];
     UIAlertAction* secondAction = [UIAlertAction actionWithTitle:@"Second" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
                                    {
                                        self.keyForSearch = @"second";
@@ -925,6 +928,7 @@
     [self.attackWayAlert addAction:catchShootAction];
     [self.attackWayAlert addAction:fastBreakAction];
     [self.attackWayAlert addAction:lowPostAction];
+    [self.attackWayAlert addAction:highPostAction];
     [self.attackWayAlert addAction:secondAction];
     [self.attackWayAlert addAction:driveAction];
     [self.attackWayAlert addAction:cutAction];
@@ -1651,7 +1655,7 @@
     UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width*0.3, PLAYER_GRADE_TABLECELL_HEIGHT)];
     label.textAlignment = NSTextAlignmentCenter;
     
-    if(indexPath.row < 14)
+    if(indexPath.row < 15)
     {
         UILabel* madeAndAttemptLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(label.frame), label.frame.origin.y, tableView.frame.size.width*0.28, PLAYER_GRADE_TABLECELL_HEIGHT)];
         madeAndAttemptLabel.textAlignment = NSTextAlignmentCenter;
