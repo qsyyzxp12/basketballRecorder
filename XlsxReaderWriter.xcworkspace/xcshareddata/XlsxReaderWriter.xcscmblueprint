@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "70F485FDF6299050E53C44009BA8468765783EA6",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "70F485FDF6299050E53C44009BA8468765783EA6" : 0,
+    "66858D06FBE52BF4B6B0AF3D04307F5F44319DB5" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "EE43F536-2FB1-4347-8FA9-18B049B94D1D",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "70F485FDF6299050E53C44009BA8468765783EA6" : "basketballRecorder\/",
+    "66858D06FBE52BF4B6B0AF3D04307F5F44319DB5" : "XlsxReaderWriter\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "XlsxReaderWriter",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "XlsxReaderWriter.xcworkspace",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/renebigot\/XlsxReaderWriter.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "66858D06FBE52BF4B6B0AF3D04307F5F44319DB5"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/qsyyzxp12\/basketballRecorder.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "70F485FDF6299050E53C44009BA8468765783EA6"
+    }
+  ]
+}

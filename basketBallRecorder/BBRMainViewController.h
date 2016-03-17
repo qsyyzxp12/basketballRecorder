@@ -29,6 +29,8 @@
 @property UIAlertController* bonusAlertFor2Chance;
 @property UIAlertController* bonusAlertFor3Chance;
 @property UIAlertController* andOneAlert;
+@property UIAlertController* nextQuarterAlert;
+@property UIAlertController* playoffOrNotAlert;
 @property UIImageView* backgroundImageView;
 @property BOOL isShowZoneGrade;
 @property NSString* tmpPlistPath;

@@ -37,6 +37,8 @@
 #define forQuarter 1
 #define forTotal 0
 
+#define END -1
+
 @interface BBRMainViewController ()
 
 @end
@@ -90,8 +92,8 @@
     [self drawPicture];
     [self constructAlertControllers];
     
-    if(self.quarterNo == 4)
-        [self finishButtonClicked];
+    if(self.quarterNo == END)
+        [self showConclusion];
 }
 
 -(void) reloadPlayerGradeFromRecordPlist
@@ -115,6 +117,7 @@
     self.playerDataArray = [tmpPlistDic objectForKey:KEY_FOR_GRADE];
     self.playerNoSet = [tmpPlistDic objectForKey:KEY_FOR_PLAYER_NO_SET];
     self.quarterNo = [[tmpPlistDic objectForKey:KEY_FOR_LAST_RECORD_QUARTER] intValue];
+    self.recordName = [tmpPlistDic objectForKey:KEY_FOR_NAME];
     self.playerCount = (int)[self.playerNoSet count];
     
     if(self.quarterNo == 0)
@@ -183,10 +186,11 @@
     
     NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
     
-    [tmpPlistDic setObject:[NSNumber numberWithInt:1] forKey:KEY_FOR_LAST_RECORD_QUARTER];
+    [tmpPlistDic setObject:[NSNumber numberWithInt:0] forKey:KEY_FOR_LAST_RECORD_QUARTER];
     [tmpPlistDic setObject:self.playerDataArray forKey:KEY_FOR_GRADE];
     [tmpPlistDic setObject:self.playerNoSet forKey:KEY_FOR_PLAYER_NO_SET];
     [tmpPlistDic setObject:self.recordName forKey:KEY_FOR_NAME];
+    NSLog(@"%@", self.recordName);
     
     [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
     
@@ -214,157 +218,12 @@
 
 -(void) nextQuarterButtonClicked
 {
-    self.quarterNo++;
-    [self updateZoneGradeView];
-    
-    NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
-    [tmpPlistDic setObject:[NSNumber numberWithInt:self.quarterNo+1] forKey:KEY_FOR_LAST_RECORD_QUARTER];
-    
-    [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
-    
-    if (self.quarterNo == 1)
-        self.navigationItem.title = @"第二節";
-    else if(self.quarterNo == 2)
-        self.navigationItem.title = @"第三節";
-    else
-    {
-        self.navigationItem.title = @"第四節";
-        self.navigationItem.rightBarButtonItem.title = @"完成";
-        self.navigationItem.rightBarButtonItem.action = @selector(finishButtonClicked);
-    }
+    [self presentViewController:self.nextQuarterAlert animated:YES completion:nil];
 }
 
 - (void) finishButtonClicked
 {
-    self.quarterNo++;
-    NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
-    [tmpPlistDic setObject:[NSNumber numberWithInt:5] forKey:KEY_FOR_LAST_RECORD_QUARTER];
-    
-    [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
-    
-    self.isShowZoneGrade = YES;
-    self.undoButton.hidden = YES;
-    
-    self.navigationItem.rightBarButtonItem.title = @"進攻分類";
-    self.navigationItem.rightBarButtonItem.action = @selector(showOffenseGrade);
-    self.navigationItem.title = @"第一節成績";
-    
-    for(int i=1; i<13; i++)
-    {
-        UIImageView* zone = (UIImageView*)[self.view viewWithTag:i];
-        [zone setUserInteractionEnabled:NO];
-    }
-    if (self.zoneNo)
-        ((UIImageView*)[self.view viewWithTag:self.zoneNo]).highlighted = NO;
-    
-    if(self.quarterNo == 4)
-    {
-        //Caculate the Total Score of the Team
-        NSMutableArray* totalGrade = [self.playerDataArray objectAtIndex:4];
-        NSMutableDictionary* totalGradeOfTeam = [totalGrade objectAtIndex:self.playerCount];
-        
-        for(int i=1; i<=12; i++)
-        {
-            NSString* keyForZone = [NSString stringWithFormat:@"zone%d", i];
-            int madeCount = 0, attemptCount = 0;
-            for(int j=0; j<self.playerCount; j++)
-            {
-                NSDictionary* totalGradeOfPlayer = [totalGrade objectAtIndex:j];
-                NSDictionary* zoneGrade = [totalGradeOfPlayer objectForKey:keyForZone];
-                madeCount += [[zoneGrade objectForKey:KEY_FOR_MADE_COUNT] intValue];
-                attemptCount += [[zoneGrade objectForKey:KEY_FOR_ATTEMPT_COUNT] intValue];
-            }
-            
-            NSMutableDictionary* zoneGradeOfTotalGradeOfTeam = [totalGradeOfTeam objectForKey:keyForZone];
-            [zoneGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", madeCount] forKey:KEY_FOR_MADE_COUNT];
-            [zoneGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", attemptCount] forKey:KEY_FOR_ATTEMPT_COUNT];
-            
-            [totalGradeOfTeam setObject:zoneGradeOfTotalGradeOfTeam forKey:keyForZone];
-        }
-        
-        for (int i=0; i<[self.attackWayKeySet count]; i++)
-        {
-            NSString* keyForOffense = [self.attackWayKeySet objectAtIndex:i];
-            int madeCount = 0, attemptCount = 0, foulCount = 0, turnOverCount = 0, scoreGet = 0;
-            for(int j=0; j<self.playerCount; j++)
-            {
-                NSDictionary* totalGradeOfPlayer = [totalGrade objectAtIndex:j];
-                NSDictionary* offenseGrade = [totalGradeOfPlayer objectForKey:keyForOffense];
-                madeCount += [[offenseGrade objectForKey:KEY_FOR_MADE_COUNT] intValue];
-                attemptCount += [[offenseGrade objectForKey:KEY_FOR_ATTEMPT_COUNT] intValue];
-                foulCount += [[offenseGrade objectForKey:KEY_FOR_FOUL_COUNT] intValue];
-                turnOverCount += [[offenseGrade objectForKey:KEY_FOR_TURN_OVER_COUNT] intValue];
-                scoreGet += [[offenseGrade objectForKey:KEY_FOR_SCORE_GET] intValue];
-            }
-            
-            NSMutableDictionary* offenseGradeOfTotalGradeOfTeam = [totalGradeOfTeam objectForKey:keyForOffense];
-            [offenseGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", madeCount] forKey:KEY_FOR_MADE_COUNT];
-            [offenseGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", attemptCount] forKey:KEY_FOR_ATTEMPT_COUNT];
-            [offenseGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", foulCount] forKey:KEY_FOR_FOUL_COUNT];
-            [offenseGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", turnOverCount] forKey:KEY_FOR_TURN_OVER_COUNT];
-            [offenseGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", scoreGet] forKey:KEY_FOR_SCORE_GET];
-            
-            [totalGradeOfTeam setObject:offenseGradeOfTotalGradeOfTeam forKey:keyForOffense];
-        }
-        
-        int totalScore = 0;
-        for(int i=0; i<self.playerCount; i++)
-        {
-            NSDictionary* totalGradeOfPlayer = [totalGrade objectAtIndex:i];
-            totalScore += [[totalGradeOfPlayer objectForKey:@"totalScoreGet"] intValue];
-        }
-        
-        [totalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", totalScore] forKey:@"totalScoreGet"];
-        
-    }
-    
-    self.quarterNo = 0;
-    //Update Zone Grade;
-    [self updateZoneGradeView];
-    
-    //Add Two Arrow for Quarter change
-    UIButton* lastQuarterButton = [[UIButton alloc] init];
-    [lastQuarterButton setImage:[UIImage imageNamed:@"leftArrow.png"] forState:UIControlStateNormal];
-    [lastQuarterButton sizeToFit];
-    lastQuarterButton.frame = CGRectMake(self.backgroundImageView.frame.origin.x-lastQuarterButton.frame.size.width*0.25-5, self.backgroundImageView.frame.origin.y+20, lastQuarterButton.frame.size.width*0.25, lastQuarterButton.frame.size.height*0.25);
-    [lastQuarterButton addTarget:self action:@selector(gradeOfLastQuarterButtonClicked) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:lastQuarterButton];
-    
-    UIButton* nextQuarterButton = [[UIButton alloc] init];
-    [nextQuarterButton setImage:[UIImage imageNamed:@"rightArrow.png"] forState:UIControlStateNormal];
-    [nextQuarterButton sizeToFit];
-    nextQuarterButton.frame = CGRectMake(CGRectGetMaxX(self.backgroundImageView.frame)+5, self.backgroundImageView.frame.origin.y+20, nextQuarterButton.frame.size.width*0.25, nextQuarterButton.frame.size.height*0.25);
-    [nextQuarterButton addTarget:self action:@selector(gradeOfNextQuaterButtonClicked) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:nextQuarterButton];
-    
-    //Update Record.plist
-    if(!self.showOldRecordNo)
-    {
-        NSString* recordPlistPath = [NSString stringWithFormat:@"%@/Documents/record.plist", NSHomeDirectory()];
-        NSMutableArray* recordPlistArray = [NSMutableArray arrayWithContentsOfFile:recordPlistPath];
-        
-        NSMutableDictionary* newItem = [[NSMutableDictionary alloc] init];
-        [newItem setObject:[NSNumber numberWithInt:5] forKey:KEY_FOR_LAST_RECORD_QUARTER];
-        [newItem setObject:self.playerDataArray forKey:KEY_FOR_GRADE];
-        [newItem setObject:self.playerNoSet forKey:KEY_FOR_PLAYER_NO_SET];
-        [newItem setObject:self.recordName forKey:KEY_FOR_NAME];
-        
-        if([recordPlistArray count] < 5)
-            [recordPlistArray addObject:newItem];
-        else
-        {
-            for(int i=0; i<4; i++)
-                [recordPlistArray setObject:[recordPlistArray objectAtIndex:i+1] atIndexedSubscript:i];
-            [recordPlistArray setObject:newItem atIndexedSubscript:4];
-        }
-        
-        [recordPlistArray writeToFile:recordPlistPath atomically:YES];
-        
-        //Remove tmp.plist
-        NSFileManager* fm = [[NSFileManager alloc] init];
-        if([fm fileExistsAtPath:self.tmpPlistPath])
-            [fm removeItemAtPath:self.tmpPlistPath error:nil];
-    }
+    [self presentViewController:self.playoffOrNotAlert animated:YES completion:nil];
 }
 
 -(void)gradeOfNextQuaterButtonClicked
@@ -401,7 +260,7 @@
         case 3:
             self.navigationItem.title = @"第四節成績";
             break;
-        case 4:
+        case END:
             self.navigationItem.title = @"總成績";
             break;
     }
@@ -933,6 +792,177 @@
     [self.attackWayAlert addAction:driveAction];
     [self.attackWayAlert addAction:cutAction];
     [self.attackWayAlert addAction:cancelAction];
+    
+    //Next Quarter Alert
+    self.nextQuarterAlert = [UIAlertController alertControllerWithTitle:@"確定？"
+                                                              message:nil preferredStyle:UIAlertControllerStyleAlert];
+    yesAction = [UIAlertAction actionWithTitle:@"是" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action)
+        {
+            self.quarterNo++;
+            [self updateZoneGradeView];
+            
+            NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
+            [tmpPlistDic setObject:[NSNumber numberWithInt:self.quarterNo] forKey:KEY_FOR_LAST_RECORD_QUARTER];
+            
+            [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
+            
+            if (self.quarterNo == 1)
+                self.navigationItem.title = @"第二節";
+            else if(self.quarterNo == 2)
+                self.navigationItem.title = @"第三節";
+            else
+            {
+                self.navigationItem.title = @"第四節";
+                self.navigationItem.rightBarButtonItem.title = @"完成";
+                self.navigationItem.rightBarButtonItem.action = @selector(finishButtonClicked);
+            }
+        }];
+    noAction = [UIAlertAction actionWithTitle:@"否" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+        {}];
+    
+    [self.nextQuarterAlert addAction:yesAction];
+    [self.nextQuarterAlert addAction:noAction];
+    
+    //Alert for determining if there is playoff or not
+    self.playoffOrNotAlert = [UIAlertController alertControllerWithTitle:@"是否有延長賽？"
+                                                                message:nil preferredStyle:UIAlertControllerStyleAlert];
+    yesAction = [UIAlertAction actionWithTitle:@"是" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action){}];
+    noAction = [UIAlertAction actionWithTitle:@"否" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+        {
+            [self showConclusion];
+        }];
+    cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action){}];
+    
+    [self.playoffOrNotAlert addAction:yesAction];
+    [self.playoffOrNotAlert addAction:noAction];
+    [self.playoffOrNotAlert addAction:cancelAction];
+}
+
+-(void) showConclusion
+{
+    self.isShowZoneGrade = YES;
+    self.undoButton.hidden = YES;
+    
+    self.navigationItem.rightBarButtonItem.title = @"進攻分類";
+    self.navigationItem.rightBarButtonItem.action = @selector(showOffenseGrade);
+    self.navigationItem.title = @"第一節成績";
+    
+    for(int i=1; i<13; i++)
+    {
+        UIImageView* zone = (UIImageView*)[self.view viewWithTag:i];
+        [zone setUserInteractionEnabled:NO];
+    }
+    if (self.zoneNo)
+        ((UIImageView*)[self.view viewWithTag:self.zoneNo]).highlighted = NO;
+    
+    if(!self.showOldRecordNo)
+    {
+        //Caculate the Total Score of the Team
+        NSMutableArray* totalGrade = [self.playerDataArray objectAtIndex:4];
+        NSMutableDictionary* totalGradeOfTeam = [totalGrade objectAtIndex:self.playerCount];
+        
+        for(int i=1; i<=12; i++)
+        {
+            NSString* keyForZone = [NSString stringWithFormat:@"zone%d", i];
+            int madeCount = 0, attemptCount = 0;
+            for(int j=0; j<self.playerCount; j++)
+            {
+                NSDictionary* totalGradeOfPlayer = [totalGrade objectAtIndex:j];
+                NSDictionary* zoneGrade = [totalGradeOfPlayer objectForKey:keyForZone];
+                madeCount += [[zoneGrade objectForKey:KEY_FOR_MADE_COUNT] intValue];
+                attemptCount += [[zoneGrade objectForKey:KEY_FOR_ATTEMPT_COUNT] intValue];
+            }
+            
+            NSMutableDictionary* zoneGradeOfTotalGradeOfTeam = [totalGradeOfTeam objectForKey:keyForZone];
+            [zoneGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", madeCount] forKey:KEY_FOR_MADE_COUNT];
+            [zoneGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", attemptCount] forKey:KEY_FOR_ATTEMPT_COUNT];
+            
+            [totalGradeOfTeam setObject:zoneGradeOfTotalGradeOfTeam forKey:keyForZone];
+        }
+        
+        for (int i=0; i<[self.attackWayKeySet count]; i++)
+        {
+            NSString* keyForOffense = [self.attackWayKeySet objectAtIndex:i];
+            int madeCount = 0, attemptCount = 0, foulCount = 0, turnOverCount = 0, scoreGet = 0;
+            for(int j=0; j<self.playerCount; j++)
+            {
+                NSDictionary* totalGradeOfPlayer = [totalGrade objectAtIndex:j];
+                NSDictionary* offenseGrade = [totalGradeOfPlayer objectForKey:keyForOffense];
+                madeCount += [[offenseGrade objectForKey:KEY_FOR_MADE_COUNT] intValue];
+                attemptCount += [[offenseGrade objectForKey:KEY_FOR_ATTEMPT_COUNT] intValue];
+                foulCount += [[offenseGrade objectForKey:KEY_FOR_FOUL_COUNT] intValue];
+                turnOverCount += [[offenseGrade objectForKey:KEY_FOR_TURN_OVER_COUNT] intValue];
+                scoreGet += [[offenseGrade objectForKey:KEY_FOR_SCORE_GET] intValue];
+            }
+            
+            NSMutableDictionary* offenseGradeOfTotalGradeOfTeam = [totalGradeOfTeam objectForKey:keyForOffense];
+            [offenseGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", madeCount] forKey:KEY_FOR_MADE_COUNT];
+            [offenseGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", attemptCount] forKey:KEY_FOR_ATTEMPT_COUNT];
+            [offenseGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", foulCount] forKey:KEY_FOR_FOUL_COUNT];
+            [offenseGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", turnOverCount] forKey:KEY_FOR_TURN_OVER_COUNT];
+            [offenseGradeOfTotalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", scoreGet] forKey:KEY_FOR_SCORE_GET];
+            
+            [totalGradeOfTeam setObject:offenseGradeOfTotalGradeOfTeam forKey:keyForOffense];
+        }
+        
+        int totalScore = 0;
+        for(int i=0; i<self.playerCount; i++)
+        {
+            NSDictionary* totalGradeOfPlayer = [totalGrade objectAtIndex:i];
+            totalScore += [[totalGradeOfPlayer objectForKey:@"totalScoreGet"] intValue];
+        }
+        
+        [totalGradeOfTeam setObject:[NSString stringWithFormat:@"%d", totalScore] forKey:@"totalScoreGet"];
+        
+    }
+    
+    self.quarterNo = 0;
+    //Update Zone Grade;
+    [self updateZoneGradeView];
+    
+    //Add Two Arrow for Quarter change
+    UIButton* lastQuarterButton = [[UIButton alloc] init];
+    [lastQuarterButton setImage:[UIImage imageNamed:@"leftArrow.png"] forState:UIControlStateNormal];
+    [lastQuarterButton sizeToFit];
+    lastQuarterButton.frame = CGRectMake(self.backgroundImageView.frame.origin.x-lastQuarterButton.frame.size.width*0.25-5, self.backgroundImageView.frame.origin.y+20, lastQuarterButton.frame.size.width*0.25, lastQuarterButton.frame.size.height*0.25);
+    [lastQuarterButton addTarget:self action:@selector(gradeOfLastQuarterButtonClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:lastQuarterButton];
+    
+    UIButton* nextQuarterButton = [[UIButton alloc] init];
+    [nextQuarterButton setImage:[UIImage imageNamed:@"rightArrow.png"] forState:UIControlStateNormal];
+    [nextQuarterButton sizeToFit];
+    nextQuarterButton.frame = CGRectMake(CGRectGetMaxX(self.backgroundImageView.frame)+5, self.backgroundImageView.frame.origin.y+20, nextQuarterButton.frame.size.width*0.25, nextQuarterButton.frame.size.height*0.25);
+    [nextQuarterButton addTarget:self action:@selector(gradeOfNextQuaterButtonClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:nextQuarterButton];
+    
+    //Update Record.plist
+    if(!self.showOldRecordNo)
+    {
+        NSString* recordPlistPath = [NSString stringWithFormat:@"%@/Documents/record.plist", NSHomeDirectory()];
+        NSMutableArray* recordPlistArray = [NSMutableArray arrayWithContentsOfFile:recordPlistPath];
+        
+        NSMutableDictionary* newItem = [[NSMutableDictionary alloc] init];
+        [newItem setObject:[NSNumber numberWithInt:END] forKey:KEY_FOR_LAST_RECORD_QUARTER];
+        [newItem setObject:self.playerDataArray forKey:KEY_FOR_GRADE];
+        [newItem setObject:self.playerNoSet forKey:KEY_FOR_PLAYER_NO_SET];
+        [newItem setObject:self.recordName forKey:KEY_FOR_NAME];
+        
+        if([recordPlistArray count] < 5)
+            [recordPlistArray addObject:newItem];
+        else
+        {
+            for(int i=0; i<4; i++)
+                [recordPlistArray setObject:[recordPlistArray objectAtIndex:i+1] atIndexedSubscript:i];
+            [recordPlistArray setObject:newItem atIndexedSubscript:4];
+        }
+        
+        [recordPlistArray writeToFile:recordPlistPath atomically:YES];
+        
+        //Remove tmp.plist
+        NSFileManager* fm = [[NSFileManager alloc] init];
+        if([fm fileExistsAtPath:self.tmpPlistPath])
+            [fm removeItemAtPath:self.tmpPlistPath error:nil];
+    }
 }
 
 - (void) updateZoneGradeForOneMadeToPlayerData:(NSMutableDictionary*) playerData
