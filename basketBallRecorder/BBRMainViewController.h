@@ -20,6 +20,7 @@
 @property NSArray* playerNoSet;
 @property BOOL isShowZoneGrade;
 @property BOOL isTmpPlistExist;
+@property BOOL isRecordMode;
 @property int playerCount;
 @property int playerSelectedIndex;
 @property int zoneNo;
@@ -40,4 +41,6 @@
 @property NSString* keyForSearch;
 @property UIButton* undoButton;
 @property UIButton* switchModeButton;
+@property UIButton* nextQuarterButton;
+@property UIButton* lastQuarterButton;
 @end
