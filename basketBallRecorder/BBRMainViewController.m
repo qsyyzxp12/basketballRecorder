@@ -56,9 +56,9 @@
     self.zoneNo = 0;
     self.quarterNo = 1;
   
-    self.attackWaySet = [[NSArray alloc] initWithObjects:@"Isolation", @"Spot Up", @"PS", @"PC", @"PR", @"PPS", @"PPC", @"Catch&Shoot", @"Fast Break", @"Low Post", @"High Post", @"Second", @"Drive", @"Cut", @"Bonus", nil];
+    self.attackWaySet = [[NSArray alloc] initWithObjects:@"Isolation", @"Spot Up", @"PS", @"PD", @"PR", @"PPS", @"PPD", @"Catch&Shoot", @"Fast Break", @"Low Post", @"High Post", @"Second", @"Drive", @"Cut", @"Bonus", nil];
     self.attackWayKeySet = [[NSArray alloc] initWithObjects:
-                            @"isolation", @"spotUp", @"PS", @"PC", @"PR", @"PPS", @"PPC", @"CS",
+                            @"isolation", @"spotUp", @"PS", @"PD", @"PR", @"PPS", @"PPDp", @"CS",
                             @"fastBreak", @"lowPost", @"highPost", @"second", @"drive", @"cut", nil];
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] init];
@@ -78,7 +78,6 @@
         self.navigationItem.leftBarButtonItem.target = self;
         self.navigationItem.leftBarButtonItem.action = @selector(backButtonClicked);
     }
-        
     
     int tableViewHeight = TITLE_CELL_HEIGHT + CELL_HEIGHT * (self.playerCount+1) + BAR_HEIGHT;
     if (tableViewHeight + 20 > self.view.frame.size.height)
@@ -735,9 +734,9 @@
                                    self.keyForSearch = @"PS";
                                    [self presentViewController:self.resultAlert animated:YES completion:nil];
                                }];
-    UIAlertAction* pcAction = [UIAlertAction actionWithTitle:@"PC" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+    UIAlertAction* pdAction = [UIAlertAction actionWithTitle:@"PD" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
                                {
-                                   self.keyForSearch = @"PC";
+                                   self.keyForSearch = @"PD";
                                    [self presentViewController:self.resultAlert animated:YES completion:nil];
                                }];
     UIAlertAction* prAction = [UIAlertAction actionWithTitle:@"PR" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
@@ -750,9 +749,9 @@
                                     self.keyForSearch = @"PPS";
                                     [self presentViewController:self.resultAlert animated:YES completion:nil];
                                 }];
-    UIAlertAction* ppcAction = [UIAlertAction actionWithTitle:@"PPC" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+    UIAlertAction* ppdAction = [UIAlertAction actionWithTitle:@"PPD" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
                                 {
-                                    self.keyForSearch = @"PPC";
+                                    self.keyForSearch = @"PPD";
                                     [self presentViewController:self.resultAlert animated:YES completion:nil];
                                 }];
     UIAlertAction* catchShootAction = [UIAlertAction actionWithTitle:@"Catch&Shoot" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
@@ -794,10 +793,10 @@
     [self.attackWayAlert addAction:isolationAction];
     [self.attackWayAlert addAction:spotUpAction];
     [self.attackWayAlert addAction:psAction];
-    [self.attackWayAlert addAction:pcAction];
+    [self.attackWayAlert addAction:pdAction];
     [self.attackWayAlert addAction:prAction];
     [self.attackWayAlert addAction:ppsAction];
-    [self.attackWayAlert addAction:ppcAction];
+    [self.attackWayAlert addAction:ppdAction];
     [self.attackWayAlert addAction:catchShootAction];
     [self.attackWayAlert addAction:fastBreakAction];
     [self.attackWayAlert addAction:lowPostAction];
@@ -910,7 +909,7 @@
     if(!self.showOldRecordNo)
     {
         //Caculate the Total Score of the Team
-        NSMutableArray* totalGrade = [self.playerDataArray objectAtIndex:4];
+        NSMutableArray* totalGrade = [self.playerDataArray objectAtIndex:0];
         NSMutableDictionary* totalGradeOfTeam = [totalGrade objectAtIndex:self.playerCount];
         
         for(int i=1; i<=12; i++)
