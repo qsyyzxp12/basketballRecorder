@@ -99,8 +99,6 @@
     
     if(self.quarterNo == END)
         [self showConclusion];
-    
-    NSLog(@"%d", self.quarterNo);
 }
 
 - (void) constructAlertControllers
@@ -832,7 +830,6 @@
     [tmpPlistDic setObject:self.playerDataArray forKey:KEY_FOR_GRADE];
     [tmpPlistDic setObject:self.playerNoSet forKey:KEY_FOR_PLAYER_NO_SET];
     [tmpPlistDic setObject:self.recordName forKey:KEY_FOR_NAME];
-    NSLog(@"%@", self.recordName);
     
     [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
     

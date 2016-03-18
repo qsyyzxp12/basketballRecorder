@@ -50,8 +50,6 @@
         //    [fm removeItemAtPath:recordPlistPath error:nil];
         NSArray* recordPlistContent = [NSArray arrayWithContentsOfFile:recordPlistPath];
         
-        NSLog(@"%lu", (unsigned long)[recordPlistContent count]);
-        
         for (int i=0; i<[recordPlistContent count]; i++)
         {
             [((UIButton*)self.buttonArray[i]) setTitle:[[recordPlistContent objectAtIndex:i] objectForKey:KEY_FOR_NAME] forState:UIControlStateNormal];
