@@ -18,11 +18,13 @@
 @property NSArray* attackWaySet;
 @property NSArray* attackWayKeySet;
 @property NSArray* playerNoSet;
+@property BOOL isShowZoneGrade;
+@property BOOL isTmpPlistExist;
 @property int playerCount;
 @property int playerSelectedIndex;
 @property int zoneNo;
 @property int quarterNo;
-@property NSString* keyForSearch;
+@property int showOldRecordNo;
 @property UIAlertController* madeOrNotAlert;
 @property UIAlertController* attackWayAlert;
 @property UIAlertController* resultAlert;
@@ -31,11 +33,11 @@
 @property UIAlertController* andOneAlert;
 @property UIAlertController* nextQuarterAlert;
 @property UIAlertController* playoffOrNotAlert;
+@property UIAlertController* finishOrNotAlert;
 @property UIImageView* backgroundImageView;
-@property BOOL isShowZoneGrade;
 @property NSString* tmpPlistPath;
-@property BOOL isTmpPlistExist;
 @property NSString* recordName;
-@property int showOldRecordNo;
+@property NSString* keyForSearch;
 @property UIButton* undoButton;
+@property UIButton* switchModeButton;
 @end

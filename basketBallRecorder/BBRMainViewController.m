@@ -87,249 +87,20 @@
     self.playerListTableView.delegate = self;
     self.playerListTableView.dataSource = self;
     self.playerListTableView.tag = NO_TABLEVIEW_TAG;
-    
     [self.view addSubview:self.playerListTableView];
     
     [self drawPicture];
     [self constructAlertControllers];
     
+    self.playerDataTableView = [[UITableView alloc] initWithFrame:[self.view viewWithTag:BACKGROUND_IMAGEVIEW_TAG].frame];
+    self.playerDataTableView.tag = PLAYER_GRADE_TABLEVIEW_TAG;
+    self.playerDataTableView.delegate = self;
+    self.playerDataTableView.dataSource = self;
+    
     if(self.quarterNo == END)
         [self showConclusion];
     
     NSLog(@"%d", self.quarterNo);
-}
-
--(void) reloadPlayerGradeFromRecordPlist
-{
-    NSString* recordPlistPath = [NSString stringWithFormat:@"%@/Documents/record.plist", NSHomeDirectory()];
-    NSArray* recordPlistArray = [NSArray arrayWithContentsOfFile:recordPlistPath];
-    NSDictionary* dataDic = [recordPlistArray objectAtIndex:self.showOldRecordNo-1 ];
-    self.playerDataArray = [dataDic objectForKey:KEY_FOR_GRADE];
-    self.playerNoSet = [dataDic objectForKey:KEY_FOR_PLAYER_NO_SET];
-    self.quarterNo = END;
-    self.playerCount = (int)[self.playerNoSet count];
-    
-    self.navigationItem.rightBarButtonItem.title = @"進攻分類";
-    self.navigationItem.rightBarButtonItem.action = @selector(showOffenseGrade);
-    self.navigationItem.title = @"第一節成績";
-}
-
--(void) reloadPlayerGradeFromTmpPlist
-{
-    NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
-    self.playerDataArray = [tmpPlistDic objectForKey:KEY_FOR_GRADE];
-    self.playerNoSet = [tmpPlistDic objectForKey:KEY_FOR_PLAYER_NO_SET];
-    self.quarterNo = [[tmpPlistDic objectForKey:KEY_FOR_LAST_RECORD_QUARTER] intValue];
-    self.recordName = [tmpPlistDic objectForKey:KEY_FOR_NAME];
-    self.playerCount = (int)[self.playerNoSet count];
-    
-    [self updateNavigationTitle];
-    if(self.quarterNo > 3)
-        self.navigationItem.rightBarButtonItem.action = @selector(finishButtonClicked);
-}
-
--(void) newPlayerGradeDataStruct
-{
-    self.playerDataArray = [NSMutableArray arrayWithCapacity:5];
-    for(int l=0; l<5; l++)
-        [self extendPlayerDataWithQuarter:l+1];
-    
-    NSLog(@"%@", self.playerDataArray);
-    
-    NSString* src = [[NSBundle mainBundle] pathForResource:@"tmp" ofType:@"plist"];
-    NSFileManager* fm = [[NSFileManager alloc] init];
-    
-    if(![fm fileExistsAtPath:self.tmpPlistPath])
-        [fm copyItemAtPath:src toPath:self.tmpPlistPath error:nil];
-    
-    NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
-    
-    [tmpPlistDic setObject:[NSNumber numberWithInt:1] forKey:KEY_FOR_LAST_RECORD_QUARTER];
-    [tmpPlistDic setObject:self.playerDataArray forKey:KEY_FOR_GRADE];
-    [tmpPlistDic setObject:self.playerNoSet forKey:KEY_FOR_PLAYER_NO_SET];
-    [tmpPlistDic setObject:self.recordName forKey:KEY_FOR_NAME];
-    NSLog(@"%@", self.recordName);
-    
-    [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
-    
-    self.navigationItem.title = @"第一節";
-}
-
--(void)backButtonClicked
-{
-    UIAlertController* backAlert = [UIAlertController alertControllerWithTitle:@"注意" message:@"返回後目前紀錄的資料都將消失，確定要返回嗎？" preferredStyle: UIAlertControllerStyleAlert];
-    
-    UIAlertAction* yesAction = [UIAlertAction actionWithTitle:@"是" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action)
-        {
-            [self.navigationController popViewControllerAnimated:YES];
-        }];
-    UIAlertAction* noAction = [UIAlertAction actionWithTitle:@"否" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action){}];
-    [backAlert addAction:yesAction];
-    [backAlert addAction:noAction];
-    
-    NSFileManager* fm = [[NSFileManager alloc] init];
-    if([fm fileExistsAtPath:self.tmpPlistPath])
-        [fm removeItemAtPath:self.tmpPlistPath error:nil];
-    
-    [self presentViewController:backAlert animated:YES completion:nil];
-}
-
--(void) nextQuarterButtonClicked
-{
-    [self presentViewController:self.nextQuarterAlert animated:YES completion:nil];
-}
-
-- (void) finishButtonClicked
-{
-    [self presentViewController:self.playoffOrNotAlert animated:YES completion:nil];
-}
-
--(void)gradeOfNextQuaterButtonClicked
-{
-    if (self.quarterNo < [self.playerDataArray count]-1)
-    {
-        self.quarterNo++;
-        [self updateGradeView];
-    }
-}
-
--(void)gradeOfLastQuarterButtonClicked
-{
-    if(self.quarterNo > 0)
-    {
-        self.quarterNo--;
-        [self updateGradeView];
-    }
-}
-
--(void)updateGradeView
-{
-    switch(self.quarterNo)
-    {
-        case 0:
-            self.navigationItem.title = @"總成績";
-            break;
-        case 1:
-            self.navigationItem.title = @"第一節成績";
-            break;
-        case 2:
-            self.navigationItem.title = @"第二節成績";
-            break;
-        case 3:
-            self.navigationItem.title = @"第三節成績";
-            break;
-        case 4:
-            self.navigationItem.title = @"第四節成績";
-            break;
-        case 5:
-            self.navigationItem.title = @"延長賽第一節成績";
-            break;
-        case 6:
-            self.navigationItem.title = @"延長賽第二節成績";
-            break;
-        case 7:
-            self.navigationItem.title = @"延長賽第三節成績";
-            break;
-        case 8:
-            self.navigationItem.title = @"延長賽第四節成績";
-            break;
-        case 9:
-            self.navigationItem.title = @"延長賽第五節成績";
-            break;
-        case 10:
-            self.navigationItem.title = @"延長賽第六節成績";
-            break;
-    }
-    
-    if(self.isShowZoneGrade)
-        [self updateZoneGradeView];
-    else
-        [(UITableView*)[self.view viewWithTag:PLAYER_GRADE_TABLEVIEW_TAG] reloadData];
-}
-
--(void) updateNavigationTitle
-{
-    switch(self.quarterNo)
-    {
-        case 1:
-            self.navigationItem.title = @"第一節";
-            break;
-        case 2:
-            self.navigationItem.title = @"第二節";
-            break;
-        case 3:
-            self.navigationItem.title = @"第三節";
-            break;
-        case 4:
-            self.navigationItem.title = @"第四節";
-            break;
-        case 5:
-            self.navigationItem.title = @"延長賽第一節";
-            break;
-        case 6:
-            self.navigationItem.title = @"延長賽第二節";
-            break;
-        case 7:
-            self.navigationItem.title = @"延長賽第三節";
-            break;
-        case 8:
-            self.navigationItem.title = @"延長賽第四節";
-            break;
-        case 9:
-            self.navigationItem.title = @"延長賽第五節";
-            break;
-        case 10:
-            self.navigationItem.title = @"延長賽第六節";
-            break;
-    }
-}
-
--(void)showZoneGrade
-{
-    self.isShowZoneGrade = YES;
-    [self updateZoneGradeView];
-    self.navigationItem.rightBarButtonItem.title = @"進攻分類";
-    self.navigationItem.rightBarButtonItem.action = @selector(showOffenseGrade);
-    
-    [self hideZone12orNot:NO];
-    
-    [[self.view viewWithTag:PLAYER_GRADE_TABLEVIEW_TAG] removeFromSuperview];
-
-}
-
--(void)showOffenseGrade
-{
-    self.isShowZoneGrade = NO;
-    self.navigationItem.rightBarButtonItem.title = @"區域分類";
-    self.navigationItem.rightBarButtonItem.action = @selector(showZoneGrade);
-
-    [self hideZone12orNot:YES];
-    
-    if(!self.playerDataTableView)
-    {
-        self.playerDataTableView = [[UITableView alloc] initWithFrame:[self.view viewWithTag:BACKGROUND_IMAGEVIEW_TAG].frame];
-        self.playerDataTableView.tag = PLAYER_GRADE_TABLEVIEW_TAG;
-        self.playerDataTableView.delegate = self;
-        self.playerDataTableView.dataSource = self;
-    }
-    [self.view addSubview:self.playerDataTableView];
-    [self.playerDataTableView reloadData];
-}
-
--(void)hideZone12orNot:(BOOL)yesOrNo
-{
-    [self.view viewWithTag:12].hidden = yesOrNo;
-    [self.view viewWithTag:1201].hidden = yesOrNo;
-    [self.view viewWithTag:1202].hidden = yesOrNo;
-    [self.view viewWithTag:1203].hidden = yesOrNo;
-}
-
--(void)updateTmpPlist
-{
-    NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
-    [tmpPlistDic setObject:self.playerDataArray forKey:KEY_FOR_GRADE];
-    
-    [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
 }
 
 - (void) constructAlertControllers
@@ -716,7 +487,7 @@
     [self.madeOrNotAlert addAction:noAction];
     [self.madeOrNotAlert addAction:cancelAction];
     
-    self.attackWayAlert = [UIAlertController alertControllerWithTitle:@"進攻方式"
+    self.attackWayAlert = [UIAlertController alertControllerWithTitle:@"進攻統計"
                                         message:nil preferredStyle:UIAlertControllerStyleAlert];
     
     UIAlertAction* isolationAction = [UIAlertAction actionWithTitle:@"Isolation" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
@@ -834,6 +605,16 @@
     [self.playoffOrNotAlert addAction:yesAction];
     [self.playoffOrNotAlert addAction:noAction];
     [self.playoffOrNotAlert addAction:cancelAction];
+    
+    self.finishOrNotAlert = [UIAlertController alertControllerWithTitle:@"確定？"
+                                                                message:nil preferredStyle:UIAlertControllerStyleAlert];
+    yesAction = [UIAlertAction actionWithTitle:@"是" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action)
+        {
+            [self showConclusion];
+        }];
+    noAction = [UIAlertAction actionWithTitle:@"否" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action){}];
+    [self.finishOrNotAlert addAction:yesAction];
+    [self.finishOrNotAlert addAction:noAction];
 }
 
 -(void) goNextQuarter
@@ -851,52 +632,16 @@
     [self updateNavigationTitle];
     if(self.quarterNo == 4)
         self.navigationItem.rightBarButtonItem.action = @selector(finishButtonClicked);
-
-}
-
--(void) extendPlayerDataWithQuarter:(int) quarterNo
-{
-    NSMutableArray* quarterData = [NSMutableArray arrayWithCapacity:self.playerCount+1];
-    for(int i=0; i<self.playerCount+1; i++)
-    {
-        NSMutableDictionary* playerDataItem = [[NSMutableDictionary alloc] init];
-        
-        if(i < [self.playerNoSet count])
-            [playerDataItem setObject:[self.playerNoSet objectAtIndex:i] forKey:@"no"];
-        else
-            [playerDataItem setObject:@"Team" forKey:@"no"];
-        
-        [playerDataItem setObject:[NSString stringWithFormat:@"%d", quarterNo] forKey:@"QUARTER"];
-        for(int k=0; k<12; k++)
-        {
-            NSMutableDictionary* madeOrAttempt = [[NSMutableDictionary alloc] init];
-            [madeOrAttempt setObject:@"0" forKey:KEY_FOR_MADE_COUNT];
-            [madeOrAttempt setObject:@"0" forKey:KEY_FOR_ATTEMPT_COUNT];
-            
-            NSString* zoneKey = [NSString stringWithFormat:@"zone%d", k+1];
-            [playerDataItem setObject:madeOrAttempt forKey:zoneKey];
-        }
-        for (int j=0; j<[self.attackWayKeySet count]; j++)
-        {
-            NSMutableDictionary* result2 = [[NSMutableDictionary alloc] init];
-            [result2 setObject:@"0" forKey:KEY_FOR_MADE_COUNT];
-            [result2 setObject:@"0" forKey:KEY_FOR_ATTEMPT_COUNT];
-            [result2 setObject:@"0" forKey:KEY_FOR_FOUL_COUNT];
-            [result2 setObject:@"0" forKey:KEY_FOR_TURN_OVER_COUNT];
-            [result2 setObject:@"0" forKey:KEY_FOR_SCORE_GET];
-            [playerDataItem setObject:result2 forKey:[self.attackWayKeySet objectAtIndex:j]];
-        }
-        
-        [playerDataItem setObject:@"0" forKey:@"totalScoreGet"];
-        [quarterData addObject:playerDataItem];
-    }
-    [self.playerDataArray addObject:quarterData];
 }
 
 -(void) showConclusion
 {
+    if(!self.isShowZoneGrade)
+        [self.playerDataTableView removeFromSuperview];
+    
     self.isShowZoneGrade = YES;
     self.undoButton.hidden = YES;
+    self.switchModeButton.hidden = YES;
     
     for(int i=1; i<13; i++)
     {
@@ -969,8 +714,8 @@
     
     self.quarterNo = 0;
     
-    self.navigationItem.rightBarButtonItem.title = @"進攻分類";
-    self.navigationItem.rightBarButtonItem.action = @selector(showOffenseGrade);
+    self.navigationItem.rightBarButtonItem.title = @"進攻統計";
+    self.navigationItem.rightBarButtonItem.action = @selector(showOffenseGradeButtonClicked);
     self.navigationItem.title = @"總成績";
     
     //Update Zone Grade;
@@ -1019,6 +764,118 @@
         if([fm fileExistsAtPath:self.tmpPlistPath])
             [fm removeItemAtPath:self.tmpPlistPath error:nil];
     }
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - Plist Operation
+
+-(void) reloadPlayerGradeFromRecordPlist
+{
+    NSString* recordPlistPath = [NSString stringWithFormat:@"%@/Documents/record.plist", NSHomeDirectory()];
+    NSArray* recordPlistArray = [NSArray arrayWithContentsOfFile:recordPlistPath];
+    NSDictionary* dataDic = [recordPlistArray objectAtIndex:self.showOldRecordNo-1 ];
+    self.playerDataArray = [dataDic objectForKey:KEY_FOR_GRADE];
+    self.playerNoSet = [dataDic objectForKey:KEY_FOR_PLAYER_NO_SET];
+    self.quarterNo = END;
+    self.playerCount = (int)[self.playerNoSet count];
+    
+    self.navigationItem.rightBarButtonItem.title = @"進攻統計";
+    self.navigationItem.rightBarButtonItem.action = @selector(showOffenseGradeButtonClicked);
+    self.navigationItem.title = @"第一節成績";
+}
+
+-(void) reloadPlayerGradeFromTmpPlist
+{
+    NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
+    self.playerDataArray = [tmpPlistDic objectForKey:KEY_FOR_GRADE];
+    self.playerNoSet = [tmpPlistDic objectForKey:KEY_FOR_PLAYER_NO_SET];
+    self.quarterNo = [[tmpPlistDic objectForKey:KEY_FOR_LAST_RECORD_QUARTER] intValue];
+    self.recordName = [tmpPlistDic objectForKey:KEY_FOR_NAME];
+    self.playerCount = (int)[self.playerNoSet count];
+    
+    [self updateNavigationTitle];
+    if(self.quarterNo > 3)
+        self.navigationItem.rightBarButtonItem.action = @selector(finishButtonClicked);
+}
+
+-(void)updateTmpPlist
+{
+    NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
+    [tmpPlistDic setObject:self.playerDataArray forKey:KEY_FOR_GRADE];
+    
+    [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
+}
+
+#pragma mark - Database Updating
+
+-(void) newPlayerGradeDataStruct
+{
+    self.playerDataArray = [NSMutableArray arrayWithCapacity:5];
+    for(int l=0; l<5; l++)
+        [self extendPlayerDataWithQuarter:l+1];
+    
+    NSLog(@"%@", self.playerDataArray);
+    
+    NSString* src = [[NSBundle mainBundle] pathForResource:@"tmp" ofType:@"plist"];
+    NSFileManager* fm = [[NSFileManager alloc] init];
+    
+    if(![fm fileExistsAtPath:self.tmpPlistPath])
+        [fm copyItemAtPath:src toPath:self.tmpPlistPath error:nil];
+    
+    NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
+    
+    [tmpPlistDic setObject:[NSNumber numberWithInt:1] forKey:KEY_FOR_LAST_RECORD_QUARTER];
+    [tmpPlistDic setObject:self.playerDataArray forKey:KEY_FOR_GRADE];
+    [tmpPlistDic setObject:self.playerNoSet forKey:KEY_FOR_PLAYER_NO_SET];
+    [tmpPlistDic setObject:self.recordName forKey:KEY_FOR_NAME];
+    NSLog(@"%@", self.recordName);
+    
+    [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
+    
+    self.navigationItem.title = @"第一節";
+}
+
+-(void) extendPlayerDataWithQuarter:(int) quarterNo
+{
+    NSMutableArray* quarterData = [NSMutableArray arrayWithCapacity:self.playerCount+1];
+    for(int i=0; i<self.playerCount+1; i++)
+    {
+        NSMutableDictionary* playerDataItem = [[NSMutableDictionary alloc] init];
+        
+        if(i < [self.playerNoSet count])
+            [playerDataItem setObject:[self.playerNoSet objectAtIndex:i] forKey:@"no"];
+        else
+            [playerDataItem setObject:@"Team" forKey:@"no"];
+        
+        [playerDataItem setObject:[NSString stringWithFormat:@"%d", quarterNo] forKey:@"QUARTER"];
+        for(int k=0; k<12; k++)
+        {
+            NSMutableDictionary* madeOrAttempt = [[NSMutableDictionary alloc] init];
+            [madeOrAttempt setObject:@"0" forKey:KEY_FOR_MADE_COUNT];
+            [madeOrAttempt setObject:@"0" forKey:KEY_FOR_ATTEMPT_COUNT];
+            
+            NSString* zoneKey = [NSString stringWithFormat:@"zone%d", k+1];
+            [playerDataItem setObject:madeOrAttempt forKey:zoneKey];
+        }
+        for (int j=0; j<[self.attackWayKeySet count]; j++)
+        {
+            NSMutableDictionary* result2 = [[NSMutableDictionary alloc] init];
+            [result2 setObject:@"0" forKey:KEY_FOR_MADE_COUNT];
+            [result2 setObject:@"0" forKey:KEY_FOR_ATTEMPT_COUNT];
+            [result2 setObject:@"0" forKey:KEY_FOR_FOUL_COUNT];
+            [result2 setObject:@"0" forKey:KEY_FOR_TURN_OVER_COUNT];
+            [result2 setObject:@"0" forKey:KEY_FOR_SCORE_GET];
+            [playerDataItem setObject:result2 forKey:[self.attackWayKeySet objectAtIndex:j]];
+        }
+        
+        [playerDataItem setObject:@"0" forKey:@"totalScoreGet"];
+        [quarterData addObject:playerDataItem];
+    }
+    [self.playerDataArray addObject:quarterData];
 }
 
 - (void) updateZoneGradeForOneMadeToPlayerData:(NSMutableDictionary*) playerData
@@ -1119,6 +976,134 @@
     [playerData setObject:totalScoreGetStr forKey:@"totalScoreGet"];
 }
 
+
+
+#pragma mark - UI Updating
+
+-(void)updateGradeView
+{
+    switch(self.quarterNo)
+    {
+        case 0:
+            self.navigationItem.title = @"總成績";
+            break;
+        case 1:
+            self.navigationItem.title = @"第一節成績";
+            break;
+        case 2:
+            self.navigationItem.title = @"第二節成績";
+            break;
+        case 3:
+            self.navigationItem.title = @"第三節成績";
+            break;
+        case 4:
+            self.navigationItem.title = @"第四節成績";
+            break;
+        case 5:
+            self.navigationItem.title = @"延長賽第一節成績";
+            break;
+        case 6:
+            self.navigationItem.title = @"延長賽第二節成績";
+            break;
+        case 7:
+            self.navigationItem.title = @"延長賽第三節成績";
+            break;
+        case 8:
+            self.navigationItem.title = @"延長賽第四節成績";
+            break;
+        case 9:
+            self.navigationItem.title = @"延長賽第五節成績";
+            break;
+        case 10:
+            self.navigationItem.title = @"延長賽第六節成績";
+            break;
+    }
+    
+    if(self.isShowZoneGrade)
+        [self updateZoneGradeView];
+    else
+        [(UITableView*)[self.view viewWithTag:PLAYER_GRADE_TABLEVIEW_TAG] reloadData];
+}
+
+- (void) updateZoneGradeView
+{
+    NSArray* quarterData = [self.playerDataArray objectAtIndex:self.quarterNo];
+    if(self.playerSelectedIndex)
+    {
+        NSDictionary* playerData = [quarterData objectAtIndex:self.playerSelectedIndex-1];
+        for(int i=1; i<13; i++)
+        {
+            NSString* keyForZone = [NSString stringWithFormat:@"zone%d", i];
+            NSDictionary* zoneData = [playerData objectForKey:keyForZone];
+            
+            float zoneAttemptCount = [(NSString*)[zoneData objectForKey:KEY_FOR_ATTEMPT_COUNT] floatValue];
+            float zoneMadeCount = [(NSString*)[zoneData objectForKey:KEY_FOR_MADE_COUNT] floatValue];
+            
+            ((UILabel*)[self.view viewWithTag:(i*100+2)]).text = [NSString stringWithFormat:@"%d/%d", (int)zoneMadeCount, (int)zoneAttemptCount];
+            
+            if(zoneAttemptCount)
+            {
+                ((UILabel*)[self.view viewWithTag:(i*100+1)]).text = [NSString stringWithFormat:@"%d%c", (int)((zoneMadeCount/zoneAttemptCount)*100), '%'];
+            }
+            else
+                ((UILabel*)[self.view viewWithTag:(i*100+1)]).text = @"0%";
+        }
+    }
+    else
+    {
+        for(int i=1; i<12; i++)
+        {
+            ((UILabel*)[self.view viewWithTag:(i*100+2)]).text = @"0/0";
+            ((UILabel*)[self.view viewWithTag:(i*100+1)]).text = @"0%";
+        }
+    }
+}
+
+-(void) updateNavigationTitle
+{
+    switch(self.quarterNo)
+    {
+        case 1:
+            self.navigationItem.title = @"第一節";
+            break;
+        case 2:
+            self.navigationItem.title = @"第二節";
+            break;
+        case 3:
+            self.navigationItem.title = @"第三節";
+            break;
+        case 4:
+            self.navigationItem.title = @"第四節";
+            break;
+        case 5:
+            self.navigationItem.title = @"延長賽第一節";
+            break;
+        case 6:
+            self.navigationItem.title = @"延長賽第二節";
+            break;
+        case 7:
+            self.navigationItem.title = @"延長賽第三節";
+            break;
+        case 8:
+            self.navigationItem.title = @"延長賽第四節";
+            break;
+        case 9:
+            self.navigationItem.title = @"延長賽第五節";
+            break;
+        case 10:
+            self.navigationItem.title = @"延長賽第六節";
+            break;
+    }
+}
+
+-(void)hideZone12orNot:(BOOL)yesOrNo
+{
+    [self.view viewWithTag:12].hidden = yesOrNo;
+    [self.view viewWithTag:1201].hidden = yesOrNo;
+    [self.view viewWithTag:1202].hidden = yesOrNo;
+    [self.view viewWithTag:1203].hidden = yesOrNo;
+}
+
 - (void) drawPicture
 {
     self.backgroundImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"background.jpg"]];
@@ -1139,7 +1124,7 @@
     
     [zoneImageView sizeToFit];
     zoneImageView.frame = CGRectMake(self.backgroundImageView.frame.origin.x+2, self.backgroundImageView.frame.origin.y+2, zoneImageView.frame.size.width*IMAGE_SCALE, zoneImageView.frame.size.height*IMAGE_SCALE);
-
+    
     zoneImageView.tag = 1;
     
     [zoneImageView setUserInteractionEnabled:YES];
@@ -1163,8 +1148,8 @@
     
     [zoneImageView setUserInteractionEnabled:YES];
     tapGestureRecognizer = [[UITapGestureRecognizer alloc]
-                                                    initWithTarget:self
-                                                    action:@selector(zonePaned:)];
+                            initWithTarget:self
+                            action:@selector(zonePaned:)];
     [tapGestureRecognizer setNumberOfTapsRequired:1];
     [tapGestureRecognizer setNumberOfTouchesRequired:1];
     [zoneImageView addGestureRecognizer:tapGestureRecognizer];
@@ -1182,8 +1167,8 @@
     
     [zoneImageView setUserInteractionEnabled:YES];
     tapGestureRecognizer = [[UITapGestureRecognizer alloc]
-                                                     initWithTarget:self
-                                                     action:@selector(zonePaned:)];
+                            initWithTarget:self
+                            action:@selector(zonePaned:)];
     [tapGestureRecognizer setNumberOfTapsRequired:1];
     [tapGestureRecognizer setNumberOfTouchesRequired:1];
     [zoneImageView addGestureRecognizer:tapGestureRecognizer];
@@ -1268,7 +1253,7 @@
     
     [self.view addSubview:zoneImageView];
     [zoneImageViewArray addObject:zoneImageView];
-  
+    
     //ZONE 10
     UIImageView* zone4 = [self.view viewWithTag:4];
     zonePosition = CGPointMake(zone4.frame.origin.x, zone4.frame.origin.y+zone4.frame.size.height+2);
@@ -1529,17 +1514,37 @@
     [self.undoButton setTitle:@"Undo" forState:UIControlStateNormal];
     [self.undoButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [self.undoButton addTarget:self action:@selector(undoButtonClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.undoButton setShowsTouchWhenHighlighted:YES];
     [self.view addSubview:self.undoButton];
+    
+    //Show Grade Switch Button
+    self.switchModeButton = [[UIButton alloc] init];
+    [self.switchModeButton setFrame:CGRectMake(CGRectGetMinX(bonusZone.frame), CGRectGetMaxY(self.undoButton.frame)+15, bonusZone.frame.size.width, bonusZone.frame.size.height)];
+    self.switchModeButton.layer.borderWidth = 1;
+    self.switchModeButton.layer.cornerRadius = 5;
+    self.switchModeButton.titleLabel.font = [UIFont systemFontOfSize:14];
+    [self.switchModeButton setTitle:@"進攻統計" forState:UIControlStateNormal];
+    [self.switchModeButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [self.switchModeButton addTarget:self action:@selector(switchButtonClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.switchModeButton setShowsTouchWhenHighlighted:YES];
+    [self.view addSubview:self.switchModeButton];
 }
 
--(void) undoButtonClicked
+- (void) showAttackList
 {
-    if(self.OldPlayerDataArray)
+    if(self.zoneNo != 12)
     {
-        self.playerDataArray = self.OldPlayerDataArray;
-
-        [self updateZoneGradeView];
-        [self updateTmpPlist];
+        [self presentViewController:self.attackWayAlert animated:YES completion:^
+         {
+             [(UIImageView*)[self.view viewWithTag:self.zoneNo] setHighlighted:NO];
+         }];
+    }
+    else
+    {
+        [self presentViewController:self.madeOrNotAlert animated:YES completion:^
+         {
+             [(UIImageView*)[self.view viewWithTag:self.zoneNo] setHighlighted:NO];
+         }];
     }
 }
 
@@ -1563,67 +1568,115 @@
         }
     }
     
-//    NSLog(@"select zone %d", self.zoneNo);
+    //    NSLog(@"select zone %d", self.zoneNo);
 }
 
-- (void) showAttackList
+#pragma mark - Button Clicked
+
+-(void)backButtonClicked
 {
-    if(self.zoneNo != 12)
+    UIAlertController* backAlert = [UIAlertController alertControllerWithTitle:@"注意" message:@"返回後目前紀錄的資料都將消失，確定要返回嗎？" preferredStyle: UIAlertControllerStyleAlert];
+    
+    UIAlertAction* yesAction = [UIAlertAction actionWithTitle:@"是" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action)
+                                {
+                                    [self.navigationController popViewControllerAnimated:YES];
+                                }];
+    UIAlertAction* noAction = [UIAlertAction actionWithTitle:@"否" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action){}];
+    [backAlert addAction:yesAction];
+    [backAlert addAction:noAction];
+    
+    NSFileManager* fm = [[NSFileManager alloc] init];
+    if([fm fileExistsAtPath:self.tmpPlistPath])
+        [fm removeItemAtPath:self.tmpPlistPath error:nil];
+    
+    [self presentViewController:backAlert animated:YES completion:nil];
+}
+
+- (void) nextQuarterButtonClicked
+{
+    [self presentViewController:self.nextQuarterAlert animated:YES completion:nil];
+}
+
+- (void) finishButtonClicked
+{
+    if(self.quarterNo != 10)
+        [self presentViewController:self.playoffOrNotAlert animated:YES completion:nil];
+    else
+        [self presentViewController:self.finishOrNotAlert animated:YES completion:nil];
+}
+
+- (void) gradeOfNextQuaterButtonClicked
+{
+    if (self.quarterNo < [self.playerDataArray count]-1)
     {
-        [self presentViewController:self.attackWayAlert animated:YES completion:^
-        {
-            [(UIImageView*)[self.view viewWithTag:self.zoneNo] setHighlighted:NO];
-        }];
+        self.quarterNo++;
+        [self updateGradeView];
+    }
+}
+
+- (void) gradeOfLastQuarterButtonClicked
+{
+    if(self.quarterNo > 0)
+    {
+        self.quarterNo--;
+        [self updateGradeView];
+    }
+}
+
+- (void) showZoneGradeButtonClicked
+{
+    self.isShowZoneGrade = YES;
+    [self updateZoneGradeView];
+    self.navigationItem.rightBarButtonItem.title = @"進攻統計";
+    self.navigationItem.rightBarButtonItem.action = @selector(showOffenseGradeButtonClicked);
+    
+    [self hideZone12orNot:NO];
+    
+    [[self.view viewWithTag:PLAYER_GRADE_TABLEVIEW_TAG] removeFromSuperview];
+    
+}
+
+- (void) showOffenseGradeButtonClicked
+{
+    self.isShowZoneGrade = NO;
+    self.navigationItem.rightBarButtonItem.title = @"區域統計";
+    self.navigationItem.rightBarButtonItem.action = @selector(showZoneGradeButtonClicked);
+    
+    [self hideZone12orNot:YES];
+    
+    [self.view addSubview:self.playerDataTableView];
+    [self.playerDataTableView reloadData];
+}
+
+- (void) switchButtonClicked
+{
+    if(self.isShowZoneGrade)
+    {
+        [self.switchModeButton setTitle:@"區域統計" forState:UIControlStateNormal];
+        [self.view addSubview:self.playerDataTableView];
+        [self.playerDataTableView reloadData];
+        self.isShowZoneGrade = NO;
     }
     else
     {
-        [self presentViewController:self.madeOrNotAlert animated:YES completion:^
-        {
-            [(UIImageView*)[self.view viewWithTag:self.zoneNo] setHighlighted:NO];
-        }];
+        [self.switchModeButton setTitle:@"進攻統計" forState:UIControlStateNormal];
+        [self.playerDataTableView removeFromSuperview];
+        self.isShowZoneGrade = YES;
     }
 }
 
-- (void) updateZoneGradeView
+- (void) undoButtonClicked
 {
-    NSArray* quarterData = [self.playerDataArray objectAtIndex:self.quarterNo];
-    if(self.playerSelectedIndex)
+    if(self.OldPlayerDataArray)
     {
-        NSDictionary* playerData = [quarterData objectAtIndex:self.playerSelectedIndex-1];
-        for(int i=1; i<13; i++)
-        {
-            NSString* keyForZone = [NSString stringWithFormat:@"zone%d", i];
-            NSDictionary* zoneData = [playerData objectForKey:keyForZone];
-            
-            float zoneAttemptCount = [(NSString*)[zoneData objectForKey:KEY_FOR_ATTEMPT_COUNT] floatValue];
-            float zoneMadeCount = [(NSString*)[zoneData objectForKey:KEY_FOR_MADE_COUNT] floatValue];
-            
-            ((UILabel*)[self.view viewWithTag:(i*100+2)]).text = [NSString stringWithFormat:@"%d/%d", (int)zoneMadeCount, (int)zoneAttemptCount];
-            
-            if(zoneAttemptCount)
-            {
-                ((UILabel*)[self.view viewWithTag:(i*100+1)]).text = [NSString stringWithFormat:@"%d%c", (int)((zoneMadeCount/zoneAttemptCount)*100), '%'];
-            }
-            else
-                ((UILabel*)[self.view viewWithTag:(i*100+1)]).text = @"0%";
-        }
-    }
-    else
-    {
-        for(int i=1; i<12; i++)
-        {
-            ((UILabel*)[self.view viewWithTag:(i*100+2)]).text = @"0/0";
-            ((UILabel*)[self.view viewWithTag:(i*100+1)]).text = @"0%";
-        }
+        self.playerDataArray = self.OldPlayerDataArray;
+        
+        [self updateZoneGradeView];
+        [self updateTmpPlist];
     }
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-#pragma mark - tableView delegate
+#pragma mark - TableView Delegate
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
