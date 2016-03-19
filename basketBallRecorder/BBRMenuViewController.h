@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "BRAOfficeDocumentPackage.h"
 
 #define KEY_FOR_LAST_RECORD_QUARTER @"LastRecordQuarter"
 #define KEY_FOR_PLAYER_NO_SET @"PlayerNoSet"

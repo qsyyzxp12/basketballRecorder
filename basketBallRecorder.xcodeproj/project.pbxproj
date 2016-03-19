@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C74F48421C9D0A7000EB3BB0 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C74F48411C9D0A7000EB3BB0 /* libz.tbd */; };
 		C7AB3CE81C7F5E2600DA23A6 /* leftArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = C7AB3CE41C7F5E2600DA23A6 /* leftArrow.png */; };
 		C7AB3CEA1C7F5E2600DA23A6 /* rightArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = C7AB3CE61C7F5E2600DA23A6 /* rightArrow.png */; };
 		C7AB3CEC1C82B10D00DA23A6 /* tmp.plist in Resources */ = {isa = PBXBuildFile; fileRef = C7AB3CEB1C82B10D00DA23A6 /* tmp.plist */; };
@@ -33,6 +34,7 @@
 		C7CC373A1C7B7F1600B97149 /* zone7.png in Resources */ = {isa = PBXBuildFile; fileRef = C7CC372F1C7B7F1600B97149 /* zone7.png */; };
 		C7CC373B1C7B7F1600B97149 /* zone8.png in Resources */ = {isa = PBXBuildFile; fileRef = C7CC37301C7B7F1600B97149 /* zone8.png */; };
 		C7CC373C1C7B7F1600B97149 /* zone9.png in Resources */ = {isa = PBXBuildFile; fileRef = C7CC37311C7B7F1600B97149 /* zone9.png */; };
+		C7CFD9921C9DA98700DA7157 /* libXlsxReaderWriter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C7CFD98D1C9DA97D00DA7157 /* libXlsxReaderWriter.a */; };
 		C7F5524B1C7B8320005CB9EC /* background.jpg in Resources */ = {isa = PBXBuildFile; fileRef = C7F5524A1C7B8320005CB9EC /* background.jpg */; };
 		C7F5524E1C7C48BD005CB9EC /* zone1-2.png in Resources */ = {isa = PBXBuildFile; fileRef = C7F5524C1C7C48BD005CB9EC /* zone1-2.png */; };
 		C7F5524F1C7C48BD005CB9EC /* zone2-2.png in Resources */ = {isa = PBXBuildFile; fileRef = C7F5524D1C7C48BD005CB9EC /* zone2-2.png */; };
@@ -62,9 +64,39 @@
 			remoteGlobalIDString = C7CC36E41C7AF17900B97149;
 			remoteInfo = basketBallRecorder;
 		};
+		C7CFD98C1C9DA97D00DA7157 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C7CFD9851C9DA97D00DA7157 /* XlsxReaderWriter.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 45B6E23A1A148F7500288A78;
+			remoteInfo = XlsxReaderWriter;
+		};
+		C7CFD98E1C9DA97D00DA7157 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C7CFD9851C9DA97D00DA7157 /* XlsxReaderWriter.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 45B6E2451A148F7500288A78;
+			remoteInfo = XlsxReaderWriterTests;
+		};
+		C7CFD9901C9DA97D00DA7157 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C7CFD9851C9DA97D00DA7157 /* XlsxReaderWriter.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 22156D581C46B42500BB5779;
+			remoteInfo = "XlsxReaderWriter Mac";
+		};
+		C7CFD9931C9DA98E00DA7157 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C7CFD9851C9DA97D00DA7157 /* XlsxReaderWriter.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 45B6E2391A148F7500288A78;
+			remoteInfo = XlsxReaderWriter;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C74F48411C9D0A7000EB3BB0 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		C74F48501C9D0C6500EB3BB0 /* Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Header.h; sourceTree = "<group>"; };
 		C7AB3CE41C7F5E2600DA23A6 /* leftArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = leftArrow.png; sourceTree = "<group>"; };
 		C7AB3CE61C7F5E2600DA23A6 /* rightArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rightArrow.png; sourceTree = "<group>"; };
 		C7AB3CEB1C82B10D00DA23A6 /* tmp.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = tmp.plist; sourceTree = "<group>"; };
@@ -102,6 +134,7 @@
 		C7CC372F1C7B7F1600B97149 /* zone7.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zone7.png; sourceTree = "<group>"; };
 		C7CC37301C7B7F1600B97149 /* zone8.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zone8.png; sourceTree = "<group>"; };
 		C7CC37311C7B7F1600B97149 /* zone9.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zone9.png; sourceTree = "<group>"; };
+		C7CFD9851C9DA97D00DA7157 /* XlsxReaderWriter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = XlsxReaderWriter.xcodeproj; path = XlsxReaderWriter/XlsxReaderWriter.xcodeproj; sourceTree = "<group>"; };
 		C7F5524A1C7B8320005CB9EC /* background.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = background.jpg; sourceTree = "<group>"; };
 		C7F5524C1C7C48BD005CB9EC /* zone1-2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zone1-2.png"; sourceTree = "<group>"; };
 		C7F5524D1C7C48BD005CB9EC /* zone2-2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zone2-2.png"; sourceTree = "<group>"; };
@@ -121,6 +154,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C7CFD9921C9DA98700DA7157 /* libXlsxReaderWriter.a in Frameworks */,
+				C74F48421C9D0A7000EB3BB0 /* libz.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -144,6 +179,8 @@
 		C7CC36DC1C7AF17900B97149 = {
 			isa = PBXGroup;
 			children = (
+				C74F48411C9D0A7000EB3BB0 /* libz.tbd */,
+				C7CFD9851C9DA97D00DA7157 /* XlsxReaderWriter.xcodeproj */,
 				C7CC36E71C7AF17900B97149 /* basketBallRecorder */,
 				C7CC37261C7B7F1600B97149 /* image */,
 				C7CC37011C7AF17900B97149 /* basketBallRecorderTests */,
@@ -182,6 +219,7 @@
 				C7AB3CEB1C82B10D00DA23A6 /* tmp.plist */,
 				C7AB3D4C1C85909D00DA23A6 /* record.plist */,
 				C7CC36E81C7AF17900B97149 /* Supporting Files */,
+				C74F48501C9D0C6500EB3BB0 /* Header.h */,
 			);
 			path = basketBallRecorder;
 			sourceTree = "<group>";
@@ -245,6 +283,16 @@
 			path = basketBallRecorder/image;
 			sourceTree = "<group>";
 		};
+		C7CFD9861C9DA97D00DA7157 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C7CFD98D1C9DA97D00DA7157 /* libXlsxReaderWriter.a */,
+				C7CFD98F1C9DA97D00DA7157 /* XlsxReaderWriterTests.xctest */,
+				C7CFD9911C9DA97D00DA7157 /* XlsxReaderWriter.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -259,6 +307,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				C7CFD9941C9DA98E00DA7157 /* PBXTargetDependency */,
 			);
 			name = basketBallRecorder;
 			productName = basketBallRecorder;
@@ -335,6 +384,12 @@
 			mainGroup = C7CC36DC1C7AF17900B97149;
 			productRefGroup = C7CC36E61C7AF17900B97149 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = C7CFD9861C9DA97D00DA7157 /* Products */;
+					ProjectRef = C7CFD9851C9DA97D00DA7157 /* XlsxReaderWriter.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				C7CC36E41C7AF17900B97149 /* basketBallRecorder */,
@@ -343,6 +398,30 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		C7CFD98D1C9DA97D00DA7157 /* libXlsxReaderWriter.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libXlsxReaderWriter.a;
+			remoteRef = C7CFD98C1C9DA97D00DA7157 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C7CFD98F1C9DA97D00DA7157 /* XlsxReaderWriterTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = XlsxReaderWriterTests.xctest;
+			remoteRef = C7CFD98E1C9DA97D00DA7157 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C7CFD9911C9DA97D00DA7157 /* XlsxReaderWriter.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = XlsxReaderWriter.framework;
+			remoteRef = C7CFD9901C9DA97D00DA7157 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		C7CC36E31C7AF17900B97149 /* Resources */ = {
@@ -441,6 +520,11 @@
 			target = C7CC36E41C7AF17900B97149 /* basketBallRecorder */;
 			targetProxy = C7CC370A1C7AF17900B97149 /* PBXContainerItemProxy */;
 		};
+		C7CFD9941C9DA98E00DA7157 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = XlsxReaderWriter;
+			targetProxy = C7CFD9931C9DA98E00DA7157 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
@@ -504,6 +588,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/XlsxReaderWriter/";
 			};
 			name = Debug;
 		};
@@ -541,6 +626,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/XlsxReaderWriter/";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -548,30 +634,38 @@
 		C7CC37131C7AF17900B97149 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = basketBallRecorder/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = "-all_load";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linchihan.basketBallRecorder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/basketBallRecorder/Header.h";
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/XlsxReaderWriter/**";
 			};
 			name = Debug;
 		};
 		C7CC37141C7AF17900B97149 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = basketBallRecorder/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = "-all_load";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linchihan.basketBallRecorder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/basketBallRecorder/Header.h";
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/XlsxReaderWriter/**";
 			};
 			name = Release;
 		};
