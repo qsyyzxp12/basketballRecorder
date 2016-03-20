@@ -7,14 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "BRAOfficeDocumentPackage.h"
 
 #define KEY_FOR_LAST_RECORD_QUARTER @"LastRecordQuarter"
 #define KEY_FOR_PLAYER_NO_SET @"PlayerNoSet"
 #define KEY_FOR_GRADE @"Grade"
 #define KEY_FOR_NAME @"Name"
 
-@interface BBRMenuViewController : UIViewController
+@interface BBRMenuViewController : UIViewController 
 @property (weak, nonatomic) IBOutlet UIButton *addNewCompetitionButton;
 @property (weak, nonatomic) IBOutlet UIButton *lastCompetitionButton;
 @property (weak, nonatomic) IBOutlet UIButton *lastTwoCompetitionButton;

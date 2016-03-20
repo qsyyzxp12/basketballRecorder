@@ -8,6 +8,7 @@
 
 #import "BBRMainViewController.h"
 #import "BBRTableViewCell.h"
+#import "BRAOfficeDocumentPackage.h"
 
 #define TITLE_CELL_HEIGHT 30
 #define CELL_HEIGHT 40
@@ -54,6 +55,9 @@
     self.zoneNo = 0;
     self.quarterNo = 1;
   
+    self.restClient = [[DBRestClient alloc] initWithSession:[DBSession sharedSession]];
+    self.restClient.delegate = self;
+    
     self.attackWaySet = [[NSArray alloc] initWithObjects:@"Isolation", @"Spot Up", @"PS", @"PD", @"PR", @"PPS", @"PPD", @"Catch&Shoot", @"Fast Break", @"Low Post", @"High Post", @"Second", @"Drive", @"Cut", @"Bonus", nil];
     self.attackWayKeySet = [[NSArray alloc] initWithObjects:
                             @"isolation", @"spotUp", @"PS", @"PD", @"PR", @"PPS", @"PPDp", @"CS",
@@ -664,6 +668,129 @@
         if([fm fileExistsAtPath:self.tmpPlistPath])
             [fm removeItemAtPath:self.tmpPlistPath error:nil];
     }
+    
+    //Generate the xlsx file
+    NSString *documentPath = [[NSBundle mainBundle] pathForResource:@"spreadsheet" ofType:@"xlsx"];
+    BRAOfficeDocumentPackage *spreadsheet = [BRAOfficeDocumentPackage open:documentPath];
+    
+    //First Worksheet in the Spreadsheet
+    BRAWorksheet *worksheet = spreadsheet.workbook.worksheets[0];
+    
+    NSString* cellRef;
+    NSArray* totalGradeArray = [self.playerDataArray objectAtIndex:QUARTER_NO_FOR_ENTIRE_GAME];
+    NSLog(@"playerCount = %d", self.playerCount);
+    for(int i=0; i<self.playerCount+1; i++)
+    {
+        char outIndex = '\0';
+        char interIndex = 'A';
+        cellRef = [NSString stringWithFormat:@"%c%c%d", outIndex, interIndex++, i+3];
+        if(i < self.playerCount)
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:self.playerNoSet[i]];
+        else
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:@"全隊"];
+        
+        NSDictionary* playerDataDic = [totalGradeArray objectAtIndex:i];
+        for(int j=0; j<[self.attackWayKeySet count]; j++)
+        {
+            NSDictionary* offenseGradeDic = [playerDataDic objectForKey:self.attackWayKeySet[j]];
+            NSString* madeCount = [offenseGradeDic objectForKey:KEY_FOR_MADE_COUNT];
+            if(interIndex == 91) // (int)'Z' == 90
+            {
+                if(outIndex != '\0')
+                    outIndex++;
+                else
+                    outIndex = 'A';
+                interIndex = 65;
+            }
+            cellRef = [NSString stringWithFormat:@"%c%c%d", outIndex, interIndex++, i+3];
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:madeCount];
+            
+            NSString* attemptCount = [offenseGradeDic objectForKey:KEY_FOR_ATTEMPT_COUNT];
+            if(interIndex == 91) // (int)'Z' == 90
+            {
+                if(outIndex != '\0')
+                    outIndex++;
+                else
+                    outIndex = 'A';
+                interIndex = 65;
+            }
+            cellRef = [NSString stringWithFormat:@"%c%c%d", outIndex, interIndex++, i+3];
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:attemptCount];
+            
+            NSString* foulCount = [offenseGradeDic objectForKey:KEY_FOR_FOUL_COUNT];
+            if(interIndex == 91) // (int)'Z' == 90
+            {
+                if(outIndex != '\0')
+                    outIndex++;
+                else
+                    outIndex = 'A';
+                interIndex = 65;
+            }
+            cellRef = [NSString stringWithFormat:@"%c%c%d", outIndex, interIndex++, i+3];
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:foulCount];
+            
+            NSString* turnOverCount = [offenseGradeDic objectForKey:KEY_FOR_TURN_OVER_COUNT];
+            if(interIndex == 91) // (int)'Z' == 90
+            {
+                if(outIndex != '\0')
+                    outIndex++;
+                else
+                    outIndex = 'A';
+                interIndex = 65;
+            }
+            cellRef = [NSString stringWithFormat:@"%c%c%d", outIndex, interIndex++, i+3];
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:turnOverCount];
+            
+            NSString* score = [offenseGradeDic objectForKey:KEY_FOR_SCORE_GET];
+            if(interIndex == 91) // (int)'Z' == 90
+            {
+                if(outIndex != '\0')
+                    outIndex++;
+                else
+                    outIndex = 'A';
+                interIndex = 65;
+            }
+            cellRef = [NSString stringWithFormat:@"%c%c%d", outIndex, interIndex++, i+3];
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:score];
+        }
+        
+        NSDictionary* bonusGrade = [playerDataDic objectForKey:@"zone12"];
+        NSString* madeCountInBonus = [bonusGrade objectForKey:KEY_FOR_MADE_COUNT];
+        cellRef = [NSString stringWithFormat:@"BT%d", i+3];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:madeCountInBonus];
+        
+        NSString* attemptCountInBonus = [bonusGrade objectForKey:KEY_FOR_ATTEMPT_COUNT];
+        cellRef = [NSString stringWithFormat:@"BU%d", i+3];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:attemptCountInBonus];
+        
+        cellRef = [NSString stringWithFormat:@"BV%d", i+3];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:madeCountInBonus];
+        
+        NSString* totalScore = [playerDataDic objectForKey:@"totalScoreGet"];
+        cellRef = [NSString stringWithFormat:@"CA%d", i+3];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:totalScore];
+        
+    }
+    
+    //Save the xlsx to the app space in the device
+    NSString *sheetPath = [NSString stringWithFormat:@"%@/Documents/spreadsheet.xlsx", NSHomeDirectory()];
+    NSFileManager* fm = [[NSFileManager alloc] init];
+    
+    if([fm fileExistsAtPath:sheetPath])
+        [fm removeItemAtPath:sheetPath error:nil];
+    
+    [spreadsheet saveAs:sheetPath];
+
+    
+    //Dropbox
+    if (![[DBSession sharedSession] isLinked]) {
+        [[DBSession sharedSession] linkFromController:self];
+    }
+    
+    NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"YYYY_MM_dd"];
+    NSString* filename = [NSString stringWithFormat:@"%@-%@.xlsx", self.recordName, [dateFormatter stringFromDate:[NSDate date]]];
+    [self.restClient uploadFile:filename toPath:@"/" withParentRev:nil fromPath:sheetPath];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -883,7 +1010,6 @@
 
 -(void)updateGradeView
 {
-    NSLog(@"%d", self.quarterNo);
     switch(self.quarterNo)
     {
         case 0:
@@ -1848,6 +1974,16 @@
     return PLAYER_GRADE_TABLECELL_HEIGHT;
 }
 
+#pragma mark - DBRestClientDelegate
+
+- (void)restClient:(DBRestClient *)client uploadedFile:(NSString *)destPath
+              from:(NSString *)srcPath metadata:(DBMetadata *)metadata {
+    NSLog(@"File uploaded successfully to path: %@", metadata.path);
+}
+
+- (void)restClient:(DBRestClient *)client uploadFileFailedWithError:(NSError *)error {
+    NSLog(@"File upload failed with error: %@", error);
+}
 
 /*
 #pragma mark - Navigation

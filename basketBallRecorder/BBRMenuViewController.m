@@ -8,6 +8,7 @@
 
 #import "BBRMenuViewController.h"
 #import "BBRMainViewController.h"
+#import "BRAOfficeDocumentPackage.h"
 
 @interface BBRMenuViewController ()
 
@@ -17,6 +18,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
+//    NSLog(@"%d", 'A');
+    
     [self constructAlertController];
     
     self.buttonClickedNo = 0;

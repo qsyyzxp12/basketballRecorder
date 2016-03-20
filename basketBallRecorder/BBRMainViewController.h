@@ -9,8 +9,9 @@
 #import <UIKit/UIKit.h>
 #import "BBRLogViewController.h"
 #import "BBRMenuViewController.h"
+#import <DropboxSDK/DropboxSDK.h>
 
-@interface BBRMainViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
+@interface BBRMainViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, DBRestClientDelegate>
 @property UITableView *playerListTableView;
 @property UITableView *playerDataTableView;
 @property NSMutableArray* playerDataArray;
@@ -43,4 +44,5 @@
 @property UIButton* switchModeButton;
 @property UIButton* nextQuarterButton;
 @property UIButton* lastQuarterButton;
+@property (nonatomic, strong) DBRestClient *restClient;
 @end
