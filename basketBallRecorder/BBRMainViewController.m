@@ -653,14 +653,14 @@
     NSString *documentPath = [[NSBundle mainBundle] pathForResource:@"spreadsheet" ofType:@"xlsx"];
     BRAOfficeDocumentPackage *spreadsheet = [BRAOfficeDocumentPackage open:documentPath];
     
-    NSLog(@"quarterNo = %d", self.quarterNo);
     for(int i=0; i<self.quarterNo+1; i++)
     {
         BRAWorksheet *worksheet;
         if(i == [spreadsheet.workbook.worksheets count])
         {
             NSString* worksheetName;
-            switch (i) {
+            switch (i)
+            {
                 case 1: worksheetName = @"第一節"; break;
                 case 2: worksheetName = @"第二節"; break;
                 case 3: worksheetName = @"第三節"; break;
@@ -678,11 +678,8 @@
         else
             worksheet = spreadsheet.workbook.worksheets[i];
         
-        NSLog(@"%lu", (unsigned long)[spreadsheet.workbook.worksheets count]);
-        
         NSString* cellRef;
         NSArray* totalGradeArray = [self.playerDataArray objectAtIndex:i];
-        NSLog(@"playerCount = %d", self.playerCount);
         for(int i=0; i<self.playerCount+1; i++)
         {
             char outIndex = '\0';
