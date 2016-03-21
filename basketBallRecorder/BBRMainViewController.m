@@ -64,10 +64,10 @@
     self.restClient = [[DBRestClient alloc] initWithSession:[DBSession sharedSession]];
     self.restClient.delegate = self;
     
-    self.attackWaySet = [[NSArray alloc] initWithObjects:@"Isolation", @"Spot Up", @"PS", @"PD", @"PR", @"PPS", @"PPD", @"Catch&Shoot", @"Fast Break", @"Low Post", @"High Post", @"Second", @"Drive", @"Cut", @"Bonus", nil];
+    self.attackWaySet = [[NSArray alloc] initWithObjects:@"Isolation", @"Spot Up", @"PS", @"PD", @"PR", @"PPS", @"PPD", @"Catch&Shoot", @"Fast Break", @"Low Post", @"High Post", @"Second", @"Drive", @"High-Low", @"Cut", @"Bonus", nil];
     self.attackWayKeySet = [[NSArray alloc] initWithObjects:
                             @"isolation", @"spotUp", @"PS", @"PD", @"PR", @"PPS", @"PPD", @"CS",
-                            @"fastBreak", @"lowPost", @"highPost", @"second", @"drive", @"cut", nil];
+                            @"fastBreak", @"lowPost", @"highPost", @"second", @"drive", @"highLow", @"cut", nil];
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] init];
     self.navigationItem.rightBarButtonItem.title = @"本節結束";
@@ -539,6 +539,11 @@
                                       self.keyForSearch = @"drive";
                                       [self presentViewController:self.resultAlert animated:YES completion:nil];
                                   }];
+    UIAlertAction* highLowAction = [UIAlertAction actionWithTitle:@"High-Low" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+                                {
+                                    self.keyForSearch = @"highLow";
+                                    [self presentViewController:self.resultAlert animated:YES completion:nil];
+                                }];
     UIAlertAction* cutAction = [UIAlertAction actionWithTitle:@"Cut" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
                                 {
                                     self.keyForSearch = @"cut";
@@ -558,6 +563,7 @@
     [self.attackWayAlert addAction:highPostAction];
     [self.attackWayAlert addAction:secondAction];
     [self.attackWayAlert addAction:driveAction];
+    [self.attackWayAlert addAction:highLowAction];
     [self.attackWayAlert addAction:cutAction];
     [self.attackWayAlert addAction:cancelAction];
     
@@ -1912,7 +1918,7 @@
     UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width*0.3, PLAYER_GRADE_TABLECELL_HEIGHT)];
     label.textAlignment = NSTextAlignmentCenter;
     
-    if(indexPath.row < 15 || indexPath.row == 16)
+    if(indexPath.row < [self.attackWayKeySet count]+1 || indexPath.row == [self.attackWayKeySet count]+2)
     {
         UILabel* madeAndAttemptLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(label.frame), label.frame.origin.y, tableView.frame.size.width*0.28, PLAYER_GRADE_TABLECELL_HEIGHT)];
         madeAndAttemptLabel.textAlignment = NSTextAlignmentCenter;
@@ -1930,7 +1936,7 @@
         totalScoreGetLabel.textAlignment = NSTextAlignmentCenter;
         totalScoreGetLabel.layer.borderWidth = 1;
         
-        if(indexPath.row != 16)
+        if(indexPath.row != [self.attackWayKeySet count]+2)
             label.text = [self.attackWaySet objectAtIndex:indexPath.row-1];
         else
             label.text = @"總成績";
@@ -1944,7 +1950,7 @@
         }
         else
         {
-            if(indexPath.row != 16)
+            if(indexPath.row != [self.attackWayKeySet count]+2)
             {
                 NSDictionary* attackData = [playerData objectForKey:[self.attackWayKeySet objectAtIndex:indexPath.row-1]];
                 madeAndAttemptLabel.text = [NSString stringWithFormat:@"%@/%@", [attackData objectForKey:KEY_FOR_MADE_COUNT], [attackData objectForKey:KEY_FOR_ATTEMPT_COUNT]];
@@ -1966,7 +1972,7 @@
         [cell addSubview:turnOverLabel];
         [cell addSubview:totalScoreGetLabel];
     }
-    else if(indexPath.row == 15)
+    else if(indexPath.row == [self.attackWayKeySet count]+1)
     {
         NSDictionary* bonusData = [playerData objectForKey:@"zone12"];
         UILabel* madeAndAttemptLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(label.frame), label.frame.origin.y, tableView.frame.size.width*0.7, PLAYER_GRADE_TABLECELL_HEIGHT)];
