@@ -53,7 +53,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
+    
     self.tmpPlistPath = [NSString stringWithFormat:@"%@/Documents/tmp.plist", NSHomeDirectory()];
     self.isShowZoneGrade = YES;
     self.isRecordMode = YES;
@@ -471,7 +471,7 @@
     [self.madeOrNotAlert addAction:noAction];
     [self.madeOrNotAlert addAction:cancelAction];
     
-    self.attackWayAlert = [UIAlertController alertControllerWithTitle:@"進攻統計"
+    self.attackWayAlert = [UIAlertController alertControllerWithTitle:@"進攻方式"
                                         message:nil preferredStyle:UIAlertControllerStyleAlert];
 
     for(int i=0; i<[self.attackWayKeySet count]; i++)
@@ -800,11 +800,9 @@
     
     [spreadsheet saveAs:sheetPath];
     
-    
     //Dropbox
-    if (![[DBSession sharedSession] isLinked]) {
+    if (![[DBSession sharedSession] isLinked])
         [[DBSession sharedSession] linkFromController:self];
-    }
     
     NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"YYYY_MM_dd"];
