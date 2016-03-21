@@ -40,7 +40,7 @@
         {
             UITextField *teamName = nameAlert.textFields.firstObject;
             UITextField *anotherTeamName = nameAlert.textFields.lastObject;
-            self.recordName = [NSString stringWithFormat:@"%@ vs %@", teamName.text, anotherTeamName.text];
+            self.recordName = [NSString stringWithFormat:@"%@_vs_%@", teamName.text, anotherTeamName.text];
         }];
     UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action)
         {

@@ -32,8 +32,14 @@
 #define KEY_FOR_ATTEMPT_COUNT @"attempCount"
 #define KEY_FOR_MADE_COUNT @"madeCount"
 #define KEY_FOR_FOUL_COUNT @"foulCount"
-#define KEY_FOR_TURN_OVER_COUNT @"turnOverCount"
+#define KEY_FOR_TURNOVER_COUNT @"turnoverCount"
 #define KEY_FOR_SCORE_GET @"scoreGet"
+
+#define KEY_FOR_TOTAL_MADE_COUNT @"totalMadeCount"
+#define KEY_FOR_TOTAL_ATTEMPT_COUNT @"totalAttemptCount"
+#define KEY_FOR_TOTAL_FOUL_COUNT @"totalFoulCount"
+#define KEY_FOR_TOTAL_TURNOVER_COUNT @"totalTurnoverCount"
+#define KEY_FOR_TOTAL_SCORE_GET @"totalScoreGet"
 
 #define END -1
 
@@ -60,7 +66,7 @@
     
     self.attackWaySet = [[NSArray alloc] initWithObjects:@"Isolation", @"Spot Up", @"PS", @"PD", @"PR", @"PPS", @"PPD", @"Catch&Shoot", @"Fast Break", @"Low Post", @"High Post", @"Second", @"Drive", @"Cut", @"Bonus", nil];
     self.attackWayKeySet = [[NSArray alloc] initWithObjects:
-                            @"isolation", @"spotUp", @"PS", @"PD", @"PR", @"PPS", @"PPDp", @"CS",
+                            @"isolation", @"spotUp", @"PS", @"PD", @"PR", @"PPS", @"PPD", @"CS",
                             @"fastBreak", @"lowPost", @"highPost", @"second", @"drive", @"cut", nil];
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] init];
@@ -668,7 +674,55 @@
         if([fm fileExistsAtPath:self.tmpPlistPath])
             [fm removeItemAtPath:self.tmpPlistPath error:nil];
     }
+    [self xlsxFileGenerateAndUpload];
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - File Operation
+
+-(void) reloadPlayerGradeFromRecordPlist
+{
+    NSString* recordPlistPath = [NSString stringWithFormat:@"%@/Documents/record.plist", NSHomeDirectory()];
+    NSArray* recordPlistArray = [NSArray arrayWithContentsOfFile:recordPlistPath];
+    NSDictionary* dataDic = [recordPlistArray objectAtIndex:self.showOldRecordNo-1 ];
+    self.playerDataArray = [dataDic objectForKey:KEY_FOR_GRADE];
+    self.playerNoSet = [dataDic objectForKey:KEY_FOR_PLAYER_NO_SET];
+    self.quarterNo = END;
+    self.playerCount = (int)[self.playerNoSet count];
     
+    self.navigationItem.rightBarButtonItem.title = @"進攻統計";
+    self.navigationItem.rightBarButtonItem.action = @selector(showOffenseGradeButtonClicked);
+    self.navigationItem.title = @"第一節成績";
+}
+
+-(void) reloadPlayerGradeFromTmpPlist
+{
+    NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
+    self.playerDataArray = [tmpPlistDic objectForKey:KEY_FOR_GRADE];
+    self.playerNoSet = [tmpPlistDic objectForKey:KEY_FOR_PLAYER_NO_SET];
+    self.quarterNo = [[tmpPlistDic objectForKey:KEY_FOR_LAST_RECORD_QUARTER] intValue];
+    self.recordName = [tmpPlistDic objectForKey:KEY_FOR_NAME];
+    self.playerCount = (int)[self.playerNoSet count];
+    
+    [self updateNavigationTitle];
+    if(self.quarterNo > 3)
+        self.navigationItem.rightBarButtonItem.action = @selector(finishButtonClicked);
+}
+
+-(void)updateTmpPlist
+{
+    NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
+    [tmpPlistDic setObject:self.playerDataArray forKey:KEY_FOR_GRADE];
+    
+    [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
+}
+
+-(void) xlsxFileGenerateAndUpload
+{
     //Generate the xlsx file
     NSString *documentPath = [[NSBundle mainBundle] pathForResource:@"spreadsheet" ofType:@"xlsx"];
     BRAOfficeDocumentPackage *spreadsheet = [BRAOfficeDocumentPackage open:documentPath];
@@ -729,7 +783,7 @@
             cellRef = [NSString stringWithFormat:@"%c%c%d", outIndex, interIndex++, i+3];
             [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:foulCount];
             
-            NSString* turnOverCount = [offenseGradeDic objectForKey:KEY_FOR_TURN_OVER_COUNT];
+            NSString* turnOverCount = [offenseGradeDic objectForKey:KEY_FOR_TURNOVER_COUNT];
             if(interIndex == 91) // (int)'Z' == 90
             {
                 if(outIndex != '\0')
@@ -766,7 +820,23 @@
         cellRef = [NSString stringWithFormat:@"BV%d", i+3];
         [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:madeCountInBonus];
         
-        NSString* totalScore = [playerDataDic objectForKey:@"totalScoreGet"];
+        NSString* totalMadeCount = [playerDataDic objectForKey:KEY_FOR_TOTAL_MADE_COUNT];
+        cellRef = [NSString stringWithFormat:@"BW%d", i+3];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:totalMadeCount];
+        
+        NSString* totalAttemptCount = [playerDataDic objectForKey:KEY_FOR_TOTAL_ATTEMPT_COUNT];
+        cellRef = [NSString stringWithFormat:@"BX%d", i+3];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:totalAttemptCount];
+        
+        NSString* totalFoulCount = [playerDataDic objectForKey:KEY_FOR_TOTAL_FOUL_COUNT];
+        cellRef = [NSString stringWithFormat:@"BY%d", i+3];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:totalFoulCount];
+        
+        NSString* totalTurnoverCount = [playerDataDic objectForKey:KEY_FOR_TOTAL_TURNOVER_COUNT];
+        cellRef = [NSString stringWithFormat:@"BZ%d", i+3];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:totalTurnoverCount];
+        
+        NSString* totalScore = [playerDataDic objectForKey:KEY_FOR_TOTAL_SCORE_GET];
         cellRef = [NSString stringWithFormat:@"CA%d", i+3];
         [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:totalScore];
         
@@ -780,7 +850,7 @@
         [fm removeItemAtPath:sheetPath error:nil];
     
     [spreadsheet saveAs:sheetPath];
-
+    
     
     //Dropbox
     if (![[DBSession sharedSession] isLinked]) {
@@ -791,50 +861,6 @@
     [dateFormatter setDateFormat:@"YYYY_MM_dd"];
     NSString* filename = [NSString stringWithFormat:@"%@-%@.xlsx", self.recordName, [dateFormatter stringFromDate:[NSDate date]]];
     [self.restClient uploadFile:filename toPath:@"/" withParentRev:nil fromPath:sheetPath];
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-#pragma mark - Plist Operation
-
--(void) reloadPlayerGradeFromRecordPlist
-{
-    NSString* recordPlistPath = [NSString stringWithFormat:@"%@/Documents/record.plist", NSHomeDirectory()];
-    NSArray* recordPlistArray = [NSArray arrayWithContentsOfFile:recordPlistPath];
-    NSDictionary* dataDic = [recordPlistArray objectAtIndex:self.showOldRecordNo-1 ];
-    self.playerDataArray = [dataDic objectForKey:KEY_FOR_GRADE];
-    self.playerNoSet = [dataDic objectForKey:KEY_FOR_PLAYER_NO_SET];
-    self.quarterNo = END;
-    self.playerCount = (int)[self.playerNoSet count];
-    
-    self.navigationItem.rightBarButtonItem.title = @"進攻統計";
-    self.navigationItem.rightBarButtonItem.action = @selector(showOffenseGradeButtonClicked);
-    self.navigationItem.title = @"第一節成績";
-}
-
--(void) reloadPlayerGradeFromTmpPlist
-{
-    NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
-    self.playerDataArray = [tmpPlistDic objectForKey:KEY_FOR_GRADE];
-    self.playerNoSet = [tmpPlistDic objectForKey:KEY_FOR_PLAYER_NO_SET];
-    self.quarterNo = [[tmpPlistDic objectForKey:KEY_FOR_LAST_RECORD_QUARTER] intValue];
-    self.recordName = [tmpPlistDic objectForKey:KEY_FOR_NAME];
-    self.playerCount = (int)[self.playerNoSet count];
-    
-    [self updateNavigationTitle];
-    if(self.quarterNo > 3)
-        self.navigationItem.rightBarButtonItem.action = @selector(finishButtonClicked);
-}
-
--(void)updateTmpPlist
-{
-    NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
-    [tmpPlistDic setObject:self.playerDataArray forKey:KEY_FOR_GRADE];
-    
-    [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
 }
 
 #pragma mark - Database Updating
@@ -894,12 +920,16 @@
             [result2 setObject:@"0" forKey:KEY_FOR_MADE_COUNT];
             [result2 setObject:@"0" forKey:KEY_FOR_ATTEMPT_COUNT];
             [result2 setObject:@"0" forKey:KEY_FOR_FOUL_COUNT];
-            [result2 setObject:@"0" forKey:KEY_FOR_TURN_OVER_COUNT];
+            [result2 setObject:@"0" forKey:KEY_FOR_TURNOVER_COUNT];
             [result2 setObject:@"0" forKey:KEY_FOR_SCORE_GET];
             [playerDataItem setObject:result2 forKey:[self.attackWayKeySet objectAtIndex:j]];
         }
         
-        [playerDataItem setObject:@"0" forKey:@"totalScoreGet"];
+        [playerDataItem setObject:@"0" forKey:KEY_FOR_TOTAL_SCORE_GET];
+        [playerDataItem setObject:@"0" forKey:KEY_FOR_TOTAL_MADE_COUNT];
+        [playerDataItem setObject:@"0" forKey:KEY_FOR_TOTAL_ATTEMPT_COUNT];
+        [playerDataItem setObject:@"0" forKey:KEY_FOR_TOTAL_FOUL_COUNT];
+        [playerDataItem setObject:@"0" forKey:KEY_FOR_TOTAL_TURNOVER_COUNT];
         [quarterData addObject:playerDataItem];
     }
     [self.playerDataArray addObject:quarterData];
@@ -958,6 +988,12 @@
             [self increaseOffenseScoreGetToPlayerData:playerData by:3];
             break;
     }
+    
+    int totalAttemptCount = [[playerData objectForKey:KEY_FOR_TOTAL_ATTEMPT_COUNT] intValue];
+    [playerData setObject:[NSString stringWithFormat:@"%d", totalAttemptCount+1] forKey:KEY_FOR_TOTAL_ATTEMPT_COUNT];
+    
+    int totalMadeCount = [[playerData objectForKey:KEY_FOR_TOTAL_MADE_COUNT] intValue];
+    [playerData setObject:[NSString stringWithFormat:@"%d", totalMadeCount+1] forKey:KEY_FOR_TOTAL_MADE_COUNT];
 }
 
 -(void)updateOffenseGradeForOneAttempToPlayerData:(NSMutableDictionary*) playerData
@@ -966,6 +1002,9 @@
     int attemptCount = [[attackData objectForKey:KEY_FOR_ATTEMPT_COUNT] intValue];
     [attackData setObject:[NSString stringWithFormat:@"%d", attemptCount+1] forKey:KEY_FOR_ATTEMPT_COUNT];
     [playerData setObject:attackData forKey:self.keyForSearch];
+    
+    int totalAttemptCount = [[playerData objectForKey:KEY_FOR_TOTAL_ATTEMPT_COUNT] intValue];
+    [playerData setObject:[NSString stringWithFormat:@"%d", totalAttemptCount+1] forKey:KEY_FOR_TOTAL_ATTEMPT_COUNT];
 }
 
 -(void) updateOffenseGradeForOneFoulToPlayerData:(NSMutableDictionary*) playerData
@@ -975,16 +1014,22 @@
     [attackData setObject:[NSString stringWithFormat:@"%d", foulCount+1] forKey:KEY_FOR_FOUL_COUNT];
     
     [playerData setObject:attackData forKey:self.keyForSearch];
+    
+    int totalFoulCount = [[playerData objectForKey:KEY_FOR_TOTAL_FOUL_COUNT] intValue];
+    [playerData setObject:[NSString stringWithFormat:@"%d", totalFoulCount+1] forKey:KEY_FOR_TOTAL_FOUL_COUNT];
 }
 
 -(void) updateOffenseGradeForOneTurnOverToPlayerData:(NSMutableDictionary*) playerData
 {
     NSMutableDictionary* attackData = [playerData objectForKey:self.keyForSearch];
     
-    int turnOverCount = [[attackData objectForKey:KEY_FOR_TURN_OVER_COUNT] intValue];
-    [attackData setObject:[NSString stringWithFormat:@"%d", turnOverCount+1] forKey:KEY_FOR_TURN_OVER_COUNT];
+    int turnOverCount = [[attackData objectForKey:KEY_FOR_TURNOVER_COUNT] intValue];
+    [attackData setObject:[NSString stringWithFormat:@"%d", turnOverCount+1] forKey:KEY_FOR_TURNOVER_COUNT];
     
     [playerData setObject:attackData forKey:self.keyForSearch];
+    
+    int totalTurnoverCount = [[playerData objectForKey:KEY_FOR_TOTAL_TURNOVER_COUNT] intValue];
+    [playerData setObject:[NSString stringWithFormat:@"%d", totalTurnoverCount+1] forKey:KEY_FOR_TOTAL_TURNOVER_COUNT];
 }
 
 -(void) increaseOffenseScoreGetToPlayerData:(NSMutableDictionary*)playerData by:(int)offset
@@ -998,10 +1043,10 @@
 
 -(void) updateTotalScoreOnePlayerGetToPlayerData:(NSMutableDictionary*) playerData withScore:(int)score
 {
-    int totalScoreGet = [[playerData objectForKey:@"totalScoreGet"] intValue];
+    int totalScoreGet = [[playerData objectForKey:KEY_FOR_TOTAL_SCORE_GET] intValue];
     NSString* totalScoreGetStr = [NSString stringWithFormat:@"%d", totalScoreGet+score];
     
-    [playerData setObject:totalScoreGetStr forKey:@"totalScoreGet"];
+    [playerData setObject:totalScoreGetStr forKey:KEY_FOR_TOTAL_SCORE_GET];
 }
 
 
@@ -1758,7 +1803,7 @@
        return (self.playerCount + 2); //One for title, the other one for team grade
     }
     //if(tableview.tag == PLAYER_GRADE_TABLEVIEW_TAG)
-    return 16;
+    return [self.attackWayKeySet count]+3;
 }
 
 - (NSInteger) numberOfSectionsInTableView:(UITableView *)tableView
@@ -1867,7 +1912,7 @@
     UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width*0.3, PLAYER_GRADE_TABLECELL_HEIGHT)];
     label.textAlignment = NSTextAlignmentCenter;
     
-    if(indexPath.row < 15)
+    if(indexPath.row < 15 || indexPath.row == 16)
     {
         UILabel* madeAndAttemptLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(label.frame), label.frame.origin.y, tableView.frame.size.width*0.28, PLAYER_GRADE_TABLECELL_HEIGHT)];
         madeAndAttemptLabel.textAlignment = NSTextAlignmentCenter;
@@ -1885,7 +1930,11 @@
         totalScoreGetLabel.textAlignment = NSTextAlignmentCenter;
         totalScoreGetLabel.layer.borderWidth = 1;
         
-        label.text = [self.attackWaySet objectAtIndex:indexPath.row-1];
+        if(indexPath.row != 16)
+            label.text = [self.attackWaySet objectAtIndex:indexPath.row-1];
+        else
+            label.text = @"總成績";
+        
         if(!self.playerSelectedIndex)
         {
             madeAndAttemptLabel.text = @"0/0";
@@ -1895,11 +1944,21 @@
         }
         else
         {
-            NSDictionary* attackData = [playerData objectForKey:[self.attackWayKeySet objectAtIndex:indexPath.row-1]];
-            madeAndAttemptLabel.text = [NSString stringWithFormat:@"%@/%@", [attackData objectForKey:KEY_FOR_MADE_COUNT], [attackData objectForKey:KEY_FOR_ATTEMPT_COUNT]];
-            foulLabel.text = [NSString stringWithFormat:@"%@", [attackData objectForKey:KEY_FOR_FOUL_COUNT]];
-            turnOverLabel.text = [NSString stringWithFormat:@"%@", [attackData objectForKey:KEY_FOR_TURN_OVER_COUNT]];
-            totalScoreGetLabel.text = [NSString stringWithFormat:@"%@", [attackData objectForKey:KEY_FOR_SCORE_GET]];
+            if(indexPath.row != 16)
+            {
+                NSDictionary* attackData = [playerData objectForKey:[self.attackWayKeySet objectAtIndex:indexPath.row-1]];
+                madeAndAttemptLabel.text = [NSString stringWithFormat:@"%@/%@", [attackData objectForKey:KEY_FOR_MADE_COUNT], [attackData objectForKey:KEY_FOR_ATTEMPT_COUNT]];
+                foulLabel.text = [attackData objectForKey:KEY_FOR_FOUL_COUNT];
+                turnOverLabel.text = [attackData objectForKey:KEY_FOR_TURNOVER_COUNT];
+                totalScoreGetLabel.text = [attackData objectForKey:KEY_FOR_SCORE_GET];
+            }
+            else
+            {
+                madeAndAttemptLabel.text = [NSString stringWithFormat:@"%@/%@", [playerData objectForKey:KEY_FOR_TOTAL_MADE_COUNT], [playerData objectForKey:KEY_FOR_TOTAL_ATTEMPT_COUNT]];
+                foulLabel.text = [playerData objectForKey:KEY_FOR_TOTAL_FOUL_COUNT];
+                turnOverLabel.text = [playerData objectForKey:KEY_FOR_TOTAL_TURNOVER_COUNT];
+                totalScoreGetLabel.text = [playerData objectForKey:KEY_FOR_TOTAL_SCORE_GET];
+            }
         }
         
         [cell addSubview:madeAndAttemptLabel];
@@ -1907,7 +1966,7 @@
         [cell addSubview:turnOverLabel];
         [cell addSubview:totalScoreGetLabel];
     }
-    else if(indexPath.row == 14)
+    else if(indexPath.row == 15)
     {
         NSDictionary* bonusData = [playerData objectForKey:@"zone12"];
         UILabel* madeAndAttemptLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(label.frame), label.frame.origin.y, tableView.frame.size.width*0.7, PLAYER_GRADE_TABLECELL_HEIGHT)];
@@ -1921,7 +1980,7 @@
             madeAndAttemptLabel.text = [NSString stringWithFormat:@"%@/%@", [bonusData objectForKey:KEY_FOR_MADE_COUNT], [bonusData objectForKey:KEY_FOR_ATTEMPT_COUNT]];
         [cell addSubview:madeAndAttemptLabel];
     }
-    else
+/*    else
     {
         label.text = @"總得分";
         UILabel* totalScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(label.frame), label.frame.origin.y, tableView.frame.size.width*0.7, PLAYER_GRADE_TABLECELL_HEIGHT)];
@@ -1934,7 +1993,7 @@
             totalScoreLabel.text = [NSString stringWithFormat:@"%@", [playerData objectForKey:@"totalScoreGet"]];
         
         [cell addSubview:totalScoreLabel];
-    }
+    }*/
     [cell addSubview:label];
     
     return cell;
