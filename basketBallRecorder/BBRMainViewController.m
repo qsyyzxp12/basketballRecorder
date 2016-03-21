@@ -108,7 +108,7 @@
     [self.view addSubview:self.playerDataTableView];
     
     if(self.quarterNo == END)
-        [self showConclusion];
+        [self showConclusionAndGernateXlsxFile:NO];
 }
 
 - (void) constructAlertControllers
@@ -507,7 +507,7 @@
         }];
     noAction = [UIAlertAction actionWithTitle:@"否" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
-            [self showConclusion];
+            [self showConclusionAndGernateXlsxFile:YES];
         }];
     cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action){}];
     
@@ -519,7 +519,7 @@
                                                                 message:nil preferredStyle:UIAlertControllerStyleAlert];
     yesAction = [UIAlertAction actionWithTitle:@"是" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action)
         {
-            [self showConclusion];
+            [self showConclusionAndGernateXlsxFile:YES];
         }];
     noAction = [UIAlertAction actionWithTitle:@"否" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action){}];
     [self.finishOrNotAlert addAction:yesAction];
@@ -542,7 +542,7 @@
         self.navigationItem.rightBarButtonItem.action = @selector(finishButtonClicked);
 }
 
--(void) showConclusion
+-(void) showConclusionAndGernateXlsxFile:(BOOL)generateXlsxFile
 {
     if(!self.isShowZoneGrade)
         self.playerDataTableView.hidden = NO;
@@ -599,7 +599,8 @@
         if([fm fileExistsAtPath:self.tmpPlistPath])
             [fm removeItemAtPath:self.tmpPlistPath error:nil];
     }
-    [self xlsxFileGenerateAndUpload];
+    if(generateXlsxFile)
+        [self xlsxFileGenerateAndUpload];
 }
 
 - (void)didReceiveMemoryWarning {
