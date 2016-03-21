@@ -473,100 +473,19 @@
     
     self.attackWayAlert = [UIAlertController alertControllerWithTitle:@"進攻統計"
                                         message:nil preferredStyle:UIAlertControllerStyleAlert];
-    
-    UIAlertAction* isolationAction = [UIAlertAction actionWithTitle:@"Isolation" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
-                                      {
-                                          self.keyForSearch = @"isolation";
-                                          [self presentViewController:self.resultAlert animated:YES completion:nil];
-                                      }];
-    UIAlertAction* spotUpAction = [UIAlertAction actionWithTitle:@"Spot Up" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
-                                   {
-                                       self.keyForSearch = @"spotUp";
-                                       [self presentViewController:self.resultAlert animated:YES completion:nil];
-                                   }];
-    UIAlertAction* psAction = [UIAlertAction actionWithTitle:@"PS" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
-                               {
-                                   self.keyForSearch = @"PS";
-                                   [self presentViewController:self.resultAlert animated:YES completion:nil];
-                               }];
-    UIAlertAction* pdAction = [UIAlertAction actionWithTitle:@"PD" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
-                               {
-                                   self.keyForSearch = @"PD";
-                                   [self presentViewController:self.resultAlert animated:YES completion:nil];
-                               }];
-    UIAlertAction* prAction = [UIAlertAction actionWithTitle:@"PR" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
-                               {
-                                   self.keyForSearch = @"PR";
-                                   [self presentViewController:self.resultAlert animated:YES completion:nil];
-                               }];
-    UIAlertAction* ppsAction = [UIAlertAction actionWithTitle:@"PPS" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
-                                {
-                                    self.keyForSearch = @"PPS";
-                                    [self presentViewController:self.resultAlert animated:YES completion:nil];
-                                }];
-    UIAlertAction* ppdAction = [UIAlertAction actionWithTitle:@"PPD" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
-                                {
-                                    self.keyForSearch = @"PPD";
-                                    [self presentViewController:self.resultAlert animated:YES completion:nil];
-                                }];
-    UIAlertAction* catchShootAction = [UIAlertAction actionWithTitle:@"Catch&Shoot" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
-                                {
-                                    self.keyForSearch = @"CS";
-                                    [self presentViewController:self.resultAlert animated:YES completion:nil];
-                                }];
-    UIAlertAction* fastBreakAction = [UIAlertAction actionWithTitle:@"Fast Break" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
-                                {
-                                    self.keyForSearch = @"fastBreak";
-                                    [self presentViewController:self.resultAlert animated:YES completion:nil];
-                                }];
-    UIAlertAction* lowPostAction = [UIAlertAction actionWithTitle:@"Low Post" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
-                                {
-                                    self.keyForSearch = @"lowPost";
-                                    [self presentViewController:self.resultAlert animated:YES completion:nil];
-                                }];
-    UIAlertAction* highPostAction = [UIAlertAction actionWithTitle:@"High Post" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
-                                    {
-                                        self.keyForSearch = @"highPost";
-                                        [self presentViewController:self.resultAlert animated:YES completion:nil];
-                                    }];
-    UIAlertAction* secondAction = [UIAlertAction actionWithTitle:@"Second" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
-                                   {
-                                       self.keyForSearch = @"second";
-                                       [self presentViewController:self.resultAlert animated:YES completion:nil];
-                                   }];
-    UIAlertAction* driveAction = [UIAlertAction actionWithTitle:@"Drive" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
-                                  {
-                                      self.keyForSearch = @"drive";
-                                      [self presentViewController:self.resultAlert animated:YES completion:nil];
-                                  }];
-    UIAlertAction* highLowAction = [UIAlertAction actionWithTitle:@"High-Low" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
-                                {
-                                    self.keyForSearch = @"highLow";
-                                    [self presentViewController:self.resultAlert animated:YES completion:nil];
-                                }];
-    UIAlertAction* cutAction = [UIAlertAction actionWithTitle:@"Cut" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
-                                {
-                                    self.keyForSearch = @"cut";
-                                    [self presentViewController:self.resultAlert animated:YES completion:nil];
-                                }];
-    
-    [self.attackWayAlert addAction:isolationAction];
-    [self.attackWayAlert addAction:spotUpAction];
-    [self.attackWayAlert addAction:psAction];
-    [self.attackWayAlert addAction:pdAction];
-    [self.attackWayAlert addAction:prAction];
-    [self.attackWayAlert addAction:ppsAction];
-    [self.attackWayAlert addAction:ppdAction];
-    [self.attackWayAlert addAction:catchShootAction];
-    [self.attackWayAlert addAction:fastBreakAction];
-    [self.attackWayAlert addAction:lowPostAction];
-    [self.attackWayAlert addAction:highPostAction];
-    [self.attackWayAlert addAction:secondAction];
-    [self.attackWayAlert addAction:driveAction];
-    [self.attackWayAlert addAction:highLowAction];
-    [self.attackWayAlert addAction:cutAction];
+
+    for(int i=0; i<[self.attackWayKeySet count]; i++)
+    {
+        NSString* title = [self.attackWaySet objectAtIndex:i];
+        UIAlertAction* action = [UIAlertAction actionWithTitle:title style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+            {
+                self.keyForSearch = [self.attackWayKeySet objectAtIndex:i];
+                [self presentViewController:self.resultAlert animated:YES completion:nil];
+            }];
+        [self.attackWayAlert addAction:action];
+    }
     [self.attackWayAlert addAction:cancelAction];
-    
+
     //Next Quarter Alert
     self.nextQuarterAlert = [UIAlertController alertControllerWithTitle:@"確定？"
                                                               message:nil preferredStyle:UIAlertControllerStyleAlert];
