@@ -816,34 +816,34 @@
         
         NSDictionary* bonusGrade = [playerDataDic objectForKey:@"zone12"];
         NSString* madeCountInBonus = [bonusGrade objectForKey:KEY_FOR_MADE_COUNT];
-        cellRef = [NSString stringWithFormat:@"BT%d", i+3];
+        cellRef = [NSString stringWithFormat:@"BY%d", i+3];
         [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:madeCountInBonus];
         
         NSString* attemptCountInBonus = [bonusGrade objectForKey:KEY_FOR_ATTEMPT_COUNT];
-        cellRef = [NSString stringWithFormat:@"BU%d", i+3];
+        cellRef = [NSString stringWithFormat:@"BZ%d", i+3];
         [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:attemptCountInBonus];
         
-        cellRef = [NSString stringWithFormat:@"BV%d", i+3];
+        cellRef = [NSString stringWithFormat:@"CA%d", i+3];
         [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:madeCountInBonus];
         
         NSString* totalMadeCount = [playerDataDic objectForKey:KEY_FOR_TOTAL_MADE_COUNT];
-        cellRef = [NSString stringWithFormat:@"BW%d", i+3];
+        cellRef = [NSString stringWithFormat:@"CB%d", i+3];
         [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:totalMadeCount];
         
         NSString* totalAttemptCount = [playerDataDic objectForKey:KEY_FOR_TOTAL_ATTEMPT_COUNT];
-        cellRef = [NSString stringWithFormat:@"BX%d", i+3];
+        cellRef = [NSString stringWithFormat:@"CC%d", i+3];
         [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:totalAttemptCount];
         
         NSString* totalFoulCount = [playerDataDic objectForKey:KEY_FOR_TOTAL_FOUL_COUNT];
-        cellRef = [NSString stringWithFormat:@"BY%d", i+3];
+        cellRef = [NSString stringWithFormat:@"CD%d", i+3];
         [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:totalFoulCount];
         
         NSString* totalTurnoverCount = [playerDataDic objectForKey:KEY_FOR_TOTAL_TURNOVER_COUNT];
-        cellRef = [NSString stringWithFormat:@"BZ%d", i+3];
+        cellRef = [NSString stringWithFormat:@"CE%d", i+3];
         [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:totalTurnoverCount];
         
         NSString* totalScore = [playerDataDic objectForKey:KEY_FOR_TOTAL_SCORE_GET];
-        cellRef = [NSString stringWithFormat:@"CA%d", i+3];
+        cellRef = [NSString stringWithFormat:@"CF%d", i+3];
         [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:totalScore];
         
     }
