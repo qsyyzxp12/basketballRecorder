@@ -67,7 +67,12 @@
     NSArray *resultArray = [self.playerNoSet sortedArrayUsingSelector:@selector(compare:)];
     mainViewCntler.playerNoSet = resultArray;
     mainViewCntler.playerCount = self.playerCount;
-    mainViewCntler.recordName = self.recordName;
+    
+    NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"YYYY_MM_dd"];
+    NSString* filename = [NSString stringWithFormat:@"%@-%@", self.recordName, [dateFormatter stringFromDate:[NSDate date]]];
+    
+    mainViewCntler.recordName = filename;
     NSLog(@"record name = %@", self.recordName);
 }
 

@@ -21,45 +21,50 @@
     
     [self constructAlertController];
     
+    self.spinView = [[UIView alloc] initWithFrame:self.view.frame];
+    self.spinView.backgroundColor = [UIColor grayColor];
+    self.spinView.alpha = 0.8;
+    [self.view addSubview:self.spinView];
+    
+    self.loadingLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMidX(self.spinView.frame)-50, CGRectGetMidY(self.spinView.frame)-15, 100, 30)];
+    self.loadingLabel.backgroundColor = [UIColor whiteColor];
+    self.loadingLabel.textAlignment = NSTextAlignmentCenter;
+    self.loadingLabel.text = @"Loading";
+    [self.view addSubview:self.loadingLabel];
+    
+    self.spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    self.spinner.frame = CGRectMake(CGRectGetMinX(self.loadingLabel.frame), CGRectGetMaxY(self.loadingLabel.frame), 100, 30);
+    self.spinner.backgroundColor = [UIColor whiteColor];
+    [self.view addSubview:self.spinner];
+    [self.spinner startAnimating];
+    
     self.buttonClickedNo = 0;
     
+    self.restClient = [[DBRestClient alloc] initWithSession:[DBSession sharedSession]];
+    self.restClient.delegate = self;
+    
     self.buttonArray = [NSArray arrayWithObjects:self.lastCompetitionButton, self.lastTwoCompetitionButton, self.lastThreeCompetitionButton, self.lastFourCompetitionButton, self.lastFiveCompetitionButton, nil];
+    self.statusButtonArray = [NSArray arrayWithObjects:self.lastStatusButton, self.lastTwoStatusButton, self.lastThreeStatusButton, self.lastFourStatusButton, self.lastFiveStatusButton, nil];
+    
     self.isTmpPlistExist = NO;
     
     NSFileManager* fm = [[NSFileManager alloc] init];
     NSString* tmpPlistPath = [NSString stringWithFormat:@"%@/Documents/tmp.plist", NSHomeDirectory()];
     
     if([fm fileExistsAtPath:tmpPlistPath])
-        self.isTmpPlistExist = YES;
-    
-    if(self.isTmpPlistExist)
         [self presentViewController:self.dirtyStatusAlert animated:YES completion:nil];
 }
 
 -(void) viewWillAppear:(BOOL)animated
 {
-    NSFileManager* fm = [[NSFileManager alloc] init];
-    NSString* src = [[NSBundle mainBundle] pathForResource:@"record" ofType:@"plist"];
-    NSString* recordPlistPath = [NSString stringWithFormat:@"%@/Documents/record.plist", NSHomeDirectory()];
-    if(![fm fileExistsAtPath:recordPlistPath])
-    {
-        [fm copyItemAtPath:src toPath:recordPlistPath error:nil];
-        for(UIButton* button in self.buttonArray)
-            button.hidden = YES;
-    }
-    else
-    {
-        //    [fm removeItemAtPath:recordPlistPath error:nil];
-        NSArray* recordPlistContent = [NSArray arrayWithContentsOfFile:recordPlistPath];
-        
-        for (int i=0; i<[recordPlistContent count]; i++)
-        {
-            [((UIButton*)self.buttonArray[i]) setTitle:[[recordPlistContent objectAtIndex:i] objectForKey:KEY_FOR_NAME] forState:UIControlStateNormal];
-            ((UIButton*)self.buttonArray[i]).hidden = NO;
-        }
-        for(int i=(int)[recordPlistContent count]; i<5; i++)
-            ((UIButton*)self.buttonArray[i]).hidden = YES;
-    }
+    //Dropbox
+ //   if ([[DBSession sharedSession] isLinked])
+   //     [[DBSession sharedSession] unlinkAll];
+    
+    if (![[DBSession sharedSession] isLinked])
+        [[DBSession sharedSession] linkFromController:self];
+    
+    [self.restClient loadMetadata:@"/"];
 }
 
 -(void) constructAlertController
@@ -100,6 +105,61 @@
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - Dropbox
+
+-(void)restClient:(DBRestClient *)client loadedMetadata:(DBMetadata *)metadata
+{
+    NSMutableArray* fileNamesInDropbox = [[NSMutableArray alloc] init];
+    if(metadata.isDirectory)
+        for (DBMetadata *file in metadata.contents)
+            [fileNamesInDropbox addObject:file.filename];
+    
+    NSLog(@"%@", fileNamesInDropbox);
+    
+    NSFileManager* fm = [[NSFileManager alloc] init];
+    NSString* src = [[NSBundle mainBundle] pathForResource:@"record" ofType:@"plist"];
+    NSString* recordPlistPath = [NSString stringWithFormat:@"%@/Documents/record.plist", NSHomeDirectory()];
+    if(![fm fileExistsAtPath:recordPlistPath])
+    {
+        [fm copyItemAtPath:src toPath:recordPlistPath error:nil];
+        for(UIButton* button in self.buttonArray)
+            button.hidden = YES;
+    }
+    else
+    {
+        //    [fm removeItemAtPath:recordPlistPath error:nil];
+        NSArray* recordPlistContent = [NSArray arrayWithContentsOfFile:recordPlistPath];
+        
+        for (int i=0; i<[recordPlistContent count]; i++)
+        {
+            NSString* gameName = [[recordPlistContent objectAtIndex:i] objectForKey:KEY_FOR_NAME];
+            [((UIButton*)self.buttonArray[i]) setTitle:gameName forState:UIControlStateNormal];
+            ((UIButton*)self.buttonArray[i]).hidden = NO;
+            ((UIButton*)self.statusButtonArray[i]).hidden = NO;
+            [((UIButton*)self.statusButtonArray[i]) setTitle:@"上傳" forState:UIControlStateNormal];
+            for(NSString* name in fileNamesInDropbox)
+                if([name isEqualToString:[NSString stringWithFormat:@"%@.xlsx", gameName]])
+                {
+                    [((UIButton*)self.statusButtonArray[i]) setTitle:@"已上傳" forState:UIControlStateNormal];
+                    break;
+                }
+        }
+        for(int i=(int)[recordPlistContent count]; i<5; i++)
+        {
+            ((UIButton*)self.buttonArray[i]).hidden = YES;
+            ((UIButton*)self.statusButtonArray[i]).hidden = YES;
+        }
+    }
+    [self.spinView removeFromSuperview];
+    [self.loadingLabel removeFromSuperview];
+    [self.spinner removeFromSuperview];
+}
+
+- (void)restClient:(DBRestClient *)client loadMetadataFailedWithError:(NSError *)error
+{
+    NSLog(@"Error loading metadata: %@", error);
 }
 
 /*

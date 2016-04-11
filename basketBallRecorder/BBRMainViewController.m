@@ -803,10 +803,8 @@
     //Dropbox
     if (![[DBSession sharedSession] isLinked])
         [[DBSession sharedSession] linkFromController:self];
-    
-    NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"YYYY_MM_dd"];
-    NSString* filename = [NSString stringWithFormat:@"%@-%@.xlsx", self.recordName, [dateFormatter stringFromDate:[NSDate date]]];
+
+    NSString* filename = [NSString stringWithFormat:@"%@.xlsx", self.recordName];
     [self.restClient uploadFile:filename toPath:@"/" withParentRev:nil fromPath:sheetPath];
 }
 
