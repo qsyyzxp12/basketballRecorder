@@ -141,23 +141,26 @@
     {
    //         [fm removeItemAtPath:recordPlistPath error:nil];
         NSArray* recordPlistContent = [NSArray arrayWithContentsOfFile:recordPlistPath];
-        
-        for (int i=0; i<[recordPlistContent count]; i++)
+        int buttonIndex = 0;
+        for (int i=((int)[recordPlistContent count]-1); i >= 0; i--)
         {
             NSString* gameName = [[recordPlistContent objectAtIndex:i] objectForKey:KEY_FOR_NAME];
-            [((UIButton*)self.buttonArray[i]) setTitle:gameName forState:UIControlStateNormal];
-            ((UIButton*)self.buttonArray[i]).hidden = NO;
-            ((UIButton*)self.statusButtonArray[i]).hidden = NO;
-            [((UIButton*)self.statusButtonArray[i]) setTitle:@"上傳" forState:UIControlStateNormal];
-            ((UIButton*)self.statusButtonArray[i]).userInteractionEnabled = YES;
+            [((UIButton*)self.buttonArray[buttonIndex]) setTitle:gameName forState:UIControlStateNormal];
+            ((UIButton*)self.buttonArray[buttonIndex]).hidden = NO;
+            ((UIButton*)self.statusButtonArray[buttonIndex]).hidden = NO;
+            [((UIButton*)self.statusButtonArray[buttonIndex]) setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+            [((UIButton*)self.statusButtonArray[buttonIndex]) setTitle:@"上傳" forState:UIControlStateNormal];
+            ((UIButton*)self.statusButtonArray[buttonIndex]).userInteractionEnabled = YES;
+            
             for(NSString* name in fileNamesInDropbox)
                 if([name isEqualToString:[NSString stringWithFormat:@"%@.xlsx", gameName]])
                 {
-                    [((UIButton*)self.statusButtonArray[i]) setTitle:@"已上傳" forState:UIControlStateNormal];
-                    [((UIButton*)self.statusButtonArray[i]) setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-                    ((UIButton*)self.statusButtonArray[i]).userInteractionEnabled = NO;
+                    [((UIButton*)self.statusButtonArray[buttonIndex]) setTitle:@"已上傳" forState:UIControlStateNormal];
+                    [((UIButton*)self.statusButtonArray[buttonIndex]) setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+                    ((UIButton*)self.statusButtonArray[buttonIndex]).userInteractionEnabled = NO;
                     break;
                 }
+            buttonIndex++;
         }
         for(int i=(int)[recordPlistContent count]; i<5; i++)
         {

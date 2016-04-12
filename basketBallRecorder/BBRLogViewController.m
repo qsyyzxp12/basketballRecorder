@@ -33,14 +33,25 @@
     for (int i=0; i<20; i++)
         [self.textFieldArray setObject:@"" atIndexedSubscript:i];
     
+//    UIAlertController* nameUncompleteAlert = [UIAlertController alertControllerWithTitle:@"" message:@"隊伍名稱輸入不完全" preferredStyle:UIAlertControllerStyleAlert];
+//    UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+//                                              handler:^(UIAlertAction *action){}];
+
+//    [nameUncompleteAlert addAction:okAction];
+    
     UIAlertController* nameAlert = [UIAlertController alertControllerWithTitle:@"比賽隊伍" message:@"" preferredStyle:UIAlertControllerStyleAlert];
 
-    UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"完成" style:UIAlertActionStyleDefault
+    UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"完成" style:UIAlertActionStyleDefault
         handler:^(UIAlertAction *action)
         {
             UITextField *teamName = nameAlert.textFields.firstObject;
             UITextField *anotherTeamName = nameAlert.textFields.lastObject;
-            self.recordName = [NSString stringWithFormat:@"%@_vs_%@", teamName.text, anotherTeamName.text];
+           /* if([teamName.text isEqualToString:@""] || [anotherTeamName isEqual:@""])
+            {
+                [self presentViewController:nameUncompleteAlert animated:YES completion:nil];
+            }
+            else*/ 
+                self.recordName = [NSString stringWithFormat:@"%@_vs_%@", teamName.text, anotherTeamName.text];
         }];
     UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action)
         {
@@ -92,7 +103,7 @@
         }
     }
 
-/*    if(self.playerCount < 5)
+    if(self.playerCount < 5)
     {
         UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"人數小於5人" message:nil preferredStyle: UIAlertControllerStyleAlert];
         UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action){}];
@@ -100,7 +111,7 @@
         [self presentViewController:alert animated:YES completion:nil];
     }
     else
-*/        [self performSegueWithIdentifier:@"showMainController" sender:nil];
+        [self performSegueWithIdentifier:@"showMainController" sender:nil];
 }
 
 /*
