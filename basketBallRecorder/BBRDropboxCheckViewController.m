@@ -17,23 +17,21 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
-    if ([[DBSession sharedSession] isLinked])
-        [[DBSession sharedSession] unlinkAll];
-    if (![[DBSession sharedSession] isLinked])
-        [[DBSession sharedSession] linkFromController:self];
-    [self performSelectorInBackground:@selector(tmp) withObject:nil];
+//    if ([[DBSession sharedSession] isLinked])
+  //      [[DBSession sharedSession] unlinkAll];
+    [self performSelectorInBackground:@selector(checkingDropboxAuthorization) withObject:nil];
 }
 
-- (void)tmp
+- (void)checkingDropboxAuthorization
 {
+    if (![[DBSession sharedSession] isLinked])
+        [[DBSession sharedSession] linkFromController:self];
     while (![[DBSession sharedSession] isLinked]);
     [self performSegueWithIdentifier:@"showMenuSegue" sender:nil];
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 /*

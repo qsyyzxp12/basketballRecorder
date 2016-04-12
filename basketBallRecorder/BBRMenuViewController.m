@@ -151,7 +151,7 @@
                 if([name isEqualToString:[NSString stringWithFormat:@"%@.xlsx", gameName]])
                 {
                     [((UIButton*)self.statusButtonArray[i]) setTitle:@"已上傳" forState:UIControlStateNormal];
-                    ((UIButton*)self.statusButtonArray[i]).titleLabel.textColor = [UIColor grayColor];
+                    [((UIButton*)self.statusButtonArray[i]) setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
                     ((UIButton*)self.statusButtonArray[i]).userInteractionEnabled = NO;
                     break;
                 }
@@ -374,10 +374,10 @@
     
     NSString* filename = [NSString stringWithFormat:@"%@.xlsx", gameName];
     NSArray* agus = [[NSArray alloc] initWithObjects:filename, sheetPath, nil];
-    [self performSelectorOnMainThread:@selector(tmp:) withObject:agus waitUntilDone:0];
+    [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
 }
 
--(void) tmp:(NSArray*) parameters
+-(void) uploadXlsxFile:(NSArray*) parameters
 {
     [self.restClient uploadFile:[parameters objectAtIndex:0] toPath:@"/" withParentRev:nil fromPath:[parameters objectAtIndex:1]];
 }

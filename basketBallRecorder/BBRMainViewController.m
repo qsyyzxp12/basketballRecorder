@@ -588,7 +588,8 @@
             [fm removeItemAtPath:self.tmpPlistPath error:nil];
     }
     if(generateXlsxFile)
-        [self xlsxFileGenerateAndUpload];
+        [self performSelectorInBackground:@selector(xlsxFileGenerateAndUpload) withObject:nil];
+//        [self xlsxFileGenerateAndUpload];
     
     self.quarterNo = 0;
     
@@ -805,7 +806,15 @@
         [[DBSession sharedSession] linkFromController:self];
 
     NSString* filename = [NSString stringWithFormat:@"%@.xlsx", self.recordName];
-    [self.restClient uploadFile:filename toPath:@"/" withParentRev:nil fromPath:sheetPath];
+    
+    NSArray* agus = [[NSArray alloc] initWithObjects:filename, sheetPath, nil];
+    [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
+  //  [self.restClient uploadFile:filename toPath:@"/" withParentRev:nil fromPath:sheetPath];
+}
+
+-(void) uploadXlsxFile:(NSArray*) parameters
+{
+    [self.restClient uploadFile:[parameters objectAtIndex:0] toPath:@"/" withParentRev:nil fromPath:[parameters objectAtIndex:1]];
 }
 
 #pragma mark - Database Updating
