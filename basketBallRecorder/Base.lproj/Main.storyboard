@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Dt8-bs-F0C">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="YmL-AA-nhf">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
@@ -14,12 +14,44 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
-                        <segue destination="PnF-Fq-esl" kind="relationship" relationship="rootViewController" id="yBP-qa-nV5"/>
+                        <segue destination="PnF-Fq-esl" kind="relationship" relationship="rootViewController" id="zIP-Sk-HMu"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="10f-PG-2tK" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1618" y="18"/>
+            <point key="canvasLocation" x="-871" y="-646"/>
+        </scene>
+        <!--Dropbox Check View Controller-->
+        <scene sceneID="7Mg-LR-dFc">
+            <objects>
+                <viewController id="YmL-AA-nhf" customClass="BBRDropboxCheckViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="zDm-CL-ZQa"/>
+                        <viewControllerLayoutGuide type="bottom" id="8ZN-ek-ppb"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="IlP-zC-BSo">
+                        <rect key="frame" x="0.0" y="0.0" width="568" height="320"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Checking Dropbox Authorization..." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8iu-nJ-hdZ">
+                                <rect key="frame" x="116" y="230" width="438" height="76"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="28"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="Sle-t4-Xce"/>
+                    <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+                    <connections>
+                        <segue destination="PnF-Fq-esl" kind="show" identifier="showMenuSegue" id="peG-MG-IZ6"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Odo-VD-sht" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1576" y="17"/>
         </scene>
         <!--選單-->
         <scene sceneID="5vc-Ag-dc7">
@@ -34,7 +66,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" tag="2" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ul1-EA-RTw">
-                                <rect key="frame" x="0.0" y="161" width="416" height="30"/>
+                                <rect key="frame" x="0.0" y="123" width="416" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                 <state key="normal" title="Button">
                                     <color key="titleColor" red="0.1204339239" green="0.34193843740000002" blue="0.65986569449999999" alpha="1" colorSpace="calibratedRGB"/>
@@ -44,7 +76,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" tag="3" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="W6x-Be-lP5">
-                                <rect key="frame" x="0.0" y="199" width="416" height="30"/>
+                                <rect key="frame" x="0.0" y="161" width="416" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                 <state key="normal" title="Button">
                                     <color key="titleColor" red="0.1204339239" green="0.34193843740000002" blue="0.65986569449999999" alpha="1" colorSpace="calibratedRGB"/>
@@ -54,7 +86,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" tag="4" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MFb-5G-4bd">
-                                <rect key="frame" x="0.0" y="237" width="416" height="30"/>
+                                <rect key="frame" x="0.0" y="199" width="416" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                 <state key="normal" title="Button">
                                     <color key="titleColor" red="0.1204339239" green="0.34193843740000002" blue="0.65986569449999999" alpha="1" colorSpace="calibratedRGB"/>
@@ -64,7 +96,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rjR-Pi-Q9y">
-                                <rect key="frame" x="208" y="85" width="152" height="30"/>
+                                <rect key="frame" x="208" y="38" width="152" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                 <state key="normal" title="新比賽">
                                     <color key="titleColor" red="0.12043392393004193" green="0.34193843738412244" blue="0.65986569452036115" alpha="1" colorSpace="calibratedRGB"/>
@@ -74,7 +106,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" tag="5" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="55d-v9-y3d">
-                                <rect key="frame" x="0.0" y="270" width="416" height="30"/>
+                                <rect key="frame" x="0.0" y="232" width="416" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                 <state key="normal" title="Button">
                                     <color key="titleColor" red="0.1204339239" green="0.34193843740000002" blue="0.65986569449999999" alpha="1" colorSpace="calibratedRGB"/>
@@ -84,7 +116,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" tag="1" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VZ9-4U-4Jy">
-                                <rect key="frame" x="0.0" y="123" width="416" height="30"/>
+                                <rect key="frame" x="0.0" y="85" width="416" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                 <state key="normal" title="Button">
                                     <color key="titleColor" red="0.1204339239" green="0.34193843740000002" blue="0.65986569449999999" alpha="1" colorSpace="calibratedRGB"/>
@@ -94,35 +126,35 @@
                                 </connections>
                             </button>
                             <button opaque="NO" tag="2" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="e0w-f1-8E3">
-                                <rect key="frame" x="420" y="161" width="75" height="30"/>
+                                <rect key="frame" x="420" y="123" width="75" height="30"/>
                                 <state key="normal" title="上傳"/>
                                 <connections>
                                     <action selector="uploadButtonClicked:" destination="PnF-Fq-esl" eventType="touchUpInside" id="9np-ta-MNF"/>
                                 </connections>
                             </button>
                             <button opaque="NO" tag="4" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oa7-AQ-a2Y">
-                                <rect key="frame" x="420" y="237" width="75" height="30"/>
+                                <rect key="frame" x="420" y="199" width="75" height="30"/>
                                 <state key="normal" title="上傳"/>
                                 <connections>
                                     <action selector="uploadButtonClicked:" destination="PnF-Fq-esl" eventType="touchUpInside" id="2eI-Qo-bBV"/>
                                 </connections>
                             </button>
                             <button opaque="NO" tag="5" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cdt-RN-ecA">
-                                <rect key="frame" x="420" y="270" width="75" height="30"/>
+                                <rect key="frame" x="420" y="232" width="75" height="30"/>
                                 <state key="normal" title="上傳"/>
                                 <connections>
                                     <action selector="uploadButtonClicked:" destination="PnF-Fq-esl" eventType="touchUpInside" id="5oi-dp-Y9q"/>
                                 </connections>
                             </button>
                             <button opaque="NO" tag="1" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="POw-Ae-m2K">
-                                <rect key="frame" x="420" y="123" width="75" height="30"/>
+                                <rect key="frame" x="420" y="85" width="75" height="30"/>
                                 <state key="normal" title="上傳"/>
                                 <connections>
                                     <action selector="uploadButtonClicked:" destination="PnF-Fq-esl" eventType="touchUpInside" id="c0h-rl-8iK"/>
                                 </connections>
                             </button>
                             <button opaque="NO" tag="3" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LgY-sD-7uv">
-                                <rect key="frame" x="420" y="199" width="75" height="30"/>
+                                <rect key="frame" x="420" y="161" width="75" height="30"/>
                                 <state key="normal" title="上傳"/>
                                 <connections>
                                     <action selector="uploadButtonClicked:" destination="PnF-Fq-esl" eventType="touchUpInside" id="OzP-2q-TQm"/>
@@ -151,7 +183,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vR1-iG-3Fw" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-859" y="17"/>
+            <point key="canvasLocation" x="-871" y="18"/>
         </scene>
         <!--球員登入-->
         <scene sceneID="tne-QT-ifu">
@@ -170,7 +202,7 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="106" id="Kao-xm-Xhs" customClass="BBRTableViewCell">
-                                        <rect key="frame" x="0.0" y="92" width="600" height="106"/>
+                                        <rect key="frame" x="0.0" y="28" width="600" height="106"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Kao-xm-Xhs" id="Cda-dK-1Yy">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="105"/>
@@ -237,6 +269,7 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
+        <segue reference="peG-MG-IZ6"/>
         <segue reference="S2w-8f-xfv"/>
     </inferredMetricsTieBreakers>
 </document>

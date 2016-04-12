@@ -36,18 +36,15 @@
     self.spinView = [[UIView alloc] initWithFrame:self.view.frame];
     self.spinView.backgroundColor = [UIColor grayColor];
     self.spinView.alpha = 0.8;
-    [self.view addSubview:self.spinView];
     
     self.loadingLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMidX(self.spinView.frame)-50, CGRectGetMidY(self.spinView.frame)-15, 100, 30)];
     self.loadingLabel.backgroundColor = [UIColor whiteColor];
     self.loadingLabel.textAlignment = NSTextAlignmentCenter;
     self.loadingLabel.text = @"Loading";
-    [self.view addSubview:self.loadingLabel];
     
     self.spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     self.spinner.frame = CGRectMake(CGRectGetMinX(self.loadingLabel.frame), CGRectGetMaxY(self.loadingLabel.frame), 100, 30);
     self.spinner.backgroundColor = [UIColor whiteColor];
-    [self.view addSubview:self.spinner];
     [self.spinner startAnimating];
     
     self.buttonClickedNo = 0;
@@ -69,12 +66,10 @@
 
 -(void) viewWillAppear:(BOOL)animated
 {
-    //Dropbox
- //   if ([[DBSession sharedSession] isLinked])
-   //     [[DBSession sharedSession] unlinkAll];
-    
-    if (![[DBSession sharedSession] isLinked])
-        [[DBSession sharedSession] linkFromController:self];
+    [self.view addSubview:self.spinView];
+    [self.view addSubview:self.spinner];
+    self.loadingLabel.text = @"Loading";
+    [self.view addSubview:self.loadingLabel];
     
     [self.restClient loadMetadata:@"/"];
 }
@@ -156,6 +151,7 @@
                 if([name isEqualToString:[NSString stringWithFormat:@"%@.xlsx", gameName]])
                 {
                     [((UIButton*)self.statusButtonArray[i]) setTitle:@"已上傳" forState:UIControlStateNormal];
+                    ((UIButton*)self.statusButtonArray[i]).titleLabel.textColor = [UIColor grayColor];
                     ((UIButton*)self.statusButtonArray[i]).userInteractionEnabled = NO;
                     break;
                 }
@@ -196,21 +192,18 @@
 - (IBAction)uploadButtonClicked:(UIButton*)sender
 {
     [self.view addSubview:self.spinView];
+    self.loadingLabel.text = @"Uploading";
     [self.view addSubview:self.loadingLabel];
     [self.view addSubview:self.spinner];
     
     NSThread *newThread = [[NSThread alloc] initWithTarget:self selector:@selector(xlsxFileGenerateAndUpload:) object:sender];
 
     [newThread start];
- //   [self performSelector:@selector(xlsxFileGenerateAndUpload:) withObject:sender afterDelay:0];
- //   [self performSelectorInBackground:@selector(xlsxFileGenerateAndUpload:) withObject:sender];
 }
 
 -(void) xlsxFileGenerateAndUpload:(UIButton*) sender
 {
     NSLog(@"%ld", sender.tag);
-    
-  //  [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
     
     NSString* recordPlistPath = [NSString stringWithFormat:@"%@/Documents/record.plist", NSHomeDirectory()];
     NSArray* recordPlistArray = [NSArray arrayWithContentsOfFile:recordPlistPath];
@@ -379,17 +372,9 @@
     
     [spreadsheet saveAs:sheetPath];
     
-    //Dropbox
-    if (![[DBSession sharedSession] isLinked])
-        [[DBSession sharedSession] linkFromController:self];
-    
-//    DBRestClient* restClient = [[DBRestClient alloc] initWithSession:[DBSession sharedSession]];
-//    restClient.delegate = self;
-    
     NSString* filename = [NSString stringWithFormat:@"%@.xlsx", gameName];
     NSArray* agus = [[NSArray alloc] initWithObjects:filename, sheetPath, nil];
     [self performSelectorOnMainThread:@selector(tmp:) withObject:agus waitUntilDone:0];
- //   [self.restClient uploadFile:filename toPath:@"/" withParentRev:nil fromPath:sheetPath];
 }
 
 -(void) tmp:(NSArray*) parameters
