@@ -55,6 +55,12 @@
     self.buttonArray = [NSArray arrayWithObjects:self.lastCompetitionButton, self.lastTwoCompetitionButton, self.lastThreeCompetitionButton, self.lastFourCompetitionButton, self.lastFiveCompetitionButton, nil];
     self.statusButtonArray = [NSArray arrayWithObjects:self.lastStatusButton, self.lastTwoStatusButton, self.lastThreeStatusButton, self.lastFourStatusButton, self.lastFiveStatusButton, nil];
     
+    for(int i=0; i<5; i++)
+    {
+        ((UIButton*)(self.buttonArray[i])).hidden = YES;
+        ((UIButton*)(self.statusButtonArray[i])).hidden = YES;
+    }
+    
     self.isTmpPlistExist = NO;
     
     NSFileManager* fm = [[NSFileManager alloc] init];
@@ -105,7 +111,7 @@
     {
         BBRMainViewController* mainViewCntler = [segue destinationViewController];
         mainViewCntler.isTmpPlistExist = self.isTmpPlistExist;
-        mainViewCntler.showOldRecordNo = self.buttonClickedNo;
+        mainViewCntler.showOldRecordNo = 5-self.buttonClickedNo;
     }
 }
 
@@ -139,7 +145,7 @@
     }
     else
     {
-   //         [fm removeItemAtPath:recordPlistPath error:nil];
+ //       [fm removeItemAtPath:recordPlistPath error:nil];
         NSArray* recordPlistContent = [NSArray arrayWithContentsOfFile:recordPlistPath];
         int buttonIndex = 0;
         for (int i=((int)[recordPlistContent count]-1); i >= 0; i--)
@@ -214,8 +220,31 @@
     NSString* recordPlistPath = [NSString stringWithFormat:@"%@/Documents/record.plist", NSHomeDirectory()];
     NSArray* recordPlistArray = [NSArray arrayWithContentsOfFile:recordPlistPath];
     
-    NSString* gameName = [[recordPlistArray objectAtIndex:sender.tag-1] objectForKey:KEY_FOR_NAME];
-    NSDictionary* dataDic = [recordPlistArray objectAtIndex:sender.tag-1];
+    NSString* gameName;
+    NSDictionary* dataDic;
+    int menuCount = (int)[recordPlistArray count];
+    switch (sender.tag) {
+        case 5:
+            gameName = [[recordPlistArray objectAtIndex:menuCount-1] objectForKey:KEY_FOR_NAME];
+            dataDic = [recordPlistArray objectAtIndex:menuCount-1];
+            break;
+        case 4:
+            gameName = [[recordPlistArray objectAtIndex:menuCount-2] objectForKey:KEY_FOR_NAME];
+            dataDic = [recordPlistArray objectAtIndex:menuCount-2];
+            break;
+        case 3:
+            gameName = [[recordPlistArray objectAtIndex:menuCount-3] objectForKey:KEY_FOR_NAME];
+            dataDic = [recordPlistArray objectAtIndex:menuCount-3];
+            break;
+        case 2:
+            gameName = [[recordPlistArray objectAtIndex:menuCount-4] objectForKey:KEY_FOR_NAME];
+            dataDic = [recordPlistArray objectAtIndex:menuCount-4];
+            break;
+        case 1:
+            gameName = [[recordPlistArray objectAtIndex:menuCount-5] objectForKey:KEY_FOR_NAME];
+            dataDic = [recordPlistArray objectAtIndex:menuCount-5];
+            break;
+    }
     
     NSLog(@"gameName = %@", gameName);
     
@@ -267,7 +296,7 @@
                 [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:playerNoSet[i]];
             else
                 [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:@"全隊"];
-            
+  
             NSDictionary* playerDataDic = [totalGradeArray objectAtIndex:i];
             for(int j=0; j<[attackWayKeySet count]; j++)
             {
@@ -360,11 +389,10 @@
             NSString* totalTurnoverCount = [playerDataDic objectForKey:KEY_FOR_TOTAL_TURNOVER_COUNT];
             cellRef = [NSString stringWithFormat:@"CE%d", i+3];
             [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:totalTurnoverCount];
-            
+ 
             NSString* totalScore = [playerDataDic objectForKey:KEY_FOR_TOTAL_SCORE_GET];
             cellRef = [NSString stringWithFormat:@"CF%d", i+3];
             [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:totalScore];
-            
         }
         
     }
