@@ -133,10 +133,13 @@
         [fm copyItemAtPath:src toPath:recordPlistPath error:nil];
         for(UIButton* button in self.buttonArray)
             button.hidden = YES;
+        for(UIButton* button in self.statusButtonArray)
+            button.hidden = YES;
+        
     }
     else
     {
-        //    [fm removeItemAtPath:recordPlistPath error:nil];
+   //         [fm removeItemAtPath:recordPlistPath error:nil];
         NSArray* recordPlistContent = [NSArray arrayWithContentsOfFile:recordPlistPath];
         
         for (int i=0; i<[recordPlistContent count]; i++)

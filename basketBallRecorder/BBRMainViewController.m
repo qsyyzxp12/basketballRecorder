@@ -588,8 +588,13 @@
             [fm removeItemAtPath:self.tmpPlistPath error:nil];
     }
     if(generateXlsxFile)
+    {
         [self performSelectorInBackground:@selector(xlsxFileGenerateAndUpload) withObject:nil];
-//        [self xlsxFileGenerateAndUpload];
+        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] init];
+        self.navigationItem.leftBarButtonItem.title = @"＜選單";
+        self.navigationItem.leftBarButtonItem.target = self;
+        self.navigationItem.leftBarButtonItem.action = @selector(backMenuButtonClicked);
+    }
     
     self.quarterNo = 0;
     
@@ -1616,6 +1621,11 @@
 }
 
 #pragma mark - Button Clicked
+
+-(void)backMenuButtonClicked
+{
+    [self.navigationController popToRootViewControllerAnimated:YES];
+}
 
 -(void)backButtonClicked
 {
