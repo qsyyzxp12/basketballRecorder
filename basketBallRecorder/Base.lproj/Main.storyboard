@@ -93,25 +93,40 @@
                                     <action selector="recordButtonClicked:" destination="PnF-Fq-esl" eventType="touchUpInside" id="5Tz-Hz-wDP"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="e0w-f1-8E3">
+                            <button opaque="NO" tag="2" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="e0w-f1-8E3">
                                 <rect key="frame" x="420" y="161" width="75" height="30"/>
                                 <state key="normal" title="上傳"/>
+                                <connections>
+                                    <action selector="uploadButtonClicked:" destination="PnF-Fq-esl" eventType="touchUpInside" id="9np-ta-MNF"/>
+                                </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LgY-sD-7uv">
-                                <rect key="frame" x="420" y="199" width="75" height="30"/>
-                                <state key="normal" title="上傳"/>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oa7-AQ-a2Y">
+                            <button opaque="NO" tag="4" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oa7-AQ-a2Y">
                                 <rect key="frame" x="420" y="237" width="75" height="30"/>
                                 <state key="normal" title="上傳"/>
+                                <connections>
+                                    <action selector="uploadButtonClicked:" destination="PnF-Fq-esl" eventType="touchUpInside" id="2eI-Qo-bBV"/>
+                                </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="POw-Ae-m2K">
-                                <rect key="frame" x="420" y="123" width="75" height="30"/>
-                                <state key="normal" title="上傳"/>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cdt-RN-ecA">
+                            <button opaque="NO" tag="5" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cdt-RN-ecA">
                                 <rect key="frame" x="420" y="270" width="75" height="30"/>
                                 <state key="normal" title="上傳"/>
+                                <connections>
+                                    <action selector="uploadButtonClicked:" destination="PnF-Fq-esl" eventType="touchUpInside" id="5oi-dp-Y9q"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" tag="1" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="POw-Ae-m2K">
+                                <rect key="frame" x="420" y="123" width="75" height="30"/>
+                                <state key="normal" title="上傳"/>
+                                <connections>
+                                    <action selector="uploadButtonClicked:" destination="PnF-Fq-esl" eventType="touchUpInside" id="c0h-rl-8iK"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" tag="3" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LgY-sD-7uv">
+                                <rect key="frame" x="420" y="199" width="75" height="30"/>
+                                <state key="normal" title="上傳"/>
+                                <connections>
+                                    <action selector="uploadButtonClicked:" destination="PnF-Fq-esl" eventType="touchUpInside" id="OzP-2q-TQm"/>
+                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
