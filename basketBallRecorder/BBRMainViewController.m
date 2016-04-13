@@ -589,7 +589,7 @@
     }
     if(generateXlsxFile)
     {
-        [self performSelectorInBackground:@selector(xlsxFileGenerateAndUpload) withObject:nil];
+        [self performSelectorInBackground:@selector(xlsxFileGenerateAndUpload:) withObject:[NSNumber numberWithInt:self.quarterNo]];
         self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] init];
         self.navigationItem.leftBarButtonItem.title = @"＜選單";
         self.navigationItem.leftBarButtonItem.target = self;
@@ -655,13 +655,13 @@
     [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
 }
 
--(void) xlsxFileGenerateAndUpload
+-(void) xlsxFileGenerateAndUpload: (NSNumber*) quarterNo
 {
     //Generate the xlsx file
     NSString *documentPath = [[NSBundle mainBundle] pathForResource:@"spreadsheet" ofType:@"xlsx"];
     BRAOfficeDocumentPackage *spreadsheet = [BRAOfficeDocumentPackage open:documentPath];
     
-    for(int i=0; i<self.quarterNo+1; i++)
+    for(int i=0; i<quarterNo.intValue+1; i++)
     {
         BRAWorksheet *worksheet;
         if(i == [spreadsheet.workbook.worksheets count])
