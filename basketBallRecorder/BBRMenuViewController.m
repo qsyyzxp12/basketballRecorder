@@ -111,7 +111,11 @@
     {
         BBRMainViewController* mainViewCntler = [segue destinationViewController];
         mainViewCntler.isTmpPlistExist = self.isTmpPlistExist;
-        mainViewCntler.showOldRecordNo = 5-self.buttonClickedNo;
+        
+        NSString* recordPlistPath = [NSString stringWithFormat:@"%@/Documents/record.plist", NSHomeDirectory()];
+        NSArray* recordPlistArray = [NSArray arrayWithContentsOfFile:recordPlistPath];
+        
+        mainViewCntler.showOldRecordNo = (int)[recordPlistArray count]-self.buttonClickedNo+1;
     }
 }
 
