@@ -64,10 +64,10 @@
     self.restClient = [[DBRestClient alloc] initWithSession:[DBSession sharedSession]];
     self.restClient.delegate = self;
     
-    self.attackWaySet = [[NSArray alloc] initWithObjects:@"Isolation", @"Spot Up", @"PS", @"PD", @"PR", @"PPS", @"PPD", @"Catch&Shoot", @"Fast Break", @"Low Post", @"High Post", @"Second", @"Drive", @"High-Low", @"Cut", @"Bonus", nil];
+    self.attackWaySet = [[NSArray alloc] initWithObjects:@"Isolation", @"Spot Up", @"PS", @"PD", @"PR", @"PPS", @"PPD", @"Catch&Shoot", @"Fast Break", @"Low Post", @"Second", @"Drive", @"High-Low", @"Cut", @"Bonus", nil];
     self.attackWayKeySet = [[NSArray alloc] initWithObjects:
                             @"isolation", @"spotUp", @"PS", @"PD", @"PR", @"PPS", @"PPD", @"CS",
-                            @"fastBreak", @"lowPost", @"highPost", @"second", @"drive", @"highLow", @"cut", nil];
+                            @"fastBreak", @"lowPost", @"second", @"drive", @"highLow", @"cut", nil];
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] init];
     self.navigationItem.rightBarButtonItem.title = @"本節結束";
@@ -620,7 +620,9 @@
 {
     NSString* recordPlistPath = [NSString stringWithFormat:@"%@/Documents/record.plist", NSHomeDirectory()];
     NSArray* recordPlistArray = [NSArray arrayWithContentsOfFile:recordPlistPath];
-    NSDictionary* dataDic = [recordPlistArray objectAtIndex:self.showOldRecordNo-1 ];
+//    NSLog(@"%lu", (unsigned long)[recordPlistArray count]);
+//    NSLog(@"%d", self.showOldRecordNo);
+    NSDictionary* dataDic = [recordPlistArray objectAtIndex:self.showOldRecordNo-1];
     self.playerDataArray = [dataDic objectForKey:KEY_FOR_GRADE];
     self.playerNoSet = [dataDic objectForKey:KEY_FOR_PLAYER_NO_SET];
     self.quarterNo = END;
@@ -763,34 +765,34 @@
             
             NSDictionary* bonusGrade = [playerDataDic objectForKey:@"zone12"];
             NSString* madeCountInBonus = [bonusGrade objectForKey:KEY_FOR_MADE_COUNT];
-            cellRef = [NSString stringWithFormat:@"BY%d", i+3];
+            cellRef = [NSString stringWithFormat:@"BT%d", i+3];
             [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:madeCountInBonus];
             
             NSString* attemptCountInBonus = [bonusGrade objectForKey:KEY_FOR_ATTEMPT_COUNT];
-            cellRef = [NSString stringWithFormat:@"BZ%d", i+3];
+            cellRef = [NSString stringWithFormat:@"BU%d", i+3];
             [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:attemptCountInBonus];
             
-            cellRef = [NSString stringWithFormat:@"CA%d", i+3];
+            cellRef = [NSString stringWithFormat:@"BV%d", i+3];
             [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:madeCountInBonus];
             
             NSString* totalMadeCount = [playerDataDic objectForKey:KEY_FOR_TOTAL_MADE_COUNT];
-            cellRef = [NSString stringWithFormat:@"CB%d", i+3];
+            cellRef = [NSString stringWithFormat:@"BW%d", i+3];
             [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:totalMadeCount];
             
             NSString* totalAttemptCount = [playerDataDic objectForKey:KEY_FOR_TOTAL_ATTEMPT_COUNT];
-            cellRef = [NSString stringWithFormat:@"CC%d", i+3];
+            cellRef = [NSString stringWithFormat:@"BX%d", i+3];
             [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:totalAttemptCount];
             
             NSString* totalFoulCount = [playerDataDic objectForKey:KEY_FOR_TOTAL_FOUL_COUNT];
-            cellRef = [NSString stringWithFormat:@"CD%d", i+3];
+            cellRef = [NSString stringWithFormat:@"BY%d", i+3];
             [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:totalFoulCount];
             
             NSString* totalTurnoverCount = [playerDataDic objectForKey:KEY_FOR_TOTAL_TURNOVER_COUNT];
-            cellRef = [NSString stringWithFormat:@"CE%d", i+3];
+            cellRef = [NSString stringWithFormat:@"BZ%d", i+3];
             [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:totalTurnoverCount];
             
             NSString* totalScore = [playerDataDic objectForKey:KEY_FOR_TOTAL_SCORE_GET];
-            cellRef = [NSString stringWithFormat:@"CF%d", i+3];
+            cellRef = [NSString stringWithFormat:@"CA%d", i+3];
             [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:totalScore];
             
         }
