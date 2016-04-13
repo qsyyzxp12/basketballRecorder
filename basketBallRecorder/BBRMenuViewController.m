@@ -55,6 +55,12 @@
     self.buttonArray = [NSArray arrayWithObjects:self.lastCompetitionButton, self.lastTwoCompetitionButton, self.lastThreeCompetitionButton, self.lastFourCompetitionButton, self.lastFiveCompetitionButton, nil];
     self.statusButtonArray = [NSArray arrayWithObjects:self.lastStatusButton, self.lastTwoStatusButton, self.lastThreeStatusButton, self.lastFourStatusButton, self.lastFiveStatusButton, nil];
     
+    
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] init];
+    self.navigationItem.rightBarButtonItem.title = @"重新整理";
+    self.navigationItem.rightBarButtonItem.target = self;
+    self.navigationItem.rightBarButtonItem.action = @selector(viewWillAppear:);
+    
     for(int i=0; i<5; i++)
     {
         ((UIButton*)(self.buttonArray[i])).hidden = YES;
