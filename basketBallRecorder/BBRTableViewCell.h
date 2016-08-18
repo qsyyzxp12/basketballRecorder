@@ -11,4 +11,5 @@
 @interface BBRTableViewCell : UITableViewCell
 @property (strong, nonatomic) IBOutlet UILabel *indexLabel;
 @property (strong, nonatomic) IBOutlet UITextField *numberTextField;
+@property (strong, nonatomic) IBOutlet UILabel *NoLabel;
 @end

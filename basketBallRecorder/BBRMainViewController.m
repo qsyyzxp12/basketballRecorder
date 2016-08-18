@@ -1817,11 +1817,11 @@
             {
                 cell = [[BBRTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"title"];
                 cell.layer.borderWidth = 1;
-                UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, CELL_WIDTH, TITLE_CELL_HEIGHT)];
-                label.textAlignment = NSTextAlignmentCenter;
-                label.backgroundColor = [UIColor lightGrayColor];
-                label.text = @"PPP";
-                [cell addSubview:label];
+                cell.NoLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, CELL_WIDTH, TITLE_CELL_HEIGHT)];
+                cell.NoLabel.textAlignment = NSTextAlignmentCenter;
+                cell.NoLabel.backgroundColor = [UIColor lightGrayColor];
+                cell.NoLabel.text = @"PPP";
+                [cell addSubview:cell.NoLabel];
                 cell.selectionStyle = UITableViewCellSelectionStyleNone;
             }
             return cell;
@@ -1833,10 +1833,10 @@
             {
                 cell = [[BBRTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Team"];
                 cell.layer.borderWidth = 1;
-                UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, CELL_WIDTH, CELL_HEIGHT)];
-                label.textAlignment = NSTextAlignmentCenter;
-                label.text = @"全隊";
-                [cell addSubview:label];
+                cell.NoLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, CELL_WIDTH, CELL_HEIGHT)];
+                cell.NoLabel.textAlignment = NSTextAlignmentCenter;
+                cell.NoLabel.text = @"全隊";
+                [cell addSubview:cell.NoLabel];
                 cell.selectionStyle = UITableViewCellSelectionStyleBlue;
             }
             return cell;
@@ -1844,10 +1844,10 @@
         
         BBRTableViewCell* cell = [[BBRTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
         cell.layer.borderWidth = 1;
-        UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, CELL_WIDTH, CELL_HEIGHT)];
-        label.textAlignment = NSTextAlignmentCenter;
-        label.text = [NSString stringWithFormat:@"%@", [self.playerNoSet objectAtIndex:indexPath.row-1]];
-        [cell addSubview:label];
+        cell.NoLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, CELL_WIDTH, CELL_HEIGHT)];
+        cell.NoLabel.textAlignment = NSTextAlignmentCenter;
+        cell.NoLabel.text = [NSString stringWithFormat:@"%@", [self.playerNoSet objectAtIndex:indexPath.row-1]];
+        [cell addSubview:cell.NoLabel];
         cell.selectionStyle = UITableViewCellSelectionStyleBlue;
         
         return cell;
@@ -1873,10 +1873,10 @@
         
         BBRTableViewCell* cell = [[BBRTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
         cell.layer.borderWidth = 1;
-        UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, CELL_WIDTH, CELL_HEIGHT)];
-        label.textAlignment = NSTextAlignmentCenter;
-        label.text = [NSString stringWithFormat:@"%@", [self.playerNoSet objectAtIndex:indexPath.row-1]];
-        [cell addSubview:label];
+        cell.NoLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, CELL_WIDTH, CELL_HEIGHT)];
+        cell.NoLabel.textAlignment = NSTextAlignmentCenter;
+        cell.NoLabel.text = [NSString stringWithFormat:@"%@", [self.playerNoSet objectAtIndex:indexPath.row-1]];
+        [cell addSubview:cell.NoLabel];
         cell.selectionStyle = UITableViewCellSelectionStyleBlue;
         
         return cell;
@@ -2040,13 +2040,45 @@
     
         [self updateZoneGradeView];
     }
-    else if(tableView.tag == NO_TABLEVIEW_TAG && !self.isRecordMode)
+    else if(tableView.tag == NO_TABLEVIEW_TAG)
     {
-        self.playerSelectedIndex = (int)indexPath.row;
-        if(!self.isShowZoneGrade)
-            [(UITableView*)[self.view viewWithTag:PLAYER_GRADE_TABLEVIEW_TAG] reloadData];
-        else
-            [self updateZoneGradeView];
+        if(!self.isRecordMode)
+        {
+            self.playerSelectedIndex = (int)indexPath.row;
+            if(!self.isShowZoneGrade)
+                [(UITableView*)[self.view viewWithTag:PLAYER_GRADE_TABLEVIEW_TAG] reloadData];
+            else
+                [self updateZoneGradeView];
+        }
+        else if(indexPath.row != 0 && indexPath.row != self.playerCount+1)
+        {
+            BBRTableViewCell* cellOfSelected = [tableView cellForRowAtIndexPath:indexPath];
+            
+            UIAlertController* changePlayerAlert = [UIAlertController alertControllerWithTitle:@"下場球員" message:nil preferredStyle: UIAlertControllerStyleAlert];
+            BOOL isPlayerOnFloorAlready = NO;
+            for(int i=1; i<6; i++)
+            {
+                NSIndexPath* index = [NSIndexPath indexPathForRow:i inSection:0];
+                BBRTableViewCell* cellOfChanged = [self.playerOnFloorListTableView cellForRowAtIndexPath:index];
+                if([cellOfChanged.NoLabel.text isEqualToString:cellOfSelected.NoLabel.text])
+                {
+                    isPlayerOnFloorAlready = YES;
+                    break;
+                }
+                UIAlertAction* playerOnFloorNoAction = [UIAlertAction actionWithTitle:cellOfChanged.NoLabel.text style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+                {
+                    cellOfChanged.NoLabel.text = cellOfSelected.NoLabel.text;
+                    [self.playerOnFloorToPPPIndexMap setObject:[NSNumber numberWithInt:[cellOfSelected.NoLabel.text intValue]] atIndexedSubscript:i-1];
+                }];
+                [changePlayerAlert addAction:playerOnFloorNoAction];
+            }
+            if(!isPlayerOnFloorAlready)
+            {
+                UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action){}];
+                [changePlayerAlert addAction:cancelAction];
+                [self presentViewController:changePlayerAlert animated:YES completion:nil];
+            }
+        }
     }
 }
 
