@@ -13,7 +13,9 @@
 
 @interface BBRMainViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, DBRestClientDelegate>
 @property UITableView *playerListTableView;
+@property UITableView *playerOnFloorListTableView;
 @property UITableView *playerDataTableView;
+@property NSMutableArray *playerOnFloorToPPPIndexMap;
 @property NSMutableArray* playerDataArray;
 @property NSMutableArray* OldPlayerDataArray;
 @property NSArray* attackWaySet;

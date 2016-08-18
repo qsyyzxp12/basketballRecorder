@@ -12,7 +12,7 @@
 
 #define TITLE_CELL_HEIGHT 30
 #define CELL_HEIGHT 40
-#define CELL_WIDTH 60
+#define CELL_WIDTH 40
 
 #define BACKGROUND_WIDTH 373
 #define BACKGROUND_HEIGHT 245
@@ -24,9 +24,10 @@
 #define TOP_PADDING_RATE3 0.6       //for zone 6, 10
 #define TOP_PADDING_RATE4 0         //for zone 8
 #define NO_TABLEVIEW_TAG -1
-#define PLAYER_GRADE_TABLEVIEW_TAG -2
+#define PLAYER_ON_FLOOR_TABLEVIEW_TAG -2
+#define PLAYER_GRADE_TABLEVIEW_TAG -3
 #define PLAYER_GRADE_TABLECELL_HEIGHT 30
-#define BACKGROUND_IMAGEVIEW_TAG -3
+#define BACKGROUND_IMAGEVIEW_TAG -4
 #define BAR_HEIGHT 33
 
 #define KEY_FOR_ATTEMPT_COUNT @"attempCount"
@@ -51,8 +52,13 @@
 
 @implementation BBRMainViewController
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
+    
+    self.playerOnFloorToPPPIndexMap = [NSMutableArray arrayWithCapacity:5];
+    for(int i=0; i<5; i++)
+        [self.playerOnFloorToPPPIndexMap setObject:[NSNumber numberWithInt:i+1] atIndexedSubscript:i];
     
     self.tmpPlistPath = [NSString stringWithFormat:@"%@/Documents/tmp.plist", NSHomeDirectory()];
     self.isShowZoneGrade = YES;
@@ -90,13 +96,20 @@
     int tableViewHeight = TITLE_CELL_HEIGHT + CELL_HEIGHT * (self.playerCount+1) + BAR_HEIGHT;
     if (tableViewHeight + 20 > self.view.frame.size.height)
         tableViewHeight = self.view.frame.size.height - 20;
-    
-    self.playerListTableView = [[UITableView alloc] initWithFrame:CGRectMake(20, 10, CELL_WIDTH, tableViewHeight)];
+ 
+    self.playerListTableView = [[UITableView alloc] initWithFrame:CGRectMake(55, 10, CELL_WIDTH, tableViewHeight)];
+//    self.playerListTableView.backgroundColor = [UIColor redColor];
     self.playerListTableView.delegate = self;
     self.playerListTableView.dataSource = self;
     self.playerListTableView.tag = NO_TABLEVIEW_TAG;
     [self.view addSubview:self.playerListTableView];
-    
+
+    self.playerOnFloorListTableView = [[UITableView alloc] initWithFrame:CGRectMake(10, 10+BAR_HEIGHT, CELL_WIDTH, TITLE_CELL_HEIGHT + CELL_HEIGHT * MIN(self.playerCount, 5))];
+    self.playerOnFloorListTableView.delegate = self;
+    self.playerOnFloorListTableView.dataSource = self;
+    self.playerOnFloorListTableView.tag = PLAYER_ON_FLOOR_TABLEVIEW_TAG;
+    [self.view addSubview:self.playerOnFloorListTableView];
+   
     [self drawPicture];
     [self constructAlertControllers];
     
@@ -1142,7 +1155,7 @@
 {
     self.backgroundImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"background.jpg"]];
     
-    CGFloat x = (self.view.frame.size.width- CGRectGetMaxX(self.playerListTableView.frame) - BACKGROUND_WIDTH)/3 + CGRectGetMaxX(self.playerListTableView.frame);
+    CGFloat x = (self.view.frame.size.width- CGRectGetMaxX(self.playerListTableView.frame) - BACKGROUND_WIDTH)/5 + CGRectGetMaxX(self.playerListTableView.frame);
     CGFloat y = (self.view.frame.size.height - BAR_HEIGHT - BACKGROUND_HEIGHT)/2 + BAR_HEIGHT;
     
     self.backgroundImageView.frame = CGRectMake(x, y, BACKGROUND_WIDTH, BACKGROUND_HEIGHT);
@@ -1609,6 +1622,8 @@
                 [(UIImageView*)[self.view viewWithTag:self.zoneNo] setHighlighted:NO];
             self.zoneNo = (int)recognizer.view.tag;
             [(UIImageView*)recognizer.view setHighlighted:YES];
+            
+            NSLog(@"playerSelectedIndex = %d", self.playerSelectedIndex);
             if(self.playerSelectedIndex && self.playerSelectedIndex != self.playerCount+1)
                 [self showAttackList];
         }
@@ -1706,8 +1721,13 @@
 
 - (void) switchButtonClicked
 {
+    NSLog(@"playerSelectedINdex = %d", self.playerSelectedIndex);
+    NSIndexPath* index = [NSIndexPath indexPathForRow:self.playerSelectedIndex inSection:0];
+    
     if (self.isRecordMode)
     {
+        [self.playerOnFloorListTableView removeFromSuperview];
+        [self.playerListTableView setFrame:CGRectMake(25, 10, self.playerListTableView.frame.size.width, self.playerListTableView.frame.size.height)];
         for(int i=1; i<13; i++)
         {
             UIImageView* zone = (UIImageView*)[self.view viewWithTag:i];
@@ -1722,12 +1742,17 @@
         self.lastQuarterButton.hidden = NO;
         self.undoButton.hidden = YES;
         self.isRecordMode = NO;
-        [self updateGradeView];
         self.navigationItem.rightBarButtonItem.title = @"進攻統計";
         self.navigationItem.rightBarButtonItem.action = @selector(showOffenseGradeButtonClicked);
+        
+        [self.playerOnFloorListTableView deselectRowAtIndexPath:index animated:NO];
+        self.playerSelectedIndex = 0;
+        [self updateGradeView];
     }
     else
     {
+        [self.view addSubview:self.playerOnFloorListTableView];
+        [self.playerListTableView setFrame:CGRectMake(55, 10, self.playerListTableView.frame.size.width, self.playerListTableView.frame.size.height)];
         for(int i=1; i<13; i++)
         {
             UIImageView* zone = (UIImageView*)[self.view viewWithTag:i];
@@ -1746,6 +1771,10 @@
         [self updateNavigationTitle];
         self.navigationItem.rightBarButtonItem.title = @"本節結束";
         self.navigationItem.rightBarButtonItem.action = @selector(nextQuarterButtonClicked);
+        
+        [self.playerListTableView deselectRowAtIndexPath:index animated:NO];
+        self.playerSelectedIndex = 0;
+        [self updateZoneGradeView];
     }
 }
 
@@ -1765,10 +1794,9 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if (tableView.tag == NO_TABLEVIEW_TAG)
-    {
        return (self.playerCount + 2); //One for title, the other one for team grade
-    }
-    //if(tableview.tag == PLAYER_GRADE_TABLEVIEW_TAG)
+    else if(tableView.tag == PLAYER_ON_FLOOR_TABLEVIEW_TAG)
+        return MIN(self.playerCount, 5)+1;
     return [self.attackWayKeySet count]+3;
 }
 
@@ -1791,7 +1819,7 @@
                 UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, CELL_WIDTH, TITLE_CELL_HEIGHT)];
                 label.textAlignment = NSTextAlignmentCenter;
                 label.backgroundColor = [UIColor lightGrayColor];
-                label.text = @"背號";
+                label.text = @"PPP";
                 [cell addSubview:label];
                 cell.selectionStyle = UITableViewCellSelectionStyleNone;
             }
@@ -1809,6 +1837,35 @@
                 label.text = @"全隊";
                 [cell addSubview:label];
                 cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+            }
+            return cell;
+        }
+        
+        BBRTableViewCell* cell = [[BBRTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
+        cell.layer.borderWidth = 1;
+        UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, CELL_WIDTH, CELL_HEIGHT)];
+        label.textAlignment = NSTextAlignmentCenter;
+        label.text = [NSString stringWithFormat:@"%@", [self.playerNoSet objectAtIndex:indexPath.row-1]];
+        [cell addSubview:label];
+        cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+        
+        return cell;
+    }
+    else if(tableView.tag == PLAYER_ON_FLOOR_TABLEVIEW_TAG)
+    {
+        if(indexPath.row == 0)
+        {
+            BBRTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"title"];
+            if(!cell)
+            {
+                cell = [[BBRTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"title"];
+                cell.layer.borderWidth = 1;
+                UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, CELL_WIDTH, TITLE_CELL_HEIGHT)];
+                label.textAlignment = NSTextAlignmentCenter;
+                label.backgroundColor = [UIColor lightGrayColor];
+                label.text = @"場上";
+                [cell addSubview:label];
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
             }
             return cell;
         }
@@ -1967,11 +2024,12 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if(tableView.tag == NO_TABLEVIEW_TAG)
+    if(tableView.tag == PLAYER_ON_FLOOR_TABLEVIEW_TAG)
     {
         if(indexPath.row)
         {
-            self.playerSelectedIndex = (int)indexPath.row;
+            NSNumber *playerSelectedIndex = self.playerOnFloorToPPPIndexMap[indexPath.row-1];
+            self.playerSelectedIndex = playerSelectedIndex.intValue;
         
             if(self.zoneNo && indexPath.row != self.playerCount+1)
                 [self showAttackList];
@@ -1979,17 +2037,21 @@
         else
             self.playerSelectedIndex = 0;
     
+        [self updateZoneGradeView];
+    }
+    else if(tableView.tag == NO_TABLEVIEW_TAG && !self.isRecordMode)
+    {
+        self.playerSelectedIndex = (int)indexPath.row;
         if(!self.isShowZoneGrade)
             [(UITableView*)[self.view viewWithTag:PLAYER_GRADE_TABLEVIEW_TAG] reloadData];
         else
             [self updateZoneGradeView];
-
     }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if(tableView.tag == NO_TABLEVIEW_TAG)
+    if(tableView.tag == NO_TABLEVIEW_TAG || tableView.tag == PLAYER_ON_FLOOR_TABLEVIEW_TAG)
     {
         if(!indexPath.row)
             return TITLE_CELL_HEIGHT;

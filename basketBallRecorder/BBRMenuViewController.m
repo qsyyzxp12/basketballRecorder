@@ -73,7 +73,10 @@
     NSString* tmpPlistPath = [NSString stringWithFormat:@"%@/Documents/tmp.plist", NSHomeDirectory()];
     
     if([fm fileExistsAtPath:tmpPlistPath])
+    {
+        self.isTmpPlistExist = YES;
         [self presentViewController:self.dirtyStatusAlert animated:YES completion:nil];
+    }
 }
 
 -(void) viewWillAppear:(BOOL)animated
