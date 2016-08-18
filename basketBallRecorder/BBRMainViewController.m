@@ -2080,6 +2080,8 @@
             }
             [tableView deselectRowAtIndexPath:indexPath animated:NO];
         }
+        else if(indexPath.row == self.playerCount+1)
+            [tableView deselectRowAtIndexPath:indexPath animated:NO];
     }
 }
 
