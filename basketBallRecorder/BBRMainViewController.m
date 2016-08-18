@@ -1721,9 +1721,8 @@
 
 - (void) switchButtonClicked
 {
-    NSLog(@"playerSelectedINdex = %d", self.playerSelectedIndex);
-    NSIndexPath* index = [NSIndexPath indexPathForRow:self.playerSelectedIndex inSection:0];
-    
+    [self.playerListTableView deselectRowAtIndexPath:self.playerListTableView.indexPathForSelectedRow animated:NO];
+    self.playerSelectedIndex = 0;
     if (self.isRecordMode)
     {
         [self.playerOnFloorListTableView removeFromSuperview];
@@ -1745,8 +1744,7 @@
         self.navigationItem.rightBarButtonItem.title = @"進攻統計";
         self.navigationItem.rightBarButtonItem.action = @selector(showOffenseGradeButtonClicked);
         
-        [self.playerOnFloorListTableView deselectRowAtIndexPath:index animated:NO];
-        self.playerSelectedIndex = 0;
+        [self.playerOnFloorListTableView deselectRowAtIndexPath:self.playerOnFloorListTableView.indexPathForSelectedRow animated:NO];
         [self updateGradeView];
     }
     else
@@ -1771,9 +1769,6 @@
         [self updateNavigationTitle];
         self.navigationItem.rightBarButtonItem.title = @"本節結束";
         self.navigationItem.rightBarButtonItem.action = @selector(nextQuarterButtonClicked);
-        
-        [self.playerListTableView deselectRowAtIndexPath:index animated:NO];
-        self.playerSelectedIndex = 0;
         [self updateZoneGradeView];
     }
 }
