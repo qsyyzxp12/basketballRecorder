@@ -2078,6 +2078,7 @@
                 [changePlayerAlert addAction:cancelAction];
                 [self presentViewController:changePlayerAlert animated:YES completion:nil];
             }
+            [tableView deselectRowAtIndexPath:indexPath animated:NO];
         }
     }
 }
