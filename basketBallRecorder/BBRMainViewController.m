@@ -557,12 +557,18 @@
 
 -(void) showConclusionAndGernateXlsxFile:(BOOL)generateXlsxFile
 {
+    self.isRecordMode = NO;
     if(!self.isShowZoneGrade)
         self.playerDataTableView.hidden = NO;
     
     self.isShowZoneGrade = YES;
     self.undoButton.hidden = YES;
     self.switchModeButton.hidden = YES;
+
+    [self.playerOnFloorListTableView removeFromSuperview];
+    [self.playerListTableView setFrame:CGRectMake(25, 10, self.playerListTableView.frame.size.width, self.playerListTableView.frame.size.height)];
+    self.playerSelectedIndex = 0;
+    [self updateZoneGradeView];
     
     for(int i=1; i<13; i++)
     {
