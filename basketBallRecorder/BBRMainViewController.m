@@ -41,6 +41,10 @@
 #define KEY_FOR_TOTAL_FOUL_COUNT @"totalFoulCount"
 #define KEY_FOR_TOTAL_TURNOVER_COUNT @"totalTurnoverCount"
 #define KEY_FOR_TOTAL_SCORE_GET @"totalScoreGet"
+#define KEY_FOR_TIME_ON_FLOOR @"timeOnFloor"
+
+#define KEY_FOR_TIME_WHEN_GO_ON_FLOOR @"timeWhenGoOnFloor"
+#define KEY_FOR_INDEX_IN_PPP_TABLEVIEW @"indexInPPPTableview"
 
 #define END -1
 
@@ -56,9 +60,14 @@
 {
     [super viewDidLoad];
     
-    self.playerOnFloorToPPPIndexMap = [NSMutableArray arrayWithCapacity:5];
+    self.playerOnFloorDataArray = [NSMutableArray arrayWithCapacity:5];
     for(int i=0; i<5; i++)
-        [self.playerOnFloorToPPPIndexMap setObject:[NSNumber numberWithInt:i+1] atIndexedSubscript:i];
+    {
+        NSMutableDictionary* dic = [[NSMutableDictionary  alloc] init];
+        [dic setObject:@"0" forKey:KEY_FOR_TIME_WHEN_GO_ON_FLOOR];
+        [dic setObject:[NSNumber numberWithInt:i+1] forKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
+        [self.playerOnFloorDataArray setObject:dic atIndexedSubscript:i];
+    }
     
     self.tmpPlistPath = [NSString stringWithFormat:@"%@/Documents/tmp.plist", NSHomeDirectory()];
     self.isShowZoneGrade = YES;
@@ -912,6 +921,7 @@
         [playerDataItem setObject:@"0" forKey:KEY_FOR_TOTAL_ATTEMPT_COUNT];
         [playerDataItem setObject:@"0" forKey:KEY_FOR_TOTAL_FOUL_COUNT];
         [playerDataItem setObject:@"0" forKey:KEY_FOR_TOTAL_TURNOVER_COUNT];
+        [playerDataItem setObject:@"0" forKey:KEY_FOR_TIME_ON_FLOOR];
         [quarterData addObject:playerDataItem];
     }
     [self.playerDataArray addObject:quarterData];
@@ -1778,6 +1788,7 @@
         [self.playerDataTableView reloadData];
         self.nextQuarterButton.hidden = NO;
         self.lastQuarterButton.hidden = NO;
+        self.timeButton.hidden = YES;
         self.undoButton.hidden = YES;
         self.isRecordMode = NO;
         self.navigationItem.rightBarButtonItem.title = @"進攻統計";
@@ -1803,6 +1814,7 @@
         self.playerDataTableView.hidden = YES;
         self.nextQuarterButton.hidden = YES;
         self.lastQuarterButton.hidden = YES;
+        self.timeButton.hidden = NO;
         self.undoButton.hidden = NO;
         self.isRecordMode = YES;
         [self updateNavigationTitle];
@@ -2062,7 +2074,8 @@
     {
         if(indexPath.row)
         {
-            NSNumber *playerSelectedIndex = self.playerOnFloorToPPPIndexMap[indexPath.row-1];
+            NSMutableDictionary* dic = [self.playerOnFloorDataArray objectAtIndex:indexPath.row-1];
+            NSNumber *playerSelectedIndex = [dic objectForKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
             self.playerSelectedIndex = playerSelectedIndex.intValue;
         
             if(self.zoneNo && indexPath.row != self.playerCount+1)
@@ -2101,7 +2114,8 @@
                 UIAlertAction* playerOnFloorNoAction = [UIAlertAction actionWithTitle:cellOfChanged.NoLabel.text style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
                 {
                     cellOfChanged.NoLabel.text = cellOfSelected.NoLabel.text;
-                    [self.playerOnFloorToPPPIndexMap setObject:[NSNumber numberWithInt:[cellOfSelected.NoLabel.text intValue]] atIndexedSubscript:i-1];
+                    NSMutableDictionary* dic = [self.playerOnFloorDataArray objectAtIndex:i-1];
+                    [dic setObject:[NSNumber numberWithInt:[cellOfSelected.NoLabel.text intValue]] forKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
                 }];
                 [changePlayerAlert addAction:playerOnFloorNoAction];
             }

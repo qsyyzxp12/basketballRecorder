@@ -15,7 +15,7 @@
 @property UITableView *playerListTableView;
 @property UITableView *playerOnFloorListTableView;
 @property UITableView *playerDataTableView;
-@property NSMutableArray *playerOnFloorToPPPIndexMap;
+@property NSMutableArray *playerOnFloorDataArray;
 @property NSMutableArray* playerDataArray;
 @property NSMutableArray* OldPlayerDataArray;
 @property NSArray* attackWaySet;
