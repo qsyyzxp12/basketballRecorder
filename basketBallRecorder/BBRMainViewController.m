@@ -41,7 +41,7 @@
 #define KEY_FOR_TOTAL_FOUL_COUNT @"totalFoulCount"
 #define KEY_FOR_TOTAL_TURNOVER_COUNT @"totalTurnoverCount"
 #define KEY_FOR_TOTAL_SCORE_GET @"totalScoreGet"
-#define KEY_FOR_TIME_ON_FLOOR @"timeOnFloor"
+#define KEY_FOR_TOTAL_TIME_ON_FLOOR @"timeOnFloor"
 
 #define KEY_FOR_TIME_WHEN_GO_ON_FLOOR @"timeWhenGoOnFloor"
 #define KEY_FOR_INDEX_IN_PPP_TABLEVIEW @"indexInPPPTableview"
@@ -64,7 +64,7 @@
     for(int i=0; i<5; i++)
     {
         NSMutableDictionary* dic = [[NSMutableDictionary  alloc] init];
-        [dic setObject:@"0" forKey:KEY_FOR_TIME_WHEN_GO_ON_FLOOR];
+        [dic setObject:[NSNumber numberWithInt:0] forKey:KEY_FOR_TIME_WHEN_GO_ON_FLOOR];
         [dic setObject:[NSNumber numberWithInt:i+1] forKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
         [self.playerOnFloorDataArray setObject:dic atIndexedSubscript:i];
     }
@@ -81,7 +81,7 @@
     self.restClient = [[DBRestClient alloc] initWithSession:[DBSession sharedSession]];
     self.restClient.delegate = self;
     
-    self.attackWaySet = [[NSArray alloc] initWithObjects:@"Isolation", @"Spot Up", @"PS", @"PD", @"PR", @"PPS", @"PPD", @"Catch&Shoot", @"Fast Break", @"Low Post", @"Second", @"Drive", @"High-Low", @"Cut", @"Bonus", nil];
+    self.attackWaySet = [[NSArray alloc] initWithObjects:@"Isolation", @"Spot Up", @"PS", @"PD", @"PR", @"PPS", @"PPD", @"Catch&Shoot", @"Fast Break", @"Low Post", @"Second", @"Drive", @"High-Low", @"Cut", @"Bonus", @"Time", nil];
     self.attackWayKeySet = [[NSArray alloc] initWithObjects:
                             @"isolation", @"spotUp", @"PS", @"PD", @"PR", @"PPS", @"PPD", @"CS",
                             @"fastBreak", @"lowPost", @"second", @"drive", @"highLow", @"cut", nil];
@@ -856,6 +856,18 @@
 
 #pragma mark - Database Updating
 
+-(void)updateTimeOnFloorOfPlayerWithIndexInOnFloorTableView:(int)index
+{
+    NSMutableDictionary* dic = [self.playerOnFloorDataArray objectAtIndex:index];
+    NSNumber* indexInPPPTableviewNo = [dic objectForKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
+    NSNumber* timeWhenWentOnFloor = [dic objectForKey:KEY_FOR_TIME_WHEN_GO_ON_FLOOR];
+    int timeOnFloor = self.timeCounter - timeWhenWentOnFloor.intValue;
+    NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:self.quarterNo];
+    NSMutableDictionary* playerData = [quarterGrade objectAtIndex:indexInPPPTableviewNo.intValue - 1];
+    timeOnFloor += ((NSNumber*)[playerData objectForKey:KEY_FOR_TOTAL_TIME_ON_FLOOR]).intValue;
+    [playerData setObject:[NSNumber numberWithInt:timeOnFloor] forKey:KEY_FOR_TOTAL_TIME_ON_FLOOR];
+}
+
 -(void) newPlayerGradeDataStruct
 {
     self.playerDataArray = [NSMutableArray arrayWithCapacity:2];
@@ -921,7 +933,7 @@
         [playerDataItem setObject:@"0" forKey:KEY_FOR_TOTAL_ATTEMPT_COUNT];
         [playerDataItem setObject:@"0" forKey:KEY_FOR_TOTAL_FOUL_COUNT];
         [playerDataItem setObject:@"0" forKey:KEY_FOR_TOTAL_TURNOVER_COUNT];
-        [playerDataItem setObject:@"0" forKey:KEY_FOR_TIME_ON_FLOOR];
+        [playerDataItem setObject:@"0" forKey:KEY_FOR_TOTAL_TIME_ON_FLOOR];
         [quarterData addObject:playerDataItem];
     }
     [self.playerDataArray addObject:quarterData];
@@ -1685,6 +1697,8 @@
         [self.timer invalidate];
         self.timer = nil;
         self.isTimerRunning = NO;
+        for(int i=0; i<5; i++)
+            [self updateTimeOnFloorOfPlayerWithIndexInOnFloorTableView:i];
     }
 }
 
@@ -1843,7 +1857,7 @@
        return (self.playerCount + 2); //One for title, the other one for team grade
     else if(tableView.tag == PLAYER_ON_FLOOR_TABLEVIEW_TAG)
         return MIN(self.playerCount, 5)+1;
-    return [self.attackWayKeySet count]+3;
+    return [self.attackWayKeySet count]+4;
 }
 
 - (NSInteger) numberOfSectionsInTableView:(UITableView *)tableView
@@ -1981,7 +1995,7 @@
     UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width*0.3, PLAYER_GRADE_TABLECELL_HEIGHT)];
     label.textAlignment = NSTextAlignmentCenter;
     
-    if(indexPath.row < [self.attackWayKeySet count]+1 || indexPath.row == [self.attackWayKeySet count]+2)
+    if(indexPath.row < [self.attackWayKeySet count]+1 || indexPath.row == [self.attackWayKeySet count]+3)
     {
         UILabel* madeAndAttemptLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(label.frame), label.frame.origin.y, tableView.frame.size.width*0.28, PLAYER_GRADE_TABLECELL_HEIGHT)];
         madeAndAttemptLabel.textAlignment = NSTextAlignmentCenter;
@@ -1999,7 +2013,7 @@
         totalScoreGetLabel.textAlignment = NSTextAlignmentCenter;
         totalScoreGetLabel.layer.borderWidth = 1;
         
-        if(indexPath.row != [self.attackWayKeySet count]+2)
+        if(indexPath.row != [self.attackWayKeySet count]+3)
             label.text = [self.attackWaySet objectAtIndex:indexPath.row-1];
         else
             label.text = @"總成績";
@@ -2013,7 +2027,7 @@
         }
         else
         {
-            if(indexPath.row != [self.attackWayKeySet count]+2)
+            if(indexPath.row != [self.attackWayKeySet count]+3)
             {
                 NSDictionary* attackData = [playerData objectForKey:[self.attackWayKeySet objectAtIndex:indexPath.row-1]];
                 madeAndAttemptLabel.text = [NSString stringWithFormat:@"%@/%@", [attackData objectForKey:KEY_FOR_MADE_COUNT], [attackData objectForKey:KEY_FOR_ATTEMPT_COUNT]];
@@ -2048,6 +2062,19 @@
         else
             madeAndAttemptLabel.text = [NSString stringWithFormat:@"%@/%@", [bonusData objectForKey:KEY_FOR_MADE_COUNT], [bonusData objectForKey:KEY_FOR_ATTEMPT_COUNT]];
         [cell addSubview:madeAndAttemptLabel];
+    }
+    else if(indexPath.row == [self.attackWayKeySet count]+2)
+    {
+        NSNumber* time = [playerData objectForKey:KEY_FOR_TOTAL_TIME_ON_FLOOR];
+        int min = time.intValue/60;
+        int sec = time.intValue%60;
+        label.text = [self.attackWaySet objectAtIndex:indexPath.row-1];
+        
+        UILabel* timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(label.frame), label.frame.origin.y, tableView.frame.size.width*0.7, PLAYER_GRADE_TABLECELL_HEIGHT)];
+        timeLabel.textAlignment = NSTextAlignmentCenter;
+        timeLabel.layer.borderWidth = 1;
+        timeLabel.text = [NSString stringWithFormat:@"%02d:%02d", min, sec];
+        [cell addSubview:timeLabel];
     }
 /*    else
     {
@@ -2113,9 +2140,14 @@
                 }
                 UIAlertAction* playerOnFloorNoAction = [UIAlertAction actionWithTitle:cellOfChanged.NoLabel.text style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
                 {
-                    cellOfChanged.NoLabel.text = cellOfSelected.NoLabel.text;
+                    //caculate the player being placed's time on floor
+                    [self updateTimeOnFloorOfPlayerWithIndexInOnFloorTableView:i-1];
+                    
+                    //update the data of the player on floor
                     NSMutableDictionary* dic = [self.playerOnFloorDataArray objectAtIndex:i-1];
+                    cellOfChanged.NoLabel.text = cellOfSelected.NoLabel.text;
                     [dic setObject:[NSNumber numberWithInt:[cellOfSelected.NoLabel.text intValue]] forKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
+                    [dic setObject:[NSNumber numberWithInt:self.timeCounter] forKey:KEY_FOR_TIME_WHEN_GO_ON_FLOOR];
                 }];
                 [changePlayerAlert addAction:playerOnFloorNoAction];
             }
