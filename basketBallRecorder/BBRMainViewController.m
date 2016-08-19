@@ -63,10 +63,12 @@
     self.tmpPlistPath = [NSString stringWithFormat:@"%@/Documents/tmp.plist", NSHomeDirectory()];
     self.isShowZoneGrade = YES;
     self.isRecordMode = YES;
+    self.isTimerRunning = NO;
     self.playerSelectedIndex = 0;
     self.zoneNo = 0;
     self.quarterNo = 1;
-  
+    self.timeCounter = 0;
+    
     self.restClient = [[DBRestClient alloc] initWithSession:[DBSession sharedSession]];
     self.restClient.delegate = self;
     
@@ -1029,9 +1031,15 @@
     [playerData setObject:totalScoreGetStr forKey:KEY_FOR_TOTAL_SCORE_GET];
 }
 
-
-
 #pragma mark - UI Updating
+
+-(void)timeCounterChange
+{
+    self.timeCounter++;
+    int min = self.timeCounter/60;
+    int sec = self.timeCounter%60;
+    [self.timeButton setTitle:[NSString stringWithFormat:@"%02d:%02d", min, sec] forState:UIControlStateNormal];
+}
 
 -(void)updateGradeView
 {
@@ -1582,6 +1590,14 @@
     [self.undoButton setShowsTouchWhenHighlighted:YES];
     [self.view addSubview:self.undoButton];
     
+    //Timer Button
+    self.timeButton = [[UIButton alloc] init];
+    [self.timeButton setFrame:CGRectMake(CGRectGetMinX(self.undoButton.frame), CGRectGetMaxY(self.undoButton.frame)+15, bonusZone.frame.size.width, bonusZone.frame.size.height)];
+    [self.timeButton setTitle:@"00:00" forState:UIControlStateNormal];
+    [self.timeButton setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+    [self.timeButton addTarget:self action:@selector(timeButtonClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.timeButton];
+    
     //Add Two Arrow for Quarter change
     self.lastQuarterButton = [[UIButton alloc] init];
     [self.lastQuarterButton setImage:[UIImage imageNamed:@"leftArrow.png"] forState:UIControlStateNormal];
@@ -1644,6 +1660,23 @@
 }
 
 #pragma mark - Button Clicked
+
+-(void)timeButtonClicked
+{
+    if(!self.isTimerRunning)
+    {
+        [self.timeButton setTitleColor:[UIColor greenColor] forState:UIControlStateNormal];
+        self.timer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(timeCounterChange) userInfo:nil repeats:YES];
+        self.isTimerRunning = YES;
+    }
+    else
+    {
+        [self.timeButton setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+        [self.timer invalidate];
+        self.timer = nil;
+        self.isTimerRunning = NO;
+    }
+}
 
 -(void)backMenuButtonClicked
 {

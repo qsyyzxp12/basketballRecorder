@@ -24,11 +24,13 @@
 @property BOOL isShowZoneGrade;
 @property BOOL isTmpPlistExist;
 @property BOOL isRecordMode;
+@property BOOL isTimerRunning;
 @property int playerCount;
 @property int playerSelectedIndex;
 @property int zoneNo;
 @property int quarterNo;
 @property int showOldRecordNo;
+@property int timeCounter;
 @property UIAlertController* madeOrNotAlert;
 @property UIAlertController* attackWayAlert;
 @property UIAlertController* resultAlert;
@@ -46,5 +48,7 @@
 @property UIButton* switchModeButton;
 @property UIButton* nextQuarterButton;
 @property UIButton* lastQuarterButton;
+@property UIButton* timeButton;
+@property NSTimer* timer;
 @property (nonatomic, strong) DBRestClient *restClient;
 @end
