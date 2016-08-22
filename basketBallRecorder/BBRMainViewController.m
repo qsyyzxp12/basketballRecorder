@@ -574,8 +574,11 @@
     
     self.isShowZoneGrade = YES;
     self.undoButton.hidden = YES;
+    self.timeButton.hidden = YES;
     self.switchModeButton.hidden = YES;
 
+   // [self hideZone12orNot:YES];
+    
     [self.playerOnFloorListTableView removeFromSuperview];
     [self.playerListTableView setFrame:CGRectMake(25, 10, self.playerListTableView.frame.size.width, self.playerListTableView.frame.size.height)];
     self.playerSelectedIndex = 0;
@@ -862,10 +865,16 @@
     NSNumber* indexInPPPTableviewNo = [dic objectForKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
     NSNumber* timeWhenWentOnFloor = [dic objectForKey:KEY_FOR_TIME_WHEN_GO_ON_FLOOR];
     int timeOnFloor = self.timeCounter - timeWhenWentOnFloor.intValue;
+    
     NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:self.quarterNo];
     NSMutableDictionary* playerData = [quarterGrade objectAtIndex:indexInPPPTableviewNo.intValue - 1];
-    timeOnFloor += ((NSNumber*)[playerData objectForKey:KEY_FOR_TOTAL_TIME_ON_FLOOR]).intValue;
-    [playerData setObject:[NSNumber numberWithInt:timeOnFloor] forKey:KEY_FOR_TOTAL_TIME_ON_FLOOR];
+    int time = timeOnFloor + ((NSNumber*)[playerData objectForKey:KEY_FOR_TOTAL_TIME_ON_FLOOR]).intValue;
+    [playerData setObject:[NSNumber numberWithInt:time] forKey:KEY_FOR_TOTAL_TIME_ON_FLOOR];
+    
+    NSMutableArray* playerAllGameGrade = [self.playerDataArray objectAtIndex:0];
+    playerData = [playerAllGameGrade objectAtIndex:indexInPPPTableviewNo.intValue-1];
+    time = timeOnFloor + ((NSNumber*)[playerData objectForKey:KEY_FOR_TOTAL_TIME_ON_FLOOR]).intValue;
+    [playerData setObject:[NSNumber numberWithInt:time] forKey:KEY_FOR_TOTAL_TIME_ON_FLOOR];
 }
 
 -(void) newPlayerGradeDataStruct
@@ -1698,7 +1707,12 @@
         self.timer = nil;
         self.isTimerRunning = NO;
         for(int i=0; i<5; i++)
+        {
             [self updateTimeOnFloorOfPlayerWithIndexInOnFloorTableView:i];
+            NSMutableDictionary* dic = [self.playerOnFloorDataArray objectAtIndex:i];
+            [dic setObject:[NSNumber numberWithInt:self.timeCounter] forKey:KEY_FOR_TIME_WHEN_GO_ON_FLOOR];
+        }
+        
     }
 }
 
@@ -1833,8 +1847,17 @@
         self.isRecordMode = YES;
         [self updateNavigationTitle];
         self.navigationItem.rightBarButtonItem.title = @"本節結束";
-        self.navigationItem.rightBarButtonItem.action = @selector(nextQuarterButtonClicked);
+        if(self.quarterNo < 4)
+            self.navigationItem.rightBarButtonItem.action = @selector(nextQuarterButtonClicked);
+        else
+            self.navigationItem.rightBarButtonItem.action = @selector(finishButtonClicked);
         [self updateZoneGradeView];
+        
+        if(!self.isShowZoneGrade)
+        {
+            self.isShowZoneGrade = YES;
+            [self.view viewWithTag:PLAYER_GRADE_TABLEVIEW_TAG].hidden = YES;
+        }
     }
 }
 
@@ -2073,7 +2096,10 @@
         UILabel* timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(label.frame), label.frame.origin.y, tableView.frame.size.width*0.7, PLAYER_GRADE_TABLECELL_HEIGHT)];
         timeLabel.textAlignment = NSTextAlignmentCenter;
         timeLabel.layer.borderWidth = 1;
-        timeLabel.text = [NSString stringWithFormat:@"%02d:%02d", min, sec];
+        if(self.playerSelectedIndex != self.playerCount + 1)
+            timeLabel.text = [NSString stringWithFormat:@"%02d:%02d", min, sec];
+        else
+            timeLabel.text = @"-";
         [cell addSubview:timeLabel];
     }
 /*    else
