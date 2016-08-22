@@ -631,7 +631,7 @@
     
     self.quarterNo = 0;
     
-    self.navigationItem.rightBarButtonItem.title = @"進攻統計";
+    self.navigationItem.rightBarButtonItem.title = @"進攻成績";
     self.navigationItem.rightBarButtonItem.action = @selector(showOffenseGradeButtonClicked);
     self.navigationItem.title = @"總成績";
     
@@ -661,7 +661,7 @@
     self.quarterNo = END;
     self.playerCount = (int)[self.playerNoSet count];
     
-    self.navigationItem.rightBarButtonItem.title = @"進攻統計";
+    self.navigationItem.rightBarButtonItem.title = @"進攻成績";
     self.navigationItem.rightBarButtonItem.action = @selector(showOffenseGradeButtonClicked);
     self.navigationItem.title = @"第一節成績";
 }
@@ -1604,7 +1604,7 @@
     self.switchModeButton.layer.borderWidth = 1;
     self.switchModeButton.layer.cornerRadius = 5;
     self.switchModeButton.titleLabel.font = [UIFont systemFontOfSize:14];
-    [self.switchModeButton setTitle:@"統計" forState:UIControlStateNormal];
+    [self.switchModeButton setTitle:@"成績" forState:UIControlStateNormal];
     [self.switchModeButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [self.switchModeButton addTarget:self action:@selector(switchButtonClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.switchModeButton setShowsTouchWhenHighlighted:YES];
@@ -1775,7 +1775,7 @@
 {
     self.isShowZoneGrade = YES;
     [self updateZoneGradeView];
-    self.navigationItem.rightBarButtonItem.title = @"進攻統計";
+    self.navigationItem.rightBarButtonItem.title = @"進攻成績";
     self.navigationItem.rightBarButtonItem.action = @selector(showOffenseGradeButtonClicked);
     
     [self hideZone12orNot:NO];
@@ -1787,7 +1787,7 @@
 - (void) showOffenseGradeButtonClicked
 {
     self.isShowZoneGrade = NO;
-    self.navigationItem.rightBarButtonItem.title = @"區域統計";
+    self.navigationItem.rightBarButtonItem.title = @"區域成績";
     self.navigationItem.rightBarButtonItem.action = @selector(showZoneGradeButtonClicked);
     
     [self hideZone12orNot:YES];
@@ -1819,7 +1819,7 @@
         self.timeButton.hidden = YES;
         self.undoButton.hidden = YES;
         self.isRecordMode = NO;
-        self.navigationItem.rightBarButtonItem.title = @"進攻統計";
+        self.navigationItem.rightBarButtonItem.title = @"進攻成績";
         self.navigationItem.rightBarButtonItem.action = @selector(showOffenseGradeButtonClicked);
         
         [self.playerOnFloorListTableView deselectRowAtIndexPath:self.playerOnFloorListTableView.indexPathForSelectedRow animated:NO];
@@ -1838,7 +1838,7 @@
         [self hideZone12orNot:NO];
         
         self.quarterNo = (int)[self.playerDataArray count]-1;
-        [self.switchModeButton setTitle:@"統計" forState:UIControlStateNormal];
+        [self.switchModeButton setTitle:@"成績" forState:UIControlStateNormal];
         self.playerDataTableView.hidden = YES;
         self.nextQuarterButton.hidden = YES;
         self.lastQuarterButton.hidden = YES;
