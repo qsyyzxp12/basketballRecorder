@@ -47,7 +47,6 @@
 #define KEY_FOR_INDEX_IN_PPP_TABLEVIEW @"indexInPPPTableview"
 
 #define END -1
-
 #define QUARTER_NO_FOR_ENTIRE_GAME 0
 
 @interface BBRMainViewController ()
@@ -73,6 +72,7 @@
     self.isShowZoneGrade = YES;
     self.isRecordMode = YES;
     self.isTimerRunning = NO;
+    self.isDefenseRecordeMode = NO;
     self.playerSelectedIndex = 0;
     self.zoneNo = 0;
     self.quarterNo = 1;
@@ -573,9 +573,10 @@
         self.playerDataTableView.hidden = NO;
     
     self.isShowZoneGrade = YES;
-    self.undoButton.hidden = YES;
-    self.timeButton.hidden = YES;
-    self.switchModeButton.hidden = YES;
+    [self.undoButton removeFromSuperview];
+    [self.timeButton removeFromSuperview];
+    [self.switchModeButton removeFromSuperview];
+    [self.recordeModeChangeButton removeFromSuperview];
 
    // [self hideZone12orNot:YES];
     
@@ -1610,9 +1611,21 @@
     [self.switchModeButton setShowsTouchWhenHighlighted:YES];
     [self.view addSubview:self.switchModeButton];
     
+    //Defense Record Button
+    self.recordeModeChangeButton = [[UIButton alloc] init];
+    [self.recordeModeChangeButton setFrame:CGRectMake(CGRectGetMinX(bonusZone.frame), CGRectGetMaxY(self.switchModeButton.frame)+15, bonusZone.frame.size.width, bonusZone.frame.size.height)];
+    self.recordeModeChangeButton.layer.borderWidth = 1;
+    self.recordeModeChangeButton.layer.cornerRadius = 5;
+    self.recordeModeChangeButton.titleLabel.font = [UIFont systemFontOfSize:14];
+    [self.recordeModeChangeButton setTitle:@"防禦統計" forState:UIControlStateNormal];
+    [self.recordeModeChangeButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [self.recordeModeChangeButton addTarget:self action:@selector(recordeModeChangeButtonClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.recordeModeChangeButton setShowsTouchWhenHighlighted:YES];
+    [self.view addSubview:self.recordeModeChangeButton];
+    
     //Undo Button
     self.undoButton = [[UIButton alloc] init];
-    [self.undoButton setFrame:CGRectMake(CGRectGetMinX(bonusZone.frame), CGRectGetMaxY(self.switchModeButton.frame)+15, bonusZone.frame.size.width, bonusZone.frame.size.height)];
+    [self.undoButton setFrame:CGRectMake(CGRectGetMinX(bonusZone.frame), CGRectGetMaxY(self.recordeModeChangeButton.frame)+15, bonusZone.frame.size.width, bonusZone.frame.size.height)];
     self.undoButton.layer.borderWidth = 1;
     self.undoButton.layer.cornerRadius = 5;
     [self.undoButton setTitle:@"Undo" forState:UIControlStateNormal];
@@ -1645,6 +1658,71 @@
     [self.nextQuarterButton addTarget:self action:@selector(gradeOfNextQuaterButtonClicked) forControlEvents:UIControlEventTouchUpInside];
     self.nextQuarterButton.hidden = YES;
     [self.view addSubview:self.nextQuarterButton];
+    
+    [self drawDefenseRecordView];
+}
+
+-(void) drawDefenseRecordView
+{
+    self.defenseRecordeView = [[UIView alloc] initWithFrame:CGRectMake(75, 40, CGRectGetMinX(self.undoButton.frame) - 80 , 270)];
+    self.defenseRecordeView.backgroundColor = [UIColor whiteColor];
+    
+    UILabel* goodLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, 60, 30)];
+    goodLabel.text = @"GOOD";
+    goodLabel.textAlignment = NSTextAlignmentCenter;
+    goodLabel.layer.borderWidth = 1;
+    [self.defenseRecordeView addSubview:goodLabel];
+    
+    NSArray* defenseTypeArray = [NSArray arrayWithObjects:@"Tip", @"Close  Out", @"Stop Ball", @"BLK", @"STL", @"8/24", @"Double Team", @"Loose  Ball", @"OR", @"DR", @"OR Tip", @"AST", @"TO", @"WIDE OPEN", @"NO BLOCK OUT", @"DEF. ASS", @"Blown BY", nil];
+    
+    for(int i=0; i<8; i++)
+    {
+        UIButton* deflectionButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetMaxX(goodLabel.frame)+40*i, CGRectGetMaxY(goodLabel.frame), 40, 40)];
+        [deflectionButton setTitle:defenseTypeArray[i] forState:UIControlStateNormal];
+        [deflectionButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        deflectionButton.tag = i;
+        deflectionButton.layer.borderWidth = 1;
+        deflectionButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+        deflectionButton.titleLabel.numberOfLines = 2;
+        deflectionButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+       // deflectionButton.backgroundColor = [UIColor blueColor];
+        [deflectionButton setShowsTouchWhenHighlighted:YES];
+        [self.defenseRecordeView addSubview:deflectionButton];
+    }
+    for(int i=0; i<4; i++)
+    {
+        UIButton* defenseButton = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetMaxX(goodLabel.frame)+40*i, CGRectGetMaxY(goodLabel.frame)+50, 40, 40)];
+        [defenseButton setTitle:defenseTypeArray[i+8] forState:UIControlStateNormal];
+        [defenseButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        defenseButton.tag = i+8;
+        defenseButton.layer.borderWidth = 1;
+        defenseButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+        defenseButton.titleLabel.numberOfLines = 3;
+        defenseButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+        [defenseButton setShowsTouchWhenHighlighted:YES];
+        [self.defenseRecordeView addSubview:defenseButton];
+    }
+    
+    UILabel* badLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, CGRectGetMaxY(goodLabel.frame)+100, 60, 30)];
+    badLabel.text = @"BAD";
+    badLabel.textAlignment = NSTextAlignmentCenter;
+    badLabel.layer.borderWidth = 1;
+    [self.defenseRecordeView addSubview:badLabel];
+    
+    for(int i=0; i<4; i++)
+    {
+        UIButton* defenseButton = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetMaxX(badLabel.frame)+40*i, CGRectGetMaxY(badLabel.frame), 40, 40)];
+        [defenseButton setTitle:defenseTypeArray[i+12] forState:UIControlStateNormal];
+        [defenseButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        defenseButton.tag = i+12;
+        defenseButton.layer.borderWidth = 1;
+        defenseButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+        defenseButton.titleLabel.numberOfLines = 2;
+        defenseButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+        [defenseButton setShowsTouchWhenHighlighted:YES];
+        [self.defenseRecordeView addSubview:defenseButton];
+    }
+    
 }
 
 - (void) showAttackList
@@ -1676,7 +1754,6 @@
             self.zoneNo = (int)recognizer.view.tag;
             [(UIImageView*)recognizer.view setHighlighted:YES];
             
-            NSLog(@"playerSelectedIndex = %d", self.playerSelectedIndex);
             if(self.playerSelectedIndex && self.playerSelectedIndex != self.playerCount+1)
                 [self showAttackList];
         }
@@ -1692,7 +1769,29 @@
 
 #pragma mark - Button Clicked
 
--(void)timeButtonClicked
+-(void) recordeModeChangeButtonClicked
+{
+    if(!self.isDefenseRecordeMode)
+    {
+        [self hideZone12orNot:YES];
+        [self.recordeModeChangeButton setTitle:@"進攻統計" forState:UIControlStateNormal];
+        [self.playerOnFloorListTableView removeFromSuperview];
+        [self.playerListTableView setFrame:CGRectMake(25, 10, self.playerListTableView.frame.size.width, self.playerListTableView.frame.size.height)];
+        [self.view addSubview:self.defenseRecordeView];
+        self.isDefenseRecordeMode = YES;
+    }
+    else
+    {
+        [self hideZone12orNot:NO];
+        [self.recordeModeChangeButton setTitle:@"防禦統計" forState:UIControlStateNormal];
+        [self.view addSubview:self.playerOnFloorListTableView];
+        [self.playerListTableView setFrame:CGRectMake(55, 10, self.playerListTableView.frame.size.width, self.playerListTableView.frame.size.height)];
+        [self.defenseRecordeView removeFromSuperview];
+        self.isDefenseRecordeMode = NO;
+    }
+}
+
+-(void) timeButtonClicked
 {
     if(!self.isTimerRunning)
     {
@@ -1818,6 +1917,7 @@
         self.lastQuarterButton.hidden = NO;
         self.timeButton.hidden = YES;
         self.undoButton.hidden = YES;
+        self.recordeModeChangeButton.hidden = YES;
         self.isRecordMode = NO;
         self.navigationItem.rightBarButtonItem.title = @"進攻成績";
         self.navigationItem.rightBarButtonItem.action = @selector(showOffenseGradeButtonClicked);
@@ -1844,6 +1944,7 @@
         self.lastQuarterButton.hidden = YES;
         self.timeButton.hidden = NO;
         self.undoButton.hidden = NO;
+        self.recordeModeChangeButton.hidden = NO;
         self.isRecordMode = YES;
         [self updateNavigationTitle];
         self.navigationItem.rightBarButtonItem.title = @"本節結束";

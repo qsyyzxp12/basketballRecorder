@@ -15,6 +15,7 @@
 @property UITableView *playerListTableView;
 @property UITableView *playerOnFloorListTableView;
 @property UITableView *playerDataTableView;
+@property UIView *defenseRecordeView;
 @property NSMutableArray *playerOnFloorDataArray;
 @property NSMutableArray* playerDataArray;
 @property NSMutableArray* OldPlayerDataArray;
@@ -25,6 +26,7 @@
 @property BOOL isTmpPlistExist;
 @property BOOL isRecordMode;
 @property BOOL isTimerRunning;
+@property BOOL isDefenseRecordeMode;
 @property int playerCount;
 @property int playerSelectedIndex;
 @property int zoneNo;
@@ -45,6 +47,7 @@
 @property NSString* recordName;
 @property NSString* keyForSearch;
 @property UIButton* undoButton;
+@property UIButton* recordeModeChangeButton;
 @property UIButton* switchModeButton;
 @property UIButton* nextQuarterButton;
 @property UIButton* lastQuarterButton;
