@@ -46,6 +46,11 @@
 #define KEY_FOR_TIME_WHEN_GO_ON_FLOOR @"timeWhenGoOnFloor"
 #define KEY_FOR_INDEX_IN_PPP_TABLEVIEW @"indexInPPPTableview"
 
+#define KEY_FOR_DEFENSE_GRADE @"defenseGrade"
+#define KEY_FOR_DEFLECTION_DEFENSE_GRADE @"deflection"
+#define KEY_FOR_GOOD_DEFENSE_GRADE @"good"
+#define KEY_FOR_BAD_DEFENSE_GRADE @"bad"
+
 #define END -1
 #define QUARTER_NO_FOR_ENTIRE_GAME 0
 
@@ -85,7 +90,7 @@
     self.attackWayKeySet = [[NSArray alloc] initWithObjects:
                             @"isolation", @"spotUp", @"PS", @"PD", @"PR", @"PPS", @"PPD", @"CS",
                             @"fastBreak", @"lowPost", @"second", @"drive", @"highLow", @"cut", nil];
-    
+    self.defenseWayKeySet = [[NSArray alloc] initWithObjects:@"Tip", @"CloseOut", @"StopBall", @"BLK", @"STL", @"8/24", @"DoubleTeam", @"LooseBall", @"OR", @"DR", @"ORTip", @"AST", @"TO", @"WIDEOPEN", @"NOBLOCKOUT", @"DEFASS", @"BlownBy", nil];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] init];
     self.navigationItem.rightBarButtonItem.title = @"本節結束";
     self.navigationItem.rightBarButtonItem.target = self;
@@ -944,6 +949,25 @@
         [playerDataItem setObject:@"0" forKey:KEY_FOR_TOTAL_FOUL_COUNT];
         [playerDataItem setObject:@"0" forKey:KEY_FOR_TOTAL_TURNOVER_COUNT];
         [playerDataItem setObject:@"0" forKey:KEY_FOR_TOTAL_TIME_ON_FLOOR];
+        
+        NSMutableDictionary* defenseGradeDic = [[NSMutableDictionary alloc] init];
+        
+        NSMutableDictionary* deflectionGradeDic = [[NSMutableDictionary alloc] init];
+        for(int j=0; j<8; j++)
+            [deflectionGradeDic setObject:@"0" forKey:self.defenseWayKeySet[j]];
+        [defenseGradeDic setObject:deflectionGradeDic forKey:KEY_FOR_DEFLECTION_DEFENSE_GRADE];
+        
+        NSMutableDictionary* goodGradeDic = [[NSMutableDictionary alloc] init];
+        for(int j=8; j<12; j++)
+            [goodGradeDic setObject:@"0" forKey:self.defenseWayKeySet[j]];
+        [defenseGradeDic setObject:goodGradeDic forKey:KEY_FOR_GOOD_DEFENSE_GRADE];
+        
+        NSMutableDictionary* badGradeDic = [[NSMutableDictionary alloc] init];
+        for(int j=12; j<17; j++)
+            [badGradeDic setObject:@"0" forKey:self.defenseWayKeySet[j]];
+        [defenseGradeDic setObject:badGradeDic forKey:KEY_FOR_BAD_DEFENSE_GRADE];
+        
+        [playerDataItem setObject:defenseGradeDic forKey:KEY_FOR_DEFENSE_GRADE];
         [quarterData addObject:playerDataItem];
     }
     [self.playerDataArray addObject:quarterData];
@@ -1673,7 +1697,7 @@
     goodLabel.layer.borderWidth = 1;
     [self.defenseRecordeView addSubview:goodLabel];
     
-    NSArray* defenseTypeArray = [NSArray arrayWithObjects:@"Tip", @"Close  Out", @"Stop Ball", @"BLK", @"STL", @"8/24", @"Double Team", @"Loose  Ball", @"OR", @"DR", @"OR Tip", @"AST", @"TO", @"WIDE OPEN", @"NO BLOCK OUT", @"DEF. ASS", @"Blown BY", nil];
+    NSArray* defenseTypeArray = [NSArray arrayWithObjects:@"Tip", @"Close  Out", @"Stop Ball", @"BLK", @"STL", @"8/24", @"Double Team", @"Loose  Ball", @"OR", @"DR", @"OR Tip", @"AST", @"TO", @"WIDE OPEN", @"NO BLOCK OUT", @"DEF. ASS", @"Blown    BY", nil];
     
     for(int i=0; i<8; i++)
     {
@@ -1697,7 +1721,7 @@
         defenseButton.tag = i+8;
         defenseButton.layer.borderWidth = 1;
         defenseButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-        defenseButton.titleLabel.numberOfLines = 3;
+        defenseButton.titleLabel.numberOfLines = 2;
         defenseButton.titleLabel.adjustsFontSizeToFitWidth = YES;
         [defenseButton setShowsTouchWhenHighlighted:YES];
         [self.defenseRecordeView addSubview:defenseButton];
@@ -1709,7 +1733,7 @@
     badLabel.layer.borderWidth = 1;
     [self.defenseRecordeView addSubview:badLabel];
     
-    for(int i=0; i<4; i++)
+    for(int i=0; i<5; i++)
     {
         UIButton* defenseButton = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetMaxX(badLabel.frame)+40*i, CGRectGetMaxY(badLabel.frame), 40, 40)];
         [defenseButton setTitle:defenseTypeArray[i+12] forState:UIControlStateNormal];

@@ -21,6 +21,7 @@
 @property NSMutableArray* OldPlayerDataArray;
 @property NSArray* attackWaySet;
 @property NSArray* attackWayKeySet;
+@property NSArray* defenseWayKeySet;
 @property NSArray* playerNoSet;
 @property BOOL isShowZoneGrade;
 @property BOOL isTmpPlistExist;
