@@ -34,6 +34,7 @@
 @property int quarterNo;
 @property int showOldRecordNo;
 @property int timeCounter;
+@property int defenseButtonNo;
 @property UIAlertController* madeOrNotAlert;
 @property UIAlertController* attackWayAlert;
 @property UIAlertController* resultAlert;
