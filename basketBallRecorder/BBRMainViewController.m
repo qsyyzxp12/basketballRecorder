@@ -154,84 +154,54 @@
     
     UIAlertAction* onePointAction = [UIAlertAction actionWithTitle:@"1分" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
-            //Update the Quarter Grade of the Player
-            NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:self.quarterNo];
-            NSMutableDictionary* playerData = [quarterGrade objectAtIndex:self.playerSelectedIndex-1];
-            [self increaseOffenseScoreGetToPlayerData:playerData by:1];
-            [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:1];
-            
-            //Update the Team's Total Grade
-            NSMutableDictionary* teamGrade = [quarterGrade objectAtIndex:self.playerCount];
-            [self increaseOffenseScoreGetToPlayerData:teamGrade by:1];
-            [self updateTotalScoreOnePlayerGetToPlayerData:teamGrade withScore:1];
-            
-            //Update the Player's Total Grade Of The Offense In Entire Game
-            NSMutableArray* totalGradeOfPlayer = [self.playerDataArray objectAtIndex:QUARTER_NO_FOR_ENTIRE_GAME];
-            playerData = [totalGradeOfPlayer objectAtIndex:self.playerSelectedIndex-1];
-            [self increaseOffenseScoreGetToPlayerData:playerData by:1];
-            [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:1];
-            
-            //Update the team's Grade in the Entire Game
-            playerData = [totalGradeOfPlayer objectAtIndex:self.playerCount];
-            [self increaseOffenseScoreGetToPlayerData:playerData by:1];
-            [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:1];
-            
+            int quarterNo[2] = {self.quarterNo, QUARTER_NO_FOR_ENTIRE_GAME};
+            int playerNo[2] = {self.playerSelectedIndex-1, self.playerCount};
+            for(int i=0; i<2; i++)
+            {
+                NSMutableArray* quarterGrade= [self.playerDataArray objectAtIndex:quarterNo[i]];
+                for(int j=0; j<2; j++)
+                {
+                    NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
+                    [self increaseOffenseScoreGetToPlayerData:playerData by:1];
+                    [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:1];
+                }
+            }
             [self updateTmpPlist];
             self.zoneNo = 0;
         }];
     
     UIAlertAction* twoPointAction = [UIAlertAction actionWithTitle:@"2分" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
-            //Update the Quarter Grade of the Player
-            NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:self.quarterNo];
-            NSMutableDictionary* playerData = [quarterGrade objectAtIndex:self.playerSelectedIndex-1];
-            [self increaseOffenseScoreGetToPlayerData:playerData by:2];
-            [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:2];
-            
-            //Update the Team's Total Grade
-            NSMutableDictionary* teamGrade = [quarterGrade objectAtIndex:self.playerCount];
-            [self increaseOffenseScoreGetToPlayerData:teamGrade by:2];
-            [self updateTotalScoreOnePlayerGetToPlayerData:teamGrade withScore:2];
-            
-            //Update the Player's Total Grade Of The Offense In Entire Game
-            NSMutableArray* totalGradeOfPlayer = [self.playerDataArray objectAtIndex:QUARTER_NO_FOR_ENTIRE_GAME];
-            playerData = [totalGradeOfPlayer objectAtIndex:self.playerSelectedIndex-1];
-            [self increaseOffenseScoreGetToPlayerData:playerData by:2];
-            [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:2];
-            
-            //Update the team's Grade in the Entire Game
-            playerData = [totalGradeOfPlayer objectAtIndex:self.playerCount];
-            [self increaseOffenseScoreGetToPlayerData:playerData by:2];
-            [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:2];
-            
+            int quarterNo[2] = {self.quarterNo, QUARTER_NO_FOR_ENTIRE_GAME};
+            int playerNo[2] = {self.playerSelectedIndex-1, self.playerCount};
+            for(int i=0; i<2; i++)
+            {
+                NSMutableArray* quarterGrade= [self.playerDataArray objectAtIndex:quarterNo[i]];
+                for(int j=0; j<2; j++)
+                {
+                    NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
+                    [self increaseOffenseScoreGetToPlayerData:playerData by:2];
+                    [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:2];
+                }
+            }
             [self updateTmpPlist];
             self.zoneNo = 0;
         }];
     
     UIAlertAction* threePointAction = [UIAlertAction actionWithTitle:@"3分" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
-            //Update the Quarter Grade of the Player
-            NSMutableArray* quarterGrade= [self.playerDataArray objectAtIndex:self.quarterNo];
-            NSMutableDictionary* playerData = [quarterGrade objectAtIndex:self.playerSelectedIndex-1];
-            [self increaseOffenseScoreGetToPlayerData:playerData by:3];
-            [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:3];
-            
-            //Update the Team's Total Grade
-            NSMutableDictionary* teamGrade = [quarterGrade objectAtIndex:self.playerCount];
-            [self increaseOffenseScoreGetToPlayerData:teamGrade by:3];
-            [self updateTotalScoreOnePlayerGetToPlayerData:teamGrade withScore:3];
-            
-            //Update the Player's Total Grade Of The Offense In Entire Game
-            NSMutableArray* totalGradeOfPlayer = [self.playerDataArray objectAtIndex:QUARTER_NO_FOR_ENTIRE_GAME];
-            playerData = [totalGradeOfPlayer objectAtIndex:self.playerSelectedIndex-1];
-            [self increaseOffenseScoreGetToPlayerData:playerData by:3];
-            [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:3];
-            
-            //Update the team's Grade in the Entire Game
-            playerData = [totalGradeOfPlayer objectAtIndex:self.playerCount];
-            [self increaseOffenseScoreGetToPlayerData:playerData by:3];
-            [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:3];
-            
+            int quarterNo[2] = {self.quarterNo, QUARTER_NO_FOR_ENTIRE_GAME};
+            int playerNo[2] = {self.playerSelectedIndex-1, self.playerCount};
+            for(int i=0; i<2; i++)
+            {
+                NSMutableArray* quarterGrade= [self.playerDataArray objectAtIndex:quarterNo[i]];
+                for(int j=0; j<2; j++)
+                {
+                    NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
+                    [self increaseOffenseScoreGetToPlayerData:playerData by:3];
+                    [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:3];
+                }
+            }
             [self updateTmpPlist];
             self.zoneNo = 0;
         }];
@@ -261,27 +231,18 @@
     
     UIAlertAction* madeAction = [UIAlertAction actionWithTitle:@"Made" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
-            //Update the Quarter Grade of the Player In the Quarter
-            NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:self.quarterNo];
-            NSMutableDictionary* playerData = [quarterGrade objectAtIndex:self.playerSelectedIndex-1];
-            [self increaseOffenseScoreGetToPlayerData:playerData by:1];
-            [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:1];
-            
-            //Update the Team's Total Grade In The Quarter
-            NSMutableDictionary* teamGrade = [quarterGrade objectAtIndex:self.playerCount];
-            [self increaseOffenseScoreGetToPlayerData:teamGrade by:1];
-            [self updateTotalScoreOnePlayerGetToPlayerData:teamGrade withScore:1];
-            
-            //Update the Player's Total Grade Of The Offense In Entire Game
-            NSMutableArray* totalGradeOfPlayer = [self.playerDataArray objectAtIndex:QUARTER_NO_FOR_ENTIRE_GAME];
-            playerData = [totalGradeOfPlayer objectAtIndex:self.playerSelectedIndex-1];
-            [self increaseOffenseScoreGetToPlayerData:playerData by:1];
-            [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:1];
-            
-            //Update the team's Grade in the Entire Game
-            playerData = [totalGradeOfPlayer objectAtIndex:self.playerCount];
-            [self increaseOffenseScoreGetToPlayerData:playerData by:1];
-            [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:1];
+            int quarterNo[2] = {self.quarterNo, QUARTER_NO_FOR_ENTIRE_GAME};
+            int playerNo[2] = {self.playerSelectedIndex-1, self.playerCount};
+            for(int i=0; i<2; i++)
+            {
+                NSMutableArray* quarterGrade= [self.playerDataArray objectAtIndex:quarterNo[i]];
+                for(int j=0; j<2; j++)
+                {
+                    NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
+                    [self increaseOffenseScoreGetToPlayerData:playerData by:1];
+                    [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:1];
+                }
+            }
             
             [self updateTmpPlist];
             self.zoneNo = 0;
@@ -298,13 +259,6 @@
     UIAlertAction* yesAction = [UIAlertAction actionWithTitle:@"Made" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
             self.OldPlayerDataArray = [NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:self.playerDataArray]];
-            
-            //Update the Quarter Grade of the Player
-            NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:self.quarterNo];
-            NSMutableDictionary* playerData = [quarterGrade objectAtIndex:self.playerSelectedIndex-1];
-            if(self.zoneNo != 12)
-                [self updateOffenseGradeForOneMadeToPlayerData:playerData];
-            [self updateZoneGradeForOneMadeToPlayerData:playerData];
             int offset = 0;
             switch (self.zoneNo)
             {
@@ -318,30 +272,21 @@
                     offset = 1;
                     break;
             }
-            [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:offset];
+            int quarterNo[2] = {self.quarterNo, QUARTER_NO_FOR_ENTIRE_GAME};
+            int playerNo[2] = {self.playerSelectedIndex-1, self.playerCount};
             
-            //Update the Team's Total Grade in the Quarter
-            NSMutableDictionary* teamGrade = [quarterGrade objectAtIndex:self.playerCount];
-            if(self.zoneNo != 12)
-                [self updateOffenseGradeForOneMadeToPlayerData:teamGrade];
-            [self updateZoneGradeForOneMadeToPlayerData:teamGrade];
-            [self updateTotalScoreOnePlayerGetToPlayerData:teamGrade withScore:offset];
-            
-            //Update the Player's Total Grade in the Quarter
-            NSMutableArray* totalGradeOfPlayer = [self.playerDataArray objectAtIndex:QUARTER_NO_FOR_ENTIRE_GAME];
-            playerData = [totalGradeOfPlayer objectAtIndex:self.playerSelectedIndex-1];
-            if(self.zoneNo != 12)
-                [self updateOffenseGradeForOneMadeToPlayerData:playerData];
-            [self updateZoneGradeForOneMadeToPlayerData:playerData];
-            [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:offset];
-            
-            //Update the team's Grade in the Entire Game
-            playerData = [totalGradeOfPlayer objectAtIndex:self.playerCount];
-            if(self.zoneNo != 12)
-                [self updateOffenseGradeForOneMadeToPlayerData:playerData];
-            [self updateZoneGradeForOneMadeToPlayerData:playerData];
-            [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:offset];
-            
+            for(int i=0; i<2; i++)
+            {
+                NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:quarterNo[i]];
+                for(int j=0; j<2; j++)
+                {
+                    NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
+                    if(self.zoneNo != 12)
+                        [self updateOffenseGradeForOneMadeToPlayerData:playerData];
+                    [self updateZoneGradeForOneMadeToPlayerData:playerData];
+                    [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:offset];
+                }
+            }
             [self updateTmpPlist];
             self.zoneNo = 0;
         }];
@@ -349,31 +294,20 @@
         {
             self.OldPlayerDataArray = [NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:self.playerDataArray]];
             
-            //Update the Quarter Grade of the Player
-            NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:self.quarterNo];
-            NSMutableDictionary* playerData = [quarterGrade objectAtIndex:self.playerSelectedIndex-1];
-            if(self.zoneNo != 12)
-                [self updateOffenseGradeForOneAttempToPlayerData:playerData];
-            [self updateZoneGradeForOndeAttemptToPlayerData:playerData];
+            int quarterNo[2] = {self.quarterNo, QUARTER_NO_FOR_ENTIRE_GAME};
+            int playerNo[2] = {self.playerSelectedIndex-1, self.playerCount};
             
-            //Update the Team's Total Grade in the Quarter
-            NSMutableDictionary* teamData = [quarterGrade objectAtIndex:self.playerCount];
-            if(self.zoneNo != 12)
-                [self updateOffenseGradeForOneAttempToPlayerData:teamData];
-            [self updateZoneGradeForOndeAttemptToPlayerData:teamData];
-            
-            //Update the Player's Total Grade in the Quarter
-            NSMutableArray* totalGradeOfPlayer = [self.playerDataArray objectAtIndex:QUARTER_NO_FOR_ENTIRE_GAME];
-            playerData = [totalGradeOfPlayer objectAtIndex:self.playerSelectedIndex-1];
-            if(self.zoneNo != 12)
-                [self updateOffenseGradeForOneAttempToPlayerData:playerData];
-            [self updateZoneGradeForOndeAttemptToPlayerData:playerData];
-            
-            //Update the team's Grade in the Entire Game
-            playerData = [totalGradeOfPlayer objectAtIndex:self.playerCount];
-            if(self.zoneNo != 12)
-                [self updateOffenseGradeForOneAttempToPlayerData:playerData];
-            [self updateZoneGradeForOndeAttemptToPlayerData:playerData];
+            for(int i=0; i<2; i++)
+            {
+                NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:quarterNo[i]];
+                for(int j=0; j<2; j++)
+                {
+                    NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
+                    if(self.zoneNo != 12)
+                        [self updateOffenseGradeForOneAttempToPlayerData:playerData];
+                    [self updateZoneGradeForOndeAttemptToPlayerData:playerData];
+                }
+            }
             
             [self updateTmpPlist];
             self.zoneNo = 0;
@@ -384,23 +318,18 @@
         {
             self.OldPlayerDataArray = [NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:self.playerDataArray]];
             
-            //Update the Quarter Grade of the Player
-            NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:self.quarterNo];
-            NSMutableDictionary* playerData = [quarterGrade objectAtIndex:self.playerSelectedIndex-1];
-            [self updateOffenseGradeForOneFoulToPlayerData:playerData];
+            int quarterNo[2] = {self.quarterNo, QUARTER_NO_FOR_ENTIRE_GAME};
+            int playerNo[2] = {self.playerSelectedIndex-1, self.playerCount};
             
-            //Update the Team's Total Grade in the Quarter
-            NSMutableDictionary* teamGrade = [quarterGrade objectAtIndex:self.playerCount];
-            [self updateOffenseGradeForOneFoulToPlayerData:teamGrade];
-            
-            //Update the Player's Total Grade in the Quarter
-            NSMutableArray* totalGradeOfPlayer = [self.playerDataArray objectAtIndex:QUARTER_NO_FOR_ENTIRE_GAME];
-            playerData = [totalGradeOfPlayer objectAtIndex:self.playerSelectedIndex-1];
-            [self updateOffenseGradeForOneFoulToPlayerData:playerData];
-            
-            //Update the team's Grade in the Entire Game
-            playerData = [totalGradeOfPlayer objectAtIndex:self.playerCount];
-            [self updateOffenseGradeForOneFoulToPlayerData:playerData];
+            for(int i=0; i<2; i++)
+            {
+                NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:quarterNo[i]];
+                for(int j=0; j<2; j++)
+                {
+                    NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
+                    [self updateOffenseGradeForOneFoulToPlayerData:playerData];
+                }
+            }
             
             switch (self.zoneNo)
             {
@@ -421,12 +350,6 @@
         {
             self.OldPlayerDataArray = [NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:self.playerDataArray]];
             
-            //Update the Quarter Grade of the Player
-            NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:self.quarterNo];
-            NSMutableDictionary* playerData = [quarterGrade objectAtIndex:self.playerSelectedIndex-1];
-            [self updateOffenseGradeForOneMadeToPlayerData:playerData];
-            [self updateOffenseGradeForOneFoulToPlayerData:playerData];
-            [self updateZoneGradeForOneMadeToPlayerData:playerData];
             int offset = 0;
             switch (self.zoneNo)
             {
@@ -437,30 +360,22 @@
                     offset = 3;
                     break;
             }
-            [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:offset];
             
-            //Update the Team's Total Grade in the Quarter
-            NSMutableDictionary* teamGrade = [quarterGrade objectAtIndex:self.playerCount];
-            [self updateOffenseGradeForOneMadeToPlayerData:teamGrade];
-            [self updateOffenseGradeForOneFoulToPlayerData:teamGrade];
-            [self updateZoneGradeForOneMadeToPlayerData:teamGrade];
-            [self updateTotalScoreOnePlayerGetToPlayerData:teamGrade withScore:offset];
+            int quarterNo[2] = {self.quarterNo, QUARTER_NO_FOR_ENTIRE_GAME};
+            int playerNo[2] = {self.playerSelectedIndex-1, self.playerCount};
             
-            //Update the Player's Total Grade in the Quarter
-            NSMutableArray* totalGradeOfPlayer = [self.playerDataArray objectAtIndex:QUARTER_NO_FOR_ENTIRE_GAME];
-            playerData = [totalGradeOfPlayer objectAtIndex:self.playerSelectedIndex-1];
-            [self updateOffenseGradeForOneMadeToPlayerData:playerData];
-            [self updateOffenseGradeForOneFoulToPlayerData:playerData];
-            [self updateZoneGradeForOneMadeToPlayerData:playerData];
-            [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:offset];
-            
-            //Update the team's Grade in the Entire Game
-            playerData = [totalGradeOfPlayer objectAtIndex:self.playerCount];
-            [self updateOffenseGradeForOneMadeToPlayerData:playerData];
-            [self updateOffenseGradeForOneFoulToPlayerData:playerData];
-            [self updateZoneGradeForOneMadeToPlayerData:playerData];
-            [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:offset];
-            
+            for(int i=0; i<2; i++)
+            {
+                NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:quarterNo[i]];
+                for(int j=0; j<2; j++)
+                {
+                    NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
+                    [self updateOffenseGradeForOneMadeToPlayerData:playerData];
+                    [self updateOffenseGradeForOneFoulToPlayerData:playerData];
+                    [self updateZoneGradeForOneMadeToPlayerData:playerData];
+                    [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:offset];
+                }
+            }
             [self presentViewController:self.andOneAlert animated:YES completion:nil];
         }];
     
@@ -468,24 +383,18 @@
         {
             self.OldPlayerDataArray = [NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:self.playerDataArray]];
             
-            //Update the Quarter Grade of the Player
-            NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:self.quarterNo];
-            NSMutableDictionary* playerData = [quarterGrade objectAtIndex:self.playerSelectedIndex-1];
-            [self updateOffenseGradeForOneTurnOverToPlayerData:playerData];
+            int quarterNo[2] = {self.quarterNo, QUARTER_NO_FOR_ENTIRE_GAME};
+            int playerNo[2] = {self.playerSelectedIndex-1, self.playerCount};
             
-            //Update the Team's Total Grade in the Quarter
-            NSMutableDictionary* teamGrade = [quarterGrade objectAtIndex:self.playerCount];
-            [self updateOffenseGradeForOneTurnOverToPlayerData:teamGrade];
-            
-            //Update the Player's Total Grade in the Quarter
-            NSMutableArray* totalGradeOfPlayer = [self.playerDataArray objectAtIndex:QUARTER_NO_FOR_ENTIRE_GAME];
-            playerData = [totalGradeOfPlayer objectAtIndex:self.playerSelectedIndex-1];
-            [self updateOffenseGradeForOneTurnOverToPlayerData:playerData];
-            
-            //Update the team's Grade in the Entire Game
-            playerData = [totalGradeOfPlayer objectAtIndex:self.playerCount];
-            [self updateOffenseGradeForOneTurnOverToPlayerData:playerData];
-            
+            for(int i=0; i<2; i++)
+            {
+                NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:quarterNo[i]];
+                for(int j=0; j<2; j++)
+                {
+                    NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
+                    [self updateOffenseGradeForOneTurnOverToPlayerData:playerData];
+                }
+            }
             [self updateTmpPlist];
             self.zoneNo = 0;
         }];
@@ -868,13 +777,13 @@
 
 -(void) updateDefenseGrade
 {
-    int quarterNo[2] = {self.quarterNo, 0};   // first for the quarter grade, the last is for the overall grade
+    // first for the quarter grade, the last is for the overall grade
+    int quarterNo[2] = {self.quarterNo, QUARTER_NO_FOR_ENTIRE_GAME};
+    int playerNo[2] = {self.playerSelectedIndex-1, self.playerCount};
     
     for(int i=0; i<2; i++)
     {
         NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:quarterNo[i]];
-        
-        int playerNo[2] = {self.playerSelectedIndex-1, self.playerCount};
         for(int j=0; j<2; j++)
         {
             NSMutableDictionary* gardeDic = [quarterGrade objectAtIndex:playerNo[j]];
