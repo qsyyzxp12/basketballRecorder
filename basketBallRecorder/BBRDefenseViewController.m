@@ -137,7 +137,6 @@
 {
     self.quarterNo++;
     [self extendPlayerDataWithQuarter:self.quarterNo];
-    [self updateZoneGradeView];
     
     NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
     [tmpPlistDic setObject:[NSNumber numberWithInt:self.quarterNo] forKey:KEY_FOR_LAST_RECORD_QUARTER];
@@ -164,7 +163,6 @@
     [self.playerOnFloorListTableView removeFromSuperview];
     [self.playerListTableView setFrame:CGRectMake(25, 10, self.playerListTableView.frame.size.width, self.playerListTableView.frame.size.height)];
     self.playerSelectedIndex = 0;
-    [self updateZoneGradeView];
     
     for(int i=1; i<13; i++)
     {
@@ -215,9 +213,6 @@
     self.navigationItem.rightBarButtonItem.title = @"數據成績";
     self.navigationItem.rightBarButtonItem.action = @selector(showOffenseGradeButtonClicked);
     self.navigationItem.title = @"總成績";
-    
-    //Update Zone Grade;
-    [self updateZoneGradeView];
     
     self.lastQuarterButton.hidden = NO;
     self.nextQuarterButton.hidden = NO;
@@ -442,6 +437,7 @@
 
 -(void) updateDefenseGrade
 {
+    self.OldPlayerDataArray = [NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:self.playerDataArray]];
     // first for the quarter grade, the last is for the overall grade
     int quarterNo[2] = {self.quarterNo, QUARTER_NO_FOR_ENTIRE_GAME};
     int playerNo[2] = {self.playerSelectedIndex-1, self.playerCount};
@@ -615,40 +611,6 @@
     }
     
     [(UITableView*)[self.view viewWithTag:PLAYER_GRADE_TABLEVIEW_TAG] reloadData];
-}
-
-- (void) updateZoneGradeView
-{
-    NSArray* quarterData = [self.playerDataArray objectAtIndex:self.quarterNo];
-    if(self.playerSelectedIndex)
-    {
-        NSDictionary* playerData = [quarterData objectAtIndex:self.playerSelectedIndex-1];
-        for(int i=1; i<13; i++)
-        {
-            NSString* keyForZone = [NSString stringWithFormat:@"zone%d", i];
-            NSDictionary* zoneData = [playerData objectForKey:keyForZone];
-            
-            float zoneAttemptCount = [(NSString*)[zoneData objectForKey:KEY_FOR_ATTEMPT_COUNT] floatValue];
-            float zoneMadeCount = [(NSString*)[zoneData objectForKey:KEY_FOR_MADE_COUNT] floatValue];
-            
-            ((UILabel*)[self.view viewWithTag:(i*100+2)]).text = [NSString stringWithFormat:@"%d/%d", (int)zoneMadeCount, (int)zoneAttemptCount];
-            
-            if(zoneAttemptCount)
-            {
-                ((UILabel*)[self.view viewWithTag:(i*100+1)]).text = [NSString stringWithFormat:@"%d%c", (int)((zoneMadeCount/zoneAttemptCount)*100), '%'];
-            }
-            else
-                ((UILabel*)[self.view viewWithTag:(i*100+1)]).text = @"0%";
-        }
-    }
-    else
-    {
-        for(int i=1; i<12; i++)
-        {
-            ((UILabel*)[self.view viewWithTag:(i*100+2)]).text = @"0/0";
-            ((UILabel*)[self.view viewWithTag:(i*100+1)]).text = @"0%";
-        }
-    }
 }
 
 -(void) updateNavigationTitle
@@ -971,7 +933,6 @@
         self.isRecordMode = YES;
         [self updateNavigationTitle];
         self.navigationItem.rightBarButtonItem = self.rightBarButton;
-        [self updateZoneGradeView];
 
         //[self.view viewWithTag:PLAYER_GRADE_TABLEVIEW_TAG].hidden = YES;
     }
@@ -982,8 +943,6 @@
     if(self.OldPlayerDataArray)
     {
         self.playerDataArray = self.OldPlayerDataArray;
-        
-        [self updateZoneGradeView];
         [self updateTmpPlist];
     }
 }
@@ -1195,8 +1154,6 @@
         }
         else
             self.playerSelectedIndex = 0;
-        
-        [self updateZoneGradeView];
     }
     else if(tableView.tag == NO_TABLEVIEW_TAG)
     {
