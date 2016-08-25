@@ -24,7 +24,7 @@
 		C7CC37031C7AF17900B97149 /* basketBallRecorderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C7CC37021C7AF17900B97149 /* basketBallRecorderTests.m */; };
 		C7CC370E1C7AF17900B97149 /* basketBallRecorderUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = C7CC370D1C7AF17900B97149 /* basketBallRecorderUITests.m */; };
 		C7CC37221C7AFA5900B97149 /* BBRTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C7CC37211C7AFA5900B97149 /* BBRTableViewCell.m */; };
-		C7CC37251C7B4B8F00B97149 /* BBRMainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C7CC37241C7B4B8F00B97149 /* BBRMainViewController.m */; };
+		C7CC37251C7B4B8F00B97149 /* BBROffenseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C7CC37241C7B4B8F00B97149 /* BBROffenseViewController.m */; };
 		C7CC37321C7B7F1600B97149 /* zone1.png in Resources */ = {isa = PBXBuildFile; fileRef = C7CC37271C7B7F1600B97149 /* zone1.png */; };
 		C7CC37331C7B7F1600B97149 /* zone10.png in Resources */ = {isa = PBXBuildFile; fileRef = C7CC37281C7B7F1600B97149 /* zone10.png */; };
 		C7CC37341C7B7F1600B97149 /* zone11.png in Resources */ = {isa = PBXBuildFile; fileRef = C7CC37291C7B7F1600B97149 /* zone11.png */; };
@@ -128,8 +128,8 @@
 		C7CC370F1C7AF17900B97149 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C7CC37201C7AFA5900B97149 /* BBRTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BBRTableViewCell.h; sourceTree = "<group>"; };
 		C7CC37211C7AFA5900B97149 /* BBRTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BBRTableViewCell.m; sourceTree = "<group>"; };
-		C7CC37231C7B4B8F00B97149 /* BBRMainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BBRMainViewController.h; sourceTree = "<group>"; };
-		C7CC37241C7B4B8F00B97149 /* BBRMainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BBRMainViewController.m; sourceTree = "<group>"; };
+		C7CC37231C7B4B8F00B97149 /* BBROffenseViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BBROffenseViewController.h; sourceTree = "<group>"; };
+		C7CC37241C7B4B8F00B97149 /* BBROffenseViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BBROffenseViewController.m; sourceTree = "<group>"; };
 		C7CC37271C7B7F1600B97149 /* zone1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zone1.png; sourceTree = "<group>"; };
 		C7CC37281C7B7F1600B97149 /* zone10.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zone10.png; sourceTree = "<group>"; };
 		C7CC37291C7B7F1600B97149 /* zone11.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zone11.png; sourceTree = "<group>"; };
@@ -225,8 +225,8 @@
 				C7AB3D4A1C84835600DA23A6 /* BBRMenuViewController.m */,
 				C7CC36EE1C7AF17900B97149 /* BBRLogViewController.h */,
 				C7CC36EF1C7AF17900B97149 /* BBRLogViewController.m */,
-				C7CC37231C7B4B8F00B97149 /* BBRMainViewController.h */,
-				C7CC37241C7B4B8F00B97149 /* BBRMainViewController.m */,
+				C7CC37231C7B4B8F00B97149 /* BBROffenseViewController.h */,
+				C7CC37241C7B4B8F00B97149 /* BBROffenseViewController.m */,
 				C7CC37201C7AFA5900B97149 /* BBRTableViewCell.h */,
 				C7CC37211C7AFA5900B97149 /* BBRTableViewCell.m */,
 				C7CC36F11C7AF17900B97149 /* Main.storyboard */,
@@ -514,7 +514,7 @@
 				C7CC36ED1C7AF17900B97149 /* AppDelegate.m in Sources */,
 				C7AB3D4B1C84835600DA23A6 /* BBRMenuViewController.m in Sources */,
 				C7CC37221C7AFA5900B97149 /* BBRTableViewCell.m in Sources */,
-				C7CC37251C7B4B8F00B97149 /* BBRMainViewController.m in Sources */,
+				C7CC37251C7B4B8F00B97149 /* BBROffenseViewController.m in Sources */,
 				C7CC36EA1C7AF17900B97149 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

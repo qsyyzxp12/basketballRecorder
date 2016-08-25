@@ -7,7 +7,7 @@
 //
 
 #import "BBRLogViewController.h"
-#import "BBRMainViewController.h"
+#import "BBROffenseViewController.h"
 #import "BBRTableViewCell.h"
 #import "BBRMenuViewController.h"
 
@@ -74,7 +74,7 @@
 
 -(void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    BBRMainViewController* mainViewCntler = [segue destinationViewController];
+    BBROffenseViewController* mainViewCntler = [segue destinationViewController];
     NSArray *resultArray = [self.playerNoSet sortedArrayUsingSelector:@selector(compare:)];
     mainViewCntler.playerNoSet = resultArray;
     mainViewCntler.playerCount = self.playerCount;
@@ -102,7 +102,7 @@
             self.playerCount++;
         }
     }
-/*
+
     if(self.playerCount < 5)
     {
         UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"人數小於5人" message:nil preferredStyle: UIAlertControllerStyleAlert];
@@ -111,7 +111,22 @@
         [self presentViewController:alert animated:YES completion:nil];
     }
     else
-*/        [self performSegueWithIdentifier:@"showMainController" sender:nil];
+    {
+        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"紀錄項目" message:nil preferredStyle: UIAlertControllerStyleAlert];
+        UIAlertAction* offenseAction = [UIAlertAction actionWithTitle:@"進攻" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+            {
+                [self performSegueWithIdentifier:@"showOffenseController" sender:nil];
+            }];
+        UIAlertAction* defenseAction = [UIAlertAction actionWithTitle:@"防守" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+            {
+                [self performSegueWithIdentifier:@"showDefenseController" sender:nil];
+            }];
+        UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action){}];
+        [alert addAction:offenseAction];
+        [alert addAction:defenseAction];
+        [alert addAction:cancelAction];
+        [self presentViewController:alert animated:YES completion:nil];
+    }
 }
 
 /*

@@ -11,7 +11,7 @@
 #import "BBRMenuViewController.h"
 #import <DropboxSDK/DropboxSDK.h>
 
-@interface BBRMainViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, DBRestClientDelegate>
+@interface BBROffenseViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, DBRestClientDelegate>
 @property UITableView *playerListTableView;
 @property UITableView *playerOnFloorListTableView;
 @property UITableView *playerDataTableView;

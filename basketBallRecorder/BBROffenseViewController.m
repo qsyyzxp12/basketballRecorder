@@ -6,7 +6,7 @@
 //  Copyright © 2016年 Lin Chih-An. All rights reserved.
 //
 
-#import "BBRMainViewController.h"
+#import "BBROffenseViewController.h"
 #import "BBRTableViewCell.h"
 #import "BRAOfficeDocumentPackage.h"
 
@@ -56,11 +56,11 @@
 #define END -1
 #define QUARTER_NO_FOR_ENTIRE_GAME 0
 
-@interface BBRMainViewController ()
+@interface BBROffenseViewController ()
 
 @end
 
-@implementation BBRMainViewController
+@implementation BBROffenseViewController
 
 - (void)viewDidLoad
 {

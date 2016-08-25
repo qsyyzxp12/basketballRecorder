@@ -240,17 +240,18 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <segue destination="nlD-tb-rTD" kind="show" identifier="showMainController" id="kiT-7J-pL3"/>
+                        <segue destination="nlD-tb-rTD" kind="show" identifier="showOffenseController" id="kiT-7J-pL3"/>
+                        <segue destination="jNK-wz-JN3" kind="show" identifier="showDefenseController" id="xey-7J-jAi"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-102" y="18"/>
         </scene>
-        <!--Main View Controller-->
+        <!--Offense View Controller-->
         <scene sceneID="AWf-ME-Fgc">
             <objects>
-                <viewController id="nlD-tb-rTD" customClass="BBRMainViewController" sceneMemberID="viewController">
+                <viewController id="nlD-tb-rTD" customClass="BBROffenseViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="fUg-d4-FCY"/>
                         <viewControllerLayoutGuide type="bottom" id="ZYh-dB-5wG"/>
@@ -261,11 +262,29 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                     <toolbarItems/>
-                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZKR-WI-5Fa" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-489" y="990"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="LZD-DF-RmM">
+            <objects>
+                <viewController id="jNK-wz-JN3" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="r7A-QX-ydA"/>
+                        <viewControllerLayoutGuide type="bottom" id="1Zk-WB-2Zt"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="ULZ-FW-yDg">
+                        <rect key="frame" x="0.0" y="0.0" width="568" height="320"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="XXk-Cl-7cK" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="285" y="1002"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>

@@ -7,7 +7,7 @@
 //
 
 #import "BBRMenuViewController.h"
-#import "BBRMainViewController.h"
+#import "BBROffenseViewController.h"
 #import "BRAOfficeDocumentPackage.h"
 
 #define KEY_FOR_ATTEMPT_COUNT @"attempCount"
@@ -120,7 +120,7 @@
     {
         NSString* recordPlistPath = [NSString stringWithFormat:@"%@/Documents/record.plist", NSHomeDirectory()];
         NSArray* recordPlistArray = [NSArray arrayWithContentsOfFile:recordPlistPath];
-        BBRMainViewController* mainViewCntler = [segue destinationViewController];
+        BBROffenseViewController* mainViewCntler = [segue destinationViewController];
         mainViewCntler.isTmpPlistExist = self.isTmpPlistExist;
 
 //        NSLog(@"%d", (int)[recordPlistArray count] - self.buttonClickedNo);
