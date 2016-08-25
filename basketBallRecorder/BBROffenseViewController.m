@@ -33,10 +33,8 @@
     self.isShowZoneGrade = YES;
     self.isRecordMode = YES;
     self.isTimerRunning = NO;
-    self.isDefenseRecordeMode = NO;
     self.playerSelectedIndex = 0;
     self.zoneNo = 0;
-    self.defenseButtonNo = 0;
     self.quarterNo = 1;
     self.timeCounter = 0;
     
@@ -47,7 +45,6 @@
     self.attackWayKeySet = [[NSArray alloc] initWithObjects:
                             @"isolation", @"spotUp", @"PS", @"PD", @"PR", @"PPS", @"PPD", @"CS",
                             @"fastBreak", @"lowPost", @"second", @"drive", @"highLow", @"cut", nil];
-    self.defenseWayKeySet = [[NSArray alloc] initWithObjects:@"Tip", @"CloseOut", @"StopBall", @"BLK", @"STL", @"8/24", @"DoubleTeam", @"LooseBall", @"OR", @"DR", @"ORTip", @"AST", @"TO", @"WIDEOPEN", @"NOBLOCKOUT", @"DEFASS", @"BlownBy", nil];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] init];
     self.navigationItem.rightBarButtonItem.title = @"本節結束";
     self.navigationItem.rightBarButtonItem.target = self;
@@ -446,7 +443,6 @@
     [self.undoButton removeFromSuperview];
     [self.timeButton removeFromSuperview];
     [self.switchModeButton removeFromSuperview];
-    [self.recordeModeChangeButton removeFromSuperview];
 
    // [self hideZone12orNot:YES];
     
@@ -729,38 +725,6 @@
 
 #pragma mark - DataStruct Updating
 
--(void) updateDefenseGrade
-{
-    // first for the quarter grade, the last is for the overall grade
-    int quarterNo[2] = {self.quarterNo, QUARTER_NO_FOR_ENTIRE_GAME};
-    int playerNo[2] = {self.playerSelectedIndex-1, self.playerCount};
-    
-    for(int i=0; i<2; i++)
-    {
-        NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:quarterNo[i]];
-        for(int j=0; j<2; j++)
-        {
-            NSMutableDictionary* gardeDic = [quarterGrade objectAtIndex:playerNo[j]];
-            NSMutableDictionary* defenseGradeDic = [gardeDic objectForKey:KEY_FOR_DEFENSE_GRADE];
-            int tag = self.defenseButtonNo - 20;
-            NSMutableDictionary* Dic;
-            if(tag < 8)         //Deflection
-                Dic = [defenseGradeDic objectForKey:KEY_FOR_DEFLECTION_DEFENSE_GRADE];
-            else if(tag < 12)   //Good
-                Dic = [defenseGradeDic objectForKey:KEY_FOR_GOOD_DEFENSE_GRADE];
-            else                //Bad
-                Dic = [defenseGradeDic objectForKey:KEY_FOR_BAD_DEFENSE_GRADE];
-            
-            int value = [[Dic objectForKey:self.defenseWayKeySet[tag]] intValue] + 1;
-            [Dic setObject:[NSString stringWithFormat:@"%d", value] forKey:self.defenseWayKeySet[tag]];
-            
-            int totalVal = [[Dic objectForKey:KEY_FOR_TOTAL_COUNT] intValue] + 1;
-            [Dic setObject:[NSString stringWithFormat:@"%d", totalVal] forKey:KEY_FOR_TOTAL_COUNT];
-        }
-    }
-    [self updateTmpPlist];
-}
-
 -(void)updateTimeOnFloorOfPlayerWithIndexInOnFloorTableView:(int)index
 {
     NSMutableDictionary* dic = [self.playerOnFloorDataArray objectAtIndex:index];
@@ -849,27 +813,6 @@
         [playerDataItem setObject:@"0" forKey:KEY_FOR_TOTAL_TURNOVER_COUNT];
         [playerDataItem setObject:@"0" forKey:KEY_FOR_TOTAL_TIME_ON_FLOOR];
         
-        NSMutableDictionary* defenseGradeDic = [[NSMutableDictionary alloc] init];
-        
-        NSMutableDictionary* deflectionGradeDic = [[NSMutableDictionary alloc] init];
-        for(int j=0; j<8; j++)
-            [deflectionGradeDic setObject:@"0" forKey:self.defenseWayKeySet[j]];
-        [deflectionGradeDic setObject:@"0" forKey:KEY_FOR_TOTAL_COUNT];
-        [defenseGradeDic setObject:deflectionGradeDic forKey:KEY_FOR_DEFLECTION_DEFENSE_GRADE];
-        
-        NSMutableDictionary* goodGradeDic = [[NSMutableDictionary alloc] init];
-        for(int j=8; j<12; j++)
-            [goodGradeDic setObject:@"0" forKey:self.defenseWayKeySet[j]];
-        [goodGradeDic setObject:@"0" forKey:KEY_FOR_TOTAL_COUNT];
-        [defenseGradeDic setObject:goodGradeDic forKey:KEY_FOR_GOOD_DEFENSE_GRADE];
-        
-        NSMutableDictionary* badGradeDic = [[NSMutableDictionary alloc] init];
-        for(int j=12; j<17; j++)
-            [badGradeDic setObject:@"0" forKey:self.defenseWayKeySet[j]];
-        [badGradeDic setObject:@"0" forKey:KEY_FOR_TOTAL_COUNT];
-        [defenseGradeDic setObject:badGradeDic forKey:KEY_FOR_BAD_DEFENSE_GRADE];
-        
-        [playerDataItem setObject:defenseGradeDic forKey:KEY_FOR_DEFENSE_GRADE];
         [quarterData addObject:playerDataItem];
     }
     [self.playerDataArray addObject:quarterData];
@@ -1544,21 +1487,9 @@
     [self.switchModeButton setShowsTouchWhenHighlighted:YES];
     [self.view addSubview:self.switchModeButton];
     
-    //Defense Record Button
-    self.recordeModeChangeButton = [[UIButton alloc] init];
-    [self.recordeModeChangeButton setFrame:CGRectMake(CGRectGetMinX(bonusZone.frame), CGRectGetMaxY(self.switchModeButton.frame)+15, bonusZone.frame.size.width, bonusZone.frame.size.height)];
-    self.recordeModeChangeButton.layer.borderWidth = 1;
-    self.recordeModeChangeButton.layer.cornerRadius = 5;
-    self.recordeModeChangeButton.titleLabel.font = [UIFont systemFontOfSize:14];
-    [self.recordeModeChangeButton setTitle:@"防守統計" forState:UIControlStateNormal];
-    [self.recordeModeChangeButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    [self.recordeModeChangeButton addTarget:self action:@selector(recordeModeChangeButtonClicked) forControlEvents:UIControlEventTouchUpInside];
-    [self.recordeModeChangeButton setShowsTouchWhenHighlighted:YES];
-    [self.view addSubview:self.recordeModeChangeButton];
-    
     //Undo Button
     self.undoButton = [[UIButton alloc] init];
-    [self.undoButton setFrame:CGRectMake(CGRectGetMinX(bonusZone.frame), CGRectGetMaxY(self.recordeModeChangeButton.frame)+15, bonusZone.frame.size.width, bonusZone.frame.size.height)];
+    [self.undoButton setFrame:CGRectMake(CGRectGetMinX(bonusZone.frame), CGRectGetMaxY(self.switchModeButton.frame)+15, bonusZone.frame.size.width, bonusZone.frame.size.height)];
     self.undoButton.layer.borderWidth = 1;
     self.undoButton.layer.cornerRadius = 5;
     [self.undoButton setTitle:@"Undo" forState:UIControlStateNormal];
@@ -1598,73 +1529,6 @@
     [self.nextQuarterButton addTarget:self action:@selector(gradeOfNextQuaterButtonClicked) forControlEvents:UIControlEventTouchUpInside];
     self.nextQuarterButton.hidden = YES;
     [self.view addSubview:self.nextQuarterButton];
-    
-    [self drawDefenseRecordView];
-}
-
--(void) drawDefenseRecordView
-{
-    self.defenseRecordeView = [[UIView alloc] initWithFrame:self.backgroundImageView.frame];
-    self.defenseRecordeView.backgroundColor = [UIColor whiteColor];
-    
-    UILabel* goodLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 10, 52, 28)];
-    goodLabel.text = @"GOOD";
-    goodLabel.textAlignment = NSTextAlignmentCenter;
-    goodLabel.layer.borderWidth = 1;
-    [self.defenseRecordeView addSubview:goodLabel];
-    
-    NSArray* defenseTypeArray = [NSArray arrayWithObjects:@"Tip", @"Close  Out", @"Stop Ball", @"BLK", @"STL", @"8/24", @"Double Team", @"Loose  Ball", @"OR", @"DR", @"OR Tip", @"AST", @"TO", @"WIDE OPEN", @"NO BLOCK OUT", @"DEF. ASS", @"Blown    BY", nil];
-    
-    for(int i=0; i<8; i++)
-    {
-        UIButton* deflectionButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetMaxX(goodLabel.frame)+40*i, CGRectGetMaxY(goodLabel.frame), 40, 40)];
-        [deflectionButton setTitle:defenseTypeArray[i] forState:UIControlStateNormal];
-        [deflectionButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-        deflectionButton.tag = 20+i;
-        deflectionButton.layer.borderWidth = 1;
-        deflectionButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-        deflectionButton.titleLabel.numberOfLines = 2;
-        deflectionButton.titleLabel.adjustsFontSizeToFitWidth = YES;
-        [deflectionButton addTarget:self action:@selector(defenseButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
-        [deflectionButton setShowsTouchWhenHighlighted:YES];
-        [self.defenseRecordeView addSubview:deflectionButton];
-    }
-    for(int i=0; i<4; i++)
-    {
-        UIButton* defenseButton = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetMaxX(goodLabel.frame)+40*i, CGRectGetMaxY(goodLabel.frame)+50, 40, 40)];
-        [defenseButton setTitle:defenseTypeArray[i+8] forState:UIControlStateNormal];
-        [defenseButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-        defenseButton.tag = 20+i+8;
-        defenseButton.layer.borderWidth = 1;
-        defenseButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-        defenseButton.titleLabel.numberOfLines = 2;
-        defenseButton.titleLabel.adjustsFontSizeToFitWidth = YES;
-        [defenseButton addTarget:self action:@selector(defenseButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
-        [defenseButton setShowsTouchWhenHighlighted:YES];
-        [self.defenseRecordeView addSubview:defenseButton];
-    }
-    
-    UILabel* badLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(goodLabel.frame)+100, 52, 28)];
-    badLabel.text = @"BAD";
-    badLabel.textAlignment = NSTextAlignmentCenter;
-    badLabel.layer.borderWidth = 1;
-    [self.defenseRecordeView addSubview:badLabel];
-    
-    for(int i=0; i<5; i++)
-    {
-        UIButton* defenseButton = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetMaxX(badLabel.frame)+40*i, CGRectGetMaxY(badLabel.frame), 40, 40)];
-        [defenseButton setTitle:defenseTypeArray[i+12] forState:UIControlStateNormal];
-        [defenseButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-        defenseButton.tag = 20+i+12;
-        defenseButton.layer.borderWidth = 1;
-        defenseButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-        defenseButton.titleLabel.numberOfLines = 2;
-        defenseButton.titleLabel.adjustsFontSizeToFitWidth = YES;
-        [defenseButton addTarget:self action:@selector(defenseButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
-        [defenseButton setShowsTouchWhenHighlighted:YES];
-        [self.defenseRecordeView addSubview:defenseButton];
-    }
-    
 }
 
 - (void) showAttackList
@@ -1710,62 +1574,6 @@
 }
 
 #pragma mark - Button Clicked
-
--(void) defenseButtonClicked:(UIButton*) button
-{
-    if(self.playerSelectedIndex)
-    {
-        self.defenseButtonNo = (int)button.tag;
-        [self updateDefenseGrade];
-        self.defenseButtonNo = 0;
-        return;
-    }
-    
-    if(self.defenseButtonNo == button.tag)
-    {
-        button.backgroundColor = [UIColor whiteColor];
-        self.defenseButtonNo = 0;
-    }
-    else if(!self.defenseButtonNo)
-    {
-        button.backgroundColor = [UIColor blueColor];
-        self.defenseButtonNo = (int)button.tag;
-    }
-    else
-    {
-        ((UIButton*)[self.view viewWithTag:self.defenseButtonNo]).backgroundColor = [UIColor whiteColor];
-        button.backgroundColor = [UIColor blueColor];
-        self.defenseButtonNo = (int)button.tag;
-    }
-}
-
--(void) recordeModeChangeButtonClicked
-{
-    if(!self.isDefenseRecordeMode)
-    {
-        if(self.zoneNo)
-        {
-            [(UIImageView*)[self.view viewWithTag:self.zoneNo] setHighlighted:NO];
-            self.zoneNo = 0;
-        }
-        [self hideZone12orNot:YES];
-        [self.recordeModeChangeButton setTitle:@"進攻統計" forState:UIControlStateNormal];
-        [self.view addSubview:self.defenseRecordeView];
-        self.isDefenseRecordeMode = YES;
-    }
-    else
-    {
-        if(self.defenseButtonNo)
-        {
-            ((UIButton*)[self.view viewWithTag:self.defenseButtonNo]).backgroundColor = [UIColor whiteColor];
-            self.defenseButtonNo = 0;
-        }
-        [self hideZone12orNot:NO];
-        [self.recordeModeChangeButton setTitle:@"防守統計" forState:UIControlStateNormal];
-        [self.defenseRecordeView removeFromSuperview];
-        self.isDefenseRecordeMode = NO;
-    }
-}
 
 -(void) timeButtonClicked
 {
@@ -1877,13 +1685,6 @@
     self.playerSelectedIndex = 0;
     if (self.isRecordMode)
     {
-        if(self.isDefenseRecordeMode)
-        {
-            [self.defenseRecordeView removeFromSuperview];
-            [self.recordeModeChangeButton setTitle:@"防守統計" forState:UIControlStateNormal];
-            self.isDefenseRecordeMode = NO;
-        }
-        
         [self.playerOnFloorListTableView removeFromSuperview];
         [self.playerListTableView setFrame:CGRectMake(25, 10, self.playerListTableView.frame.size.width, self.playerListTableView.frame.size.height)];
         for(int i=1; i<13; i++)
@@ -1900,7 +1701,6 @@
         self.lastQuarterButton.hidden = NO;
         self.timeButton.hidden = YES;
         self.undoButton.hidden = YES;
-        self.recordeModeChangeButton.hidden = YES;
         self.isRecordMode = NO;
         self.navigationItem.rightBarButtonItem.title = @"數據成績";
         self.navigationItem.rightBarButtonItem.action = @selector(showOffenseGradeButtonClicked);
@@ -1927,7 +1727,6 @@
         self.lastQuarterButton.hidden = YES;
         self.timeButton.hidden = NO;
         self.undoButton.hidden = NO;
-        self.recordeModeChangeButton.hidden = NO;
         self.isRecordMode = YES;
         [self updateNavigationTitle];
         self.navigationItem.rightBarButtonItem.title = @"本節結束";
@@ -1964,7 +1763,7 @@
        return (self.playerCount + 2); //One for title, the other one for team grade
     else if(tableView.tag == PLAYER_ON_FLOOR_TABLEVIEW_TAG)
         return MIN(self.playerCount, 5)+1;
-    return [self.attackWayKeySet count]+[self.defenseWayKeySet count] + 8;
+    return [self.attackWayKeySet count] + 4;
 }
 
 - (NSInteger) numberOfSectionsInTableView:(UITableView *)tableView
@@ -2186,88 +1985,6 @@
             timeLabel.text = @"-";
         [cell addSubview:timeLabel];
     }
-    else    //Defense Grade
-    {
-        UILabel* gradeValueLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(label.frame), label.frame.origin.y, tableView.frame.size.width*0.7, PLAYER_GRADE_TABLECELL_HEIGHT)];
-        gradeValueLabel.textAlignment = NSTextAlignmentCenter;
-        gradeValueLabel.layer.borderWidth = 1;
-        
-        if(indexPath.row == [self.attackWayKeySet count] + 4)
-        {
-            label.text = @"GOOD";
-            [label setFrame:CGRectMake(0, 0, tableView.frame.size.width, PLAYER_GRADE_TABLECELL_HEIGHT)];
-        }
-        else if(indexPath.row < [self.attackWayKeySet count] + 17)
-        {
-            NSMutableDictionary* defenseDic = [playerData objectForKey:KEY_FOR_DEFENSE_GRADE];
-            NSMutableDictionary* Dic;
-            if(indexPath.row < [self.attackWayKeySet count] + 13)
-                Dic = [defenseDic objectForKey:KEY_FOR_DEFLECTION_DEFENSE_GRADE];
-            else
-                Dic = [defenseDic objectForKey:KEY_FOR_GOOD_DEFENSE_GRADE];
-            
-            int index = (int)indexPath.row - (int)[self.attackWayKeySet count] - 5;
-            label.text = self.defenseWayKeySet[index];
-            
-            if(self.playerSelectedIndex)
-                gradeValueLabel.text = [Dic objectForKey:self.defenseWayKeySet[index]];
-            else
-                gradeValueLabel.text = @"0";
-            [cell addSubview:gradeValueLabel];
-        }
-        else if(indexPath.row == [self.attackWayKeySet count]+17)
-        {
-            label.text = @"BAD";
-            [label setFrame:CGRectMake(0, 0, tableView.frame.size.width, PLAYER_GRADE_TABLECELL_HEIGHT)];
-        }
-        else if(indexPath.row < [self.attackWayKeySet count] + 23)
-        {
-            NSMutableDictionary* defenseDic = [playerData objectForKey:KEY_FOR_DEFENSE_GRADE];
-            NSMutableDictionary* Dic = [defenseDic objectForKey:KEY_FOR_BAD_DEFENSE_GRADE];
-            
-            int index = (int)indexPath.row - (int)[self.attackWayKeySet count] - 6;
-            label.text = self.defenseWayKeySet[index];
-
-            if(self.playerSelectedIndex)
-                gradeValueLabel.text = [Dic objectForKey:self.defenseWayKeySet[index]];
-            else
-                gradeValueLabel.text = @"0";
-            [cell addSubview:gradeValueLabel];
-        }
-        else if(indexPath.row == [self.attackWayKeySet count] + [self.defenseWayKeySet count] + 6)
-        {
-            label.text = @"total";
-            
-            if(self.playerSelectedIndex)
-            {
-                NSMutableDictionary* defenseDic = [playerData objectForKey:KEY_FOR_DEFENSE_GRADE];
-                NSMutableDictionary* deflectionDic = [defenseDic objectForKey:KEY_FOR_DEFLECTION_DEFENSE_GRADE];
-                int totalValue = [[deflectionDic objectForKey:KEY_FOR_TOTAL_COUNT] intValue];
-                NSMutableDictionary* goodDic = [defenseDic objectForKey:KEY_FOR_GOOD_DEFENSE_GRADE];
-                totalValue += [[goodDic objectForKey:KEY_FOR_TOTAL_COUNT] intValue];
-                NSMutableDictionary* badDic = [defenseDic objectForKey:KEY_FOR_BAD_DEFENSE_GRADE];
-                totalValue -= [[badDic objectForKey:KEY_FOR_TOTAL_COUNT] intValue];
-                gradeValueLabel.text = [NSString stringWithFormat:@"%d", totalValue];
-            }
-            else
-                gradeValueLabel.text = @"0";
-            [cell addSubview:gradeValueLabel];
-        }
-        else if(indexPath.row == [self.attackWayKeySet count] + [self.defenseWayKeySet count] + 7)
-        {
-            label.text = @"Deflection";
-            NSMutableDictionary* defenseDic = [playerData objectForKey:KEY_FOR_DEFENSE_GRADE];
-            NSMutableDictionary* deflectionDic = [defenseDic objectForKey:KEY_FOR_DEFLECTION_DEFENSE_GRADE];
-            if(self.playerSelectedIndex)
-            {
-                gradeValueLabel.text = [deflectionDic objectForKey:KEY_FOR_TOTAL_COUNT];
-                NSLog(@"%@", deflectionDic);
-            }
-            else
-                gradeValueLabel.text = @"0";
-            [cell addSubview:gradeValueLabel];
-        }
-    }
     [cell addSubview:label];
     
     return cell;
@@ -2283,15 +2000,8 @@
             NSNumber *playerSelectedIndex = [dic objectForKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
             self.playerSelectedIndex = playerSelectedIndex.intValue;
         
-            
-            if(!self.isDefenseRecordeMode && self.zoneNo)
+            if(self.zoneNo)
                 [self showAttackList];
-            else if(self.isDefenseRecordeMode && self.defenseButtonNo)
-            {
-                ((UIButton*)[self.view viewWithTag:self.defenseButtonNo]).backgroundColor = [UIColor whiteColor];
-                [self updateDefenseGrade];
-                self.defenseButtonNo = 0;
-            }
         }
         else
             self.playerSelectedIndex = 0;
