@@ -10,6 +10,7 @@
 #import "BBROffenseViewController.h"
 #import "BBRTableViewCell.h"
 #import "BBRMenuViewController.h"
+#import "BBRDefenseViewController.h"
 
 #define TITLE_CELL_HEIGHT 40
 #define CELL_HEIGHT 60
@@ -74,17 +75,28 @@
 
 -(void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    BBROffenseViewController* mainViewCntler = [segue destinationViewController];
     NSArray *resultArray = [self.playerNoSet sortedArrayUsingSelector:@selector(compare:)];
-    mainViewCntler.playerNoSet = resultArray;
-    mainViewCntler.playerCount = self.playerCount;
-    
     NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"YYYY_MM_dd"];
-    NSString* filename = [NSString stringWithFormat:@"%@-%@", self.recordName, [dateFormatter stringFromDate:[NSDate date]]];
     
-    mainViewCntler.recordName = filename;
-    NSLog(@"record name = %@", self.recordName);
+    if([segue.identifier isEqualToString:@"showOffenseController"])
+    {
+        BBROffenseViewController* mainViewCntler = [segue destinationViewController];
+        mainViewCntler.playerNoSet = resultArray;
+        mainViewCntler.playerCount = self.playerCount;
+    
+        NSString* filename = [NSString stringWithFormat:@"%@-%@_進攻", self.recordName, [dateFormatter stringFromDate:[NSDate date]]];
+        mainViewCntler.recordName = filename;
+    }
+    else if([segue.identifier isEqualToString:@"showDefenseController"])
+    {
+        BBRDefenseViewController* mainViewCntler = [segue destinationViewController];
+        mainViewCntler.playerNoSet = resultArray;
+        mainViewCntler.playerCount = self.playerCount;
+        
+        NSString* filename = [NSString stringWithFormat:@"%@-%@_防守", self.recordName, [dateFormatter stringFromDate:[NSDate date]]];
+        mainViewCntler.recordName = filename;
+    }
 }
 
 #pragma mark - action

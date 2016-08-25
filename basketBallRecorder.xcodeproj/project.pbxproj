@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C74D79881D6EF18400624286 /* BBRDefenseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C74D79871D6EF18400624286 /* BBRDefenseViewController.m */; };
 		C74F48421C9D0A7000EB3BB0 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C74F48411C9D0A7000EB3BB0 /* libz.tbd */; };
 		C768630D1CBCA730005074F3 /* BBRDropboxCheckViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C768630C1CBCA730005074F3 /* BBRDropboxCheckViewController.m */; };
 		C7746DC91CBE25D50034F621 /* spreadsheet.xlsx in Resources */ = {isa = PBXBuildFile; fileRef = C7746DC81CBE25D50034F621 /* spreadsheet.xlsx */; };
@@ -100,6 +101,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C74D79861D6EF18400624286 /* BBRDefenseViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BBRDefenseViewController.h; sourceTree = "<group>"; };
+		C74D79871D6EF18400624286 /* BBRDefenseViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BBRDefenseViewController.m; sourceTree = "<group>"; };
+		C74D79891D6EF32400624286 /* BBRMacro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BBRMacro.h; sourceTree = "<group>"; };
 		C74F48411C9D0A7000EB3BB0 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		C768630B1CBCA730005074F3 /* BBRDropboxCheckViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BBRDropboxCheckViewController.h; sourceTree = "<group>"; };
 		C768630C1CBCA730005074F3 /* BBRDropboxCheckViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BBRDropboxCheckViewController.m; sourceTree = "<group>"; };
@@ -219,6 +223,7 @@
 				C7746DC81CBE25D50034F621 /* spreadsheet.xlsx */,
 				C7CC36EB1C7AF17900B97149 /* AppDelegate.h */,
 				C7CC36EC1C7AF17900B97149 /* AppDelegate.m */,
+				C74D79891D6EF32400624286 /* BBRMacro.h */,
 				C768630B1CBCA730005074F3 /* BBRDropboxCheckViewController.h */,
 				C768630C1CBCA730005074F3 /* BBRDropboxCheckViewController.m */,
 				C7AB3D491C84835600DA23A6 /* BBRMenuViewController.h */,
@@ -227,6 +232,8 @@
 				C7CC36EF1C7AF17900B97149 /* BBRLogViewController.m */,
 				C7CC37231C7B4B8F00B97149 /* BBROffenseViewController.h */,
 				C7CC37241C7B4B8F00B97149 /* BBROffenseViewController.m */,
+				C74D79861D6EF18400624286 /* BBRDefenseViewController.h */,
+				C74D79871D6EF18400624286 /* BBRDefenseViewController.m */,
 				C7CC37201C7AFA5900B97149 /* BBRTableViewCell.h */,
 				C7CC37211C7AFA5900B97149 /* BBRTableViewCell.m */,
 				C7CC36F11C7AF17900B97149 /* Main.storyboard */,
@@ -513,6 +520,7 @@
 				C768630D1CBCA730005074F3 /* BBRDropboxCheckViewController.m in Sources */,
 				C7CC36ED1C7AF17900B97149 /* AppDelegate.m in Sources */,
 				C7AB3D4B1C84835600DA23A6 /* BBRMenuViewController.m in Sources */,
+				C74D79881D6EF18400624286 /* BBRDefenseViewController.m in Sources */,
 				C7CC37221C7AFA5900B97149 /* BBRTableViewCell.m in Sources */,
 				C7CC37251C7B4B8F00B97149 /* BBROffenseViewController.m in Sources */,
 				C7CC36EA1C7AF17900B97149 /* main.m in Sources */,
