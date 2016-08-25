@@ -570,8 +570,6 @@
 {
     NSString* recordPlistPath = [NSString stringWithFormat:@"%@/Documents/record.plist", NSHomeDirectory()];
     NSArray* recordPlistArray = [NSArray arrayWithContentsOfFile:recordPlistPath];
-//    NSLog(@"%lu", (unsigned long)[recordPlistArray count]);
-//    NSLog(@"%d", self.showOldRecordNo);
     NSDictionary* dataDic = [recordPlistArray objectAtIndex:self.showOldRecordNo-1];
     self.playerDataArray = [dataDic objectForKey:KEY_FOR_GRADE];
     self.playerNoSet = [dataDic objectForKey:KEY_FOR_PLAYER_NO_SET];
@@ -591,7 +589,6 @@
     self.quarterNo = [[tmpPlistDic objectForKey:KEY_FOR_LAST_RECORD_QUARTER] intValue];
     self.recordName = [tmpPlistDic objectForKey:KEY_FOR_NAME];
     self.timeCounter = [(NSNumber*)[tmpPlistDic objectForKey:KEY_FOR_TIME] intValue];
-    NSLog(@"%d", self.timeCounter);
     self.playerCount = (int)[self.playerNoSet count];
     
     [self updateNavigationTitle];
