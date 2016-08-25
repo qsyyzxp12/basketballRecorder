@@ -8,7 +8,9 @@
 
 #import "BBRMenuViewController.h"
 #import "BBROffenseViewController.h"
+#import "BBRDefenseViewController.h"
 #import "BRAOfficeDocumentPackage.h"
+#import "BBRMacro.h"
 
 #define KEY_FOR_ATTEMPT_COUNT @"attempCount"
 #define KEY_FOR_MADE_COUNT @"madeCount"
@@ -95,7 +97,12 @@
     
     UIAlertAction* yesAction = [UIAlertAction actionWithTitle:@"要" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
-            [self performSegueWithIdentifier:@"showMainViewController" sender:nil];
+            NSString* tmpPlistPath = [NSString stringWithFormat:@"%@/Documents/tmp.plist", NSHomeDirectory()];
+            NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:tmpPlistPath];
+            if([[tmpPlistDic objectForKey:KEY_FOR_DATA_TYPE] isEqualToString:OFFENSE_TYPE_DATA])
+                [self performSegueWithIdentifier:@"showOffenseController" sender:nil];
+            else if([[tmpPlistDic objectForKey:KEY_FOR_DATA_TYPE] isEqualToString:DEFENSE_TYPE_DATA])
+                [self performSegueWithIdentifier:@"showDefenseController" sender:nil];
         }];
     UIAlertAction* noAction = [UIAlertAction actionWithTitle:@"不要" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action)
         {
@@ -116,16 +123,19 @@
 
 -(void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    if([segue.identifier isEqualToString:@"showMainViewController"])
+    NSString* recordPlistPath = [NSString stringWithFormat:@"%@/Documents/record.plist", NSHomeDirectory()];
+    NSArray* recordPlistArray = [NSArray arrayWithContentsOfFile:recordPlistPath];
+    if([segue.identifier isEqualToString:@"showOffenseController"])
     {
-        NSString* recordPlistPath = [NSString stringWithFormat:@"%@/Documents/record.plist", NSHomeDirectory()];
-        NSArray* recordPlistArray = [NSArray arrayWithContentsOfFile:recordPlistPath];
         BBROffenseViewController* mainViewCntler = [segue destinationViewController];
         mainViewCntler.isTmpPlistExist = self.isTmpPlistExist;
-
-//        NSLog(@"%d", (int)[recordPlistArray count] - self.buttonClickedNo);
         mainViewCntler.showOldRecordNo = (int)[recordPlistArray count] - self.buttonClickedNo + 1;
-
+    }
+    else if([segue.identifier isEqualToString:@"showDefenseController"])
+    {
+        BBRDefenseViewController* defenseViewCntler = [segue destinationViewController];
+        defenseViewCntler.isTmpPlistExist = self.isTmpPlistExist;
+        defenseViewCntler.showOldRecordNo = (int)[recordPlistArray count] - self.buttonClickedNo + 1;
     }
 }
 

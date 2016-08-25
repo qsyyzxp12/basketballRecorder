@@ -30,6 +30,10 @@
 #define BACKGROUND_IMAGEVIEW_TAG -4
 #define BAR_HEIGHT 33
 
+#define OFFENSE_TYPE_DATA @"Offense"
+#define DEFENSE_TYPE_DATA @"Defense"
+#define KEY_FOR_DATA_TYPE @"Type"
+
 #define KEY_FOR_ATTEMPT_COUNT @"attempCount"
 #define KEY_FOR_MADE_COUNT @"madeCount"
 #define KEY_FOR_FOUL_COUNT @"foulCount"

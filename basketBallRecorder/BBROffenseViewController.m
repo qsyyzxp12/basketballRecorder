@@ -802,6 +802,7 @@
     [tmpPlistDic setObject:self.playerNoSet forKey:KEY_FOR_PLAYER_NO_SET];
     [tmpPlistDic setObject:self.recordName forKey:KEY_FOR_NAME];
     [tmpPlistDic setObject:[NSNumber numberWithInt:0] forKey:KEY_FOR_TIME];
+    [tmpPlistDic setObject:OFFENSE_TYPE_DATA forKey:KEY_FOR_DATA_TYPE];
     
     [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
     

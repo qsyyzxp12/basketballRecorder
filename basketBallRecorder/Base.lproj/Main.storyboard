@@ -113,6 +113,7 @@
                                 </state>
                                 <connections>
                                     <action selector="recordButtonClicked:" destination="PnF-Fq-esl" eventType="touchUpInside" id="N0K-ps-qav"/>
+                                    <segue destination="jNK-wz-JN3" kind="show" identifier="showDefenseController" id="Efh-o5-9Ry"/>
                                 </connections>
                             </button>
                             <button opaque="NO" tag="1" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VZ9-4U-4Jy">
@@ -178,7 +179,7 @@
                         <outlet property="lastThreeStatusButton" destination="LgY-sD-7uv" id="vNm-fc-T8m"/>
                         <outlet property="lastTwoCompetitionButton" destination="Ul1-EA-RTw" id="l4R-8J-2s3"/>
                         <outlet property="lastTwoStatusButton" destination="e0w-f1-8E3" id="Ivz-tx-kXg"/>
-                        <segue destination="nlD-tb-rTD" kind="show" identifier="showMainViewController" id="S2w-8f-xfv"/>
+                        <segue destination="nlD-tb-rTD" kind="show" identifier="showOffenseController" id="S2w-8f-xfv"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vR1-iG-3Fw" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -265,7 +266,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZKR-WI-5Fa" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-489" y="990"/>
+            <point key="canvasLocation" x="-871" y="848"/>
         </scene>
         <!--Defense View Controller-->
         <scene sceneID="LZD-DF-RmM">
@@ -284,10 +285,11 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="XXk-Cl-7cK" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="285" y="1002"/>
+            <point key="canvasLocation" x="-102" y="848"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
         <segue reference="kiT-7J-pL3"/>
+        <segue reference="xey-7J-jAi"/>
     </inferredMetricsTieBreakers>
 </document>
