@@ -45,6 +45,7 @@
 
 #define KEY_FOR_TIME_WHEN_GO_ON_FLOOR @"timeWhenGoOnFloor"
 #define KEY_FOR_INDEX_IN_PPP_TABLEVIEW @"indexInPPPTableview"
+#define KEY_FOR_TIME @"time"
 
 #define KEY_FOR_DEFENSE_GRADE @"defenseGrade"
 #define KEY_FOR_DEFLECTION_DEFENSE_GRADE @"deflection"
@@ -589,6 +590,8 @@
     self.playerNoSet = [tmpPlistDic objectForKey:KEY_FOR_PLAYER_NO_SET];
     self.quarterNo = [[tmpPlistDic objectForKey:KEY_FOR_LAST_RECORD_QUARTER] intValue];
     self.recordName = [tmpPlistDic objectForKey:KEY_FOR_NAME];
+    self.timeCounter = [(NSNumber*)[tmpPlistDic objectForKey:KEY_FOR_TIME] intValue];
+    NSLog(@"%d", self.timeCounter);
     self.playerCount = (int)[self.playerNoSet count];
     
     [self updateNavigationTitle];
@@ -773,7 +776,7 @@
     [self.restClient uploadFile:[parameters objectAtIndex:0] toPath:@"/" withParentRev:nil fromPath:[parameters objectAtIndex:1]];
 }
 
-#pragma mark - Database Updating
+#pragma mark - DataStruct Updating
 
 -(void) updateDefenseGrade
 {
@@ -823,6 +826,7 @@
     playerData = [playerAllGameGrade objectAtIndex:indexInPPPTableviewNo.intValue-1];
     time = timeOnFloor + ((NSNumber*)[playerData objectForKey:KEY_FOR_TOTAL_TIME_ON_FLOOR]).intValue;
     [playerData setObject:[NSNumber numberWithInt:time] forKey:KEY_FOR_TOTAL_TIME_ON_FLOOR];
+    [self updateTmpPlist];
 }
 
 -(void) newPlayerGradeDataStruct
@@ -846,6 +850,7 @@
     [tmpPlistDic setObject:self.playerDataArray forKey:KEY_FOR_GRADE];
     [tmpPlistDic setObject:self.playerNoSet forKey:KEY_FOR_PLAYER_NO_SET];
     [tmpPlistDic setObject:self.recordName forKey:KEY_FOR_NAME];
+    [tmpPlistDic setObject:[NSNumber numberWithInt:0] forKey:KEY_FOR_TIME];
     
     [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
     
@@ -1040,6 +1045,13 @@
     int min = self.timeCounter/60;
     int sec = self.timeCounter%60;
     [self.timeButton setTitle:[NSString stringWithFormat:@"%02d:%02d", min, sec] forState:UIControlStateNormal];
+    
+    if(self.timeCounter%3 == 0)
+    {
+        NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
+        [tmpPlistDic setObject:[NSNumber numberWithInt:self.timeCounter] forKey:KEY_FOR_TIME];
+        [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
+    }
 }
 
 -(void)updateGradeView
@@ -1606,7 +1618,14 @@
     //Timer Button
     self.timeButton = [[UIButton alloc] init];
     [self.timeButton setFrame:CGRectMake(CGRectGetMinX(self.undoButton.frame), CGRectGetMaxY(self.undoButton.frame)+15, bonusZone.frame.size.width, bonusZone.frame.size.height)];
-    [self.timeButton setTitle:@"00:00" forState:UIControlStateNormal];
+    if(self.timeCounter)
+    {
+        int min = self.timeCounter/60;
+        int sec = self.timeCounter%60;
+        [self.timeButton setTitle:[NSString stringWithFormat:@"%02d:%02d", min, sec] forState:UIControlStateNormal];
+    }
+    else
+        [self.timeButton setTitle:@"00:00" forState:UIControlStateNormal];
     [self.timeButton setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
     [self.timeButton addTarget:self action:@selector(timeButtonClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.timeButton];
