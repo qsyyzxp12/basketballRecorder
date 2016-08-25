@@ -868,24 +868,33 @@
 
 -(void) updateDefenseGrade
 {
-    NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:self.quarterNo];
-    NSMutableDictionary* gardeInQuarterDic = [quarterGrade objectAtIndex:self.playerSelectedIndex-1];
-    NSMutableDictionary* defenseGradeDic = [gardeInQuarterDic objectForKey:KEY_FOR_DEFENSE_GRADE];
-    int tag = self.defenseButtonNo - 20;
-    NSMutableDictionary* Dic;
-    if(tag < 8)         //Deflection
-        Dic = [defenseGradeDic objectForKey:KEY_FOR_DEFLECTION_DEFENSE_GRADE];
-    else if(tag < 12)   //Good
-        Dic = [defenseGradeDic objectForKey:KEY_FOR_GOOD_DEFENSE_GRADE];
-    else                //Bad
-        Dic = [defenseGradeDic objectForKey:KEY_FOR_BAD_DEFENSE_GRADE];
-
-    int value = [[Dic objectForKey:self.defenseWayKeySet[tag]] intValue] + 1;
-    [Dic setObject:[NSString stringWithFormat:@"%d", value] forKey:self.defenseWayKeySet[tag]];
-
-    int totalVal = [[Dic objectForKey:KEY_FOR_TOTAL_COUNT] intValue] + 1;
-    [Dic setObject:[NSString stringWithFormat:@"%d", totalVal] forKey:KEY_FOR_TOTAL_COUNT];
+    int quarterNo[2] = {self.quarterNo, 0};   // first for the quarter grade, the last is for the overall grade
     
+    for(int i=0; i<2; i++)
+    {
+        NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:quarterNo[i]];
+        
+        int playerNo[2] = {self.playerSelectedIndex-1, self.playerCount};
+        for(int j=0; j<2; j++)
+        {
+            NSMutableDictionary* gardeDic = [quarterGrade objectAtIndex:playerNo[j]];
+            NSMutableDictionary* defenseGradeDic = [gardeDic objectForKey:KEY_FOR_DEFENSE_GRADE];
+            int tag = self.defenseButtonNo - 20;
+            NSMutableDictionary* Dic;
+            if(tag < 8)         //Deflection
+                Dic = [defenseGradeDic objectForKey:KEY_FOR_DEFLECTION_DEFENSE_GRADE];
+            else if(tag < 12)   //Good
+                Dic = [defenseGradeDic objectForKey:KEY_FOR_GOOD_DEFENSE_GRADE];
+            else                //Bad
+                Dic = [defenseGradeDic objectForKey:KEY_FOR_BAD_DEFENSE_GRADE];
+            
+            int value = [[Dic objectForKey:self.defenseWayKeySet[tag]] intValue] + 1;
+            [Dic setObject:[NSString stringWithFormat:@"%d", value] forKey:self.defenseWayKeySet[tag]];
+            
+            int totalVal = [[Dic objectForKey:KEY_FOR_TOTAL_COUNT] intValue] + 1;
+            [Dic setObject:[NSString stringWithFormat:@"%d", totalVal] forKey:KEY_FOR_TOTAL_COUNT];
+        }
+    }
     [self updateTmpPlist];
 }
 
@@ -1668,7 +1677,7 @@
     self.recordeModeChangeButton.layer.borderWidth = 1;
     self.recordeModeChangeButton.layer.cornerRadius = 5;
     self.recordeModeChangeButton.titleLabel.font = [UIFont systemFontOfSize:14];
-    [self.recordeModeChangeButton setTitle:@"防禦統計" forState:UIControlStateNormal];
+    [self.recordeModeChangeButton setTitle:@"防守統計" forState:UIControlStateNormal];
     [self.recordeModeChangeButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [self.recordeModeChangeButton addTarget:self action:@selector(recordeModeChangeButtonClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.recordeModeChangeButton setShowsTouchWhenHighlighted:YES];
@@ -1872,7 +1881,7 @@
             self.defenseButtonNo = 0;
         }
         [self hideZone12orNot:NO];
-        [self.recordeModeChangeButton setTitle:@"防禦統計" forState:UIControlStateNormal];
+        [self.recordeModeChangeButton setTitle:@"防守統計" forState:UIControlStateNormal];
         [self.defenseRecordeView removeFromSuperview];
         self.isDefenseRecordeMode = NO;
     }
@@ -1991,7 +2000,7 @@
         if(self.isDefenseRecordeMode)
         {
             [self.defenseRecordeView removeFromSuperview];
-            [self.recordeModeChangeButton setTitle:@"防禦統計" forState:UIControlStateNormal];
+            [self.recordeModeChangeButton setTitle:@"防守統計" forState:UIControlStateNormal];
             self.isDefenseRecordeMode = NO;
         }
         
