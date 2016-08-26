@@ -444,12 +444,10 @@
     [self.timeButton removeFromSuperview];
     [self.switchModeButton removeFromSuperview];
 
-   // [self hideZone12orNot:YES];
     
     [self.playerOnFloorListTableView removeFromSuperview];
     [self.playerListTableView setFrame:CGRectMake(25, 10, self.playerListTableView.frame.size.width, self.playerListTableView.frame.size.height)];
     self.playerSelectedIndex = 0;
-    [self updateZoneGradeView];
     
     for(int i=1; i<13; i++)
     {
@@ -470,6 +468,7 @@
         [newItem setObject:self.playerDataArray forKey:KEY_FOR_GRADE];
         [newItem setObject:self.playerNoSet forKey:KEY_FOR_PLAYER_NO_SET];
         [newItem setObject:self.recordName forKey:KEY_FOR_NAME];
+        [newItem setObject:OFFENSE_TYPE_DATA forKey:KEY_FOR_DATA_TYPE];
         
         if([recordPlistArray count] < 5)
             [recordPlistArray addObject:newItem];
@@ -521,6 +520,9 @@
     NSString* recordPlistPath = [NSString stringWithFormat:@"%@/Documents/record.plist", NSHomeDirectory()];
     NSArray* recordPlistArray = [NSArray arrayWithContentsOfFile:recordPlistPath];
     NSDictionary* dataDic = [recordPlistArray objectAtIndex:self.showOldRecordNo-1];
+    
+    NSLog(@"%@", dataDic);
+    
     self.playerDataArray = [dataDic objectForKey:KEY_FOR_GRADE];
     self.playerNoSet = [dataDic objectForKey:KEY_FOR_PLAYER_NO_SET];
     self.quarterNo = END;
@@ -528,7 +530,6 @@
     
     self.navigationItem.rightBarButtonItem.title = @"數據成績";
     self.navigationItem.rightBarButtonItem.action = @selector(showOffenseGradeButtonClicked);
-    self.navigationItem.title = @"第一節成績";
 }
 
 -(void) reloadPlayerGradeFromTmpPlist
@@ -557,7 +558,7 @@
 -(void) xlsxFileGenerateAndUpload: (NSNumber*) quarterNo
 {
     //Generate the xlsx file
-    NSString *documentPath = [[NSBundle mainBundle] pathForResource:@"spreadsheet" ofType:@"xlsx"];
+    NSString *documentPath = [[NSBundle mainBundle] pathForResource:@"spreadsheet_for_offense" ofType:@"xlsx"];
     BRAOfficeDocumentPackage *spreadsheet = [BRAOfficeDocumentPackage open:documentPath];
     
     for(int i=0; i<quarterNo.intValue+1; i++)

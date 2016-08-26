@@ -9,8 +9,9 @@
 /* Begin PBXBuildFile section */
 		C74D79881D6EF18400624286 /* BBRDefenseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C74D79871D6EF18400624286 /* BBRDefenseViewController.m */; };
 		C74F48421C9D0A7000EB3BB0 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C74F48411C9D0A7000EB3BB0 /* libz.tbd */; };
+		C75BA2AD1D70AB8600DEC1BF /* spreadsheet_for_defense.xlsx in Resources */ = {isa = PBXBuildFile; fileRef = C75BA2AC1D70AB8600DEC1BF /* spreadsheet_for_defense.xlsx */; };
 		C768630D1CBCA730005074F3 /* BBRDropboxCheckViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C768630C1CBCA730005074F3 /* BBRDropboxCheckViewController.m */; };
-		C7746DC91CBE25D50034F621 /* spreadsheet.xlsx in Resources */ = {isa = PBXBuildFile; fileRef = C7746DC81CBE25D50034F621 /* spreadsheet.xlsx */; };
+		C7746DC91CBE25D50034F621 /* spreadsheet_for_offense.xlsx in Resources */ = {isa = PBXBuildFile; fileRef = C7746DC81CBE25D50034F621 /* spreadsheet_for_offense.xlsx */; };
 		C7AB3CE81C7F5E2600DA23A6 /* leftArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = C7AB3CE41C7F5E2600DA23A6 /* leftArrow.png */; };
 		C7AB3CEA1C7F5E2600DA23A6 /* rightArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = C7AB3CE61C7F5E2600DA23A6 /* rightArrow.png */; };
 		C7AB3CEC1C82B10D00DA23A6 /* tmp.plist in Resources */ = {isa = PBXBuildFile; fileRef = C7AB3CEB1C82B10D00DA23A6 /* tmp.plist */; };
@@ -105,9 +106,10 @@
 		C74D79871D6EF18400624286 /* BBRDefenseViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BBRDefenseViewController.m; sourceTree = "<group>"; };
 		C74D79891D6EF32400624286 /* BBRMacro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BBRMacro.h; sourceTree = "<group>"; };
 		C74F48411C9D0A7000EB3BB0 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		C75BA2AC1D70AB8600DEC1BF /* spreadsheet_for_defense.xlsx */ = {isa = PBXFileReference; lastKnownFileType = file; path = spreadsheet_for_defense.xlsx; sourceTree = "<group>"; };
 		C768630B1CBCA730005074F3 /* BBRDropboxCheckViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BBRDropboxCheckViewController.h; sourceTree = "<group>"; };
 		C768630C1CBCA730005074F3 /* BBRDropboxCheckViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BBRDropboxCheckViewController.m; sourceTree = "<group>"; };
-		C7746DC81CBE25D50034F621 /* spreadsheet.xlsx */ = {isa = PBXFileReference; lastKnownFileType = file; path = spreadsheet.xlsx; sourceTree = "<group>"; };
+		C7746DC81CBE25D50034F621 /* spreadsheet_for_offense.xlsx */ = {isa = PBXFileReference; lastKnownFileType = file; path = spreadsheet_for_offense.xlsx; sourceTree = "<group>"; };
 		C7AB3CE41C7F5E2600DA23A6 /* leftArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = leftArrow.png; sourceTree = "<group>"; };
 		C7AB3CE61C7F5E2600DA23A6 /* rightArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rightArrow.png; sourceTree = "<group>"; };
 		C7AB3CEB1C82B10D00DA23A6 /* tmp.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = tmp.plist; sourceTree = "<group>"; };
@@ -220,7 +222,8 @@
 		C7CC36E71C7AF17900B97149 /* basketBallRecorder */ = {
 			isa = PBXGroup;
 			children = (
-				C7746DC81CBE25D50034F621 /* spreadsheet.xlsx */,
+				C75BA2AC1D70AB8600DEC1BF /* spreadsheet_for_defense.xlsx */,
+				C7746DC81CBE25D50034F621 /* spreadsheet_for_offense.xlsx */,
 				C7CC36EB1C7AF17900B97149 /* AppDelegate.h */,
 				C7CC36EC1C7AF17900B97149 /* AppDelegate.m */,
 				C74D79891D6EF32400624286 /* BBRMacro.h */,
@@ -477,10 +480,11 @@
 				C7F5525D1C7C5066005CB9EC /* zone7-2.png in Resources */,
 				C7F5524B1C7B8320005CB9EC /* background.jpg in Resources */,
 				C7CC37361C7B7F1600B97149 /* zone3.png in Resources */,
+				C75BA2AD1D70AB8600DEC1BF /* spreadsheet_for_defense.xlsx in Resources */,
 				C7CC37351C7B7F1600B97149 /* zone2.png in Resources */,
 				C7CC373A1C7B7F1600B97149 /* zone7.png in Resources */,
 				C7F5524E1C7C48BD005CB9EC /* zone1-2.png in Resources */,
-				C7746DC91CBE25D50034F621 /* spreadsheet.xlsx in Resources */,
+				C7746DC91CBE25D50034F621 /* spreadsheet_for_offense.xlsx in Resources */,
 				C7AB3CE81C7F5E2600DA23A6 /* leftArrow.png in Resources */,
 				C7CC37331C7B7F1600B97149 /* zone10.png in Resources */,
 				C7F5525F1C7C5066005CB9EC /* zone9-2.png in Resources */,

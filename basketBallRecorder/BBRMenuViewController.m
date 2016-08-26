@@ -118,24 +118,31 @@
 - (IBAction)recordButtonClicked:(UIButton*)sender
 {
     self.buttonClickedNo = (int)sender.tag;
-    [self performSegueWithIdentifier:@"showMainViewController" sender:nil];
+    NSString* recordPlistPath = [NSString stringWithFormat:@"%@/Documents/record.plist", NSHomeDirectory()];
+    NSArray* recordPlistArray = [NSArray arrayWithContentsOfFile:recordPlistPath];
+    self.showOldRecordNo = (int)[recordPlistArray count] - self.buttonClickedNo;
+    NSDictionary* dataDic = [recordPlistArray objectAtIndex:self.showOldRecordNo];
+    if([[dataDic objectForKey:KEY_FOR_DATA_TYPE] isEqualToString:OFFENSE_TYPE_DATA])
+        [self performSegueWithIdentifier:@"showOffenseController" sender:nil];
+    else if([[dataDic objectForKey:KEY_FOR_DATA_TYPE] isEqualToString:DEFENSE_TYPE_DATA])
+        [self performSegueWithIdentifier:@"showDefenseController" sender:nil];
+        
 }
 
 -(void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    NSString* recordPlistPath = [NSString stringWithFormat:@"%@/Documents/record.plist", NSHomeDirectory()];
-    NSArray* recordPlistArray = [NSArray arrayWithContentsOfFile:recordPlistPath];
     if([segue.identifier isEqualToString:@"showOffenseController"])
     {
         BBROffenseViewController* mainViewCntler = [segue destinationViewController];
         mainViewCntler.isTmpPlistExist = self.isTmpPlistExist;
-        mainViewCntler.showOldRecordNo = (int)[recordPlistArray count] - self.buttonClickedNo + 1;
+        mainViewCntler.showOldRecordNo = self.showOldRecordNo + 1;
+        NSLog(@"%d", mainViewCntler.showOldRecordNo);
     }
     else if([segue.identifier isEqualToString:@"showDefenseController"])
     {
         BBRDefenseViewController* defenseViewCntler = [segue destinationViewController];
         defenseViewCntler.isTmpPlistExist = self.isTmpPlistExist;
-        defenseViewCntler.showOldRecordNo = (int)[recordPlistArray count] - self.buttonClickedNo + 1;
+        defenseViewCntler.showOldRecordNo = self.showOldRecordNo + 1;
     }
 }
 

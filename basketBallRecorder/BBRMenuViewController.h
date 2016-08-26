@@ -37,6 +37,7 @@
 @property UIAlertController* dirtyStatusAlert;
 @property BOOL isTmpPlistExist;
 @property int buttonClickedNo;
+@property int showOldRecordNo;
 
 @property (nonatomic, strong) DBRestClient *restClient;
 @end
