@@ -23,12 +23,15 @@
 #define TOP_PADDING_RATE2 0.3       //for zone 3
 #define TOP_PADDING_RATE3 0.6       //for zone 6, 10
 #define TOP_PADDING_RATE4 0         //for zone 8
+#define BAR_HEIGHT 33
+
 #define NO_TABLEVIEW_TAG -1
 #define PLAYER_ON_FLOOR_TABLEVIEW_TAG -2
 #define PLAYER_GRADE_TABLEVIEW_TAG -3
 #define PLAYER_GRADE_TABLECELL_HEIGHT 30
 #define BACKGROUND_IMAGEVIEW_TAG -4
-#define BAR_HEIGHT 33
+#define DETAIL_TABLE_VIEW -5
+
 
 #define OFFENSE_TYPE_DATA @"Offense"
 #define DEFENSE_TYPE_DATA @"Defense"
@@ -37,6 +40,7 @@
 #define KEY_FOR_FASTBREAK @"Fastbreak"
 #define KEY_FOR_ISOLATION @"Isolation"
 #define KEY_FOR_OFF_SCREEN @"OffScreen"
+#define KEY_FOR_CUT @"Cut"
 #define KEY_FOR_DK @"DK"
 #define KEY_FOR_OTHERS @"Others"
 #define KEY_FOR_PNR @"PNR"
@@ -44,18 +48,18 @@
 #define KEY_FOR_PU @"PU"
 #define KEY_FOR_TOTAL @"Total"
 
-#define KEY_FOR_DRIVE @"drive"
-#define KEY_FOR_PULL_UP @"pullUp"
-#define KEY_FOR_SPOT_UP @"spotUp"
-#define KEY_FOR_BP @"ballHandlerPullUp"
-#define KEY_FOR_BD @"ballHandlerDriver"
-#define KEY_FOR_MR @"manRoll"
-#define KEY_FOR_MPP @"manPop"
-#define KEY_FOR_MPD @"manPopAndDrive"
-#define KEY_FOR_MPS @"MPS"
-#define KEY_FOR_PUT_BACK @"putBack"
-#define KEY_FOR_SF @"SF"
-#define KEY_FOR_LP @"LP"
+#define KEY_FOR_DRIVE @"切入上籃(D)"
+#define KEY_FOR_PULL_UP @"帶一步投籃(P)"
+#define KEY_FOR_SPOT_UP @"原地投籃(S)"
+#define KEY_FOR_BP @"持球者帶一步跳投(BP)"
+#define KEY_FOR_BD @"持球者切入(BD)"
+#define KEY_FOR_MR @"掩護者Roll in"
+#define KEY_FOR_MPP @"掩護者帶一步跳投(MPP)"
+#define KEY_FOR_MPD @"掩護者持球切入(MPD)"
+#define KEY_FOR_MPS @"掩護者外翻原地跳投(MPS)"
+#define KEY_FOR_PUT_BACK @"補籃(PB)"
+#define KEY_FOR_SF @"要位第一拍出手(SF)"
+#define KEY_FOR_LP @"低位單打(LP)"
 
 #define KEY_FOR_STOLEN @"stolen"
 #define KEY_FOR_BAD_PASS @"badPass"

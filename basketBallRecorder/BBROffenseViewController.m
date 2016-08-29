@@ -37,13 +37,20 @@
     self.zoneNo = 0;
     self.quarterNo = 1;
     self.timeCounter = 0;
+    self.attackWayNo = 0;
     
     self.restClient = [[DBRestClient alloc] initWithSession:[DBSession sharedSession]];
     self.restClient.delegate = self;
     
+    self.normalDetailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, nil];
+    self.secondDetailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, KEY_FOR_PUT_BACK, nil];
+    self.PNRDetailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_BP, KEY_FOR_BD, KEY_FOR_MR, KEY_FOR_MPP, KEY_FOR_MPD, KEY_FOR_MPS, nil];
+    self.PUDeyailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, KEY_FOR_SF, KEY_FOR_SF, nil];
+    self.TotalDetailItemArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_SPOT_UP, KEY_FOR_PULL_UP, KEY_FOR_SF, KEY_FOR_LP, KEY_FOR_PUT_BACK, KEY_FOR_BD, KEY_FOR_BD, KEY_FOR_MPD, KEY_FOR_MR, KEY_FOR_MPS, KEY_FOR_MPP, nil];
+    
     self.attackWaySet = [[NSArray alloc] initWithObjects:@"快攻(F)", @"拉開單打(I)", @"無球掩護(OS)", @"空切(C)", @"切傳(DK)", @"其他(O)", @"高位擋拆(PNR)", @"二波進攻(2)", @"低位(PU)", @"Bonus", @"Time", nil];
     self.attackWayKeySet = [[NSArray alloc] initWithObjects:
-                            KEY_FOR_FASTBREAK, KEY_FOR_ISOLATION, KEY_FOR_OFF_SCREEN, KEY_FOR_DK, KEY_FOR_OTHERS, KEY_FOR_PNR, KEY_FOR_SECOND, KEY_FOR_PU, KEY_FOR_TOTAL, nil];
+                            KEY_FOR_FASTBREAK, KEY_FOR_ISOLATION, KEY_FOR_OFF_SCREEN, KEY_FOR_DK, KEY_FOR_CUT, KEY_FOR_OTHERS, KEY_FOR_PNR, KEY_FOR_SECOND, KEY_FOR_PU, KEY_FOR_TOTAL, nil];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] init];
     self.navigationItem.rightBarButtonItem.title = @"本節結束";
     self.navigationItem.rightBarButtonItem.target = self;
@@ -61,32 +68,9 @@
         self.navigationItem.leftBarButtonItem.target = self;
         self.navigationItem.leftBarButtonItem.action = @selector(backButtonClicked);
     }
-    int tableViewHeight = TITLE_CELL_HEIGHT + CELL_HEIGHT * (self.playerCount+1) + BAR_HEIGHT;
-    if (tableViewHeight + 20 > self.view.frame.size.height)
-        tableViewHeight = self.view.frame.size.height - 20;
- 
-    self.playerListTableView = [[UITableView alloc] initWithFrame:CGRectMake(55, 10, CELL_WIDTH, tableViewHeight)];
-//    self.playerListTableView.backgroundColor = [UIColor redColor];
-    self.playerListTableView.delegate = self;
-    self.playerListTableView.dataSource = self;
-    self.playerListTableView.tag = NO_TABLEVIEW_TAG;
-    [self.view addSubview:self.playerListTableView];
-
-    self.playerOnFloorListTableView = [[UITableView alloc] initWithFrame:CGRectMake(10, 10+BAR_HEIGHT, CELL_WIDTH, TITLE_CELL_HEIGHT + CELL_HEIGHT * MIN(self.playerCount, 5))];
-    self.playerOnFloorListTableView.delegate = self;
-    self.playerOnFloorListTableView.dataSource = self;
-    self.playerOnFloorListTableView.tag = PLAYER_ON_FLOOR_TABLEVIEW_TAG;
-    [self.view addSubview:self.playerOnFloorListTableView];
-   
+    
     [self drawPicture];
     [self constructAlertControllers];
-    
-    self.playerDataTableView = [[UITableView alloc] initWithFrame:[self.view viewWithTag:BACKGROUND_IMAGEVIEW_TAG].frame];
-    self.playerDataTableView.tag = PLAYER_GRADE_TABLEVIEW_TAG;
-    self.playerDataTableView.delegate = self;
-    self.playerDataTableView.dataSource = self;
-    self.playerDataTableView.hidden = YES;
-    [self.view addSubview:self.playerDataTableView];
     
     if(self.quarterNo == END)
         [self showConclusionAndGernateXlsxFile:NO];
@@ -817,25 +801,20 @@
             NSString* zoneKey = [NSString stringWithFormat:@"zone%d", k+1];
             [playerDataItem setObject:madeOrAttempt forKey:zoneKey];
         }
-        NSArray* normalDetailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, nil];
-        NSArray* secondDetailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, KEY_FOR_PUT_BACK, nil];
-        NSArray* PNRDetailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_BP, KEY_FOR_BD, KEY_FOR_MR, KEY_FOR_MPP, KEY_FOR_MPD, KEY_FOR_MPS, nil];
-        NSArray* PUDeyailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, KEY_FOR_SF, KEY_FOR_SF, nil];
-        NSArray* TotalDetailItemArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_SPOT_UP, KEY_FOR_PULL_UP, KEY_FOR_SF, KEY_FOR_LP, KEY_FOR_PUT_BACK, KEY_FOR_BD, KEY_FOR_BD, KEY_FOR_MPD, KEY_FOR_MR, KEY_FOR_MPS, KEY_FOR_MPP, nil];
         NSArray* detailItemKeyArray;
        
         for (NSString* attackKeyStr in self.attackWayKeySet)
         {
             if([attackKeyStr isEqualToString:KEY_FOR_SECOND])
-                detailItemKeyArray = secondDetailItemKeyArray;
+                detailItemKeyArray = self.secondDetailItemKeyArray;
             else if([attackKeyStr isEqualToString:KEY_FOR_PNR])
-                detailItemKeyArray = PNRDetailItemKeyArray;
+                detailItemKeyArray = self.PNRDetailItemKeyArray;
             else if([attackKeyStr isEqualToString:KEY_FOR_PU])
-                detailItemKeyArray = PUDeyailItemKeyArray;
+                detailItemKeyArray = self.PUDeyailItemKeyArray;
             else if([attackKeyStr isEqualToString:KEY_FOR_TOTAL])
-                detailItemKeyArray = TotalDetailItemArray;
+                detailItemKeyArray = self.TotalDetailItemArray;
             else
-                detailItemKeyArray = normalDetailItemKeyArray;
+                detailItemKeyArray = self.normalDetailItemKeyArray;
             
             NSMutableDictionary* detailDic = [[NSMutableDictionary alloc] init];
             for(NSString* detailItemKey in detailItemKeyArray)
@@ -847,15 +826,13 @@
                 [detailItemDic setObject:@"0" forKey:KEY_FOR_SCORE_GET];
                 [detailDic setObject:detailItemDic forKey:detailItemKey];
             }
-            [detailDic setObject:@"0" forKey:KEY_FOR_TURNOVER_COUNT];
+            [detailDic setObject:@"0" forKey:KEY_FOR_TOTAL_TURNOVER_COUNT];
+            [detailDic setObject:@"0" forKey:KEY_FOR_TOTAL_SCORE_GET];
+            [detailDic setObject:@"0" forKey:KEY_FOR_TOTAL_MADE_COUNT];
+            [detailDic setObject:@"0" forKey:KEY_FOR_TOTAL_ATTEMPT_COUNT];
+            [detailDic setObject:@"0" forKey:KEY_FOR_TOTAL_FOUL_COUNT];
             if([attackKeyStr isEqualToString:KEY_FOR_TOTAL])
-            {
-                [detailDic setObject:@"0" forKey:KEY_FOR_SCORE_GET];
-                [detailDic setObject:@"0" forKey:KEY_FOR_MADE_COUNT];
-                [detailDic setObject:@"0" forKey:KEY_FOR_ATTEMPT_COUNT];
-                [detailDic setObject:@"0" forKey:KEY_FOR_FOUL_COUNT];
                 [detailDic setObject:@"0" forKey:KEY_FOR_HOLD_BALL_COUNT];
-            }
             [playerDataItem setObject:detailDic forKey:attackKeyStr];
         }
         
@@ -1126,6 +1103,23 @@
 
 - (void) drawPicture
 {
+    int tableViewHeight = TITLE_CELL_HEIGHT + CELL_HEIGHT * (self.playerCount+1) + BAR_HEIGHT;
+    if (tableViewHeight + 20 > self.view.frame.size.height)
+        tableViewHeight = self.view.frame.size.height - 20;
+    
+    self.playerListTableView = [[UITableView alloc] initWithFrame:CGRectMake(55, 10, CELL_WIDTH, tableViewHeight)];
+    //    self.playerListTableView.backgroundColor = [UIColor redColor];
+    self.playerListTableView.delegate = self;
+    self.playerListTableView.dataSource = self;
+    self.playerListTableView.tag = NO_TABLEVIEW_TAG;
+    [self.view addSubview:self.playerListTableView];
+    
+    self.playerOnFloorListTableView = [[UITableView alloc] initWithFrame:CGRectMake(10, 10+BAR_HEIGHT, CELL_WIDTH, TITLE_CELL_HEIGHT + CELL_HEIGHT * MIN(self.playerCount, 5))];
+    self.playerOnFloorListTableView.delegate = self;
+    self.playerOnFloorListTableView.dataSource = self;
+    self.playerOnFloorListTableView.tag = PLAYER_ON_FLOOR_TABLEVIEW_TAG;
+    [self.view addSubview:self.playerOnFloorListTableView];
+    
     self.backgroundImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"background.jpg"]];
     
     CGFloat x = (self.view.frame.size.width- CGRectGetMaxX(self.playerListTableView.frame) - BACKGROUND_WIDTH)/5 + CGRectGetMaxX(self.playerListTableView.frame);
@@ -1580,6 +1574,20 @@
     [self.nextQuarterButton addTarget:self action:@selector(gradeOfNextQuaterButtonClicked) forControlEvents:UIControlEventTouchUpInside];
     self.nextQuarterButton.hidden = YES;
     [self.view addSubview:self.nextQuarterButton];
+    
+    
+    self.playerDataTableView = [[UITableView alloc] initWithFrame:[self.view viewWithTag:BACKGROUND_IMAGEVIEW_TAG].frame];
+    self.playerDataTableView.tag = PLAYER_GRADE_TABLEVIEW_TAG;
+    self.playerDataTableView.delegate = self;
+    self.playerDataTableView.dataSource = self;
+    self.playerDataTableView.hidden = YES;
+    [self.view addSubview:self.playerDataTableView];
+    
+    self.detailTableView = [[UITableView alloc] initWithFrame:self.playerDataTableView.frame];
+    self.detailTableView.delegate = self;
+    self.detailTableView.dataSource = self;
+    self.detailTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.detailTableView.tag = DETAIL_TABLE_VIEW;
 }
 
 - (void) showAttackList
@@ -1625,6 +1633,14 @@
 }
 
 #pragma mark - Button Clicked
+
+-(void) titleButtonInGradeTableClicked:(UIButton*) button
+{
+    self.attackWayNo = (int)button.tag;
+    [self.playerDataTableView removeFromSuperview];
+    [self.view addSubview:self.detailTableView];
+    [self.detailTableView reloadData];
+}
 
 -(void) timeButtonClicked
 {
@@ -1814,7 +1830,21 @@
        return (self.playerCount + 2); //One for title, the other one for team grade
     else if(tableView.tag == PLAYER_ON_FLOOR_TABLEVIEW_TAG)
         return MIN(self.playerCount, 5)+1;
-    return [self.attackWaySet count] + 2;
+    else if(tableView.tag == PLAYER_GRADE_TABLEVIEW_TAG)
+        return [self.attackWaySet count] + 2;
+    
+    switch (self.attackWayNo) {
+        case 7:
+            return [self.PNRDetailItemKeyArray count] + 4;
+        case 8:
+            return [self.secondDetailItemKeyArray count] + 4;
+        case 9:
+            return [self.PUDeyailItemKeyArray count] + 4;
+        case 11:
+            return [self.TotalDetailItemArray count] + 4;
+         default:
+            return [self.normalDetailItemKeyArray count] + 4;
+    }
 }
 
 - (NSInteger) numberOfSectionsInTableView:(UITableView *)tableView
@@ -1897,7 +1927,156 @@
         
         return cell;
     }
-    //if(tableview.tag == PLAYER_GRADE_TABLEVIEW_TAG)
+    else if(tableView.tag == PLAYER_GRADE_TABLEVIEW_TAG)
+    {
+        if(indexPath.row == 0)
+        {
+            BBRTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"title"];
+            if(!cell)
+            {
+                cell = [[BBRTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"title"];
+                cell.layer.borderWidth = 1;
+                UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width*0.3, PLAYER_GRADE_TABLECELL_HEIGHT)];
+                [cell addSubview:label];
+                
+                UILabel* madeAndAttemptLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(label.frame), label.frame.origin.y, tableView.frame.size.width*0.28, PLAYER_GRADE_TABLECELL_HEIGHT)];
+                madeAndAttemptLabel.textAlignment = NSTextAlignmentCenter;
+                madeAndAttemptLabel.layer.borderWidth = 1;
+                madeAndAttemptLabel.text = @"進球/出手";
+                
+                UILabel* foulLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(madeAndAttemptLabel.frame), label.frame.origin.y, tableView.frame.size.width*0.14, PLAYER_GRADE_TABLECELL_HEIGHT)];
+                foulLabel.textAlignment = NSTextAlignmentCenter;
+                foulLabel.layer.borderWidth = 1;
+                foulLabel.text = @"犯規";
+                
+                UILabel* turnOverLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(foulLabel.frame), label.frame.origin.y, tableView.frame.size.width*0.14, PLAYER_GRADE_TABLECELL_HEIGHT)];
+                turnOverLabel.textAlignment = NSTextAlignmentCenter;
+                turnOverLabel.layer.borderWidth = 1;
+                turnOverLabel.text = @"失誤";
+                
+                UILabel* totalScoreGetLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(turnOverLabel.frame), label.frame.origin.y, tableView.frame.size.width*0.14, PLAYER_GRADE_TABLECELL_HEIGHT)];
+                totalScoreGetLabel.textAlignment = NSTextAlignmentCenter;
+                totalScoreGetLabel.layer.borderWidth = 1;
+                totalScoreGetLabel.text = @"得分";
+                
+                [cell addSubview:madeAndAttemptLabel];
+                [cell addSubview:foulLabel];
+                [cell addSubview:turnOverLabel];
+                [cell addSubview:totalScoreGetLabel];
+                
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            }
+            return cell;
+        }
+        
+        NSDictionary* playerData;
+        if(self.playerSelectedIndex)
+        {
+            NSMutableArray* quarterData = [self.playerDataArray objectAtIndex:self.quarterNo];
+            playerData = [quarterData objectAtIndex:self.playerSelectedIndex-1];
+        }
+        
+        BBRTableViewCell* cell = [[BBRTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
+        cell.layer.borderWidth = 1;
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        
+        UIButton* titleButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width*0.3, PLAYER_GRADE_TABLECELL_HEIGHT)];
+        [titleButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        titleButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+        [titleButton setShowsTouchWhenHighlighted:YES];
+        titleButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+        titleButton.tag = indexPath.row;
+        [titleButton addTarget:self action:@selector(titleButtonInGradeTableClicked:) forControlEvents:UIControlEventTouchUpInside];
+        
+        if(indexPath.row < [self.attackWaySet count]-1 || indexPath.row == [self.attackWaySet count]+1)
+        {
+            UILabel* madeAndAttemptLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(titleButton.frame), titleButton.frame.origin.y, tableView.frame.size.width*0.28, PLAYER_GRADE_TABLECELL_HEIGHT)];
+            madeAndAttemptLabel.textAlignment = NSTextAlignmentCenter;
+            madeAndAttemptLabel.layer.borderWidth = 1;
+            
+            UILabel* foulLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(madeAndAttemptLabel.frame), titleButton.frame.origin.y, tableView.frame.size.width*0.14, PLAYER_GRADE_TABLECELL_HEIGHT)];
+            foulLabel.textAlignment = NSTextAlignmentCenter;
+            foulLabel.layer.borderWidth = 1;
+            
+            UILabel* turnOverLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(foulLabel.frame), titleButton.frame.origin.y, tableView.frame.size.width*0.14, PLAYER_GRADE_TABLECELL_HEIGHT)];
+            turnOverLabel.textAlignment = NSTextAlignmentCenter;
+            turnOverLabel.layer.borderWidth = 1;
+            
+            UILabel* totalScoreGetLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(turnOverLabel.frame), titleButton.frame.origin.y, tableView.frame.size.width*0.14, PLAYER_GRADE_TABLECELL_HEIGHT)];
+            totalScoreGetLabel.textAlignment = NSTextAlignmentCenter;
+            totalScoreGetLabel.layer.borderWidth = 1;
+            
+            if(indexPath.row != [self.attackWaySet count]+1)
+                [titleButton setTitle:[self.attackWaySet objectAtIndex:indexPath.row-1] forState:UIControlStateNormal];
+            else
+                [titleButton setTitle:@"總成績" forState:UIControlStateNormal];
+            
+            if(!self.playerSelectedIndex)
+            {
+                madeAndAttemptLabel.text = @"0/0";
+                foulLabel.text = @"0";
+                turnOverLabel.text = @"0";
+                totalScoreGetLabel.text = @"0";
+            }
+            else
+            {
+                if(indexPath.row != [self.attackWaySet count]+1)
+                {
+                    NSDictionary* attackData = [playerData objectForKey:[self.attackWayKeySet objectAtIndex:indexPath.row-1]];
+                    madeAndAttemptLabel.text = [NSString stringWithFormat:@"%@/%@", [attackData objectForKey:KEY_FOR_TOTAL_MADE_COUNT], [attackData objectForKey:KEY_FOR_TOTAL_ATTEMPT_COUNT]];
+                    foulLabel.text = [attackData objectForKey:KEY_FOR_TOTAL_FOUL_COUNT];
+                    turnOverLabel.text = [attackData objectForKey:KEY_FOR_TOTAL_TURNOVER_COUNT];
+                    totalScoreGetLabel.text = [attackData objectForKey:KEY_FOR_TOTAL_SCORE_GET];
+                }
+                else
+                {
+                    madeAndAttemptLabel.text = [NSString stringWithFormat:@"%@/%@", [playerData objectForKey:KEY_FOR_TOTAL_MADE_COUNT], [playerData objectForKey:KEY_FOR_TOTAL_ATTEMPT_COUNT]];
+                    foulLabel.text = [playerData objectForKey:KEY_FOR_TOTAL_FOUL_COUNT];
+                    turnOverLabel.text = [playerData objectForKey:KEY_FOR_TOTAL_TURNOVER_COUNT];
+                    totalScoreGetLabel.text = [playerData objectForKey:KEY_FOR_TOTAL_SCORE_GET];
+                }
+            }
+            
+            [cell addSubview:madeAndAttemptLabel];
+            [cell addSubview:foulLabel];
+            [cell addSubview:turnOverLabel];
+            [cell addSubview:totalScoreGetLabel];
+        }
+        else if(indexPath.row == [self.attackWaySet count]-1)
+        {
+            NSDictionary* bonusData = [playerData objectForKey:@"zone12"];
+            UILabel* madeAndAttemptLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(titleButton.frame), titleButton.frame.origin.y, tableView.frame.size.width*0.7, PLAYER_GRADE_TABLECELL_HEIGHT)];
+            madeAndAttemptLabel.textAlignment = NSTextAlignmentCenter;
+            madeAndAttemptLabel.layer.borderWidth = 1;
+            
+            [titleButton setTitle:[self.attackWaySet objectAtIndex:indexPath.row-1] forState:UIControlStateNormal];
+            if(!self.playerSelectedIndex)
+                madeAndAttemptLabel.text = @"0/0";
+            else
+                madeAndAttemptLabel.text = [NSString stringWithFormat:@"%@/%@", [bonusData objectForKey:KEY_FOR_MADE_COUNT], [bonusData objectForKey:KEY_FOR_ATTEMPT_COUNT]];
+            [cell addSubview:madeAndAttemptLabel];
+        }
+        else if(indexPath.row == [self.attackWaySet count])
+        {
+            NSNumber* time = [playerData objectForKey:KEY_FOR_TOTAL_TIME_ON_FLOOR];
+            int min = time.intValue/60;
+            int sec = time.intValue%60;
+            [titleButton setTitle:[self.attackWaySet objectAtIndex:indexPath.row-1] forState:UIControlStateNormal];
+            
+            UILabel* timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(titleButton.frame), titleButton.frame.origin.y, tableView.frame.size.width*0.7, PLAYER_GRADE_TABLECELL_HEIGHT)];
+            timeLabel.textAlignment = NSTextAlignmentCenter;
+            timeLabel.layer.borderWidth = 1;
+            if(self.playerSelectedIndex != self.playerCount + 1)
+                timeLabel.text = [NSString stringWithFormat:@"%02d:%02d", min, sec];
+            else
+                timeLabel.text = @"-";
+            [cell addSubview:timeLabel];
+        }
+        [cell addSubview:titleButton];
+        
+        return cell;
+    }
+    // if(tableView.tag == DETAIL_TABLE_VIEW)
     if(indexPath.row == 0)
     {
         BBRTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"title"];
@@ -1905,139 +2084,156 @@
         {
             cell = [[BBRTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"title"];
             cell.layer.borderWidth = 1;
-            UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width*0.3, PLAYER_GRADE_TABLECELL_HEIGHT)];
+            UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, PLAYER_GRADE_TABLECELL_HEIGHT)];
+            label.textAlignment = NSTextAlignmentCenter;
+            label.text = [self.attackWaySet objectAtIndex:self.attackWayNo-1];
             [cell addSubview:label];
             
-            UILabel* madeAndAttemptLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(label.frame), label.frame.origin.y, tableView.frame.size.width*0.28, PLAYER_GRADE_TABLECELL_HEIGHT)];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        }
+        return cell;
+    }
+    if(indexPath.row == 1)
+    {
+        BBRTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"itemTitle"];
+        if(!cell)
+        {
+            cell = [[BBRTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"itemTitle"];
+            cell.layer.borderWidth = 1;
+            UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width*0.45, PLAYER_GRADE_TABLECELL_HEIGHT)];
+            [cell addSubview:label];
+            
+            UILabel* madeAndAttemptLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(label.frame), label.frame.origin.y, tableView.frame.size.width*0.275, PLAYER_GRADE_TABLECELL_HEIGHT)];
             madeAndAttemptLabel.textAlignment = NSTextAlignmentCenter;
             madeAndAttemptLabel.layer.borderWidth = 1;
             madeAndAttemptLabel.text = @"進球/出手";
             
-            UILabel* foulLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(madeAndAttemptLabel.frame), label.frame.origin.y, tableView.frame.size.width*0.14, PLAYER_GRADE_TABLECELL_HEIGHT)];
+            UILabel* foulLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(madeAndAttemptLabel.frame), label.frame.origin.y, tableView.frame.size.width*0.1375, PLAYER_GRADE_TABLECELL_HEIGHT)];
             foulLabel.textAlignment = NSTextAlignmentCenter;
             foulLabel.layer.borderWidth = 1;
             foulLabel.text = @"犯規";
             
-            UILabel* turnOverLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(foulLabel.frame), label.frame.origin.y, tableView.frame.size.width*0.14, PLAYER_GRADE_TABLECELL_HEIGHT)];
-            turnOverLabel.textAlignment = NSTextAlignmentCenter;
-            turnOverLabel.layer.borderWidth = 1;
-            turnOverLabel.text = @"失誤";
-            
-            UILabel* totalScoreGetLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(turnOverLabel.frame), label.frame.origin.y, tableView.frame.size.width*0.14, PLAYER_GRADE_TABLECELL_HEIGHT)];
+            UILabel* totalScoreGetLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(foulLabel.frame), label.frame.origin.y, tableView.frame.size.width*0.1375, PLAYER_GRADE_TABLECELL_HEIGHT)];
             totalScoreGetLabel.textAlignment = NSTextAlignmentCenter;
             totalScoreGetLabel.layer.borderWidth = 1;
             totalScoreGetLabel.text = @"得分";
             
             [cell addSubview:madeAndAttemptLabel];
             [cell addSubview:foulLabel];
-            [cell addSubview:turnOverLabel];
             [cell addSubview:totalScoreGetLabel];
             
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
         }
         return cell;
     }
-    
-    NSDictionary* playerData;
-    if(self.playerSelectedIndex)
-    {
-        NSMutableArray* quarterData = [self.playerDataArray objectAtIndex:self.quarterNo];
-        playerData = [quarterData objectAtIndex:self.playerSelectedIndex-1];
-    }
-    
+
     BBRTableViewCell* cell = [[BBRTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
     cell.layer.borderWidth = 1;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
-    UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width*0.3, PLAYER_GRADE_TABLECELL_HEIGHT)];
-    label.textAlignment = NSTextAlignmentCenter;
-    
-    if(indexPath.row < [self.attackWaySet count]-1 || indexPath.row == [self.attackWaySet count]+1)
+    NSDictionary* detailDic;
+
+    if(self.playerSelectedIndex)
     {
-        UILabel* madeAndAttemptLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(label.frame), label.frame.origin.y, tableView.frame.size.width*0.28, PLAYER_GRADE_TABLECELL_HEIGHT)];
+        NSMutableArray* quarterData = [self.playerDataArray objectAtIndex:self.quarterNo];
+        NSDictionary* playerData = [quarterData objectAtIndex:self.playerSelectedIndex-1];
+        detailDic = [playerData objectForKey:self.attackWaySet[self.attackWayNo-1]];
+    }
+
+    NSLog(@"attack no = %d", self.attackWayNo);
+    NSArray* keyArr;
+    switch (self.attackWayNo)
+    {
+        case 7:
+            keyArr = self.PNRDetailItemKeyArray;
+            break;
+        case 8:
+            keyArr = self.secondDetailItemKeyArray;
+            break;
+        case 9:
+            keyArr =self.PUDeyailItemKeyArray;
+            break;
+        case 11:
+            keyArr = self.TotalDetailItemArray;
+            break;
+        default:
+            keyArr = self.normalDetailItemKeyArray;
+            break;
+    }
+    NSLog(@"%@", keyArr);
+    if(indexPath.row < keyArr.count+2 || indexPath.row == keyArr.count+3)
+    {
+        UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width*0.45, PLAYER_GRADE_TABLECELL_HEIGHT)];
+        label.adjustsFontSizeToFitWidth = YES;
+        label.textAlignment = NSTextAlignmentCenter;
+        if(indexPath.row != keyArr.count + 3)
+            label.text = keyArr[indexPath.row - 2];
+        else
+            label.text = @"總計";
+        [cell addSubview:label];
+        
+        UILabel* madeAndAttemptLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(label.frame), label.frame.origin.y, tableView.frame.size.width*0.275, PLAYER_GRADE_TABLECELL_HEIGHT)];
         madeAndAttemptLabel.textAlignment = NSTextAlignmentCenter;
         madeAndAttemptLabel.layer.borderWidth = 1;
         
-        UILabel* foulLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(madeAndAttemptLabel.frame), label.frame.origin.y, tableView.frame.size.width*0.14, PLAYER_GRADE_TABLECELL_HEIGHT)];
+        UILabel* foulLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(madeAndAttemptLabel.frame), label.frame.origin.y, tableView.frame.size.width*0.1375, PLAYER_GRADE_TABLECELL_HEIGHT)];
         foulLabel.textAlignment = NSTextAlignmentCenter;
         foulLabel.layer.borderWidth = 1;
         
-        UILabel* turnOverLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(foulLabel.frame), label.frame.origin.y, tableView.frame.size.width*0.14, PLAYER_GRADE_TABLECELL_HEIGHT)];
-        turnOverLabel.textAlignment = NSTextAlignmentCenter;
-        turnOverLabel.layer.borderWidth = 1;
-        
-        UILabel* totalScoreGetLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(turnOverLabel.frame), label.frame.origin.y, tableView.frame.size.width*0.14, PLAYER_GRADE_TABLECELL_HEIGHT)];
+        UILabel* totalScoreGetLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(foulLabel.frame), label.frame.origin.y, tableView.frame.size.width*0.1375, PLAYER_GRADE_TABLECELL_HEIGHT)];
         totalScoreGetLabel.textAlignment = NSTextAlignmentCenter;
         totalScoreGetLabel.layer.borderWidth = 1;
-        
-        if(indexPath.row != [self.attackWaySet count]+1)
-            label.text = [self.attackWaySet objectAtIndex:indexPath.row-1];
-        else
-            label.text = @"總成績";
         
         if(!self.playerSelectedIndex)
         {
             madeAndAttemptLabel.text = @"0/0";
             foulLabel.text = @"0";
-            turnOverLabel.text = @"0";
             totalScoreGetLabel.text = @"0";
         }
         else
         {
-            if(indexPath.row != [self.attackWaySet count]+1)
+            if(indexPath.row != keyArr.count+3)
             {
-                NSDictionary* attackData = [playerData objectForKey:[self.attackWayKeySet objectAtIndex:indexPath.row-1]];
-                madeAndAttemptLabel.text = [NSString stringWithFormat:@"%@/%@", [attackData objectForKey:KEY_FOR_MADE_COUNT], [attackData objectForKey:KEY_FOR_ATTEMPT_COUNT]];
-                foulLabel.text = [attackData objectForKey:KEY_FOR_FOUL_COUNT];
-                turnOverLabel.text = [attackData objectForKey:KEY_FOR_TURNOVER_COUNT];
-                totalScoreGetLabel.text = [attackData objectForKey:KEY_FOR_SCORE_GET];
+                NSDictionary* detailItemDic = [detailDic objectForKey:keyArr[indexPath.row-2]];
+                NSString* madeCount = [detailItemDic objectForKey:KEY_FOR_MADE_COUNT];
+                NSString* attemptCount = [detailItemDic objectForKey:KEY_FOR_MADE_COUNT];
+            
+                madeAndAttemptLabel.text = [NSString stringWithFormat:@"%@/%@", madeCount, attemptCount];
+                foulLabel.text = [detailItemDic objectForKey:KEY_FOR_FOUL_COUNT];
+                totalScoreGetLabel.text = [detailItemDic objectForKey:KEY_FOR_SCORE_GET];
             }
             else
             {
-                madeAndAttemptLabel.text = [NSString stringWithFormat:@"%@/%@", [playerData objectForKey:KEY_FOR_TOTAL_MADE_COUNT], [playerData objectForKey:KEY_FOR_TOTAL_ATTEMPT_COUNT]];
-                foulLabel.text = [playerData objectForKey:KEY_FOR_TOTAL_FOUL_COUNT];
-                turnOverLabel.text = [playerData objectForKey:KEY_FOR_TOTAL_TURNOVER_COUNT];
-                totalScoreGetLabel.text = [playerData objectForKey:KEY_FOR_TOTAL_SCORE_GET];
+                NSString* madeCount = [detailDic objectForKey:KEY_FOR_TOTAL_MADE_COUNT];
+                NSString* attemptCount = [detailDic objectForKey:KEY_FOR_TOTAL_ATTEMPT_COUNT];
+                
+                madeAndAttemptLabel.text = [NSString stringWithFormat:@"%@/%@", madeCount, attemptCount];
+                foulLabel.text = [detailDic objectForKey:KEY_FOR_FOUL_COUNT];
+                totalScoreGetLabel.text = [detailDic objectForKey:KEY_FOR_SCORE_GET];
             }
         }
         
         [cell addSubview:madeAndAttemptLabel];
         [cell addSubview:foulLabel];
-        [cell addSubview:turnOverLabel];
         [cell addSubview:totalScoreGetLabel];
     }
-    else if(indexPath.row == [self.attackWaySet count]-1)
+    else
     {
-        NSDictionary* bonusData = [playerData objectForKey:@"zone12"];
-        UILabel* madeAndAttemptLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(label.frame), label.frame.origin.y, tableView.frame.size.width*0.7, PLAYER_GRADE_TABLECELL_HEIGHT)];
-        madeAndAttemptLabel.textAlignment = NSTextAlignmentCenter;
-        madeAndAttemptLabel.layer.borderWidth = 1;
+        UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width*0.45, PLAYER_GRADE_TABLECELL_HEIGHT)];
+        label.textAlignment = NSTextAlignmentCenter;
+        label.text = @"失誤(TO)";
         
-        label.text = [self.attackWaySet objectAtIndex:indexPath.row-1];
-        if(!self.playerSelectedIndex)
-            madeAndAttemptLabel.text = @"0/0";
+        UILabel* turnOverLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(label.frame), 0, tableView.frame.size.width*0.55, PLAYER_GRADE_TABLECELL_HEIGHT)];
+        turnOverLabel.textAlignment = NSTextAlignmentCenter;
+        turnOverLabel.layer.borderWidth = 1;
+        if(self.playerSelectedIndex)
+            turnOverLabel.text = [detailDic objectForKey:KEY_FOR_TOTAL_TURNOVER_COUNT];
         else
-            madeAndAttemptLabel.text = [NSString stringWithFormat:@"%@/%@", [bonusData objectForKey:KEY_FOR_MADE_COUNT], [bonusData objectForKey:KEY_FOR_ATTEMPT_COUNT]];
-        [cell addSubview:madeAndAttemptLabel];
-    }
-    else if(indexPath.row == [self.attackWaySet count])
-    {
-        NSNumber* time = [playerData objectForKey:KEY_FOR_TOTAL_TIME_ON_FLOOR];
-        int min = time.intValue/60;
-        int sec = time.intValue%60;
-        label.text = [self.attackWaySet objectAtIndex:indexPath.row-1];
+            turnOverLabel.text = @"0";
+        [cell addSubview:label];
+        [cell addSubview:turnOverLabel];
         
-        UILabel* timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(label.frame), label.frame.origin.y, tableView.frame.size.width*0.7, PLAYER_GRADE_TABLECELL_HEIGHT)];
-        timeLabel.textAlignment = NSTextAlignmentCenter;
-        timeLabel.layer.borderWidth = 1;
-        if(self.playerSelectedIndex != self.playerCount + 1)
-            timeLabel.text = [NSString stringWithFormat:@"%02d:%02d", min, sec];
-        else
-            timeLabel.text = @"-";
-        [cell addSubview:timeLabel];
     }
-    [cell addSubview:label];
-    
     return cell;
 }
 

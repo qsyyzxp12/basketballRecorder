@@ -15,12 +15,18 @@
 @property UITableView *playerListTableView;
 @property UITableView *playerOnFloorListTableView;
 @property UITableView *playerDataTableView;
+@property UITableView *detailTableView;
 @property NSMutableArray *playerOnFloorDataArray;
 @property NSMutableArray* playerDataArray;
 @property NSMutableArray* OldPlayerDataArray;
 @property NSArray* attackWaySet;
 @property NSArray* attackWayKeySet;
 @property NSArray* playerNoSet;
+@property NSArray* normalDetailItemKeyArray;
+@property NSArray* secondDetailItemKeyArray;
+@property NSArray* PNRDetailItemKeyArray;
+@property NSArray* PUDeyailItemKeyArray;
+@property NSArray* TotalDetailItemArray;
 @property BOOL isShowZoneGrade;
 @property BOOL isTmpPlistExist;
 @property BOOL isRecordMode;
@@ -31,6 +37,7 @@
 @property int quarterNo;
 @property int showOldRecordNo;
 @property int timeCounter;
+@property int attackWayNo;
 @property UIAlertController* madeOrNotAlert;
 @property UIAlertController* attackWayAlert;
 @property UIAlertController* resultAlert;
