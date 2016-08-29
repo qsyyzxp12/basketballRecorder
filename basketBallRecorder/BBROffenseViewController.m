@@ -33,6 +33,7 @@
     self.isShowZoneGrade = YES;
     self.isRecordMode = YES;
     self.isTimerRunning = NO;
+    self.isDetailShowing = NO;
     self.playerSelectedIndex = 0;
     self.zoneNo = 0;
     self.quarterNo = 1;
@@ -1636,10 +1637,21 @@
 
 -(void) titleButtonInGradeTableClicked:(UIButton*) button
 {
-    self.attackWayNo = (int)button.tag;
-    [self.playerDataTableView removeFromSuperview];
-    [self.view addSubview:self.detailTableView];
-    [self.detailTableView reloadData];
+    if(!self.isDetailShowing)
+    {
+        self.attackWayNo = (int)button.tag;
+        [self.playerDataTableView removeFromSuperview];
+        [self.view addSubview:self.detailTableView];
+        [self.detailTableView reloadData];
+        self.isDetailShowing = YES;
+    }
+    else
+    {
+        self.attackWayNo = 0;
+        [self.view addSubview:self.playerDataTableView];
+        [self.detailTableView removeFromSuperview];
+        self.isDetailShowing = NO;
+    }
 }
 
 -(void) timeButtonClicked
@@ -2084,13 +2096,16 @@
         {
             cell = [[BBRTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"title"];
             cell.layer.borderWidth = 1;
-            UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, PLAYER_GRADE_TABLECELL_HEIGHT)];
-            label.textAlignment = NSTextAlignmentCenter;
-            label.text = [self.attackWaySet objectAtIndex:self.attackWayNo-1];
-            [cell addSubview:label];
+            cell.titleButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, PLAYER_GRADE_TABLECELL_HEIGHT)];
+            cell.titleButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+            [cell.titleButton setShowsTouchWhenHighlighted:YES];
+            [cell.titleButton addTarget:self action:@selector(titleButtonInGradeTableClicked:) forControlEvents:UIControlEventTouchUpInside];
+            [cell.titleButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+            [cell addSubview:cell.titleButton];
             
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
         }
+        [cell.titleButton setTitle:[self.attackWaySet objectAtIndex:self.attackWayNo-1] forState:UIControlStateNormal];
         return cell;
     }
     if(indexPath.row == 1)
@@ -2140,7 +2155,6 @@
         detailDic = [playerData objectForKey:self.attackWaySet[self.attackWayNo-1]];
     }
 
-    NSLog(@"attack no = %d", self.attackWayNo);
     NSArray* keyArr;
     switch (self.attackWayNo)
     {
@@ -2160,7 +2174,6 @@
             keyArr = self.normalDetailItemKeyArray;
             break;
     }
-    NSLog(@"%@", keyArr);
     if(indexPath.row < keyArr.count+2 || indexPath.row == keyArr.count+3)
     {
         UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width*0.45, PLAYER_GRADE_TABLECELL_HEIGHT)];

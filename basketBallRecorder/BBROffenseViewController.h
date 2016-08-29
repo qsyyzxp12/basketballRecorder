@@ -31,6 +31,7 @@
 @property BOOL isTmpPlistExist;
 @property BOOL isRecordMode;
 @property BOOL isTimerRunning;
+@property BOOL isDetailShowing;
 @property int playerCount;
 @property int playerSelectedIndex;
 @property int zoneNo;

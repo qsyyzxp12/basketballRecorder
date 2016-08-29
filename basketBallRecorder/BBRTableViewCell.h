@@ -12,4 +12,5 @@
 @property (strong, nonatomic) IBOutlet UILabel *indexLabel;
 @property (strong, nonatomic) IBOutlet UITextField *numberTextField;
 @property (strong, nonatomic) IBOutlet UILabel *NoLabel;
+@property (strong, nonatomic) IBOutlet UIButton* titleButton;
 @end
