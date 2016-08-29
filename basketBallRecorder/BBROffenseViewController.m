@@ -41,10 +41,9 @@
     self.restClient = [[DBRestClient alloc] initWithSession:[DBSession sharedSession]];
     self.restClient.delegate = self;
     
-    self.attackWaySet = [[NSArray alloc] initWithObjects:@"Isolation", @"Spot Up", @"PS", @"PD", @"PR", @"PPS", @"PPD", @"Catch&Shoot", @"Fast Break", @"Low Post", @"Second", @"Drive", @"High-Low", @"Cut", @"Bonus", @"Time", nil];
+    self.attackWaySet = [[NSArray alloc] initWithObjects:@"快攻(F)", @"拉開單打(I)", @"無球掩護(OS)", @"空切(C)", @"切傳(DK)", @"其他(O)", @"高位擋拆(PNR)", @"二波進攻(2)", @"低位(PU)", @"Bonus", @"Time", nil];
     self.attackWayKeySet = [[NSArray alloc] initWithObjects:
-                            @"isolation", @"spotUp", @"PS", @"PD", @"PR", @"PPS", @"PPD", @"CS",
-                            @"fastBreak", @"lowPost", @"second", @"drive", @"highLow", @"cut", nil];
+                            KEY_FOR_FASTBREAK, KEY_FOR_ISOLATION, KEY_FOR_OFF_SCREEN, KEY_FOR_DK, KEY_FOR_OTHERS, KEY_FOR_PNR, KEY_FOR_SECOND, KEY_FOR_PU, KEY_FOR_TOTAL, nil];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] init];
     self.navigationItem.rightBarButtonItem.title = @"本節結束";
     self.navigationItem.rightBarButtonItem.target = self;
@@ -362,6 +361,27 @@
     [self.madeOrNotAlert addAction:noAction];
     [self.madeOrNotAlert addAction:cancelAction];
     
+    
+    UIAlertController *detailAlert = [UIAlertController alertControllerWithTitle:@"細節" message:nil preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction* driveAction = [UIAlertAction actionWithTitle:@"Drive" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+        {
+            [self presentViewController:self.resultAlert animated:YES completion:nil];
+        }];
+    UIAlertAction* pullUpAction = [UIAlertAction actionWithTitle:@"Pull Up" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+        {
+            [self presentViewController:self.resultAlert animated:YES completion:nil];
+        }];
+    UIAlertAction* spotUpAction = [UIAlertAction actionWithTitle:@"Spot Up" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+        {
+            [self presentViewController:self.resultAlert animated:YES completion:nil];
+        }];
+    
+    [detailAlert addAction:driveAction];
+    [detailAlert addAction:pullUpAction];
+    [detailAlert addAction:spotUpAction];
+    [detailAlert addAction:cancelAction];
+    
     self.attackWayAlert = [UIAlertController alertControllerWithTitle:@"進攻方式"
                                         message:nil preferredStyle:UIAlertControllerStyleAlert];
 
@@ -371,7 +391,7 @@
         UIAlertAction* action = [UIAlertAction actionWithTitle:title style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
             {
                 self.keyForSearch = [self.attackWayKeySet objectAtIndex:i];
-                [self presentViewController:self.resultAlert animated:YES completion:nil];
+                [self presentViewController:detailAlert animated:YES completion:nil];
             }];
         [self.attackWayAlert addAction:action];
     }
@@ -750,6 +770,7 @@
     self.playerDataArray = [NSMutableArray arrayWithCapacity:2];
 
     [self extendPlayerDataWithQuarter:0];
+    NSLog(@"%@", self.playerDataArray);
     [self extendPlayerDataWithQuarter:1];
     
     NSLog(@"%@", self.playerDataArray);
@@ -796,22 +817,51 @@
             NSString* zoneKey = [NSString stringWithFormat:@"zone%d", k+1];
             [playerDataItem setObject:madeOrAttempt forKey:zoneKey];
         }
-        for (int j=0; j<[self.attackWayKeySet count]; j++)
+        NSArray* normalDetailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, nil];
+        NSArray* secondDetailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, KEY_FOR_PUT_BACK, nil];
+        NSArray* PNRDetailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_BP, KEY_FOR_BD, KEY_FOR_MR, KEY_FOR_MPP, KEY_FOR_MPD, KEY_FOR_MPS, nil];
+        NSArray* PUDeyailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, KEY_FOR_SF, KEY_FOR_SF, nil];
+        NSArray* TotalDetailItemArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_SPOT_UP, KEY_FOR_PULL_UP, KEY_FOR_SF, KEY_FOR_LP, KEY_FOR_PUT_BACK, KEY_FOR_BD, KEY_FOR_BD, KEY_FOR_MPD, KEY_FOR_MR, KEY_FOR_MPS, KEY_FOR_MPP, nil];
+        NSArray* detailItemKeyArray;
+       
+        for (NSString* attackKeyStr in self.attackWayKeySet)
         {
-            NSMutableDictionary* result2 = [[NSMutableDictionary alloc] init];
-            [result2 setObject:@"0" forKey:KEY_FOR_MADE_COUNT];
-            [result2 setObject:@"0" forKey:KEY_FOR_ATTEMPT_COUNT];
-            [result2 setObject:@"0" forKey:KEY_FOR_FOUL_COUNT];
-            [result2 setObject:@"0" forKey:KEY_FOR_TURNOVER_COUNT];
-            [result2 setObject:@"0" forKey:KEY_FOR_SCORE_GET];
-            [playerDataItem setObject:result2 forKey:[self.attackWayKeySet objectAtIndex:j]];
+            if([attackKeyStr isEqualToString:KEY_FOR_SECOND])
+                detailItemKeyArray = secondDetailItemKeyArray;
+            else if([attackKeyStr isEqualToString:KEY_FOR_PNR])
+                detailItemKeyArray = PNRDetailItemKeyArray;
+            else if([attackKeyStr isEqualToString:KEY_FOR_PU])
+                detailItemKeyArray = PUDeyailItemKeyArray;
+            else if([attackKeyStr isEqualToString:KEY_FOR_TOTAL])
+                detailItemKeyArray = TotalDetailItemArray;
+            else
+                detailItemKeyArray = normalDetailItemKeyArray;
+            
+            NSMutableDictionary* detailDic = [[NSMutableDictionary alloc] init];
+            for(NSString* detailItemKey in detailItemKeyArray)
+            {
+                NSMutableDictionary* detailItemDic = [[NSMutableDictionary alloc] init];
+                [detailItemDic setObject:@"0" forKey:KEY_FOR_MADE_COUNT];
+                [detailItemDic setObject:@"0" forKey:KEY_FOR_ATTEMPT_COUNT];
+                [detailItemDic setObject:@"0" forKey:KEY_FOR_FOUL_COUNT];
+                [detailItemDic setObject:@"0" forKey:KEY_FOR_SCORE_GET];
+                [detailDic setObject:detailItemDic forKey:detailItemKey];
+            }
+            [detailDic setObject:@"0" forKey:KEY_FOR_TURNOVER_COUNT];
+            if([attackKeyStr isEqualToString:KEY_FOR_TOTAL])
+            {
+                [detailDic setObject:@"0" forKey:KEY_FOR_SCORE_GET];
+                [detailDic setObject:@"0" forKey:KEY_FOR_MADE_COUNT];
+                [detailDic setObject:@"0" forKey:KEY_FOR_ATTEMPT_COUNT];
+                [detailDic setObject:@"0" forKey:KEY_FOR_FOUL_COUNT];
+                [detailDic setObject:@"0" forKey:KEY_FOR_HOLD_BALL_COUNT];
+            }
+            [playerDataItem setObject:detailDic forKey:attackKeyStr];
         }
         
-        [playerDataItem setObject:@"0" forKey:KEY_FOR_TOTAL_SCORE_GET];
-        [playerDataItem setObject:@"0" forKey:KEY_FOR_TOTAL_MADE_COUNT];
-        [playerDataItem setObject:@"0" forKey:KEY_FOR_TOTAL_ATTEMPT_COUNT];
-        [playerDataItem setObject:@"0" forKey:KEY_FOR_TOTAL_FOUL_COUNT];
-        [playerDataItem setObject:@"0" forKey:KEY_FOR_TOTAL_TURNOVER_COUNT];
+        
+        
+        
         [playerDataItem setObject:@"0" forKey:KEY_FOR_TOTAL_TIME_ON_FLOOR];
         
         [quarterData addObject:playerDataItem];
@@ -1764,7 +1814,7 @@
        return (self.playerCount + 2); //One for title, the other one for team grade
     else if(tableView.tag == PLAYER_ON_FLOOR_TABLEVIEW_TAG)
         return MIN(self.playerCount, 5)+1;
-    return [self.attackWayKeySet count] + 4;
+    return [self.attackWaySet count] + 2;
 }
 
 - (NSInteger) numberOfSectionsInTableView:(UITableView *)tableView
@@ -1902,7 +1952,7 @@
     UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width*0.3, PLAYER_GRADE_TABLECELL_HEIGHT)];
     label.textAlignment = NSTextAlignmentCenter;
     
-    if(indexPath.row < [self.attackWayKeySet count]+1 || indexPath.row == [self.attackWayKeySet count]+3)
+    if(indexPath.row < [self.attackWaySet count]-1 || indexPath.row == [self.attackWaySet count]+1)
     {
         UILabel* madeAndAttemptLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(label.frame), label.frame.origin.y, tableView.frame.size.width*0.28, PLAYER_GRADE_TABLECELL_HEIGHT)];
         madeAndAttemptLabel.textAlignment = NSTextAlignmentCenter;
@@ -1920,7 +1970,7 @@
         totalScoreGetLabel.textAlignment = NSTextAlignmentCenter;
         totalScoreGetLabel.layer.borderWidth = 1;
         
-        if(indexPath.row != [self.attackWayKeySet count]+3)
+        if(indexPath.row != [self.attackWaySet count]+1)
             label.text = [self.attackWaySet objectAtIndex:indexPath.row-1];
         else
             label.text = @"總成績";
@@ -1934,7 +1984,7 @@
         }
         else
         {
-            if(indexPath.row != [self.attackWayKeySet count]+3)
+            if(indexPath.row != [self.attackWaySet count]+1)
             {
                 NSDictionary* attackData = [playerData objectForKey:[self.attackWayKeySet objectAtIndex:indexPath.row-1]];
                 madeAndAttemptLabel.text = [NSString stringWithFormat:@"%@/%@", [attackData objectForKey:KEY_FOR_MADE_COUNT], [attackData objectForKey:KEY_FOR_ATTEMPT_COUNT]];
@@ -1956,7 +2006,7 @@
         [cell addSubview:turnOverLabel];
         [cell addSubview:totalScoreGetLabel];
     }
-    else if(indexPath.row == [self.attackWayKeySet count]+1)
+    else if(indexPath.row == [self.attackWaySet count]-1)
     {
         NSDictionary* bonusData = [playerData objectForKey:@"zone12"];
         UILabel* madeAndAttemptLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(label.frame), label.frame.origin.y, tableView.frame.size.width*0.7, PLAYER_GRADE_TABLECELL_HEIGHT)];
@@ -1970,7 +2020,7 @@
             madeAndAttemptLabel.text = [NSString stringWithFormat:@"%@/%@", [bonusData objectForKey:KEY_FOR_MADE_COUNT], [bonusData objectForKey:KEY_FOR_ATTEMPT_COUNT]];
         [cell addSubview:madeAndAttemptLabel];
     }
-    else if(indexPath.row == [self.attackWayKeySet count]+2)
+    else if(indexPath.row == [self.attackWaySet count])
     {
         NSNumber* time = [playerData objectForKey:KEY_FOR_TOTAL_TIME_ON_FLOOR];
         int min = time.intValue/60;
