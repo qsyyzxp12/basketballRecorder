@@ -115,7 +115,7 @@
         }
     }
 
-    if(self.playerCount < 5)
+  /*  if(self.playerCount < 5)
     {
         UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"人數小於5人" message:nil preferredStyle: UIAlertControllerStyleAlert];
         UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action){}];
@@ -124,7 +124,7 @@
     }
     else
     {
-        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"紀錄項目" message:nil preferredStyle: UIAlertControllerStyleAlert];
+*/        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"紀錄項目" message:nil preferredStyle: UIAlertControllerStyleAlert];
         UIAlertAction* offenseAction = [UIAlertAction actionWithTitle:@"進攻" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
             {
                 [self performSegueWithIdentifier:@"showOffenseController" sender:nil];
@@ -138,7 +138,7 @@
         [alert addAction:defenseAction];
         [alert addAction:cancelAction];
         [self presentViewController:alert animated:YES completion:nil];
-    }
+  //  }
 }
 
 /*
@@ -195,7 +195,6 @@
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
     }
-    
 
     BBRTableViewCell* cell = [[BBRTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
 

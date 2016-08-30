@@ -46,7 +46,7 @@
     self.normalDetailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, nil];
     self.secondDetailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, KEY_FOR_PUT_BACK, nil];
     self.PNRDetailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_BP, KEY_FOR_BD, KEY_FOR_MR, KEY_FOR_MPP, KEY_FOR_MPD, KEY_FOR_MPS, nil];
-    self.PUDeyailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, KEY_FOR_SF, KEY_FOR_SF, nil];
+    self.PUDetailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, KEY_FOR_SF, KEY_FOR_SF, nil];
     self.TotalDetailItemArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_SPOT_UP, KEY_FOR_PULL_UP, KEY_FOR_SF, KEY_FOR_LP, KEY_FOR_PUT_BACK, KEY_FOR_BD, KEY_FOR_BD, KEY_FOR_MPD, KEY_FOR_MR, KEY_FOR_MPS, KEY_FOR_MPP, nil];
     self.turnOverArray = [NSArray arrayWithObjects:KEY_FOR_STOLEN, KEY_FOR_BAD_PASS, KEY_FOR_CHARGING, KEY_FOR_DROP, KEY_FOR_3_SENCOND, KEY_FOR_TRAVELING, KEY_FOR_TEAM, nil];
     
@@ -100,7 +100,7 @@
                 {
                     NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
                     [self increaseOffenseScoreGetToPlayerData:playerData by:1];
-                    [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:1];
+                    [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:1];
                 }
             }
             [self updateTmpPlist];
@@ -118,7 +118,7 @@
                 {
                     NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
                     [self increaseOffenseScoreGetToPlayerData:playerData by:2];
-                    [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:2];
+                    [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:2];
                 }
             }
             [self updateTmpPlist];
@@ -136,7 +136,7 @@
                 {
                     NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
                     [self increaseOffenseScoreGetToPlayerData:playerData by:3];
-                    [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:3];
+                    [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:3];
                 }
             }
             [self updateTmpPlist];
@@ -177,7 +177,7 @@
                 {
                     NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
                     [self increaseOffenseScoreGetToPlayerData:playerData by:1];
-                    [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:1];
+                    [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:1];
                 }
             }
             
@@ -221,7 +221,7 @@
                     if(self.zoneNo != 12)
                         [self updateOffenseGradeForOneMadeToPlayerData:playerData];
                     [self updateZoneGradeForOneMadeToPlayerData:playerData];
-                    [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:offset];
+                    [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:offset];
                 }
             }
             [self updateTmpPlist];
@@ -248,7 +248,6 @@
             
             [self updateTmpPlist];
             self.zoneNo = 0;
-            NSLog(@"%@", self.playerDataArray);
         }];
     
     UIAlertAction* foulAction = [UIAlertAction actionWithTitle:@"Foul" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action)
@@ -310,7 +309,7 @@
                     [self updateOffenseGradeForOneMadeToPlayerData:playerData];
                     [self updateOffenseGradeForOneFoulToPlayerData:playerData];
                     [self updateZoneGradeForOneMadeToPlayerData:playerData];
-                    [self updateTotalScoreOnePlayerGetToPlayerData:playerData withScore:offset];
+                    [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:offset];
                 }
             }
             [self presentViewController:self.andOneAlert animated:YES completion:nil];
@@ -326,30 +325,43 @@
     [self.madeOrNotAlert addAction:noAction];
     [self.madeOrNotAlert addAction:cancelAction];
     
+    UIAlertController *turnoverDetailAlert = [UIAlertController alertControllerWithTitle:@"細節" message:nil preferredStyle:UIAlertControllerStyleAlert];
+    for(NSString* detailKey in self.turnOverArray)
+    {
+        UIAlertAction *detailAction = [UIAlertAction actionWithTitle:detailKey style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+            {
+            }];
+        [turnoverDetailAlert addAction:detailAction];
+    }
+    [turnoverDetailAlert addAction:cancelAction];
     
-    UIAlertController *detailAlert = [UIAlertController alertControllerWithTitle:@"細節" message:nil preferredStyle:UIAlertControllerStyleAlert];
-    
-    UIAlertAction* driveAction = [UIAlertAction actionWithTitle:@"Drive" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+    UIAlertAction* turnoverAction = [UIAlertAction actionWithTitle:@"失誤(TO)" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
-            [self presentViewController:self.resultAlert animated:YES completion:nil];
-        }];
-    UIAlertAction* pullUpAction = [UIAlertAction actionWithTitle:@"Pull Up" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
-        {
-            [self presentViewController:self.resultAlert animated:YES completion:nil];
-        }];
-    UIAlertAction* spotUpAction = [UIAlertAction actionWithTitle:@"Spot Up" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
-        {
-            [self presentViewController:self.resultAlert animated:YES completion:nil];
-        }];
-    UIAlertAction* turnoverAction = [UIAlertAction actionWithTitle:@"Turn Over" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
-        {
-            
+            self.keyOfAttackWay = KEY_FOR_TURNOVER;
+            [self presentViewController:turnoverDetailAlert animated:YES completion:nil];
         }];
     
-    [detailAlert addAction:driveAction];
-    [detailAlert addAction:pullUpAction];
-    [detailAlert addAction:spotUpAction];
-    [detailAlert addAction:cancelAction];
+    NSArray* detailItemsArray = [NSArray arrayWithObjects:self.normalDetailItemKeyArray, self.secondDetailItemKeyArray, self.PUDetailItemKeyArray, self.PNRDetailItemKeyArray, nil];
+
+    NSMutableArray* alertPtrArray = [[NSMutableArray alloc] init];
+    for(NSArray* itemArray in detailItemsArray)
+    {
+        UIAlertController *detailAlert = [UIAlertController alertControllerWithTitle:@"細節" message:nil preferredStyle:UIAlertControllerStyleAlert];
+    
+        for(NSString* detailKey in itemArray)
+        {
+            UIAlertAction* detailAction = [UIAlertAction actionWithTitle:detailKey style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+            {
+                self.keyOfDetail = detailKey;
+                [self presentViewController:self.resultAlert animated:YES completion:nil];
+            }];
+            [detailAlert addAction:detailAction];
+        }
+        [detailAlert addAction:turnoverAction];
+        [detailAlert addAction:cancelAction];
+        [alertPtrArray addObject:detailAlert];
+    }
+    
     
     self.attackWayAlert = [UIAlertController alertControllerWithTitle:@"進攻方式"
                                         message:nil preferredStyle:UIAlertControllerStyleAlert];
@@ -359,8 +371,15 @@
         NSString* title = [self.attackWaySet objectAtIndex:i];
         UIAlertAction* action = [UIAlertAction actionWithTitle:title style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
             {
-                self.keyForSearch = [self.attackWayKeySet objectAtIndex:i];
-                [self presentViewController:detailAlert animated:YES completion:nil];
+                self.keyOfAttackWay = [self.attackWayKeySet objectAtIndex:i];
+                if([self.attackWayKeySet[i] isEqualToString:KEY_FOR_SECOND])
+                    [self presentViewController:alertPtrArray[1] animated:YES completion:nil];
+                else if([self.attackWayKeySet[i] isEqualToString:KEY_FOR_PU])
+                    [self presentViewController:alertPtrArray[2] animated:YES completion:nil];
+                else if([self.attackWayKeySet[i] isEqualToString:KEY_FOR_PNR])
+                    [self presentViewController:alertPtrArray[3] animated:YES completion:nil];
+                else
+                    [self presentViewController:alertPtrArray[0] animated:YES completion:nil];
             }];
         [self.attackWayAlert addAction:action];
     }
@@ -795,7 +814,7 @@
             else if([attackKeyStr isEqualToString:KEY_FOR_PNR])
                 detailItemKeyArray = self.PNRDetailItemKeyArray;
             else if([attackKeyStr isEqualToString:KEY_FOR_PU])
-                detailItemKeyArray = self.PUDeyailItemKeyArray;
+                detailItemKeyArray = self.PUDetailItemKeyArray;
             else if([attackKeyStr isEqualToString:KEY_FOR_TOTAL])
                 detailItemKeyArray = self.TotalDetailItemArray;
             else
@@ -867,15 +886,7 @@
 -(void)updateOffenseGradeForOneMadeToPlayerData:(NSMutableDictionary*) playerData
 {
     //Update the Quarter Grade
-    NSMutableDictionary* attackData = [playerData objectForKey:self.keyForSearch];
-    
-    int attemptCount = [[attackData objectForKey:KEY_FOR_ATTEMPT_COUNT] intValue];
-    [attackData setObject:[NSString stringWithFormat:@"%d", attemptCount+1] forKey:KEY_FOR_ATTEMPT_COUNT];
-    
-    int madeCount = [[attackData objectForKey:KEY_FOR_MADE_COUNT] intValue];
-    [attackData setObject:[NSString stringWithFormat:@"%d", madeCount+1] forKey:KEY_FOR_MADE_COUNT];
-    
-    [playerData setObject:attackData forKey:self.keyForSearch];
+    NSArray* attackDicArray = [NSArray arrayWithObjects:[playerData objectForKey:self.keyOfAttackWay], [playerData objectForKey:KEY_FOR_TOTAL], nil];
     
     switch (self.zoneNo)
     {
@@ -887,44 +898,63 @@
             break;
     }
     
-    int totalAttemptCount = [[playerData objectForKey:KEY_FOR_TOTAL_ATTEMPT_COUNT] intValue];
-    [playerData setObject:[NSString stringWithFormat:@"%d", totalAttemptCount+1] forKey:KEY_FOR_TOTAL_ATTEMPT_COUNT];
+    for(NSMutableDictionary* attackDic in attackDicArray)
+    {
+        NSMutableDictionary* detailDic = [attackDic objectForKey:self.keyOfDetail];
+        
+        int attemptCount = [[detailDic objectForKey:KEY_FOR_ATTEMPT_COUNT] intValue];
+        [detailDic setObject:[NSString stringWithFormat:@"%d", attemptCount+1] forKey:KEY_FOR_ATTEMPT_COUNT];
     
-    int totalMadeCount = [[playerData objectForKey:KEY_FOR_TOTAL_MADE_COUNT] intValue];
-    [playerData setObject:[NSString stringWithFormat:@"%d", totalMadeCount+1] forKey:KEY_FOR_TOTAL_MADE_COUNT];
+        int madeCount = [[detailDic objectForKey:KEY_FOR_MADE_COUNT] intValue];
+        [detailDic setObject:[NSString stringWithFormat:@"%d", madeCount+1] forKey:KEY_FOR_MADE_COUNT];
+    
+        int totalAttemptCount = [[attackDic objectForKey:KEY_FOR_TOTAL_ATTEMPT_COUNT] intValue];
+        [attackDic setObject:[NSString stringWithFormat:@"%d", totalAttemptCount+1] forKey:KEY_FOR_TOTAL_ATTEMPT_COUNT];
+    
+        int totalMadeCount = [[attackDic objectForKey:KEY_FOR_TOTAL_MADE_COUNT] intValue];
+        [attackDic setObject:[NSString stringWithFormat:@"%d", totalMadeCount+1] forKey:KEY_FOR_TOTAL_MADE_COUNT];
+    }
 }
 
 -(void)updateOffenseGradeForOneAttempToPlayerData:(NSMutableDictionary*) playerData
 {
-    NSMutableDictionary* attackData = [playerData objectForKey:self.keyForSearch];
-    int attemptCount = [[attackData objectForKey:KEY_FOR_ATTEMPT_COUNT] intValue];
-    [attackData setObject:[NSString stringWithFormat:@"%d", attemptCount+1] forKey:KEY_FOR_ATTEMPT_COUNT];
-    [playerData setObject:attackData forKey:self.keyForSearch];
+    NSArray* attackDicArray = [NSArray arrayWithObjects:[playerData objectForKey:self.keyOfAttackWay], [playerData objectForKey:KEY_FOR_TOTAL], nil];
     
-    int totalAttemptCount = [[playerData objectForKey:KEY_FOR_TOTAL_ATTEMPT_COUNT] intValue];
-    [playerData setObject:[NSString stringWithFormat:@"%d", totalAttemptCount+1] forKey:KEY_FOR_TOTAL_ATTEMPT_COUNT];
+    for(NSMutableDictionary* attackDic in attackDicArray)
+    {
+        NSMutableDictionary* detailDic = [attackDic objectForKey:self.keyOfDetail];
+        int attemptCount = [[detailDic objectForKey:KEY_FOR_ATTEMPT_COUNT] intValue];
+        [detailDic setObject:[NSString stringWithFormat:@"%d", attemptCount+1] forKey:KEY_FOR_ATTEMPT_COUNT];
+        //[playerData setObject:attackData forKey:self.keyOfAttackWay];
+        
+        int totalAttemptCount = [[attackDic objectForKey:KEY_FOR_TOTAL_ATTEMPT_COUNT] intValue];
+        [attackDic setObject:[NSString stringWithFormat:@"%d", totalAttemptCount+1] forKey:KEY_FOR_TOTAL_ATTEMPT_COUNT];
+    }
 }
 
 -(void) updateOffenseGradeForOneFoulToPlayerData:(NSMutableDictionary*) playerData
 {
-    NSMutableDictionary* attackData = [playerData objectForKey:self.keyForSearch];
-    int foulCount = [[attackData objectForKey:KEY_FOR_FOUL_COUNT] intValue];
-    [attackData setObject:[NSString stringWithFormat:@"%d", foulCount+1] forKey:KEY_FOR_FOUL_COUNT];
+    NSArray* attackDicArray = [NSArray arrayWithObjects:[playerData objectForKey:self.keyOfAttackWay], [playerData objectForKey:KEY_FOR_TOTAL], nil];
     
-    [playerData setObject:attackData forKey:self.keyForSearch];
+    for(NSMutableDictionary* attackDic in attackDicArray)
+    {
+        NSMutableDictionary* detailDic = [attackDic objectForKey:self.keyOfDetail];
+        int foulCount = [[detailDic objectForKey:KEY_FOR_FOUL_COUNT] intValue];
+        [detailDic setObject:[NSString stringWithFormat:@"%d", foulCount+1] forKey:KEY_FOR_FOUL_COUNT];
     
-    int totalFoulCount = [[playerData objectForKey:KEY_FOR_TOTAL_FOUL_COUNT] intValue];
-    [playerData setObject:[NSString stringWithFormat:@"%d", totalFoulCount+1] forKey:KEY_FOR_TOTAL_FOUL_COUNT];
+        int totalFoulCount = [[attackDic objectForKey:KEY_FOR_TOTAL_FOUL_COUNT] intValue];
+        [attackDic setObject:[NSString stringWithFormat:@"%d", totalFoulCount+1] forKey:KEY_FOR_TOTAL_FOUL_COUNT];
+    }
 }
 
 -(void) updateOffenseGradeForOneTurnOverToPlayerData:(NSMutableDictionary*) playerData
 {
-    NSMutableDictionary* attackData = [playerData objectForKey:self.keyForSearch];
+    NSMutableDictionary* attackData = [playerData objectForKey:self.keyOfAttackWay];
     
  //   int turnOverCount = [[attackData objectForKey:KEY_FOR_TURNOVER_COUNT] intValue];
   //  [attackData setObject:[NSString stringWithFormat:@"%d", turnOverCount+1] forKey:KEY_FOR_TURNOVER_COUNT];
     
-    [playerData setObject:attackData forKey:self.keyForSearch];
+    [playerData setObject:attackData forKey:self.keyOfAttackWay];
     
     int totalTurnoverCount = [[playerData objectForKey:KEY_FOR_TOTAL_TURNOVER_COUNT] intValue];
     [playerData setObject:[NSString stringWithFormat:@"%d", totalTurnoverCount+1] forKey:KEY_FOR_TOTAL_TURNOVER_COUNT];
@@ -932,19 +962,22 @@
 
 -(void) increaseOffenseScoreGetToPlayerData:(NSMutableDictionary*)playerData by:(int)offset
 {
-    NSMutableDictionary* attackData = [playerData objectForKey:self.keyForSearch];
-    int scoreGet = [[attackData objectForKey:KEY_FOR_SCORE_GET] intValue];
-    [attackData setObject:[NSString stringWithFormat:@"%d", scoreGet+offset] forKey:KEY_FOR_SCORE_GET];
+    NSMutableDictionary* attackDic = [playerData objectForKey:self.keyOfAttackWay];
+    NSMutableDictionary* detailDic = [attackDic objectForKey:self.keyOfDetail];
+    int scoreGet = [[detailDic objectForKey:KEY_FOR_SCORE_GET] intValue];
+    [detailDic setObject:[NSString stringWithFormat:@"%d", scoreGet+offset] forKey:KEY_FOR_SCORE_GET];
     
-    [playerData setObject:attackData forKey:self.keyForSearch];
+    int totalScoreGet = [[attackDic objectForKey:KEY_FOR_TOTAL_SCORE_GET] intValue];
+    NSString* totalScoreGetStr = [NSString stringWithFormat:@"%d", totalScoreGet+offset];
+    [attackDic setObject:totalScoreGetStr forKey:KEY_FOR_TOTAL_SCORE_GET];
 }
 
--(void) updateTotalScoreOnePlayerGetToPlayerData:(NSMutableDictionary*) playerData withScore:(int)score
+-(void) increaseTotalOffenseScoreGetToPlayerData:(NSMutableDictionary*) playerData withScore:(int)score
 {
-    int totalScoreGet = [[playerData objectForKey:KEY_FOR_TOTAL_SCORE_GET] intValue];
-    NSString* totalScoreGetStr = [NSString stringWithFormat:@"%d", totalScoreGet+score];
-    
-    [playerData setObject:totalScoreGetStr forKey:KEY_FOR_TOTAL_SCORE_GET];
+    NSMutableDictionary* totalDic = [playerData objectForKey:KEY_FOR_TOTAL];
+    int totalScore = [[totalDic objectForKey:KEY_FOR_TOTAL_SCORE_GET] intValue];
+    NSString* totalScoreStr = [NSString stringWithFormat:@"%d", totalScore+score];
+    [totalDic setObject:totalScoreStr forKey:KEY_FOR_TOTAL_SCORE_GET];
 }
 
 #pragma mark - UI Updating
@@ -1844,7 +1877,7 @@
         case 8:
             return [self.secondDetailItemKeyArray count] + 4;
         case 9:
-            return [self.PUDeyailItemKeyArray count] + 4;
+            return [self.PUDetailItemKeyArray count] + 4;
         case 11:
             return [self.TotalDetailItemArray count] + 4;
          default:
@@ -2155,13 +2188,14 @@
     cell.layer.borderWidth = 1;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
-    NSDictionary* detailDic;
+    NSDictionary* attackDic;
 
     if(self.playerSelectedIndex)
     {
         NSMutableArray* quarterData = [self.playerDataArray objectAtIndex:self.quarterNo];
         NSDictionary* playerData = [quarterData objectAtIndex:self.playerSelectedIndex-1];
-        detailDic = [playerData objectForKey:self.attackWaySet[self.attackWayNo-1]];
+        attackDic = [playerData objectForKey:self.attackWayKeySet[self.attackWayNo-1]];
+        NSLog(@"%@", attackDic);
     }
 
     NSArray* keyArr;
@@ -2174,7 +2208,7 @@
             keyArr = self.secondDetailItemKeyArray;
             break;
         case 9:
-            keyArr =self.PUDeyailItemKeyArray;
+            keyArr =self.PUDetailItemKeyArray;
             break;
         case 11:
             keyArr = self.TotalDetailItemArray;
@@ -2216,22 +2250,22 @@
         {
             if(indexPath.row != keyArr.count+3)
             {
-                NSDictionary* detailItemDic = [detailDic objectForKey:keyArr[indexPath.row-2]];
-                NSString* madeCount = [detailItemDic objectForKey:KEY_FOR_MADE_COUNT];
-                NSString* attemptCount = [detailItemDic objectForKey:KEY_FOR_MADE_COUNT];
+                NSDictionary* detailDic = [attackDic objectForKey:keyArr[indexPath.row-2]];
+                NSString* madeCount = [detailDic objectForKey:KEY_FOR_MADE_COUNT];
+                NSString* attemptCount = [detailDic objectForKey:KEY_FOR_MADE_COUNT];
             
-                madeAndAttemptLabel.text = [NSString stringWithFormat:@"%@/%@", madeCount, attemptCount];
-                foulLabel.text = [detailItemDic objectForKey:KEY_FOR_FOUL_COUNT];
-                totalScoreGetLabel.text = [detailItemDic objectForKey:KEY_FOR_SCORE_GET];
-            }
-            else
-            {
-                NSString* madeCount = [detailDic objectForKey:KEY_FOR_TOTAL_MADE_COUNT];
-                NSString* attemptCount = [detailDic objectForKey:KEY_FOR_TOTAL_ATTEMPT_COUNT];
-                
                 madeAndAttemptLabel.text = [NSString stringWithFormat:@"%@/%@", madeCount, attemptCount];
                 foulLabel.text = [detailDic objectForKey:KEY_FOR_FOUL_COUNT];
                 totalScoreGetLabel.text = [detailDic objectForKey:KEY_FOR_SCORE_GET];
+            }
+            else
+            {
+                NSString* madeCount = [attackDic objectForKey:KEY_FOR_TOTAL_MADE_COUNT];
+                NSString* attemptCount = [attackDic objectForKey:KEY_FOR_TOTAL_ATTEMPT_COUNT];
+                
+                madeAndAttemptLabel.text = [NSString stringWithFormat:@"%@/%@", madeCount, attemptCount];
+                foulLabel.text = [attackDic objectForKey:KEY_FOR_TOTAL_FOUL_COUNT];
+                totalScoreGetLabel.text = [attackDic objectForKey:KEY_FOR_TOTAL_SCORE_GET];
             }
         }
         
@@ -2249,7 +2283,7 @@
         turnOverLabel.textAlignment = NSTextAlignmentCenter;
         turnOverLabel.layer.borderWidth = 1;
         if(self.playerSelectedIndex)
-            turnOverLabel.text = [detailDic objectForKey:KEY_FOR_TOTAL_TURNOVER_COUNT];
+            turnOverLabel.text = [attackDic objectForKey:KEY_FOR_TOTAL_TURNOVER_COUNT];
         else
             turnOverLabel.text = @"0";
         [cell addSubview:label];
@@ -2283,7 +2317,10 @@
         {
             self.playerSelectedIndex = (int)indexPath.row;
             if(!self.isShowZoneGrade)
-                [(UITableView*)[self.view viewWithTag:PLAYER_GRADE_TABLEVIEW_TAG] reloadData];
+            {
+                [self.playerDataTableView reloadData];
+                [self.detailTableView reloadData];
+            }
             else
                 [self updateZoneGradeView];
         }

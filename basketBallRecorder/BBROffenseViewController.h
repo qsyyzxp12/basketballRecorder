@@ -25,7 +25,7 @@
 @property NSArray* normalDetailItemKeyArray;
 @property NSArray* secondDetailItemKeyArray;
 @property NSArray* PNRDetailItemKeyArray;
-@property NSArray* PUDeyailItemKeyArray;
+@property NSArray* PUDetailItemKeyArray;
 @property NSArray* TotalDetailItemArray;
 @property NSArray* turnOverArray;
 @property BOOL isShowZoneGrade;
@@ -52,7 +52,8 @@
 @property UIImageView* backgroundImageView;
 @property NSString* tmpPlistPath;
 @property NSString* recordName;
-@property NSString* keyForSearch;
+@property NSString* keyOfAttackWay;
+@property NSString* keyOfDetail;
 @property UIButton* undoButton;
 @property UIButton* switchModeButton;
 @property UIButton* nextQuarterButton;
