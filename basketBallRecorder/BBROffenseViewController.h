@@ -27,6 +27,7 @@
 @property NSArray* PNRDetailItemKeyArray;
 @property NSArray* PUDeyailItemKeyArray;
 @property NSArray* TotalDetailItemArray;
+@property NSArray* turnOverArray;
 @property BOOL isShowZoneGrade;
 @property BOOL isTmpPlistExist;
 @property BOOL isRecordMode;

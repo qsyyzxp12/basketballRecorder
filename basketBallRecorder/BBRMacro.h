@@ -46,6 +46,7 @@
 #define KEY_FOR_PNR @"PNR"
 #define KEY_FOR_SECOND @"Second"
 #define KEY_FOR_PU @"PU"
+#define KEY_FOR_TURNOVER @"turnover"
 #define KEY_FOR_TOTAL @"Total"
 
 #define KEY_FOR_DRIVE @"切入上籃(D)"
@@ -72,7 +73,6 @@
 #define KEY_FOR_ATTEMPT_COUNT @"attempCount"
 #define KEY_FOR_MADE_COUNT @"madeCount"
 #define KEY_FOR_FOUL_COUNT @"foulCount"
-#define KEY_FOR_TURNOVER_COUNT @"turnoverCount"
 #define KEY_FOR_SCORE_GET @"scoreGet"
 #define KEY_FOR_HOLD_BALL_COUNT @"holdBallCount"
 

@@ -48,8 +48,9 @@
     self.PNRDetailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_BP, KEY_FOR_BD, KEY_FOR_MR, KEY_FOR_MPP, KEY_FOR_MPD, KEY_FOR_MPS, nil];
     self.PUDeyailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, KEY_FOR_SF, KEY_FOR_SF, nil];
     self.TotalDetailItemArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_SPOT_UP, KEY_FOR_PULL_UP, KEY_FOR_SF, KEY_FOR_LP, KEY_FOR_PUT_BACK, KEY_FOR_BD, KEY_FOR_BD, KEY_FOR_MPD, KEY_FOR_MR, KEY_FOR_MPS, KEY_FOR_MPP, nil];
+    self.turnOverArray = [NSArray arrayWithObjects:KEY_FOR_STOLEN, KEY_FOR_BAD_PASS, KEY_FOR_CHARGING, KEY_FOR_DROP, KEY_FOR_3_SENCOND, KEY_FOR_TRAVELING, KEY_FOR_TEAM, nil];
     
-    self.attackWaySet = [[NSArray alloc] initWithObjects:@"快攻(F)", @"拉開單打(I)", @"無球掩護(OS)", @"空切(C)", @"切傳(DK)", @"其他(O)", @"高位擋拆(PNR)", @"二波進攻(2)", @"低位(PU)", @"Bonus", @"Time", nil];
+    self.attackWaySet = [[NSArray alloc] initWithObjects:@"快攻(F)", @"拉開單打(I)", @"無球掩護(OS)", @"空切(C)", @"切傳(DK)", @"其他(O)", @"高位擋拆(PNR)", @"二波進攻(2)", @"低位(PU)", @"失誤(TO)", @"Bonus", @"Time", nil];
     self.attackWayKeySet = [[NSArray alloc] initWithObjects:
                             KEY_FOR_FASTBREAK, KEY_FOR_ISOLATION, KEY_FOR_OFF_SCREEN, KEY_FOR_DK, KEY_FOR_CUT, KEY_FOR_OTHERS, KEY_FOR_PNR, KEY_FOR_SECOND, KEY_FOR_PU, KEY_FOR_TOTAL, nil];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] init];
@@ -315,31 +316,10 @@
             [self presentViewController:self.andOneAlert animated:YES completion:nil];
         }];
     
-    UIAlertAction* turnOverAction = [UIAlertAction actionWithTitle:@"Turn Over" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action)
-        {
-            self.OldPlayerDataArray = [NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:self.playerDataArray]];
-            
-            int quarterNo[2] = {self.quarterNo, QUARTER_NO_FOR_ENTIRE_GAME};
-            int playerNo[2] = {self.playerSelectedIndex-1, self.playerCount};
-            
-            for(int i=0; i<2; i++)
-            {
-                NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:quarterNo[i]];
-                for(int j=0; j<2; j++)
-                {
-                    NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
-                    [self updateOffenseGradeForOneTurnOverToPlayerData:playerData];
-                }
-            }
-            [self updateTmpPlist];
-            self.zoneNo = 0;
-        }];
-    
     [self.resultAlert addAction:yesAction];
     [self.resultAlert addAction:noAction];
     [self.resultAlert addAction:andOneAction];
     [self.resultAlert addAction:foulAction];
-    [self.resultAlert addAction:turnOverAction];
     [self.resultAlert addAction:cancelAction];
     
     [self.madeOrNotAlert addAction:yesAction];
@@ -361,6 +341,10 @@
         {
             [self presentViewController:self.resultAlert animated:YES completion:nil];
         }];
+    UIAlertAction* turnoverAction = [UIAlertAction actionWithTitle:@"Turn Over" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+        {
+            
+        }];
     
     [detailAlert addAction:driveAction];
     [detailAlert addAction:pullUpAction];
@@ -370,7 +354,7 @@
     self.attackWayAlert = [UIAlertController alertControllerWithTitle:@"進攻方式"
                                         message:nil preferredStyle:UIAlertControllerStyleAlert];
 
-    for(int i=0; i<[self.attackWayKeySet count]; i++)
+    for(int i=0; i<[self.attackWayKeySet count]-1; i++)
     {
         NSString* title = [self.attackWaySet objectAtIndex:i];
         UIAlertAction* action = [UIAlertAction actionWithTitle:title style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
@@ -643,7 +627,7 @@
                 cellRef = [NSString stringWithFormat:@"%c%c%d", outIndex, interIndex++, i+3];
                 [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:foulCount];
                 
-                NSString* turnOverCount = [offenseGradeDic objectForKey:KEY_FOR_TURNOVER_COUNT];
+     //           NSString* turnOverCount = [offenseGradeDic objectForKey:KEY_FOR_TURNOVER_COUNT];
                 if(interIndex == 91) // (int)'Z' == 90
                 {
                     if(outIndex != '\0')
@@ -653,7 +637,7 @@
                     interIndex = 65;
                 }
                 cellRef = [NSString stringWithFormat:@"%c%c%d", outIndex, interIndex++, i+3];
-                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:turnOverCount];
+       //         [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:turnOverCount];
                 
                 NSString* score = [offenseGradeDic objectForKey:KEY_FOR_SCORE_GET];
                 if(interIndex == 91) // (int)'Z' == 90
@@ -837,8 +821,10 @@
             [playerDataItem setObject:detailDic forKey:attackKeyStr];
         }
         
-        
-        
+        NSMutableDictionary* turnoverDic = [[NSMutableDictionary alloc] init];
+        for(NSString* turnOverDetailKey in self.turnOverArray)
+            [turnoverDic setObject:@"0" forKey:turnOverDetailKey];
+        [playerDataItem setObject:turnoverDic forKey:KEY_FOR_TURNOVER];
         
         [playerDataItem setObject:@"0" forKey:KEY_FOR_TOTAL_TIME_ON_FLOOR];
         
@@ -935,8 +921,8 @@
 {
     NSMutableDictionary* attackData = [playerData objectForKey:self.keyForSearch];
     
-    int turnOverCount = [[attackData objectForKey:KEY_FOR_TURNOVER_COUNT] intValue];
-    [attackData setObject:[NSString stringWithFormat:@"%d", turnOverCount+1] forKey:KEY_FOR_TURNOVER_COUNT];
+ //   int turnOverCount = [[attackData objectForKey:KEY_FOR_TURNOVER_COUNT] intValue];
+  //  [attackData setObject:[NSString stringWithFormat:@"%d", turnOverCount+1] forKey:KEY_FOR_TURNOVER_COUNT];
     
     [playerData setObject:attackData forKey:self.keyForSearch];
     
@@ -1789,6 +1775,13 @@
     }
     else
     {
+        if(self.isDetailShowing)
+        {
+            self.isDetailShowing = NO;
+            [self.detailTableView removeFromSuperview];
+            [self.view addSubview:self.playerDataTableView];
+        }
+        
         [self.view addSubview:self.playerOnFloorListTableView];
         [self.playerListTableView setFrame:CGRectMake(55, 10, self.playerListTableView.frame.size.width, self.playerListTableView.frame.size.height)];
         for(int i=1; i<13; i++)
@@ -1994,13 +1987,13 @@
         
         UIButton* titleButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width*0.3, PLAYER_GRADE_TABLECELL_HEIGHT)];
         [titleButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-        titleButton.titleLabel.adjustsFontSizeToFitWidth = YES;
         [titleButton setShowsTouchWhenHighlighted:YES];
+        titleButton.titleLabel.adjustsFontSizeToFitWidth = YES;
         titleButton.titleLabel.textAlignment = NSTextAlignmentCenter;
         titleButton.tag = indexPath.row;
         [titleButton addTarget:self action:@selector(titleButtonInGradeTableClicked:) forControlEvents:UIControlEventTouchUpInside];
         
-        if(indexPath.row < [self.attackWaySet count]-1 || indexPath.row == [self.attackWaySet count]+1)
+        if(indexPath.row < [self.attackWaySet count]-2 || indexPath.row == [self.attackWaySet count]+1)
         {
             UILabel* madeAndAttemptLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(titleButton.frame), titleButton.frame.origin.y, tableView.frame.size.width*0.28, PLAYER_GRADE_TABLECELL_HEIGHT)];
             madeAndAttemptLabel.textAlignment = NSTextAlignmentCenter;
@@ -2042,10 +2035,11 @@
                 }
                 else
                 {
-                    madeAndAttemptLabel.text = [NSString stringWithFormat:@"%@/%@", [playerData objectForKey:KEY_FOR_TOTAL_MADE_COUNT], [playerData objectForKey:KEY_FOR_TOTAL_ATTEMPT_COUNT]];
-                    foulLabel.text = [playerData objectForKey:KEY_FOR_TOTAL_FOUL_COUNT];
-                    turnOverLabel.text = [playerData objectForKey:KEY_FOR_TOTAL_TURNOVER_COUNT];
-                    totalScoreGetLabel.text = [playerData objectForKey:KEY_FOR_TOTAL_SCORE_GET];
+                    NSDictionary* totalDic = [playerData objectForKey:KEY_FOR_TOTAL];
+                    madeAndAttemptLabel.text = [NSString stringWithFormat:@"%@/%@", [totalDic objectForKey:KEY_FOR_TOTAL_MADE_COUNT], [totalDic objectForKey:KEY_FOR_TOTAL_ATTEMPT_COUNT]];
+                    foulLabel.text = [totalDic objectForKey:KEY_FOR_TOTAL_FOUL_COUNT];
+                    turnOverLabel.text = [totalDic objectForKey:KEY_FOR_TOTAL_TURNOVER_COUNT];
+                    totalScoreGetLabel.text = [totalDic objectForKey:KEY_FOR_TOTAL_SCORE_GET];
                 }
             }
             
@@ -2053,6 +2047,21 @@
             [cell addSubview:foulLabel];
             [cell addSubview:turnOverLabel];
             [cell addSubview:totalScoreGetLabel];
+        }
+        else if(indexPath.row == [self.attackWaySet count]-2)
+        {
+            [titleButton setTitle:@"失誤(TO)" forState:UIControlStateNormal];
+            UILabel* turnOverLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(titleButton.frame), titleButton.frame.origin.y, tableView.frame.size.width*0.7, PLAYER_GRADE_TABLECELL_HEIGHT)];
+            turnOverLabel.textAlignment = NSTextAlignmentCenter;
+            turnOverLabel.layer.borderWidth = 1;
+            
+            NSDictionary* turnOverDic = [playerData objectForKey:KEY_FOR_TOTAL];
+            if(!self.playerSelectedIndex)
+                turnOverLabel.text = @"0";
+            else
+                turnOverLabel.text = [turnOverDic objectForKey:KEY_FOR_TOTAL_TURNOVER_COUNT];
+            
+            [cell addSubview:turnOverLabel];
         }
         else if(indexPath.row == [self.attackWaySet count]-1)
         {
