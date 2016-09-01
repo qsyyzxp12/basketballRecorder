@@ -169,7 +169,7 @@
     
     UIAlertAction* attemptAction = [UIAlertAction actionWithTitle:@"Attempt" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
-            [self pushEventIntoTimeLineWithResultKey:SIGNAL_FOR_ATTEMPT pts:0];
+            [self pushEventIntoTimeLineWithResultKey:SIGNAL_FOR_ATTEMPT pts:self.ptr];
             self.zoneNo = 0;
         }];
     
@@ -187,7 +187,7 @@
                     [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:1];
                 }
             }
-            [self pushEventIntoTimeLineWithResultKey:SIGNAL_FOR_MADE pts:1];
+            [self pushEventIntoTimeLineWithResultKey:SIGNAL_FOR_MADE pts:self.ptr+1];
             [self updateTmpPlist];
             self.zoneNo = 0;
         }];
@@ -291,14 +291,14 @@
         {
             self.OldPlayerDataArray = [NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:self.playerDataArray]];
             
-            int offset = 0;
+            self.ptr = 0;
             switch (self.zoneNo)
             {
                 case 2: case 3: case 4: case 7: case 8: case 9:
-                    offset = 2;
+                    self.ptr = 2;
                     break;
                 case 1: case 5: case 6: case 10: case 11:
-                    offset = 3;
+                    self.ptr = 3;
                     break;
             }
             
@@ -314,7 +314,7 @@
                     [self updateOffenseGradeForOneMadeToPlayerData:playerData];
                     [self updateOffenseGradeForOneFoulToPlayerData:playerData];
                     [self updateZoneGradeForOneMadeToPlayerData:playerData];
-                    [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:offset];
+                    [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:self.ptr];
                 }
             }
             [self presentViewController:self.andOneAlert animated:YES completion:nil];
@@ -580,6 +580,7 @@
 {
     NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
     [tmpPlistDic setObject:self.playerDataArray forKey:KEY_FOR_GRADE];
+    [tmpPlistDic setObject:self.timeLineReordeArray forKey:KEY_FOR_TIMELINE];
     
     [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
 }
@@ -767,7 +768,28 @@
     [event setObject:signalForResult forKey:KEY_FOR_RESULT];
     [event setObject:[NSString stringWithFormat:@"%d", pts] forKey:KEY_FOR_PTS];
     
+    if([signalForResult isEqualToString:SIGNAL_FOR_FOUL] || [signalForResult isEqualToString:SIGNAL_FOR_AND_ONE])
+    {
+        int bonusCount;
+        switch (self.zoneNo)
+        {
+            case 2: case 3: case 4: case 7: case 8: case 9:
+                bonusCount = 2;
+                break;
+            default://case 1: case 5: case 6: case 10: case 11:
+                bonusCount = 3;
+                break;
+        }
+        NSString* bonusResultStr;
+        if([signalForResult isEqualToString:SIGNAL_FOR_FOUL])
+            bonusResultStr = [NSString stringWithFormat:@"%d-%d", pts, bonusCount];
+        else if([signalForResult isEqualToString:SIGNAL_FOR_AND_ONE])
+            bonusResultStr = [NSString stringWithFormat:@"%d-1", pts-bonusCount];
+        [event setObject:bonusResultStr forKey:KEY_FOR_BONUS];
+    }
     [timeLineArray addObject:event];
+    
+    NSLog(@"%@", event);
 }
 
 -(void)pushTurnoverIntoTimeLine
@@ -777,10 +799,12 @@
     NSMutableDictionary* turnoverEvent = [[NSMutableDictionary alloc] init];
     
     [turnoverEvent setObject:[NSString stringWithFormat:@"%@", self.playerNoSet[self.playerSelectedIndex-1]] forKey:KEY_FOR_PLAYER_NO];
-    [turnoverEvent setObject:self.keyOfDetail forKey:KEY_FOR_DETAIL];
+    [turnoverEvent setObject:self.keyOfAttackWay forKey:KEY_FOR_ATTACK_WAY];
+    [turnoverEvent setObject:SIGNAL_FOR_TURNOVER forKey:KEY_FOR_DETAIL];
+    [turnoverEvent setObject:self.keyOfDetail forKey:KEY_FOR_RESULT];
+    [timeLineArray addObject:turnoverEvent];
     
-    NSMutableDictionary* topEventInTimeline = [timeLineArray objectAtIndex:timeLineArray.count-1];
-    [topEventInTimeline setObject:turnoverEvent forKey:KEY_FOR_TO];
+    NSLog(@"%@", turnoverEvent);
 }
 
 -(void)updateTimeOnFloorOfPlayerWithIndexInOnFloorTableView:(int)index
@@ -825,6 +849,7 @@
     [tmpPlistDic setObject:self.recordName forKey:KEY_FOR_NAME];
     [tmpPlistDic setObject:[NSNumber numberWithInt:0] forKey:KEY_FOR_TIME];
     [tmpPlistDic setObject:OFFENSE_TYPE_DATA forKey:KEY_FOR_DATA_TYPE];
+    [tmpPlistDic setObject:self.timeLineReordeArray forKey:KEY_FOR_TIMELINE];
     
     [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
     

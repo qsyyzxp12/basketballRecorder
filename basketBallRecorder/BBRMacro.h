@@ -36,6 +36,7 @@
 #define OFFENSE_TYPE_DATA @"Offense"
 #define DEFENSE_TYPE_DATA @"Defense"
 #define KEY_FOR_DATA_TYPE @"Type"
+#define KEY_FOR_TIMELINE @"timeLine"
 
 #define KEY_FOR_FASTBREAK @"Fastbreak"
 #define KEY_FOR_ISOLATION @"Isolation"
@@ -101,12 +102,13 @@
 #define KEY_FOR_DETAIL @"Detail"
 #define KEY_FOR_RESULT @"Result"
 #define KEY_FOR_PTS @"Pts"
-#define KEY_FOR_TO @"TO"
+#define KEY_FOR_BONUS @"Bonus"
 
-#define SIGNAL_FOR_FOUL @"F"
-#define SIGNAL_FOR_AND_ONE @"N1"
-#define SIGNAL_FOR_ATTEMPT @"X"
-#define SIGNAL_FOR_MADE @"O"
+#define SIGNAL_FOR_FOUL @"Foul"
+#define SIGNAL_FOR_AND_ONE @"And 1"
+#define SIGNAL_FOR_ATTEMPT @"Attemp"
+#define SIGNAL_FOR_MADE @"Made"
+#define SIGNAL_FOR_TURNOVER @"TO"
 
 #define END -1
 #define QUARTER_NO_FOR_ENTIRE_GAME 0

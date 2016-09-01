@@ -41,6 +41,7 @@
 @property int showOldRecordNo;
 @property int timeCounter;
 @property int attackWayNo;
+@property int ptr;
 @property UIAlertController* madeOrNotAlert;
 @property UIAlertController* attackWayAlert;
 @property UIAlertController* resultAlert;
