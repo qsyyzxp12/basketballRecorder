@@ -19,6 +19,7 @@
 @property NSMutableArray *playerOnFloorDataArray;
 @property NSMutableArray* playerDataArray;
 @property NSMutableArray* OldPlayerDataArray;
+@property NSMutableArray* timeLineReordeArray;
 @property NSArray* attackWaySet;
 @property NSArray* attackWayKeySet;
 @property NSArray* playerNoSet;

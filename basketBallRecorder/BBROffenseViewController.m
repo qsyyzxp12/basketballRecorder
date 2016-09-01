@@ -86,6 +86,7 @@
     
     UIAlertAction* zeroPointAction = [UIAlertAction actionWithTitle:@"0分" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
+            [self pushEventIntoTimeLineWithResultKey:SIGNAL_FOR_FOUL pts:0];
             self.zoneNo = 0;
         }];
     
@@ -103,6 +104,7 @@
                     [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:1];
                 }
             }
+            [self pushEventIntoTimeLineWithResultKey:SIGNAL_FOR_FOUL pts:1];
             [self updateTmpPlist];
             self.zoneNo = 0;
         }];
@@ -121,6 +123,7 @@
                     [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:2];
                 }
             }
+            [self pushEventIntoTimeLineWithResultKey:SIGNAL_FOR_FOUL pts:2];
             [self updateTmpPlist];
             self.zoneNo = 0;
         }];
@@ -139,6 +142,7 @@
                     [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:3];
                 }
             }
+            [self pushEventIntoTimeLineWithResultKey:SIGNAL_FOR_FOUL pts:3];
             [self updateTmpPlist];
             self.zoneNo = 0;
         }];
@@ -152,17 +156,20 @@
     [self.bonusAlertFor2Chance addAction:zeroPointAction];
     [self.bonusAlertFor2Chance addAction:onePointAction];
     [self.bonusAlertFor2Chance addAction:twoPointAction];
+    [self.bonusAlertFor2Chance addAction:cancelAction];
     
     [self.bonusAlertFor3Chance addAction:zeroPointAction];
     [self.bonusAlertFor3Chance addAction:onePointAction];
     [self.bonusAlertFor3Chance addAction:twoPointAction];
     [self.bonusAlertFor3Chance addAction:threePointAction];
+    [self.bonusAlertFor3Chance addAction:cancelAction];
     
     //And One Alert
     self.andOneAlert = [UIAlertController alertControllerWithTitle:@"罰球結果" message:nil preferredStyle: UIAlertControllerStyleAlert];
     
     UIAlertAction* attemptAction = [UIAlertAction actionWithTitle:@"Attempt" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
+            [self pushEventIntoTimeLineWithResultKey:SIGNAL_FOR_ATTEMPT pts:0];
             self.zoneNo = 0;
         }];
     
@@ -180,7 +187,7 @@
                     [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:1];
                 }
             }
-            
+            [self pushEventIntoTimeLineWithResultKey:SIGNAL_FOR_MADE pts:1];
             [self updateTmpPlist];
             self.zoneNo = 0;
         }];
@@ -224,6 +231,7 @@
                     [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:offset];
                 }
             }
+            [self pushEventIntoTimeLineWithResultKey:SIGNAL_FOR_MADE pts:offset];
             [self updateTmpPlist];
             self.zoneNo = 0;
         }];
@@ -245,7 +253,7 @@
                     [self updateZoneGradeForOndeAttemptToPlayerData:playerData];
                 }
             }
-            
+            [self pushEventIntoTimeLineWithResultKey:SIGNAL_FOR_ATTEMPT pts:0];
             [self updateTmpPlist];
             self.zoneNo = 0;
         }];
@@ -273,13 +281,10 @@
                     [self presentViewController:self.bonusAlertFor2Chance animated:YES completion:nil];
                     break;
                     
-                case 1: case 6: case 10: case 11:
+                default: //case 1: case 6: case 10: case 11:
                     [self presentViewController:self.bonusAlertFor3Chance animated:YES completion:nil];
                     break;
             }
-            
-            [self updateTmpPlist];
-            self.zoneNo = 0;
         }];
     
     UIAlertAction* andOneAction = [UIAlertAction actionWithTitle:@"And One" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action)
@@ -344,6 +349,9 @@
                         [self updateOffenseGradeForOneTurnoverToPlayerData:playerData];
                     }
                 }
+                [self pushTurnoverIntoTimeLine];
+                [self updateTmpPlist];
+                self.zoneNo = 0;
             }];
         [turnoverDetailAlert addAction:detailAction];
     }
@@ -747,6 +755,34 @@
 
 #pragma mark - DataStruct Updating
 
+-(void)pushEventIntoTimeLineWithResultKey:(NSString*)signalForResult pts:(int)pts
+{
+    NSMutableDictionary* quarterDic = [self.timeLineReordeArray objectAtIndex:self.quarterNo-1];
+    NSMutableArray* timeLineArray = [quarterDic objectForKey:KEY_FOR_TIME_LINE_DATA];
+    NSMutableDictionary* event = [[NSMutableDictionary alloc] init];
+
+    [event setObject:[NSString stringWithFormat:@"%@", self.playerNoSet[self.playerSelectedIndex-1]] forKey:KEY_FOR_PLAYER_NO];
+    [event setObject:self.keyOfAttackWay forKey:KEY_FOR_ATTACK_WAY];
+    [event setObject:self.keyOfDetail forKey:KEY_FOR_DETAIL];
+    [event setObject:signalForResult forKey:KEY_FOR_RESULT];
+    [event setObject:[NSString stringWithFormat:@"%d", pts] forKey:KEY_FOR_PTS];
+    
+    [timeLineArray addObject:event];
+}
+
+-(void)pushTurnoverIntoTimeLine
+{
+    NSMutableDictionary* quarterDic = [self.timeLineReordeArray objectAtIndex:self.quarterNo-1];
+    NSMutableArray* timeLineArray = [quarterDic objectForKey:KEY_FOR_TIME_LINE_DATA];
+    NSMutableDictionary* turnoverEvent = [[NSMutableDictionary alloc] init];
+    
+    [turnoverEvent setObject:[NSString stringWithFormat:@"%@", self.playerNoSet[self.playerSelectedIndex-1]] forKey:KEY_FOR_PLAYER_NO];
+    [turnoverEvent setObject:self.keyOfDetail forKey:KEY_FOR_DETAIL];
+    
+    NSMutableDictionary* topEventInTimeline = [timeLineArray objectAtIndex:timeLineArray.count-1];
+    [topEventInTimeline setObject:turnoverEvent forKey:KEY_FOR_TO];
+}
+
 -(void)updateTimeOnFloorOfPlayerWithIndexInOnFloorTableView:(int)index
 {
     NSMutableDictionary* dic = [self.playerOnFloorDataArray objectAtIndex:index];
@@ -768,13 +804,12 @@
 
 -(void) newPlayerGradeDataStruct
 {
-    self.playerDataArray = [NSMutableArray arrayWithCapacity:2];
-
-    [self extendPlayerDataWithQuarter:0];
-    NSLog(@"%@", self.playerDataArray);
+    self.timeLineReordeArray = [[NSMutableArray alloc] init];
     [self extendPlayerDataWithQuarter:1];
     
-    NSLog(@"%@", self.playerDataArray);
+    self.playerDataArray = [NSMutableArray arrayWithCapacity:2];
+    [self extendPlayerDataWithQuarter:0];
+    [self extendPlayerDataWithQuarter:1];
     
     NSString* src = [[NSBundle mainBundle] pathForResource:@"tmp" ofType:@"plist"];
     NSFileManager* fm = [[NSFileManager alloc] init];
@@ -794,6 +829,17 @@
     [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
     
     self.navigationItem.title = @"第一節";
+}
+
+-(void) extendTimeLineRecordeWithQuarter:(int) quarterNo
+{
+    NSMutableDictionary* quarterDic = [[NSMutableDictionary alloc] init];
+    [quarterDic setObject:self.playerOnFloorDataArray forKey:KEY_FOR_PLAYER_ON_FLOOR];
+    NSMutableArray* timeLineData = [[NSMutableArray alloc] init];
+    [quarterDic setObject:timeLineData forKey:KEY_FOR_TIME_LINE_DATA];
+    [quarterDic setObject:[NSString stringWithFormat:@"%d", quarterNo] forKey:@"Quarter No"];
+    
+    [self.timeLineReordeArray addObject:quarterDic];
 }
 
 -(void) extendPlayerDataWithQuarter:(int) quarterNo

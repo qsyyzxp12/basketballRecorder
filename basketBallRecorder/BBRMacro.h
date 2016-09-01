@@ -93,6 +93,21 @@
 #define KEY_FOR_BAD_DEFENSE_GRADE @"bad"
 #define KEY_FOR_TOTAL_COUNT @"total"
 
+//Key for timeLineRecordArray
+#define KEY_FOR_PLAYER_ON_FLOOR @"playerOnFloor"
+#define KEY_FOR_TIME_LINE_DATA @"timeLineData"
+#define KEY_FOR_PLAYER_NO @"PlayerNo"
+#define KEY_FOR_ATTACK_WAY @"AttackWay"
+#define KEY_FOR_DETAIL @"Detail"
+#define KEY_FOR_RESULT @"Result"
+#define KEY_FOR_PTS @"Pts"
+#define KEY_FOR_TO @"TO"
+
+#define SIGNAL_FOR_FOUL @"F"
+#define SIGNAL_FOR_AND_ONE @"N1"
+#define SIGNAL_FOR_ATTEMPT @"X"
+#define SIGNAL_FOR_MADE @"O"
+
 #define END -1
 #define QUARTER_NO_FOR_ENTIRE_GAME 0
 
