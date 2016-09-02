@@ -604,7 +604,6 @@
     char outIndex = '\0';
     char interIndex = 'A';
     int rowIndex = 2;
-//    int quarter = 1;
     NSString* cellRef = [NSString stringWithFormat:@"%c%c%d", outIndex, interIndex, rowIndex];
 
     for(NSMutableDictionary* quarterDic in self.timeLineReordeArray)
@@ -615,40 +614,48 @@
         NSArray* timeLineRecordArray = [quarterDic objectForKey:KEY_FOR_TIME_LINE_DATA];
         
         int rowI = rowIndex+1;
-        cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowI];
         for(NSDictionary* eventDic in timeLineRecordArray)
         {
             char outI =  outIndex;
             char interI = interIndex;
-            NSString* playerNoStr = [eventDic objectForKey:KEY_FOR_PLAYER_NO];
-            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:playerNoStr];
-            cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
-            
-            NSString* attackWayStr = [eventDic objectForKey:KEY_FOR_ATTACK_WAY];
-            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:attackWayStr];
-            cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
-            
-            NSString* detailStr = [eventDic objectForKey:KEY_FOR_DETAIL];
-            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:detailStr];
-            cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
-            
-            NSString* resultStr = [eventDic objectForKey:KEY_FOR_RESULT];
-            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:resultStr];
-            cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
-            
-            if([resultStr isEqualToString:SIGNAL_FOR_FOUL] || [resultStr isEqualToString:SIGNAL_FOR_AND_ONE])
+            if([[eventDic objectForKey:KEY_FOR_TYPE] isEqualToString:SIGNAL_FOR_NON_EXCHANGE])
             {
-                NSString* bonusStr = [eventDic objectForKey:KEY_FOR_BONUS];
-                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:bonusStr];
+                cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+                NSString* playerNoStr = [eventDic objectForKey:KEY_FOR_PLAYER_NO];
+                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:playerNoStr];
+                
+                cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+                NSString* attackWayStr = [eventDic objectForKey:KEY_FOR_ATTACK_WAY];
+                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:attackWayStr];
+                
+                cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+                NSString* detailStr = [eventDic objectForKey:KEY_FOR_DETAIL];
+                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:detailStr];
+                
+                cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+                NSString* resultStr = [eventDic objectForKey:KEY_FOR_RESULT];
+                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:resultStr];
+                
+                cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+                if([resultStr isEqualToString:SIGNAL_FOR_FOUL] || [resultStr isEqualToString:SIGNAL_FOR_AND_ONE])
+                {
+                    NSString* bonusStr = [eventDic objectForKey:KEY_FOR_BONUS];
+                    [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:bonusStr];
+                }
+                
+                cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+                NSString* ptsStr = [eventDic objectForKey:KEY_FOR_PTS];
+                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:ptsStr];
             }
-            cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
-            
-            NSString* ptsStr = [eventDic objectForKey:KEY_FOR_PTS];
-            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:ptsStr];
-            cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+            else
+            {
+                NSString* result = [eventDic objectForKey:KEY_FOR_RESULT];
+                cellRef = [NSString stringWithFormat:@"%c%c%d", outI, interI, rowI];
+                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:result];
+            }
             rowI++;
         }
-        for(int i=0; i<7; i++)
+        for(int i=0; i<8; i++)
             cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowIndex];
     }
     
@@ -842,6 +849,19 @@
 
 #pragma mark - DataStruct Updating
 
+-(void) pushExchangeEventIntoTimeLineWithUpPlayerNo:(NSString*)upNo downPlayerNo:(NSString*)downNo
+{
+    NSMutableDictionary* quarterDic = [self.timeLineReordeArray objectAtIndex:self.quarterNo-1];
+    NSMutableArray* timeLineArray = [quarterDic objectForKey:KEY_FOR_TIME_LINE_DATA];
+    NSMutableDictionary* event = [[NSMutableDictionary alloc] init];
+    [event setObject:SIGNAL_FOR_EXCHANGE forKey:KEY_FOR_TYPE];
+    NSString* resultStr = [NSString stringWithFormat:@"%@↑%@↓", upNo, downNo];
+    NSLog(@"%@", resultStr);
+    [event setObject:resultStr forKey:KEY_FOR_RESULT];
+    
+    [timeLineArray addObject:event];
+}
+
 -(void)pushEventIntoTimeLineWithResultKey:(NSString*)signalForResult pts:(int)pts
 {
     NSMutableDictionary* quarterDic = [self.timeLineReordeArray objectAtIndex:self.quarterNo-1];
@@ -849,6 +869,7 @@
     NSMutableDictionary* event = [[NSMutableDictionary alloc] init];
 
     [event setObject:[NSString stringWithFormat:@"%@", self.playerNoSet[self.playerSelectedIndex-1]] forKey:KEY_FOR_PLAYER_NO];
+    [event setObject:SIGNAL_FOR_NON_EXCHANGE forKey:KEY_FOR_TYPE];
     [event setObject:self.keyOfAttackWay forKey:KEY_FOR_ATTACK_WAY];
     [event setObject:self.keyOfDetail forKey:KEY_FOR_DETAIL];
     [event setObject:signalForResult forKey:KEY_FOR_RESULT];
@@ -883,6 +904,7 @@
     NSMutableDictionary* turnoverEvent = [[NSMutableDictionary alloc] init];
     
     [turnoverEvent setObject:[NSString stringWithFormat:@"%@", self.playerNoSet[self.playerSelectedIndex-1]] forKey:KEY_FOR_PLAYER_NO];
+    [turnoverEvent setObject:SIGNAL_FOR_NON_EXCHANGE forKey:KEY_FOR_TYPE];
     [turnoverEvent setObject:self.keyOfAttackWay forKey:KEY_FOR_ATTACK_WAY];
     [turnoverEvent setObject:SIGNAL_FOR_TURNOVER forKey:KEY_FOR_DETAIL];
     [turnoverEvent setObject:self.keyOfDetail forKey:KEY_FOR_RESULT];
@@ -2591,6 +2613,8 @@
                 }
                 UIAlertAction* playerOnFloorNoAction = [UIAlertAction actionWithTitle:cellOfChanged.NoLabel.text style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
                 {
+                    [self pushExchangeEventIntoTimeLineWithUpPlayerNo:cellOfSelected.NoLabel.text downPlayerNo:cellOfChanged.NoLabel.text];
+                    
                     //caculate the player being placed's time on floor
                     [self updateTimeOnFloorOfPlayerWithIndexInOnFloorTableView:i-1];
                     
@@ -2599,6 +2623,7 @@
                     cellOfChanged.NoLabel.text = cellOfSelected.NoLabel.text;
                     [dic setObject:[NSNumber numberWithInt:[cellOfSelected.NoLabel.text intValue]] forKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
                     [dic setObject:[NSNumber numberWithInt:self.timeCounter] forKey:KEY_FOR_TIME_WHEN_GO_ON_FLOOR];
+                    
                     [self updateTmpPlist];
                 }];
                 [changePlayerAlert addAction:playerOnFloorNoAction];

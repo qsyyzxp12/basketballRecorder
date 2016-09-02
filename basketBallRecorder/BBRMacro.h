@@ -100,7 +100,7 @@
 #define KEY_FOR_BAD_DEFENSE_GRADE @"bad"
 #define KEY_FOR_TOTAL_COUNT @"total"
 
-//Key for timeLineRecordArray
+//Key for timeLine event
 #define KEY_FOR_PLAYER_ON_FLOOR @"playerOnFloor"
 #define KEY_FOR_TIME_LINE_DATA @"timeLineData"
 #define KEY_FOR_PLAYER_NO @"PlayerNo"
@@ -109,7 +109,10 @@
 #define KEY_FOR_RESULT @"Result"
 #define KEY_FOR_PTS @"Pts"
 #define KEY_FOR_BONUS @"Bonus"
+#define KEY_FOR_TYPE @"type"
 
+#define SIGNAL_FOR_EXCHANGE @"Exchange"
+#define SIGNAL_FOR_NON_EXCHANGE @"NoneExchange"
 #define SIGNAL_FOR_FOUL @"Foul"
 #define SIGNAL_FOR_AND_ONE @"And 1"
 #define SIGNAL_FOR_ATTEMPT @"Attemp"
