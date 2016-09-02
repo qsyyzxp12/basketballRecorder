@@ -581,6 +581,20 @@
     [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
 }
 
+-(NSString*) cellRefGoRightWithOutIndex:(char*)outIndex interIndex:(char*)interIndex rowIndex:(int)rowIndex
+{
+    (*interIndex)++;
+    if(*interIndex == 91) // (int)'Z' == 90
+    {
+        if(*outIndex != '\0')
+            (*outIndex)++;
+        else
+            *outIndex = 'A';
+        *interIndex = 'A';
+    }
+    return [NSString stringWithFormat:@"%c%c%d", *outIndex, *interIndex, rowIndex];
+}
+
 -(NSString*) generateTimeLineXlsx:(NSNumber*) quarterNo
 {
     NSString* orgDocumentPath = [[NSBundle mainBundle] pathForResource:@"spreadsheet_for_timeLine" ofType:@"xlsx"];
@@ -590,14 +604,64 @@
     char outIndex = '\0';
     char interIndex = 'A';
     int rowIndex = 2;
+//    int quarter = 1;
     NSString* cellRef = [NSString stringWithFormat:@"%c%c%d", outIndex, interIndex, rowIndex];
-    for(NSMutableArray* quarterDic in self.timeLineReordeArray)
+
+    for(NSMutableDictionary* quarterDic in self.timeLineReordeArray)
     {
-    //    NSDictionary* q
-      //  NSString* playersOnFloorStr = [NSString stringWithFormat:<#(nonnull NSString *), ...#>]
+        NSString* playersOnFloorStr = [quarterDic objectForKey:KEY_FOR_PLAYER_ON_FLOOR];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:playersOnFloorStr];
+        
+        NSArray* timeLineRecordArray = [quarterDic objectForKey:KEY_FOR_TIME_LINE_DATA];
+        
+        int rowI = rowIndex+1;
+        cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowI];
+        for(NSDictionary* eventDic in timeLineRecordArray)
+        {
+            char outI =  outIndex;
+            char interI = interIndex;
+            NSString* playerNoStr = [eventDic objectForKey:KEY_FOR_PLAYER_NO];
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:playerNoStr];
+            cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+            
+            NSString* attackWayStr = [eventDic objectForKey:KEY_FOR_ATTACK_WAY];
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:attackWayStr];
+            cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+            
+            NSString* detailStr = [eventDic objectForKey:KEY_FOR_DETAIL];
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:detailStr];
+            cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+            
+            NSString* resultStr = [eventDic objectForKey:KEY_FOR_RESULT];
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:resultStr];
+            cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+            
+            if([resultStr isEqualToString:SIGNAL_FOR_FOUL] || [resultStr isEqualToString:SIGNAL_FOR_AND_ONE])
+            {
+                NSString* bonusStr = [eventDic objectForKey:KEY_FOR_BONUS];
+                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:bonusStr];
+            }
+            cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+            
+            NSString* ptsStr = [eventDic objectForKey:KEY_FOR_PTS];
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:ptsStr];
+            cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+            rowI++;
+        }
+        for(int i=0; i<7; i++)
+            cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowIndex];
     }
     
-    return nil;
+    //Save the xlsx to the app space in the device
+    NSString *sheetPath = [NSString stringWithFormat:@"%@/Documents/spreadsheet_for_timeLine.xlsx", NSHomeDirectory()];
+    NSFileManager* fm = [[NSFileManager alloc] init];
+    
+    if([fm fileExistsAtPath:sheetPath])
+        [fm removeItemAtPath:sheetPath error:nil];
+    
+    [spreadsheet saveAs:sheetPath];
+    
+    return sheetPath;
 }
 
 -(NSString*) generateGradeXlsx:(NSNumber*) quarterNo
@@ -769,7 +833,6 @@
     
     NSArray* agus = [[NSArray alloc] initWithObjects:filename, timeLineSheetPath, nil];
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
-  //  [self.restClient uploadFile:filename toPath:@"/" withParentRev:nil fromPath:sheetPath];
 }
 
 -(void) uploadXlsxFile:(NSArray*) parameters
@@ -811,8 +874,6 @@
         [event setObject:bonusResultStr forKey:KEY_FOR_BONUS];
     }
     [timeLineArray addObject:event];
-    
-    NSLog(@"%@", event);
 }
 
 -(void)pushTurnoverIntoTimeLine
@@ -826,13 +887,10 @@
     [turnoverEvent setObject:SIGNAL_FOR_TURNOVER forKey:KEY_FOR_DETAIL];
     [turnoverEvent setObject:self.keyOfDetail forKey:KEY_FOR_RESULT];
     [timeLineArray addObject:turnoverEvent];
-    
-    NSLog(@"%@", turnoverEvent);
 }
 
 -(void)updateTimeOnFloorOfPlayerWithIndexInOnFloorTableView:(int)index
 {
-    NSLog(@"index = %d", index);
     NSMutableDictionary* dic = [self.playerOnFloorDataArray objectAtIndex:index];
     NSNumber* indexInPPPTableviewNo = [dic objectForKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
     NSNumber* timeWhenWentOnFloor = [dic objectForKey:KEY_FOR_TIME_WHEN_GO_ON_FLOOR];
@@ -902,7 +960,6 @@
         [playersOnFloorNoArray addObject:playerNo];
     }
     NSString* playersOnFloorNoStr = [NSString stringWithFormat:@"%@,%@,%@,%@,%@", playersOnFloorNoArray[0], playersOnFloorNoArray[1], playersOnFloorNoArray[2], playersOnFloorNoArray[3], playersOnFloorNoArray[4]];
-    NSLog(@"%@", playersOnFloorNoStr);
     [quarterDic setObject:playersOnFloorNoStr forKey:KEY_FOR_PLAYER_ON_FLOOR];
     NSMutableArray* timeLineData = [[NSMutableArray alloc] init];
     [quarterDic setObject:timeLineData forKey:KEY_FOR_TIME_LINE_DATA];
