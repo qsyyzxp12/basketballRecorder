@@ -861,6 +861,11 @@
 
 #pragma mark - DataStruct Updating
 
+-(void)increaseHoldBallCountByOne
+{
+    
+}
+
 -(void) pushExchangeEventIntoTimeLineWithUpPlayerNo:(NSString*)upNo downPlayerNo:(NSString*)downNo
 {
     NSMutableDictionary* quarterDic = [self.timeLineReordeArray objectAtIndex:self.quarterNo-1];
@@ -872,7 +877,6 @@
     [event setObject:resultStr forKey:KEY_FOR_RESULT];
     
     [timeLineArray addObject:event];
-    
 }
 
 -(void)pushEventIntoTimeLineWithResultKey:(NSString*)signalForResult pts:(int)pts
@@ -2110,7 +2114,7 @@
         case 10:
             return [self.turnOverArray count] + 2;
         case 13:
-            return [self.TotalDetailItemArray count] + 3;
+            return [self.TotalDetailItemArray count] + 5;
          default:
             return [self.normalDetailItemKeyArray count] + 4;
     }
@@ -2435,10 +2439,13 @@
     {
         NSMutableArray* quarterData = [self.playerDataArray objectAtIndex:self.quarterNo];
         playerData = [quarterData objectAtIndex:self.playerSelectedIndex-1];
-        if(self.attackWayNo != 10)
-            attackDic = [playerData objectForKey:self.attackWayKeySet[self.attackWayNo-1]];
-        else
+        if(self.attackWayNo == 10)
             attackDic = [playerData objectForKey:KEY_FOR_TURNOVER];
+        else if(self.attackWayNo == 13)
+            attackDic = [playerData objectForKey:self.attackWayKeySet[self.attackWayNo-4]];
+        else
+            attackDic = [playerData objectForKey:self.attackWayKeySet[self.attackWayNo-1]];
+            
    //     NSLog(@"%@", attackDic);
     }
 
@@ -2502,12 +2509,13 @@
         return cell;
     }
     //else if(self.attackWayNo != 10)
-    if(indexPath.row < keyArr.count+2 || indexPath.row == keyArr.count+3)
+    if((self.attackWayNo != 13 && (indexPath.row < keyArr.count+2 || indexPath.row == keyArr.count+3)) ||(self.attackWayNo == 13 && (indexPath.row < keyArr.count+2 || indexPath.row == keyArr.count+4)))
     {
         UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width*0.45, PLAYER_GRADE_TABLECELL_HEIGHT)];
         label.adjustsFontSizeToFitWidth = YES;
         label.textAlignment = NSTextAlignmentCenter;
-        if(indexPath.row != keyArr.count + 3)
+        if((self.attackWayNo != 13 && (indexPath.row != keyArr.count+3)) ||
+           (self.attackWayNo == 13 && (indexPath.row != keyArr.count+4))  )
             label.text = keyArr[indexPath.row - 2];
         else
             label.text = @"總計";
@@ -2533,7 +2541,8 @@
         }
         else
         {
-            if(indexPath.row != keyArr.count+3)
+            if((self.attackWayNo != 13 && (indexPath.row != keyArr.count+3)) ||
+               (self.attackWayNo == 13 && (indexPath.row != keyArr.count+4))  )
             {
                 NSDictionary* detailDic = [attackDic objectForKey:keyArr[indexPath.row-2]];
                 NSString* madeCount = [detailDic objectForKey:KEY_FOR_MADE_COUNT];
@@ -2543,7 +2552,8 @@
                 foulLabel.text = [detailDic objectForKey:KEY_FOR_FOUL_COUNT];
                 totalScoreGetLabel.text = [detailDic objectForKey:KEY_FOR_SCORE_GET];
             }
-            else
+            else if((self.attackWayNo != 13 && (indexPath.row == keyArr.count+3)) ||
+                    (self.attackWayNo == 13 && (indexPath.row == keyArr.count+4)) )
             {
                 NSString* madeCount = [attackDic objectForKey:KEY_FOR_TOTAL_MADE_COUNT];
                 NSString* attemptCount = [attackDic objectForKey:KEY_FOR_TOTAL_ATTEMPT_COUNT];
@@ -2558,8 +2568,10 @@
         [cell addSubview:foulLabel];
         [cell addSubview:totalScoreGetLabel];
     }
-    else
+    else if((self.attackWayNo != 13 && (indexPath.row == keyArr.count+2)) ||
+            (self.attackWayNo == 13 && (indexPath.row == keyArr.count+2)) )
     {
+        NSLog(@"%d", self.attackWayNo);
         UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width*0.45, PLAYER_GRADE_TABLECELL_HEIGHT)];
         label.textAlignment = NSTextAlignmentCenter;
         label.text = @"失誤(TO)";
@@ -2573,6 +2585,23 @@
             turnOverLabel.text = @"0";
         [cell addSubview:label];
         [cell addSubview:turnOverLabel];
+        
+    }
+    else
+    {
+        UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width*0.45, PLAYER_GRADE_TABLECELL_HEIGHT)];
+        label.textAlignment = NSTextAlignmentCenter;
+        label.text = @"持球數";
+        
+        UILabel* holdBallCountLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(label.frame), 0, tableView.frame.size.width*0.55, PLAYER_GRADE_TABLECELL_HEIGHT)];
+        holdBallCountLabel.textAlignment = NSTextAlignmentCenter;
+        holdBallCountLabel.layer.borderWidth = 1;
+        if(self.playerSelectedIndex)
+            holdBallCountLabel.text = [attackDic objectForKey:KEY_FOR_HOLD_BALL_COUNT];
+        else
+            holdBallCountLabel.text = @"0";
+        [cell addSubview:label];
+        [cell addSubview:holdBallCountLabel];
         
     }
     return cell;
