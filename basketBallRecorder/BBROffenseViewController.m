@@ -614,10 +614,13 @@
         NSArray* timeLineRecordArray = [quarterDic objectForKey:KEY_FOR_TIME_LINE_DATA];
         
         int rowI = rowIndex+1;
+        int holdBallCount = 0;
+        char outI = outIndex;
+        char interI = interIndex;
         for(NSDictionary* eventDic in timeLineRecordArray)
         {
-            char outI =  outIndex;
-            char interI = interIndex;
+            outI =  outIndex;
+            interI = interIndex;
             if([[eventDic objectForKey:KEY_FOR_TYPE] isEqualToString:SIGNAL_FOR_NON_EXCHANGE])
             {
                 cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
@@ -646,6 +649,7 @@
                 cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
                 NSString* ptsStr = [eventDic objectForKey:KEY_FOR_PTS];
                 [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:ptsStr];
+                holdBallCount++;
             }
             else
             {
@@ -655,6 +659,14 @@
             }
             rowI++;
         }
+        
+        cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:@"持球數"];
+        
+        cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+        NSString* holdBallCountStr = [NSString stringWithFormat:@"%d", holdBallCount];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:holdBallCountStr];
+        
         for(int i=0; i<8; i++)
             cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowIndex];
     }
@@ -860,6 +872,7 @@
     [event setObject:resultStr forKey:KEY_FOR_RESULT];
     
     [timeLineArray addObject:event];
+    
 }
 
 -(void)pushEventIntoTimeLineWithResultKey:(NSString*)signalForResult pts:(int)pts
