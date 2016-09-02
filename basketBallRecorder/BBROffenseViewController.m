@@ -67,7 +67,6 @@
     
     if(self.quarterNo == END)
         [self showConclusionAndGernateXlsxFile:NO];
-    NSLog(@"%@", self.playerOnFloorDataArray);
 }
 
 - (void) constructAlertControllers
@@ -863,7 +862,21 @@
 
 -(void)increaseHoldBallCountByOne
 {
+    int quarterNo[2] = {self.quarterNo, QUARTER_NO_FOR_ENTIRE_GAME};
+    int playerNo[2] = {self.playerSelectedIndex-1, self.playerCount};
     
+    for(int i=0; i<2; i++)
+    {
+        NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:quarterNo[i]];
+        for(int j=0; j<2; j++)
+        {
+            NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
+            NSMutableDictionary* totalDic = [playerData objectForKey:KEY_FOR_TOTAL];
+            int holdBallCount = [[totalDic objectForKey:KEY_FOR_HOLD_BALL_COUNT] intValue];
+            [totalDic setObject:[NSString stringWithFormat:@"%d", holdBallCount+1] forKey:KEY_FOR_HOLD_BALL_COUNT];
+        }
+    }
+
 }
 
 -(void) pushExchangeEventIntoTimeLineWithUpPlayerNo:(NSString*)upNo downPlayerNo:(NSString*)downNo
@@ -873,7 +886,7 @@
     NSMutableDictionary* event = [[NSMutableDictionary alloc] init];
     [event setObject:SIGNAL_FOR_EXCHANGE forKey:KEY_FOR_TYPE];
     NSString* resultStr = [NSString stringWithFormat:@"%@↑%@↓", upNo, downNo];
-    NSLog(@"%@", resultStr);
+
     [event setObject:resultStr forKey:KEY_FOR_RESULT];
     
     [timeLineArray addObject:event];
@@ -912,6 +925,7 @@
         [event setObject:bonusResultStr forKey:KEY_FOR_BONUS];
     }
     [timeLineArray addObject:event];
+    [self increaseHoldBallCountByOne];
 }
 
 -(void)pushTurnoverIntoTimeLine
@@ -926,6 +940,7 @@
     [turnoverEvent setObject:SIGNAL_FOR_TURNOVER forKey:KEY_FOR_DETAIL];
     [turnoverEvent setObject:self.keyOfDetail forKey:KEY_FOR_RESULT];
     [timeLineArray addObject:turnoverEvent];
+    [self increaseHoldBallCountByOne];
 }
 
 -(void)updateTimeOnFloorOfPlayerWithIndexInOnFloorTableView:(int)index
@@ -1994,8 +2009,14 @@
     
     [self hideZone12orNot:NO];
     
-    [self.view viewWithTag:PLAYER_GRADE_TABLEVIEW_TAG].hidden = YES;
     
+    if(self.isDetailShowing)
+    {
+        self.isDetailShowing = NO;
+        [self.view addSubview:self.playerDataTableView];
+        [self.detailTableView removeFromSuperview];
+    }
+    self.playerDataTableView.hidden = YES;
 }
 
 - (void) showOffenseGradeButtonClicked
@@ -2571,7 +2592,6 @@
     else if((self.attackWayNo != 13 && (indexPath.row == keyArr.count+2)) ||
             (self.attackWayNo == 13 && (indexPath.row == keyArr.count+2)) )
     {
-        NSLog(@"%d", self.attackWayNo);
         UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width*0.45, PLAYER_GRADE_TABLECELL_HEIGHT)];
         label.textAlignment = NSTextAlignmentCenter;
         label.text = @"失誤(TO)";
