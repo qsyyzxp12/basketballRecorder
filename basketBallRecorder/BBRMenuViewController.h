@@ -9,10 +9,6 @@
 #import <UIKit/UIKit.h>
 #import <DropboxSDK/DropboxSDK.h>
 
-#define KEY_FOR_LAST_RECORD_QUARTER @"LastRecordQuarter"
-#define KEY_FOR_PLAYER_NO_SET @"PlayerNoSet"
-#define KEY_FOR_GRADE @"Grade"
-#define KEY_FOR_NAME @"Name"
 
 @interface BBRMenuViewController : UIViewController <DBRestClientDelegate>
 @property (weak, nonatomic) IBOutlet UIButton *addNewCompetitionButton;

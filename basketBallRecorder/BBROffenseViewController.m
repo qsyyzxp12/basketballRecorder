@@ -20,15 +20,6 @@
 {
     [super viewDidLoad];
     
-    self.playerOnFloorDataArray = [NSMutableArray arrayWithCapacity:5];
-    for(int i=0; i<5; i++)
-    {
-        NSMutableDictionary* dic = [[NSMutableDictionary  alloc] init];
-        [dic setObject:[NSNumber numberWithInt:0] forKey:KEY_FOR_TIME_WHEN_GO_ON_FLOOR];
-        [dic setObject:[NSNumber numberWithInt:i+1] forKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
-        [self.playerOnFloorDataArray setObject:dic atIndexedSubscript:i];
-    }
-    
     self.tmpPlistPath = [NSString stringWithFormat:@"%@/Documents/tmp.plist", NSHomeDirectory()];
     self.isShowZoneGrade = YES;
     self.isRecordMode = YES;
@@ -76,6 +67,7 @@
     
     if(self.quarterNo == END)
         [self showConclusionAndGernateXlsxFile:NO];
+    NSLog(@"%@", self.playerOnFloorDataArray);
 }
 
 - (void) constructAlertControllers
@@ -450,6 +442,7 @@
 {
     self.quarterNo++;
     [self extendPlayerDataWithQuarter:self.quarterNo];
+    [self extendTimeLineRecordeWithQuarter:self.quarterNo];
     [self updateZoneGradeView];
     
     NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
@@ -517,7 +510,7 @@
     }
     if(generateXlsxFile)
     {
-        [self performSelectorInBackground:@selector(xlsxFileGenerateAndUpload:) withObject:[NSNumber numberWithInt:self.quarterNo]];
+        [self performSelectorInBackground:@selector(xlsxFilesGenerateAndUpload:) withObject:[NSNumber numberWithInt:self.quarterNo]];
         self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] init];
         self.navigationItem.leftBarButtonItem.title = @"＜選單";
         self.navigationItem.leftBarButtonItem.target = self;
@@ -570,6 +563,8 @@
     self.recordName = [tmpPlistDic objectForKey:KEY_FOR_NAME];
     self.timeCounter = [(NSNumber*)[tmpPlistDic objectForKey:KEY_FOR_TIME] intValue];
     self.playerCount = (int)[self.playerNoSet count];
+    self.playerOnFloorDataArray = [tmpPlistDic objectForKey:KEY_FOR_ON_FLOOR_PLAYER_DATA];
+    self.timeLineReordeArray = [tmpPlistDic objectForKey:KEY_FOR_TIMELINE];
     
     [self updateNavigationTitle];
     if(self.quarterNo > 3)
@@ -581,11 +576,31 @@
     NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
     [tmpPlistDic setObject:self.playerDataArray forKey:KEY_FOR_GRADE];
     [tmpPlistDic setObject:self.timeLineReordeArray forKey:KEY_FOR_TIMELINE];
+    [tmpPlistDic setObject:self.playerOnFloorDataArray forKey:KEY_FOR_ON_FLOOR_PLAYER_DATA];
     
     [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
 }
 
--(void) xlsxFileGenerateAndUpload: (NSNumber*) quarterNo
+-(NSString*) generateTimeLineXlsx:(NSNumber*) quarterNo
+{
+    NSString* orgDocumentPath = [[NSBundle mainBundle] pathForResource:@"spreadsheet_for_timeLine" ofType:@"xlsx"];
+    BRAOfficeDocumentPackage *spreadsheet = [BRAOfficeDocumentPackage open:orgDocumentPath];
+    BRAWorksheet *worksheet = spreadsheet.workbook.worksheets[0];
+    
+    char outIndex = '\0';
+    char interIndex = 'A';
+    int rowIndex = 2;
+    NSString* cellRef = [NSString stringWithFormat:@"%c%c%d", outIndex, interIndex, rowIndex];
+    for(NSMutableArray* quarterDic in self.timeLineReordeArray)
+    {
+    //    NSDictionary* q
+      //  NSString* playersOnFloorStr = [NSString stringWithFormat:<#(nonnull NSString *), ...#>]
+    }
+    
+    return nil;
+}
+
+-(NSString*) generateGradeXlsx:(NSNumber*) quarterNo
 {
     //Generate the xlsx file
     NSString *documentPath = [[NSBundle mainBundle] pathForResource:@"spreadsheet_for_offense" ofType:@"xlsx"];
@@ -668,7 +683,7 @@
                 cellRef = [NSString stringWithFormat:@"%c%c%d", outIndex, interIndex++, i+3];
                 [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:foulCount];
                 
-     //           NSString* turnOverCount = [offenseGradeDic objectForKey:KEY_FOR_TURNOVER_COUNT];
+                //           NSString* turnOverCount = [offenseGradeDic objectForKey:KEY_FOR_TURNOVER_COUNT];
                 if(interIndex == 91) // (int)'Z' == 90
                 {
                     if(outIndex != '\0')
@@ -678,7 +693,7 @@
                     interIndex = 65;
                 }
                 cellRef = [NSString stringWithFormat:@"%c%c%d", outIndex, interIndex++, i+3];
-       //         [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:turnOverCount];
+                //         [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:turnOverCount];
                 
                 NSString* score = [offenseGradeDic objectForKey:KEY_FOR_SCORE_GET];
                 if(interIndex == 91) // (int)'Z' == 90
@@ -726,7 +741,7 @@
             [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:totalScore];
             
         }
-
+        
     }
     
     //Save the xlsx to the app space in the device
@@ -738,13 +753,21 @@
     
     [spreadsheet saveAs:sheetPath];
     
+    return sheetPath;
+}
+
+-(void) xlsxFilesGenerateAndUpload: (NSNumber*) quarterNo
+{
+    NSString* timeLineSheetPath = [self generateTimeLineXlsx:quarterNo];
+ //   NSString* gradeSheetPath = [self generateGradeXlsx:quarterNo];
+    
     //Dropbox
     if (![[DBSession sharedSession] isLinked])
         [[DBSession sharedSession] linkFromController:self];
 
     NSString* filename = [NSString stringWithFormat:@"%@.xlsx", self.recordName];
     
-    NSArray* agus = [[NSArray alloc] initWithObjects:filename, sheetPath, nil];
+    NSArray* agus = [[NSArray alloc] initWithObjects:filename, timeLineSheetPath, nil];
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
   //  [self.restClient uploadFile:filename toPath:@"/" withParentRev:nil fromPath:sheetPath];
 }
@@ -809,6 +832,7 @@
 
 -(void)updateTimeOnFloorOfPlayerWithIndexInOnFloorTableView:(int)index
 {
+    NSLog(@"index = %d", index);
     NSMutableDictionary* dic = [self.playerOnFloorDataArray objectAtIndex:index];
     NSNumber* indexInPPPTableviewNo = [dic objectForKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
     NSNumber* timeWhenWentOnFloor = [dic objectForKey:KEY_FOR_TIME_WHEN_GO_ON_FLOOR];
@@ -828,8 +852,17 @@
 
 -(void) newPlayerGradeDataStruct
 {
+    self.playerOnFloorDataArray = [NSMutableArray arrayWithCapacity:5];
+    for(int i=0; i<5; i++)
+    {
+        NSMutableDictionary* dic = [[NSMutableDictionary  alloc] init];
+        [dic setObject:[NSNumber numberWithInt:0] forKey:KEY_FOR_TIME_WHEN_GO_ON_FLOOR];
+        [dic setObject:[NSNumber numberWithInt:i+1] forKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
+        [self.playerOnFloorDataArray setObject:dic atIndexedSubscript:i];
+    }
+    
     self.timeLineReordeArray = [[NSMutableArray alloc] init];
-    [self extendPlayerDataWithQuarter:1];
+    [self extendTimeLineRecordeWithQuarter:1];
     
     self.playerDataArray = [NSMutableArray arrayWithCapacity:2];
     [self extendPlayerDataWithQuarter:0];
@@ -850,6 +883,7 @@
     [tmpPlistDic setObject:[NSNumber numberWithInt:0] forKey:KEY_FOR_TIME];
     [tmpPlistDic setObject:OFFENSE_TYPE_DATA forKey:KEY_FOR_DATA_TYPE];
     [tmpPlistDic setObject:self.timeLineReordeArray forKey:KEY_FOR_TIMELINE];
+    [tmpPlistDic setObject:self.playerOnFloorDataArray forKey:KEY_FOR_ON_FLOOR_PLAYER_DATA];
     
     [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
     
@@ -859,7 +893,17 @@
 -(void) extendTimeLineRecordeWithQuarter:(int) quarterNo
 {
     NSMutableDictionary* quarterDic = [[NSMutableDictionary alloc] init];
-    [quarterDic setObject:self.playerOnFloorDataArray forKey:KEY_FOR_PLAYER_ON_FLOOR];
+    
+    NSMutableArray* playersOnFloorNoArray = [[NSMutableArray alloc] init];
+    for(NSDictionary* playersOnFloorDataDic in self.playerOnFloorDataArray)
+    {
+        NSNumber* playerIndexInPPPTableView = [playersOnFloorDataDic objectForKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
+        NSString* playerNo = self.playerNoSet[playerIndexInPPPTableView.intValue-1];
+        [playersOnFloorNoArray addObject:playerNo];
+    }
+    NSString* playersOnFloorNoStr = [NSString stringWithFormat:@"%@,%@,%@,%@,%@", playersOnFloorNoArray[0], playersOnFloorNoArray[1], playersOnFloorNoArray[2], playersOnFloorNoArray[3], playersOnFloorNoArray[4]];
+    NSLog(@"%@", playersOnFloorNoStr);
+    [quarterDic setObject:playersOnFloorNoStr forKey:KEY_FOR_PLAYER_ON_FLOOR];
     NSMutableArray* timeLineData = [[NSMutableArray alloc] init];
     [quarterDic setObject:timeLineData forKey:KEY_FOR_TIME_LINE_DATA];
     [quarterDic setObject:[NSString stringWithFormat:@"%d", quarterNo] forKey:@"Quarter No"];
@@ -2054,7 +2098,11 @@
         cell.layer.borderWidth = 1;
         cell.NoLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, CELL_WIDTH, CELL_HEIGHT)];
         cell.NoLabel.textAlignment = NSTextAlignmentCenter;
-        cell.NoLabel.text = [NSString stringWithFormat:@"%@", [self.playerNoSet objectAtIndex:indexPath.row-1]];
+        NSDictionary* playersOnFloorDataDic = self.playerOnFloorDataArray[indexPath.row-1];
+        NSNumber* playerIndexInPPPTableView = [playersOnFloorDataDic objectForKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
+        NSString* playerNo = self.playerNoSet[playerIndexInPPPTableView.intValue-1];
+        
+        cell.NoLabel.text = [NSString stringWithFormat:@"%@", playerNo];
         [cell addSubview:cell.NoLabel];
         cell.selectionStyle = UITableViewCellSelectionStyleBlue;
         
@@ -2494,6 +2542,7 @@
                     cellOfChanged.NoLabel.text = cellOfSelected.NoLabel.text;
                     [dic setObject:[NSNumber numberWithInt:[cellOfSelected.NoLabel.text intValue]] forKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
                     [dic setObject:[NSNumber numberWithInt:self.timeCounter] forKey:KEY_FOR_TIME_WHEN_GO_ON_FLOOR];
+                    [self updateTmpPlist];
                 }];
                 [changePlayerAlert addAction:playerOnFloorNoAction];
             }

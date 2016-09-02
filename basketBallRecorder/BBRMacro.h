@@ -32,11 +32,18 @@
 #define BACKGROUND_IMAGEVIEW_TAG -4
 #define DETAIL_TABLE_VIEW -5
 
+#define KEY_FOR_LAST_RECORD_QUARTER @"LastRecordQuarter"
 
+//Key using in tmpPlistDic
 #define OFFENSE_TYPE_DATA @"Offense"
 #define DEFENSE_TYPE_DATA @"Defense"
 #define KEY_FOR_DATA_TYPE @"Type"
 #define KEY_FOR_TIMELINE @"timeLine"
+#define KEY_FOR_TIME @"time"
+#define KEY_FOR_GRADE @"Grade"
+#define KEY_FOR_NAME @"Name"
+#define KEY_FOR_PLAYER_NO_SET @"PlayerNoSet"
+#define KEY_FOR_ON_FLOOR_PLAYER_DATA @"PlayersOnFloorData"
 
 #define KEY_FOR_FASTBREAK @"Fastbreak"
 #define KEY_FOR_ISOLATION @"Isolation"
@@ -86,7 +93,6 @@
 
 #define KEY_FOR_TIME_WHEN_GO_ON_FLOOR @"timeWhenGoOnFloor"
 #define KEY_FOR_INDEX_IN_PPP_TABLEVIEW @"indexInPPPTableview"
-#define KEY_FOR_TIME @"time"
 
 #define KEY_FOR_DEFENSE_GRADE @"defenseGrade"
 #define KEY_FOR_DEFLECTION_DEFENSE_GRADE @"deflection"
