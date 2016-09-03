@@ -34,6 +34,9 @@
 @property BOOL isRecordMode;
 @property BOOL isTimerRunning;
 @property BOOL isDetailShowing;
+@property BOOL isGradeXlsxFileExistInDropbox;
+@property BOOL isLoadMetaFinished;
+@property BOOL isDownloadXlsxFileFinished;
 @property int playerCount;
 @property int playerSelectedIndex;
 @property int zoneNo;
@@ -53,7 +56,7 @@
 @property UIAlertController* finishOrNotAlert;
 @property UIImageView* backgroundImageView;
 @property NSString* tmpPlistPath;
-@property NSString* recordName;
+@property NSString* opponentName;
 @property NSString* keyOfAttackWay;
 @property NSString* keyOfDetail;
 @property UIButton* undoButton;

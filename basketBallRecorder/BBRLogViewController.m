@@ -23,6 +23,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
     self.BBRtableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 33, self.view.frame.size.width, self.view.frame.size.height-33)];
     
     self.BBRtableView.delegate = self;
@@ -51,8 +52,9 @@
             {
                 [self presentViewController:nameUncompleteAlert animated:YES completion:nil];
             }
-            else*/ 
-                self.recordName = [NSString stringWithFormat:@"%@_vs_%@", teamName.text, anotherTeamName.text];
+            else*/
+                self.myTeamName = teamName.text;
+                self.opponentName = anotherTeamName.text;
         }];
     UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action)
         {
@@ -78,6 +80,7 @@
     NSArray *resultArray = [self.playerNoSet sortedArrayUsingSelector:@selector(compare:)];
     NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"YYYY_MM_dd"];
+    NSString* recordName = [NSString stringWithFormat:@"%@_vs_%@", self.myTeamName, self.opponentName];
     
     if([segue.identifier isEqualToString:@"showOffenseController"])
     {
@@ -85,8 +88,7 @@
         mainViewCntler.playerNoSet = resultArray;
         mainViewCntler.playerCount = self.playerCount;
     
-        NSString* filename = [NSString stringWithFormat:@"%@-%@_進攻", self.recordName, [dateFormatter stringFromDate:[NSDate date]]];
-        mainViewCntler.recordName = filename;
+        mainViewCntler.opponentName = self.opponentName;
     }
     else if([segue.identifier isEqualToString:@"showDefenseController"])
     {
@@ -94,7 +96,7 @@
         mainViewCntler.playerNoSet = resultArray;
         mainViewCntler.playerCount = self.playerCount;
         
-        NSString* filename = [NSString stringWithFormat:@"%@-%@_防守", self.recordName, [dateFormatter stringFromDate:[NSDate date]]];
+        NSString* filename = [NSString stringWithFormat:@"%@-%@_防守", recordName, [dateFormatter stringFromDate:[NSDate date]]];
         mainViewCntler.recordName = filename;
     }
 }

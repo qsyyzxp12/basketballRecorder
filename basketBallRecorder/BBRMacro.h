@@ -42,6 +42,7 @@
 #define KEY_FOR_TIME @"time"
 #define KEY_FOR_GRADE @"Grade"
 #define KEY_FOR_NAME @"Name"
+#define KEY_FOR_OPPONENT_NAME @"OpponentName"
 #define KEY_FOR_PLAYER_NO_SET @"PlayerNoSet"
 #define KEY_FOR_ON_FLOOR_PLAYER_DATA @"PlayersOnFloorData"
 
@@ -118,6 +119,10 @@
 #define SIGNAL_FOR_ATTEMPT @"Attemp"
 #define SIGNAL_FOR_MADE @"Made"
 #define SIGNAL_FOR_TURNOVER @"TO"
+
+
+//Dropbox
+#define NAME_OF_THE_FINAL_XLSX_FILE @"PPP數據"
 
 #define END -1
 #define QUARTER_NO_FOR_ENTIRE_GAME 0

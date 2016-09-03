@@ -14,6 +14,7 @@
 @property NSMutableArray* textFieldArray;
 @property int playerCount;
 @property NSMutableArray* playerNoSet;
-@property NSString* recordName;
+@property NSString* myTeamName;
+@property NSString* opponentName;
 @end
 
