@@ -30,6 +30,9 @@
 @property NSArray* statusButtonArray;
 @property NSArray* buttonArray;
 
+@property NSMutableArray* fileNamesInDropbox;
+@property BOOL isLoadMetaFinished;
+
 @property UIAlertController* dirtyStatusAlert;
 @property BOOL isTmpPlistExist;
 @property int buttonClickedNo;

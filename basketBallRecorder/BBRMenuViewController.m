@@ -88,7 +88,59 @@
     self.loadingLabel.text = @"Loading";
     [self.view addSubview:self.loadingLabel];
     
+    self.isLoadMetaFinished = NO;
+    self.fileNamesInDropbox = [[NSMutableArray alloc] init];
     [self.restClient loadMetadata:@"/"];
+    
+}
+
+-(void) updateButtons
+{
+    NSFileManager* fm = [[NSFileManager alloc] init];
+    NSString* src = [[NSBundle mainBundle] pathForResource:@"record" ofType:@"plist"];
+    NSString* recordPlistPath = [NSString stringWithFormat:@"%@/Documents/record.plist", NSHomeDirectory()];
+    if(![fm fileExistsAtPath:recordPlistPath])
+    {
+        [fm copyItemAtPath:src toPath:recordPlistPath error:nil];
+        for(UIButton* button in self.buttonArray)
+            button.hidden = YES;
+        for(UIButton* button in self.statusButtonArray)
+            button.hidden = YES;
+    }
+    else
+    {
+        //        [fm removeItemAtPath:recordPlistPath error:nil];
+        NSArray* recordPlistContent = [NSArray arrayWithContentsOfFile:recordPlistPath];
+        int buttonIndex = 0;
+        for (int i=((int)[recordPlistContent count]-1); i >= 0; i--)
+        {
+            NSString* gameName = [[recordPlistContent objectAtIndex:i] objectForKey:KEY_FOR_NAME];
+            [((UIButton*)self.buttonArray[buttonIndex]) setTitle:gameName forState:UIControlStateNormal];
+            ((UIButton*)self.buttonArray[buttonIndex]).hidden = NO;
+            ((UIButton*)self.statusButtonArray[buttonIndex]).hidden = NO;
+            [((UIButton*)self.statusButtonArray[buttonIndex]) setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+            [((UIButton*)self.statusButtonArray[buttonIndex]) setTitle:@"上傳" forState:UIControlStateNormal];
+            ((UIButton*)self.statusButtonArray[buttonIndex]).userInteractionEnabled = YES;
+            
+            for(NSString* name in self.fileNamesInDropbox)
+                if([name isEqualToString:[NSString stringWithFormat:@"%@.xlsx", gameName]])
+                {
+                    [((UIButton*)self.statusButtonArray[buttonIndex]) setTitle:@"已上傳" forState:UIControlStateNormal];
+                    [((UIButton*)self.statusButtonArray[buttonIndex]) setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+                    ((UIButton*)self.statusButtonArray[buttonIndex]).userInteractionEnabled = NO;
+                    break;
+                }
+            buttonIndex++;
+        }
+        for(int i=(int)[recordPlistContent count]; i<5; i++)
+        {
+            ((UIButton*)self.buttonArray[i]).hidden = YES;
+            ((UIButton*)self.statusButtonArray[i]).hidden = YES;
+        }
+    }
+    [self.spinView removeFromSuperview];
+    [self.loadingLabel removeFromSuperview];
+    [self.spinner removeFromSuperview];
 }
 
 -(void) constructAlertController
@@ -155,59 +207,12 @@
 
 -(void)restClient:(DBRestClient *)client loadedMetadata:(DBMetadata *)metadata
 {
-    NSMutableArray* fileNamesInDropbox = [[NSMutableArray alloc] init];
     if(metadata.isDirectory)
         for (DBMetadata *file in metadata.contents)
-            [fileNamesInDropbox addObject:file.filename];
+            [self.fileNamesInDropbox addObject:file.filename];
     
-    NSLog(@"%@", fileNamesInDropbox);
-    
-    NSFileManager* fm = [[NSFileManager alloc] init];
-    NSString* src = [[NSBundle mainBundle] pathForResource:@"record" ofType:@"plist"];
-    NSString* recordPlistPath = [NSString stringWithFormat:@"%@/Documents/record.plist", NSHomeDirectory()];
-    if(![fm fileExistsAtPath:recordPlistPath])
-    {
-        [fm copyItemAtPath:src toPath:recordPlistPath error:nil];
-        for(UIButton* button in self.buttonArray)
-            button.hidden = YES;
-        for(UIButton* button in self.statusButtonArray)
-            button.hidden = YES;
-        
-    }
-    else
-    {
-//        [fm removeItemAtPath:recordPlistPath error:nil];
-        NSArray* recordPlistContent = [NSArray arrayWithContentsOfFile:recordPlistPath];
-        int buttonIndex = 0;
-        for (int i=((int)[recordPlistContent count]-1); i >= 0; i--)
-        {
-            NSString* gameName = [[recordPlistContent objectAtIndex:i] objectForKey:KEY_FOR_NAME];
-            [((UIButton*)self.buttonArray[buttonIndex]) setTitle:gameName forState:UIControlStateNormal];
-            ((UIButton*)self.buttonArray[buttonIndex]).hidden = NO;
-            ((UIButton*)self.statusButtonArray[buttonIndex]).hidden = NO;
-            [((UIButton*)self.statusButtonArray[buttonIndex]) setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
-            [((UIButton*)self.statusButtonArray[buttonIndex]) setTitle:@"上傳" forState:UIControlStateNormal];
-            ((UIButton*)self.statusButtonArray[buttonIndex]).userInteractionEnabled = YES;
-            
-            for(NSString* name in fileNamesInDropbox)
-                if([name isEqualToString:[NSString stringWithFormat:@"%@.xlsx", gameName]])
-                {
-                    [((UIButton*)self.statusButtonArray[buttonIndex]) setTitle:@"已上傳" forState:UIControlStateNormal];
-                    [((UIButton*)self.statusButtonArray[buttonIndex]) setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-                    ((UIButton*)self.statusButtonArray[buttonIndex]).userInteractionEnabled = NO;
-                    break;
-                }
-            buttonIndex++;
-        }
-        for(int i=(int)[recordPlistContent count]; i<5; i++)
-        {
-            ((UIButton*)self.buttonArray[i]).hidden = YES;
-            ((UIButton*)self.statusButtonArray[i]).hidden = YES;
-        }
-    }
-    [self.spinView removeFromSuperview];
-    [self.loadingLabel removeFromSuperview];
-    [self.spinner removeFromSuperview];
+    self.isLoadMetaFinished = YES;
+    [self updateButtons];
 }
 
 - (void)restClient:(DBRestClient *)client loadMetadataFailedWithError:(NSError *)error

@@ -37,6 +37,8 @@
 @property BOOL isGradeXlsxFileExistInDropbox;
 @property BOOL isLoadMetaFinished;
 @property BOOL isDownloadXlsxFileFinished;
+@property BOOL isPPPGradeXlsxUploadFinished;
+@property BOOL isTimeLineXlsxUploadFinished;
 @property int playerCount;
 @property int playerSelectedIndex;
 @property int zoneNo;
@@ -57,6 +59,7 @@
 @property UIImageView* backgroundImageView;
 @property NSString* tmpPlistPath;
 @property NSString* opponentName;
+@property NSString* recordName;
 @property NSString* keyOfAttackWay;
 @property NSString* keyOfDetail;
 @property UIButton* undoButton;
@@ -65,5 +68,8 @@
 @property UIButton* lastQuarterButton;
 @property UIButton* timeButton;
 @property NSTimer* timer;
+@property UIView* spinView;
+@property UILabel* loadingLabel;
+@property UIActivityIndicatorView* spinner;
 @property (nonatomic, strong) DBRestClient *restClient;
 @end

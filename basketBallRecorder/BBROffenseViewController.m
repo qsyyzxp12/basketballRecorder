@@ -488,7 +488,7 @@
         [newItem setObject:[NSNumber numberWithInt:END] forKey:KEY_FOR_LAST_RECORD_QUARTER];
         [newItem setObject:self.playerDataArray forKey:KEY_FOR_GRADE];
         [newItem setObject:self.playerNoSet forKey:KEY_FOR_PLAYER_NO_SET];
-        [newItem setObject:self.opponentName forKey:KEY_FOR_OPPONENT_NAME];
+        [newItem setObject:self.recordName forKey:KEY_FOR_NAME];
         [newItem setObject:OFFENSE_TYPE_DATA forKey:KEY_FOR_DATA_TYPE];
         
         if([recordPlistArray count] < 5)
@@ -511,6 +511,11 @@
     {
         self.isLoadMetaFinished = NO;
         [self.restClient loadMetadata:@"/"];
+        
+        [self.view addSubview:self.spinView];
+        [self.view addSubview:self.loadingLabel];
+        [self.view addSubview:self.spinner];
+        
         [self performSelectorInBackground:@selector(xlsxFilesGenerateAndUpload:) withObject:[NSNumber numberWithInt:self.quarterNo]];
         self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] init];
         self.navigationItem.leftBarButtonItem.title = @"＜選單";
@@ -596,7 +601,7 @@
     return [NSString stringWithFormat:@"%c%c%d", *outIndex, *interIndex, rowIndex];
 }
 
--(NSString*) generateTimeLineXlsx:(NSNumber*) quarterNo
+-(void) generateTimeLineXlsx:(NSNumber*) quarterNo
 {
     NSString* orgDocumentPath = [[NSBundle mainBundle] pathForResource:@"spreadsheet_for_timeLine" ofType:@"xlsx"];
     BRAOfficeDocumentPackage *spreadsheet = [BRAOfficeDocumentPackage open:orgDocumentPath];
@@ -681,7 +686,10 @@
     
     [spreadsheet saveAs:sheetPath];
     
-    return sheetPath;
+    NSString* filename = [NSString stringWithFormat:@"%@.xlsx", self.opponentName];
+    
+    NSArray* agus = [[NSArray alloc] initWithObjects:filename, sheetPath, nil];
+    [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
 }
 
 -(void) generateGradeXlsx:(NSNumber*) quarterNo
@@ -707,8 +715,6 @@
         NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
         [dateFormatter setDateFormat:@"YYYY/MM/dd"];
         
-        NSLog(@"%ld", (long)worksheet.dimension.bottomRowIndex);
-        
         NSString* cellRef;
         NSString *cellContent;
         do
@@ -718,13 +724,11 @@
             cellContent = [[worksheet cellForCellReference:cellRef] stringValue];
         }while(cellContent && ![cellContent isEqualToString:@""]);
         
-        NSLog(@"%@", cellRef);
         [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:
          [dateFormatter stringFromDate:[NSDate date]]];
         
         cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowIndex];
         [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:self.opponentName];
-        NSLog(@"%@", cellRef);
         
         NSArray* totalGradeArray = [self.playerDataArray objectAtIndex:0];
         NSDictionary* playerGradeDic = [totalGradeArray objectAtIndex:i];
@@ -754,33 +758,27 @@
             NSDictionary* attackDic = [playerGradeDic objectForKey:keyForAttackWay];
             for(NSString* keyForDetail in detailArray)
             {
-                NSLog(@"\t%@", keyForDetail);
                 NSDictionary* detailDic = [attackDic objectForKey:keyForDetail];
                 
                 cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowIndex];
-                NSLog(@"%@", cellRef);
                 NSInteger madeCount = [[detailDic objectForKey:KEY_FOR_MADE_COUNT] integerValue];
                 [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:madeCount];
                 
                 cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowIndex];
-                NSLog(@"%@", cellRef);
                 NSInteger attemptCount = [[detailDic objectForKey:KEY_FOR_ATTEMPT_COUNT] integerValue];
                 [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:attemptCount];
                 
                 cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowIndex];
-                NSLog(@"%@", cellRef);
                 NSInteger foulCount = [[detailDic objectForKey:KEY_FOR_FOUL_COUNT] integerValue];
                 [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:foulCount];
                 
                 cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowIndex];
-                NSLog(@"%@", cellRef);
                 NSInteger pts = [[detailDic objectForKey:KEY_FOR_SCORE_GET] integerValue];
                 [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:pts];
             }
             if(![keyForAttackWay isEqualToString:KEY_FOR_TOTAL])
             {
                 cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowIndex];
-                NSLog(@"%@", cellRef);
                 NSInteger toCount = [[attackDic objectForKey:KEY_FOR_TOTAL_TURNOVER_COUNT] integerValue];
                 [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:toCount];
             }
@@ -834,7 +832,7 @@
     if (![[DBSession sharedSession] isLinked])
         [[DBSession sharedSession] linkFromController:self];
     
-  //  NSString* timeLineSheetPath = [self generateTimeLineXlsx:quarterNo];
+    [self generateTimeLineXlsx:quarterNo];
     [self generateGradeXlsx:quarterNo];
 }
 
@@ -999,6 +997,7 @@
     [tmpPlistDic setObject:self.playerDataArray forKey:KEY_FOR_GRADE];
     [tmpPlistDic setObject:self.playerNoSet forKey:KEY_FOR_PLAYER_NO_SET];
     [tmpPlistDic setObject:self.opponentName forKey:KEY_FOR_OPPONENT_NAME];
+    [tmpPlistDic setObject:self.recordName forKey:KEY_FOR_NAME];
     [tmpPlistDic setObject:[NSNumber numberWithInt:0] forKey:KEY_FOR_TIME];
     [tmpPlistDic setObject:OFFENSE_TYPE_DATA forKey:KEY_FOR_DATA_TYPE];
     [tmpPlistDic setObject:self.timeLineReordeArray forKey:KEY_FOR_TIMELINE];
@@ -1020,8 +1019,8 @@
         NSString* playerNo = self.playerNoSet[playerIndexInPPPTableView.intValue-1];
         [playersOnFloorNoArray addObject:playerNo];
     }
- //   NSString* playersOnFloorNoStr = [NSString stringWithFormat:@"%@,%@,%@,%@,%@", playersOnFloorNoArray[0], playersOnFloorNoArray[1], playersOnFloorNoArray[2], playersOnFloorNoArray[3], playersOnFloorNoArray[4]];
- //   [quarterDic setObject:playersOnFloorNoStr forKey:KEY_FOR_PLAYER_ON_FLOOR];
+    NSString* playersOnFloorNoStr = [NSString stringWithFormat:@"%@,%@,%@,%@,%@", playersOnFloorNoArray[0], playersOnFloorNoArray[1], playersOnFloorNoArray[2], playersOnFloorNoArray[3], playersOnFloorNoArray[4]];
+    [quarterDic setObject:playersOnFloorNoStr forKey:KEY_FOR_PLAYER_ON_FLOOR];
     NSMutableArray* timeLineData = [[NSMutableArray alloc] init];
     [quarterDic setObject:timeLineData forKey:KEY_FOR_TIME_LINE_DATA];
     [quarterDic setObject:[NSString stringWithFormat:@"%d", quarterNo] forKey:@"Quarter No"];
@@ -1233,6 +1232,13 @@
 }
 
 #pragma mark - UI Updating
+
+-(void) removeSpinningView
+{
+    [self.spinView removeFromSuperview];
+    [self.loadingLabel removeFromSuperview];
+    [self.spinner removeFromSuperview];
+}
 
 -(void)timeCounterChange
 {
@@ -1863,6 +1869,20 @@
     self.detailTableView.dataSource = self;
     self.detailTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.detailTableView.tag = DETAIL_TABLE_VIEW;
+
+    self.spinView = [[UIView alloc] initWithFrame:self.view.frame];
+    self.spinView.backgroundColor = [UIColor grayColor];
+    self.spinView.alpha = 0.8;
+    
+    self.loadingLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMidX(self.spinView.frame)-50, CGRectGetMidY(self.spinView.frame)-15, 100, 30)];
+    self.loadingLabel.backgroundColor = [UIColor whiteColor];
+    self.loadingLabel.textAlignment = NSTextAlignmentCenter;
+    self.loadingLabel.text = @"Loading";
+    
+    self.spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    self.spinner.frame = CGRectMake(CGRectGetMinX(self.loadingLabel.frame), CGRectGetMaxY(self.loadingLabel.frame), 100, 30);
+    self.spinner.backgroundColor = [UIColor whiteColor];
+    [self.spinner startAnimating];
 }
 
 - (void) showAttackList
@@ -2750,8 +2770,17 @@
 }
 
 - (void)restClient:(DBRestClient *)client uploadedFile:(NSString *)destPath
-              from:(NSString *)srcPath metadata:(DBMetadata *)metadata {
+              from:(NSString *)srcPath metadata:(DBMetadata *)metadata
+{
     NSLog(@"File uploaded successfully to path: %@", metadata.path);
+    
+    if([metadata.path isEqualToString:[NSString stringWithFormat:@"/%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE]])
+        self.isPPPGradeXlsxUploadFinished = YES;
+    else if([metadata.path isEqualToString:[NSString stringWithFormat:@"/%@.xlsx", self.opponentName]])
+        self.isTimeLineXlsxUploadFinished = YES;
+    
+    if(self.isPPPGradeXlsxUploadFinished && self.isTimeLineXlsxUploadFinished)
+        [self performSelectorOnMainThread:@selector(removeSpinningView) withObject:nil waitUntilDone:NO];
 }
 
 - (void)restClient:(DBRestClient *)client uploadFileFailedWithError:(NSError *)error {

@@ -89,6 +89,8 @@
         mainViewCntler.playerCount = self.playerCount;
     
         mainViewCntler.opponentName = self.opponentName;
+        NSString* filename = [NSString stringWithFormat:@"%@-%@_進攻", recordName, [dateFormatter stringFromDate:[NSDate date]]];
+        mainViewCntler.recordName = filename;
     }
     else if([segue.identifier isEqualToString:@"showDefenseController"])
     {
