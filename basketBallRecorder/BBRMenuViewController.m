@@ -91,7 +91,7 @@
     self.isGradeXlsxFileExistInDropbox = NO;
     self.isDownloadXlsxFileFinished = NO;
     self.isLoadMetaFinished = NO;
-    self.fileNamesInDropbox = [[NSMutableArray alloc] init];
+    self.loadMetaType = PPP_GRADE;
     [self.restClient loadMetadata:@"/" atRev:nil];
 }
 
@@ -122,15 +122,6 @@
             [((UIButton*)self.statusButtonArray[buttonIndex]) setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
             [((UIButton*)self.statusButtonArray[buttonIndex]) setTitle:@"上傳" forState:UIControlStateNormal];
             ((UIButton*)self.statusButtonArray[buttonIndex]).userInteractionEnabled = YES;
-            
-            for(NSString* name in self.fileNamesInDropbox)
-                if([name isEqualToString:[NSString stringWithFormat:@"%@.xlsx", gameName]])
-                {
-                    [((UIButton*)self.statusButtonArray[buttonIndex]) setTitle:@"已上傳" forState:UIControlStateNormal];
-                    [((UIButton*)self.statusButtonArray[buttonIndex]) setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-                    ((UIButton*)self.statusButtonArray[buttonIndex]).userInteractionEnabled = NO;
-                    break;
-                }
             buttonIndex++;
         }
         for(int i=(int)[recordPlistContent count]; i<5; i++)
@@ -212,7 +203,9 @@
     self.loadingLabel.text = @"Uploading";
     [self.view addSubview:self.loadingLabel];
     [self.view addSubview:self.spinner];
-    
+    self.isLoadMetaFinished = NO;
+    self.loadMetaType = FILE_NAMES;
+    [self.restClient loadMetadata:@"/"];
     NSThread *newThread = [[NSThread alloc] initWithTarget:self selector:@selector(xlsxFileGenerateAndUpload:) object:sender];
 
     [newThread start];
@@ -327,6 +320,7 @@
     
     [spreadsheet saveAs:sheetPath];
     
+    while(!self.isLoadMetaFinished);
     NSString* filename = [self addTimeLineXlsxFileVersionNumber:1 OpponentName:opponentName];
     
     NSArray* agus = [[NSArray alloc] initWithObjects:filename, sheetPath, nil];
@@ -532,23 +526,33 @@
 
 -(void)restClient:(DBRestClient *)client loadedMetadata:(DBMetadata *)metadata
 {
+    
+    self.fileNamesInDropbox = [[NSMutableArray alloc] init];
     if(metadata.isDirectory)
     {
-        NSString* PPPxlsxFileName = [NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE];
-        for (DBMetadata *file in metadata.contents)
+        if(self.loadMetaType == PPP_GRADE)
         {
-            [self.fileNamesInDropbox addObject:file.filename];
-            if([file.filename isEqualToString:PPPxlsxFileName])
+            NSString* PPPxlsxFileName = [NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE];
+            for (DBMetadata *file in metadata.contents)
             {
-                self.isGradeXlsxFileExistInDropbox = YES;
-                NSString *sheetPath = [NSString stringWithFormat:@"%@/Documents/%@.xlsx", NSHomeDirectory(), NAME_OF_THE_FINAL_XLSX_FILE];
-                self.isDownloadXlsxFileFinished = NO;
-                [self.restClient loadFile:file.path atRev:nil intoPath:sheetPath];
+                [self.fileNamesInDropbox addObject:file.filename];
+                if([file.filename isEqualToString:PPPxlsxFileName])
+                {
+                    self.isGradeXlsxFileExistInDropbox = YES;
+                    NSString *sheetPath = [NSString stringWithFormat:@"%@/Documents/%@.xlsx", NSHomeDirectory(), NAME_OF_THE_FINAL_XLSX_FILE];
+                    self.isDownloadXlsxFileFinished = NO;
+                    [self.restClient loadFile:file.path atRev:nil intoPath:sheetPath];
+                }
             }
+            [self updateButtons];
+        }
+        else
+        {
+            for (DBMetadata *file in metadata.contents)
+                [self.fileNamesInDropbox addObject:file.filename];
         }
     }
     self.isLoadMetaFinished = YES;
-    [self updateButtons];
 }
 
 - (void)restClient:(DBRestClient *)client loadMetadataFailedWithError:(NSError *)error
