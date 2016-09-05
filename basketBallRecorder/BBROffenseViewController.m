@@ -489,6 +489,7 @@
         [newItem setObject:self.playerDataArray forKey:KEY_FOR_GRADE];
         [newItem setObject:self.playerNoSet forKey:KEY_FOR_PLAYER_NO_SET];
         [newItem setObject:self.recordName forKey:KEY_FOR_NAME];
+        [newItem setObject:self.opponentName forKey:KEY_FOR_OPPONENT_NAME];
         [newItem setObject:OFFENSE_TYPE_DATA forKey:KEY_FOR_DATA_TYPE];
         
         if([recordPlistArray count] < 5)
@@ -513,8 +514,8 @@
         [self.restClient loadMetadata:@"/"];
         
         [self.view addSubview:self.spinView];
-        [self.view addSubview:self.loadingLabel];
         [self.view addSubview:self.spinner];
+        [self.view addSubview:self.loadingLabel];
         
         [self performSelectorInBackground:@selector(xlsxFilesGenerateAndUpload:) withObject:[NSNumber numberWithInt:self.quarterNo]];
         self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] init];
@@ -692,7 +693,7 @@
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
 }
 
--(void) generateGradeXlsx:(NSNumber*) quarterNo
+-(void) generateGradeXlsx
 {
     while(!self.isLoadMetaFinished);
     NSString* xlsxFilePath;
@@ -833,7 +834,7 @@
         [[DBSession sharedSession] linkFromController:self];
     
     [self generateTimeLineXlsx:quarterNo];
-    [self generateGradeXlsx:quarterNo];
+    [self generateGradeXlsx];
 }
 
 -(BRAWorksheet*) lookForWorkSheetWithPlayerIndex:(int)index spreadSheet:(BRAOfficeDocumentPackage*)spreadSheet
@@ -2748,10 +2749,10 @@
 {
     self.isGradeXlsxFileExistInDropbox = NO;
     if(metadata.isDirectory)
+    {
+        NSString* PPPxlsxFileName = [NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE];
         for (DBMetadata *file in metadata.contents)
         {
-            NSLog(@"%@", file.filename);
-            NSString* PPPxlsxFileName = [NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE];
             if([file.filename isEqualToString:PPPxlsxFileName])
             {
                 self.isGradeXlsxFileExistInDropbox = YES;
@@ -2761,6 +2762,7 @@
                 break;
             }
         }
+    }
     self.isLoadMetaFinished = YES;
 }
 

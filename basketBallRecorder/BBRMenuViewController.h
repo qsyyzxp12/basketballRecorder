@@ -31,7 +31,9 @@
 @property NSArray* buttonArray;
 
 @property NSMutableArray* fileNamesInDropbox;
+@property BOOL isGradeXlsxFileExistInDropbox;
 @property BOOL isLoadMetaFinished;
+@property BOOL isDownloadXlsxFileFinished;
 
 @property UIAlertController* dirtyStatusAlert;
 @property BOOL isTmpPlistExist;

@@ -6,15 +6,15 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "basketBallRecorder/BBROffenseViewController.m"
-            timestampString = "494606907.78636"
+            timestampString = "494754677.927752"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "2783"
-            endingLineNumber = "2783"
+            startingLineNumber = "2777"
+            endingLineNumber = "2777"
             landmarkName = "-restClient:uploadedFile:from:metadata:"
             landmarkType = "5">
          </BreakpointContent>
