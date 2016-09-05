@@ -35,6 +35,7 @@ enum LoadMetaType {PPP_GRADE, FILE_NAMES};
 @property BOOL isGradeXlsxFileExistInDropbox;
 @property BOOL isLoadMetaFinished;
 @property BOOL isDownloadXlsxFileFinished;
+@property BOOL isUploadingDefenseXlsx;
 @property enum LoadMetaType loadMetaType;
 
 @property UIAlertController* dirtyStatusAlert;

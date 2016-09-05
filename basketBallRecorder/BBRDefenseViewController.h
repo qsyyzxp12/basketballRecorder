@@ -20,11 +20,13 @@
 @property NSMutableArray *playerOnFloorDataArray;
 @property NSMutableArray* playerDataArray;
 @property NSMutableArray* OldPlayerDataArray;
+@property NSMutableArray* fileNamesInDropbox;
 @property NSArray* defenseWayKeySet;
 @property NSArray* playerNoSet;
 @property BOOL isTmpPlistExist;
 @property BOOL isRecordMode;
 @property BOOL isTimerRunning;
+@property BOOL isLoadMetaFinished;
 @property int playerCount;
 @property int playerSelectedIndex;
 @property int quarterNo;
@@ -43,6 +45,9 @@
 @property UIButton* lastQuarterButton;
 @property UIButton* timeButton;
 @property NSTimer* timer;
+@property UIView* spinView;
+@property UILabel* loadingLabel;
+@property UIActivityIndicatorView* spinner;
 @property UIBarButtonItem* rightBarButton;
 @property (nonatomic, strong) DBRestClient *restClient;
 

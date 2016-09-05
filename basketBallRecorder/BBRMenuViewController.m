@@ -219,8 +219,17 @@
     int menuCount = (int)[recordPlistArray count];
     NSDictionary* dataDic = [recordPlistArray objectAtIndex:menuCount-(6-sender.tag)];
     
-    [self generateGradeXlsx:dataDic];
-    [self generateTimeLineXlsx:dataDic];
+    if([[dataDic objectForKey:KEY_FOR_DATA_TYPE] isEqualToString:OFFENSE_TYPE_DATA])
+    {
+        self.isUploadingDefenseXlsx = NO;
+        [self generateGradeXlsx:dataDic];
+        [self generateTimeLineXlsx:dataDic];
+    }
+    else
+    {
+        self.isUploadingDefenseXlsx = YES;
+        [self generateDefenseXlsx:dataDic];
+    }
 }
 
 -(void) uploadXlsxFile:(NSArray*) parameters
@@ -231,6 +240,114 @@
     }
     
     [self.restClient uploadFile:[parameters objectAtIndex:0] toPath:@"/" withParentRev:nil fromPath:[parameters objectAtIndex:1]];
+}
+
+-(void) generateDefenseXlsx:(NSDictionary*) dataDic
+{
+    //Generate the xlsx file
+    NSString *documentPath = [[NSBundle mainBundle] pathForResource:@"spreadsheet_for_defense" ofType:@"xlsx"];
+    NSArray* playerDataArray = [dataDic objectForKey:KEY_FOR_GRADE];
+    NSArray* playerNoSet = [dataDic objectForKey:KEY_FOR_PLAYER_NO_SET];
+    NSString* recordName = [dataDic objectForKey:KEY_FOR_NAME];
+    
+    NSArray* defenseWayKeySet = [[NSArray alloc] initWithObjects:@"Tip", @"CloseOut", @"StopBall", @"BLK", @"STL", @"8/24", @"DoubleTeam", @"LooseBall", @"OR", @"DR", @"ORTip", @"AST", @"TO", @"WIDEOPEN", @"NOBLOCKOUT", @"DEFASS", @"BlownBy", nil];
+    
+    BRAOfficeDocumentPackage *spreadsheet = [BRAOfficeDocumentPackage open:documentPath];
+    for(int i=0; i<playerDataArray.count; i++)
+    {
+        BRAWorksheet *worksheet;
+        if(i == [spreadsheet.workbook.worksheets count])
+        {
+            NSString* worksheetName;
+            switch (i)
+            {
+                case 1: worksheetName = @"第一節"; break;
+                case 2: worksheetName = @"第二節"; break;
+                case 3: worksheetName = @"第三節"; break;
+                case 4: worksheetName = @"第四節"; break;
+                case 5: worksheetName = @"延長賽第一節"; break;
+                case 6: worksheetName = @"延長賽第二節"; break;
+                case 7: worksheetName = @"延長賽第三節"; break;
+                case 8: worksheetName = @"延長賽第四節"; break;
+                case 9: worksheetName = @"延長賽第五節"; break;
+                case 10: worksheetName = @"延長賽第六節"; break;
+            }
+            worksheet = [spreadsheet.workbook createWorksheetNamed:worksheetName byCopyingWorksheet:spreadsheet.workbook.worksheets[0]];
+            [worksheet save];
+        }
+        else
+            worksheet = spreadsheet.workbook.worksheets[i];
+        
+        NSString* cellRef;
+        NSArray* totalGradeArray = [playerDataArray objectAtIndex:i];
+        for(int i=0; i<playerNoSet.count+1; i++)
+        {
+            char outIndex = '\0';
+            char interIndex = 'A';
+            cellRef = [NSString stringWithFormat:@"%c%c%d", outIndex, interIndex++, i+3];
+            if(i < playerNoSet.count)
+                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:playerNoSet[i]];
+            else
+                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:@"全隊"];
+            
+            NSDictionary* playerDataDic = [totalGradeArray objectAtIndex:i];
+            NSDictionary* deflectionDic = [playerDataDic objectForKey:KEY_FOR_DEFLECTION_DEFENSE_GRADE];
+            NSDictionary* goodDic = [playerDataDic objectForKey:KEY_FOR_GOOD_DEFENSE_GRADE];
+            NSDictionary* badDic = [playerDataDic objectForKey:KEY_FOR_BAD_DEFENSE_GRADE];
+            NSArray* dicArray = [NSArray arrayWithObjects:deflectionDic, goodDic, badDic, nil];
+            int top = 0;
+            for(int k=0; k<3; k++)
+            {
+                NSLog(@"%lu", (unsigned long)[dicArray[k] count]);
+                for(int l=0; l<[dicArray[k] count]-1; l++)
+                {
+                    NSString* gradeStr = [dicArray[k] objectForKey:defenseWayKeySet[top++]];
+                    if(interIndex == 91) // (int)'Z' == 90
+                    {
+                        if(outIndex != '\0')
+                            outIndex++;
+                        else
+                            outIndex = 'A';
+                        interIndex = 65;
+                    }
+                    cellRef = [NSString stringWithFormat:@"%c%c%d", outIndex, interIndex++, i+3];
+                    [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:gradeStr];
+                }
+            }
+            
+            int deflectionTotal = [[deflectionDic objectForKey:KEY_FOR_TOTAL_COUNT] intValue];
+            int goodTotal = deflectionTotal + [[goodDic objectForKey:KEY_FOR_TOTAL_COUNT] intValue];
+            int total = goodTotal - [[badDic objectForKey:KEY_FOR_TOTAL_COUNT] intValue];
+            
+            NSString* str = [NSString stringWithFormat:@"%d", total];
+            cellRef = [NSString stringWithFormat:@"S%d", i+3];
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:str];
+            
+            str = [NSString stringWithFormat:@"%d", deflectionTotal];
+            cellRef = [NSString stringWithFormat:@"T%d", i+3];
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:str];
+        }
+        
+    }
+    
+    //Save the xlsx to the app space in the device
+    NSString *sheetPath = [NSString stringWithFormat:@"%@/Documents/spreadsheet.xlsx", NSHomeDirectory()];
+    NSFileManager* fm = [[NSFileManager alloc] init];
+    
+    if([fm fileExistsAtPath:sheetPath])
+        [fm removeItemAtPath:sheetPath error:nil];
+    
+    [spreadsheet saveAs:sheetPath];
+    
+    //Dropbox
+    if (![[DBSession sharedSession] isLinked])
+        [[DBSession sharedSession] linkFromController:self];
+    
+    NSString* filename = [self addDefenseXlsxFileVersionNumber:1 recordName:recordName];
+    
+    NSArray* agus = [[NSArray alloc] initWithObjects:filename, sheetPath, nil];
+    [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
+    //  [self.restClient uploadFile:filename toPath:@"/" withParentRev:nil fromPath:sheetPath];
 }
 
 -(void) generateTimeLineXlsx:(NSDictionary*)dataDic
@@ -482,7 +599,6 @@
         fileName = [NSString stringWithFormat:@"%@_%@.xlsx", opponentName, [dateFormatter stringFromDate:[NSDate date]]];
     else
         fileName = [NSString stringWithFormat:@"%@_%@(%d).xlsx", opponentName, [dateFormatter stringFromDate:[NSDate date]], no];
-    
     for(NSString* fileNameInDropbox in self.fileNamesInDropbox)
     {
         if([fileName isEqualToString:fileNameInDropbox])
@@ -491,6 +607,20 @@
     return fileName;
 }
 
+-(NSString*) addDefenseXlsxFileVersionNumber:(int)no recordName:(NSString*) recordName
+{
+    NSString* fileName;
+    if(no == 1)
+        fileName = [NSString stringWithFormat:@"%@.xlsx", recordName];
+    else
+        fileName = [NSString stringWithFormat:@"%@(%d).xlsx", recordName, no];
+    for(NSString* fileNameInDropbox in self.fileNamesInDropbox)
+    {
+        if([fileName isEqualToString:fileNameInDropbox])
+            return [self addDefenseXlsxFileVersionNumber:no+1 recordName:recordName];
+    }
+    return fileName;
+}
 
 -(BRAWorksheet*) lookForWorkSheetWithPlayerIndex:(int)index spreadSheet:(BRAOfficeDocumentPackage*)spreadSheet platerNoArray:(NSArray*)playerNoSet
 {
@@ -567,7 +697,8 @@
 {
     NSLog(@"File uploaded successfully to path: %@", metadata.path);
     self.uploadFilesCount++;
-    if(self.uploadFilesCount == 2)
+    if((!self.isUploadingDefenseXlsx && self.uploadFilesCount == 2) ||
+       (self.isUploadingDefenseXlsx && self.uploadFilesCount == 1)   )
     {
         [self.spinView removeFromSuperview];
         [self.loadingLabel removeFromSuperview];

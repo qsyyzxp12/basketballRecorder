@@ -199,6 +199,13 @@
     }
     if(generateXlsxFile)
     {
+        self.isLoadMetaFinished = NO;
+        [self.restClient loadMetadata:@"/"];
+        
+        [self.view addSubview:self.spinView];
+        [self.view addSubview:self.spinner];
+        [self.view addSubview:self.loadingLabel];
+        
         [self performSelectorInBackground:@selector(xlsxFileGenerateAndUpload:) withObject:[NSNumber numberWithInt:self.quarterNo]];
         self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] init];
         self.navigationItem.leftBarButtonItem.title = @"＜選單";
@@ -352,6 +359,7 @@
     if (![[DBSession sharedSession] isLinked])
         [[DBSession sharedSession] linkFromController:self];
     
+    while(!self.isLoadMetaFinished);
     NSString* filename = [NSString stringWithFormat:@"%@.xlsx", self.recordName];
     
     NSArray* agus = [[NSArray alloc] initWithObjects:filename, sheetPath, nil];
@@ -363,6 +371,22 @@
 -(void) uploadXlsxFile:(NSArray*) parameters
 {
     [self.restClient uploadFile:[parameters objectAtIndex:0] toPath:@"/" withParentRev:nil fromPath:[parameters objectAtIndex:1]];
+}
+
+
+-(NSString*) addDefenseXlsxFileVersionNumber:(int)no
+{
+    NSString* fileName;
+    if(no == 1)
+        fileName = [NSString stringWithFormat:@"%@.xlsx", self.recordName];
+    else
+        fileName = [NSString stringWithFormat:@"%@(%d).xlsx", self.recordName, no];
+    for(NSString* fileNameInDropbox in self.fileNamesInDropbox)
+    {
+        if([fileName isEqualToString:fileNameInDropbox])
+            return [self addDefenseXlsxFileVersionNumber:no+1];
+    }
+    return fileName;
 }
 
 #pragma mark - DataStruct Updating
@@ -485,6 +509,13 @@
 
 
 #pragma mark - UI Updating
+
+-(void) removeSpinningView
+{
+    [self.spinView removeFromSuperview];
+    [self.loadingLabel removeFromSuperview];
+    [self.spinner removeFromSuperview];
+}
 
 -(void)timeCounterChange
 {
@@ -703,6 +734,20 @@
     [self.nextQuarterButton addTarget:self action:@selector(gradeOfNextQuaterButtonClicked) forControlEvents:UIControlEventTouchUpInside];
     self.nextQuarterButton.hidden = YES;
     [self.view addSubview:self.nextQuarterButton];
+    
+    self.spinView = [[UIView alloc] initWithFrame:self.view.frame];
+    self.spinView.backgroundColor = [UIColor grayColor];
+    self.spinView.alpha = 0.8;
+    
+    self.loadingLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMidX(self.spinView.frame)-50, CGRectGetMidY(self.spinView.frame)-15, 100, 30)];
+    self.loadingLabel.backgroundColor = [UIColor whiteColor];
+    self.loadingLabel.textAlignment = NSTextAlignmentCenter;
+    self.loadingLabel.text = @"Loading";
+    
+    self.spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    self.spinner.frame = CGRectMake(CGRectGetMinX(self.loadingLabel.frame), CGRectGetMaxY(self.loadingLabel.frame), 100, 30);
+    self.spinner.backgroundColor = [UIColor whiteColor];
+    [self.spinner startAnimating];
 }
 
 #pragma mark - Button Clicked
@@ -1147,9 +1192,26 @@
 
 #pragma mark - DBRestClientDelegate
 
+-(void)restClient:(DBRestClient *)client loadedMetadata:(DBMetadata *)metadata
+{
+    self.fileNamesInDropbox = [[NSMutableArray alloc] init];
+    if(metadata.isDirectory)
+    {
+        for (DBMetadata *file in metadata.contents)
+            [self.fileNamesInDropbox addObject:file.filename];
+    }
+    self.isLoadMetaFinished = YES;
+}
+
+- (void)restClient:(DBRestClient *)client loadMetadataFailedWithError:(NSError *)error
+{
+    NSLog(@"Error loading metadata: %@", error);
+}
+
 - (void)restClient:(DBRestClient *)client uploadedFile:(NSString *)destPath
               from:(NSString *)srcPath metadata:(DBMetadata *)metadata {
     NSLog(@"File uploaded successfully to path: %@", metadata.path);
+    [self performSelectorOnMainThread:@selector(removeSpinningView) withObject:nil waitUntilDone:NO];
 }
 
 - (void)restClient:(DBRestClient *)client uploadFileFailedWithError:(NSError *)error {
