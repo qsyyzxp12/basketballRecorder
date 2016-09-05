@@ -689,7 +689,7 @@
     
     [spreadsheet saveAs:sheetPath];
     
-    NSString* filename = [NSString stringWithFormat:@"%@.xlsx", self.opponentName];
+    NSString* filename = [self addTimeLineXlsxFileVersionNumber:1];
     
     NSArray* agus = [[NSArray alloc] initWithObjects:filename, sheetPath, nil];
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
@@ -827,6 +827,23 @@
     
     NSArray* agus = [[NSArray alloc] initWithObjects:filename, sheetPath, nil];
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
+}
+
+-(NSString*) addTimeLineXlsxFileVersionNumber:(int)no
+{
+    NSString* fileName;
+    if(no == 1)
+        fileName = [NSString stringWithFormat:@"%@.xlsx", self.opponentName];
+    else
+        fileName = [NSString stringWithFormat:@"%@(%d).xlsx", self.opponentName, no];
+    
+    for(NSString* fileNameInDropbox in self.fileNamesInDropbox)
+    {
+        NSLog(@"%@, %@, %d", fileName, fileNameInDropbox, [fileName isEqualToString:fileNameInDropbox]);
+        if([fileName isEqualToString:fileNameInDropbox])
+            return [self addTimeLineXlsxFileVersionNumber:no+1];
+    }
+    return fileName;
 }
 
 -(void) xlsxFilesGenerateAndUpload
@@ -2749,19 +2766,20 @@
 
 -(void)restClient:(DBRestClient *)client loadedMetadata:(DBMetadata *)metadata
 {
+    self.fileNamesInDropbox = [[NSMutableArray alloc] init];
     self.isGradeXlsxFileExistInDropbox = NO;
     if(metadata.isDirectory)
     {
         NSString* PPPxlsxFileName = [NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE];
         for (DBMetadata *file in metadata.contents)
         {
+            [self.fileNamesInDropbox addObject:file.filename];
             if([file.filename isEqualToString:PPPxlsxFileName])
             {
                 self.isGradeXlsxFileExistInDropbox = YES;
                 NSString *sheetPath = [NSString stringWithFormat:@"%@/Documents/%@.xlsx", NSHomeDirectory(), NAME_OF_THE_FINAL_XLSX_FILE];
                 self.isDownloadXlsxFileFinished = NO;
                 [self.restClient loadFile:file.path intoPath:sheetPath];
-                break;
             }
         }
     }

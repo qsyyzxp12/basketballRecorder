@@ -327,7 +327,7 @@
     
     [spreadsheet saveAs:sheetPath];
     
-    NSString* filename = [NSString stringWithFormat:@"%@.xlsx", opponentName];
+    NSString* filename = [self addTimeLineXlsxFileVersionNumber:1 OpponentName:opponentName];
     
     NSArray* agus = [[NSArray alloc] initWithObjects:filename, sheetPath, nil];
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
@@ -479,6 +479,23 @@
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
 }
 
+-(NSString*) addTimeLineXlsxFileVersionNumber:(int)no OpponentName:(NSString*) opponentName
+{
+    NSString* fileName;
+    if(no == 1)
+        fileName = [NSString stringWithFormat:@"%@.xlsx", opponentName];
+    else
+        fileName = [NSString stringWithFormat:@"%@(%d).xlsx", opponentName, no];
+    
+    for(NSString* fileNameInDropbox in self.fileNamesInDropbox)
+    {
+        if([fileName isEqualToString:fileNameInDropbox])
+            return [self addTimeLineXlsxFileVersionNumber:no+1 OpponentName:opponentName];
+    }
+    return fileName;
+}
+
+
 -(BRAWorksheet*) lookForWorkSheetWithPlayerIndex:(int)index spreadSheet:(BRAOfficeDocumentPackage*)spreadSheet platerNoArray:(NSArray*)playerNoSet
 {
     if(index == playerNoSet.count)
@@ -527,7 +544,6 @@
                 NSString *sheetPath = [NSString stringWithFormat:@"%@/Documents/%@.xlsx", NSHomeDirectory(), NAME_OF_THE_FINAL_XLSX_FILE];
                 self.isDownloadXlsxFileFinished = NO;
                 [self.restClient loadFile:file.path atRev:nil intoPath:sheetPath];
-                break;
             }
         }
     }

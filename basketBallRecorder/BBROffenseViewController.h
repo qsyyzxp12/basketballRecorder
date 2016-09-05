@@ -20,6 +20,7 @@
 @property NSMutableArray* playerDataArray;
 @property NSMutableArray* OldPlayerDataArray;
 @property NSMutableArray* timeLineReordeArray;
+@property NSMutableArray* fileNamesInDropbox;
 @property NSArray* attackWaySet;
 @property NSArray* attackWayKeySet;
 @property NSArray* playerNoSet;
