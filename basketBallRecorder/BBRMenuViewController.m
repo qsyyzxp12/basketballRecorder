@@ -475,11 +475,13 @@
 
 -(NSString*) addTimeLineXlsxFileVersionNumber:(int)no OpponentName:(NSString*) opponentName
 {
+    NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"YYYY-MM-dd"];
     NSString* fileName;
     if(no == 1)
-        fileName = [NSString stringWithFormat:@"%@.xlsx", opponentName];
+        fileName = [NSString stringWithFormat:@"%@_%@.xlsx", opponentName, [dateFormatter stringFromDate:[NSDate date]]];
     else
-        fileName = [NSString stringWithFormat:@"%@(%d).xlsx", opponentName, no];
+        fileName = [NSString stringWithFormat:@"%@_%@(%d).xlsx", opponentName, [dateFormatter stringFromDate:[NSDate date]], no];
     
     for(NSString* fileNameInDropbox in self.fileNamesInDropbox)
     {
