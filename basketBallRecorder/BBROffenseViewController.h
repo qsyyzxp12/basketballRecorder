@@ -37,8 +37,7 @@
 @property BOOL isGradeXlsxFileExistInDropbox;
 @property BOOL isLoadMetaFinished;
 @property BOOL isDownloadXlsxFileFinished;
-@property BOOL isPPPGradeXlsxUploadFinished;
-@property BOOL isTimeLineXlsxUploadFinished;
+@property int uploadFilesCount;
 @property int playerCount;
 @property int playerSelectedIndex;
 @property int zoneNo;

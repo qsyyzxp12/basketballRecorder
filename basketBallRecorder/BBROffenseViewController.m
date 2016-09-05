@@ -30,6 +30,7 @@
     self.quarterNo = 1;
     self.timeCounter = 0;
     self.attackWayNo = 0;
+    self.uploadFilesCount = 0;
     
     self.restClient = [[DBRestClient alloc] initWithSession:[DBSession sharedSession]];
     self.restClient.delegate = self;
@@ -490,6 +491,7 @@
         [newItem setObject:self.playerNoSet forKey:KEY_FOR_PLAYER_NO_SET];
         [newItem setObject:self.recordName forKey:KEY_FOR_NAME];
         [newItem setObject:self.opponentName forKey:KEY_FOR_OPPONENT_NAME];
+        [newItem setObject:self.timeLineReordeArray forKey:KEY_FOR_TIMELINE];
         [newItem setObject:OFFENSE_TYPE_DATA forKey:KEY_FOR_DATA_TYPE];
         
         if([recordPlistArray count] < 5)
@@ -517,7 +519,7 @@
         [self.view addSubview:self.spinner];
         [self.view addSubview:self.loadingLabel];
         
-        [self performSelectorInBackground:@selector(xlsxFilesGenerateAndUpload:) withObject:[NSNumber numberWithInt:self.quarterNo]];
+        [self performSelectorInBackground:@selector(xlsxFilesGenerateAndUpload) withObject:[NSNumber numberWithInt:self.quarterNo]];
         self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] init];
         self.navigationItem.leftBarButtonItem.title = @"＜選單";
         self.navigationItem.leftBarButtonItem.target = self;
@@ -602,7 +604,7 @@
     return [NSString stringWithFormat:@"%c%c%d", *outIndex, *interIndex, rowIndex];
 }
 
--(void) generateTimeLineXlsx:(NSNumber*) quarterNo
+-(void) generateTimeLineXlsx
 {
     NSString* orgDocumentPath = [[NSBundle mainBundle] pathForResource:@"spreadsheet_for_timeLine" ofType:@"xlsx"];
     BRAOfficeDocumentPackage *spreadsheet = [BRAOfficeDocumentPackage open:orgDocumentPath];
@@ -827,13 +829,13 @@
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
 }
 
--(void) xlsxFilesGenerateAndUpload: (NSNumber*) quarterNo
+-(void) xlsxFilesGenerateAndUpload
 {
     //Dropbox
     if (![[DBSession sharedSession] isLinked])
         [[DBSession sharedSession] linkFromController:self];
     
-    [self generateTimeLineXlsx:quarterNo];
+    [self generateTimeLineXlsx];
     [self generateGradeXlsx];
 }
 
@@ -2775,13 +2777,9 @@
               from:(NSString *)srcPath metadata:(DBMetadata *)metadata
 {
     NSLog(@"File uploaded successfully to path: %@", metadata.path);
+    self.uploadFilesCount++;
     
-    if([metadata.path isEqualToString:[NSString stringWithFormat:@"/%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE]])
-        self.isPPPGradeXlsxUploadFinished = YES;
-    else if([metadata.path isEqualToString:[NSString stringWithFormat:@"/%@.xlsx", self.opponentName]])
-        self.isTimeLineXlsxUploadFinished = YES;
-    
-    if(self.isPPPGradeXlsxUploadFinished && self.isTimeLineXlsxUploadFinished)
+    if(self.uploadFilesCount == 2)
         [self performSelectorOnMainThread:@selector(removeSpinningView) withObject:nil waitUntilDone:NO];
 }
 

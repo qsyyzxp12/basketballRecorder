@@ -220,7 +220,14 @@
 
 -(void) xlsxFileGenerateAndUpload:(UIButton*) sender
 {
-    [self generateGradeXlsx:sender.tag];
+    NSString* recordPlistPath = [NSString stringWithFormat:@"%@/Documents/record.plist", NSHomeDirectory()];
+    NSArray* recordPlistArray = [NSArray arrayWithContentsOfFile:recordPlistPath];
+    
+    int menuCount = (int)[recordPlistArray count];
+    NSDictionary* dataDic = [recordPlistArray objectAtIndex:menuCount-(6-sender.tag)];
+    
+    [self generateGradeXlsx:dataDic];
+    [self generateTimeLineXlsx:dataDic];
 }
 
 -(void) uploadXlsxFile:(NSArray*) parameters
@@ -233,7 +240,100 @@
     [self.restClient uploadFile:[parameters objectAtIndex:0] toPath:@"/" withParentRev:nil fromPath:[parameters objectAtIndex:1]];
 }
 
--(void) generateGradeXlsx:(NSInteger)buttonTag
+-(void) generateTimeLineXlsx:(NSDictionary*)dataDic
+{
+    NSArray* timeLineRecordArray = [dataDic objectForKey:KEY_FOR_TIMELINE];
+    NSString* opponentName = [dataDic objectForKey:KEY_FOR_OPPONENT_NAME];
+    NSString* orgDocumentPath = [[NSBundle mainBundle] pathForResource:@"spreadsheet_for_timeLine" ofType:@"xlsx"];
+    BRAOfficeDocumentPackage *spreadsheet = [BRAOfficeDocumentPackage open:orgDocumentPath];
+    BRAWorksheet *worksheet = spreadsheet.workbook.worksheets[0];
+    
+    char outIndex = '\0';
+    char interIndex = 'A';
+    int rowIndex = 2;
+    NSString* cellRef = [NSString stringWithFormat:@"%c%c%d", outIndex, interIndex, rowIndex];
+    
+    for(NSMutableDictionary* quarterDic in timeLineRecordArray)
+    {
+        NSString* playersOnFloorStr = [quarterDic objectForKey:KEY_FOR_PLAYER_ON_FLOOR];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:playersOnFloorStr];
+        
+        NSArray* timeLineRecordArray = [quarterDic objectForKey:KEY_FOR_TIME_LINE_DATA];
+        
+        int rowI = rowIndex+1;
+        int holdBallCount = 0;
+        char outI = outIndex;
+        char interI = interIndex;
+        for(NSDictionary* eventDic in timeLineRecordArray)
+        {
+            outI =  outIndex;
+            interI = interIndex;
+            if([[eventDic objectForKey:KEY_FOR_TYPE] isEqualToString:SIGNAL_FOR_NON_EXCHANGE])
+            {
+                cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+                NSString* playerNoStr = [eventDic objectForKey:KEY_FOR_PLAYER_NO];
+                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:playerNoStr];
+                
+                cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+                NSString* attackWayStr = [eventDic objectForKey:KEY_FOR_ATTACK_WAY];
+                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:attackWayStr];
+                
+                cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+                NSString* detailStr = [eventDic objectForKey:KEY_FOR_DETAIL];
+                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:detailStr];
+                
+                cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+                NSString* resultStr = [eventDic objectForKey:KEY_FOR_RESULT];
+                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:resultStr];
+                
+                cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+                if([resultStr isEqualToString:SIGNAL_FOR_FOUL] || [resultStr isEqualToString:SIGNAL_FOR_AND_ONE])
+                {
+                    NSString* bonusStr = [eventDic objectForKey:KEY_FOR_BONUS];
+                    [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:bonusStr];
+                }
+                
+                cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+                NSString* ptsStr = [eventDic objectForKey:KEY_FOR_PTS];
+                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:ptsStr];
+                holdBallCount++;
+            }
+            else
+            {
+                NSString* result = [eventDic objectForKey:KEY_FOR_RESULT];
+                cellRef = [NSString stringWithFormat:@"%c%c%d", outI, interI, rowI];
+                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:result];
+            }
+            rowI++;
+        }
+        
+        cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:@"持球數"];
+        
+        cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+        NSString* holdBallCountStr = [NSString stringWithFormat:@"%d", holdBallCount];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:holdBallCountStr];
+        
+        for(int i=0; i<8; i++)
+            cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowIndex];
+    }
+    
+    //Save the xlsx to the app space in the device
+    NSString *sheetPath = [NSString stringWithFormat:@"%@/Documents/spreadsheet_for_timeLine.xlsx", NSHomeDirectory()];
+    NSFileManager* fm = [[NSFileManager alloc] init];
+    
+    if([fm fileExistsAtPath:sheetPath])
+        [fm removeItemAtPath:sheetPath error:nil];
+    
+    [spreadsheet saveAs:sheetPath];
+    
+    NSString* filename = [NSString stringWithFormat:@"%@.xlsx", opponentName];
+    
+    NSArray* agus = [[NSArray alloc] initWithObjects:filename, sheetPath, nil];
+    [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
+}
+
+-(void) generateGradeXlsx:(NSDictionary*)dataDic
 {
     NSString* xlsxFilePath;
     if(self.isGradeXlsxFileExistInDropbox)
@@ -244,11 +344,6 @@
     else
         xlsxFilePath = [[NSBundle mainBundle] pathForResource:NAME_OF_THE_FINAL_XLSX_FILE ofType:@"xlsx"];
     
-    NSString* recordPlistPath = [NSString stringWithFormat:@"%@/Documents/record.plist", NSHomeDirectory()];
-    NSArray* recordPlistArray = [NSArray arrayWithContentsOfFile:recordPlistPath];
-    
-    int menuCount = (int)[recordPlistArray count];
-    NSDictionary* dataDic = [recordPlistArray objectAtIndex:menuCount-(6-buttonTag)];
     NSArray* playerNoSet = [dataDic objectForKey:KEY_FOR_PLAYER_NO_SET];
     NSString* opponentName = [dataDic objectForKey:KEY_FOR_OPPONENT_NAME];
     NSArray* playerDataArray =[dataDic objectForKey:KEY_FOR_GRADE];
@@ -449,9 +544,14 @@
               from:(NSString *)srcPath metadata:(DBMetadata *)metadata
 {
     NSLog(@"File uploaded successfully to path: %@", metadata.path);
-    [self.spinView removeFromSuperview];
-    [self.loadingLabel removeFromSuperview];
-    [self.spinner removeFromSuperview];
+    self.uploadFilesCount++;
+    if(self.uploadFilesCount == 2)
+    {
+        [self.spinView removeFromSuperview];
+        [self.loadingLabel removeFromSuperview];
+        [self.spinner removeFromSuperview];
+        self.uploadFilesCount = 0;
+    }
 }
 
 - (void)restClient:(DBRestClient *)client uploadFileFailedWithError:(NSError *)error

@@ -39,6 +39,7 @@
 @property BOOL isTmpPlistExist;
 @property int buttonClickedNo;
 @property int showOldRecordNo;
+@property int uploadFilesCount;
 
 @property (nonatomic, strong) DBRestClient *restClient;
 @end
