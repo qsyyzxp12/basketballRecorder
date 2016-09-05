@@ -234,12 +234,15 @@
 
 -(void) uploadXlsxFile:(NSArray*) parameters
 {
-    if([parameters[0] isEqualToString:[NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE]] && self.isGradeXlsxFileExistInDropbox)
+    if([parameters[0] isEqualToString:[NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE]])
     {
-        [self.restClient deletePath:[NSString stringWithFormat:@"/%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE]];
+        if(self.isGradeXlsxFileExistInDropbox)
+            [self.restClient deletePath:[NSString stringWithFormat:@"/%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE]];
+        else
+            [self.restClient uploadFile:[parameters objectAtIndex:0] toPath:@"/" withParentRev:nil fromPath:[parameters objectAtIndex:1]];
     }
-    
-    [self.restClient uploadFile:[parameters objectAtIndex:0] toPath:@"/" withParentRev:nil fromPath:[parameters objectAtIndex:1]];
+    else
+        [self.restClient uploadFile:[parameters objectAtIndex:0] toPath:@"/" withParentRev:nil fromPath:[parameters objectAtIndex:1]];
 }
 
 -(void) generateDefenseXlsx:(NSDictionary*) dataDic
@@ -353,7 +356,7 @@
 -(void) generateTimeLineXlsx:(NSDictionary*)dataDic
 {
     NSArray* timeLineRecordArray = [dataDic objectForKey:KEY_FOR_TIMELINE];
-    NSString* opponentName = [dataDic objectForKey:KEY_FOR_OPPONENT_NAME];
+    NSString* name = [dataDic objectForKey:KEY_FOR_NAME];
     NSString* orgDocumentPath = [[NSBundle mainBundle] pathForResource:@"spreadsheet_for_timeLine" ofType:@"xlsx"];
     BRAOfficeDocumentPackage *spreadsheet = [BRAOfficeDocumentPackage open:orgDocumentPath];
     BRAWorksheet *worksheet = spreadsheet.workbook.worksheets[0];
@@ -438,7 +441,7 @@
     [spreadsheet saveAs:sheetPath];
     
     while(!self.isLoadMetaFinished);
-    NSString* filename = [self addTimeLineXlsxFileVersionNumber:1 OpponentName:opponentName];
+    NSString* filename = [self addTimeLineXlsxFileVersionNumber:1 name:name];
     
     NSArray* agus = [[NSArray alloc] initWithObjects:filename, sheetPath, nil];
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
@@ -590,19 +593,17 @@
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
 }
 
--(NSString*) addTimeLineXlsxFileVersionNumber:(int)no OpponentName:(NSString*) opponentName
+-(NSString*) addTimeLineXlsxFileVersionNumber:(int)no name:(NSString*) name
 {
-    NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"YYYY-MM-dd"];
     NSString* fileName;
     if(no == 1)
-        fileName = [NSString stringWithFormat:@"%@_%@.xlsx", opponentName, [dateFormatter stringFromDate:[NSDate date]]];
+        fileName = [NSString stringWithFormat:@"%@.xlsx", name];
     else
-        fileName = [NSString stringWithFormat:@"%@_%@(%d).xlsx", opponentName, [dateFormatter stringFromDate:[NSDate date]], no];
+        fileName = [NSString stringWithFormat:@"%@(%d).xlsx", name, no];
     for(NSString* fileNameInDropbox in self.fileNamesInDropbox)
     {
         if([fileName isEqualToString:fileNameInDropbox])
-            return [self addTimeLineXlsxFileVersionNumber:no+1 OpponentName:opponentName];
+            return [self addTimeLineXlsxFileVersionNumber:no+1 name:name];
     }
     return fileName;
 }
@@ -722,6 +723,20 @@
 - (void)restClient:(DBRestClient *)client loadFileFailedWithError:(NSError *)error {
     NSLog(@"There was an error loading the file: %@", error);
 }
+
+- (void)restClient:(DBRestClient *)client deletedPath:(NSString *)path
+{
+    NSLog(@"FILE deleted in Path:%@", path);
+    NSString *sheetPath = [NSString stringWithFormat:@"%@/Documents/%@.xlsx", NSHomeDirectory(), NAME_OF_THE_FINAL_XLSX_FILE];
+    NSString* filename = [NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE];
+    [self.restClient uploadFile:filename toPath:@"/" withParentRev:nil fromPath:sheetPath];
+}
+
+-(void)restClient:(DBRestClient *)client deletePathFailedWithError:(NSError *)error
+{
+    NSLog(@"File deleted: %@", error);
+}
+
 /*
 #pragma mark - Navigation
 

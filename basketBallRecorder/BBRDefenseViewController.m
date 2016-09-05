@@ -314,7 +314,6 @@
             int top = 0;
             for(int k=0; k<3; k++)
             {
-                NSLog(@"%lu", (unsigned long)[dicArray[k] count]);
                 for(int l=0; l<[dicArray[k] count]-1; l++)
                 {
                     NSString* gradeStr = [dicArray[k] objectForKey:self.defenseWayKeySet[top++]];
@@ -1097,10 +1096,7 @@
         label.text = @"Deflection";
         NSMutableDictionary* deflectionDic = [playerData objectForKey:KEY_FOR_DEFLECTION_DEFENSE_GRADE];
         if(self.playerSelectedIndex)
-        {
             gradeValueLabel.text = [deflectionDic objectForKey:KEY_FOR_TOTAL_COUNT];
-            NSLog(@"%@", deflectionDic);
-        }
         else
             gradeValueLabel.text = @"0";
         [cell addSubview:gradeValueLabel];

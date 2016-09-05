@@ -831,17 +831,14 @@
 
 -(NSString*) addTimeLineXlsxFileVersionNumber:(int)no
 {
-    NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"YYYY-MM-dd"];
     NSString* fileName;
     if(no == 1)
-        fileName = [NSString stringWithFormat:@"%@_%@.xlsx", self.opponentName, [dateFormatter stringFromDate:[NSDate date]]];
+        fileName = [NSString stringWithFormat:@"%@.xlsx", self.recordName];
     else
-        fileName = [NSString stringWithFormat:@"%@_%@(%d).xlsx", self.opponentName, [dateFormatter stringFromDate:[NSDate date]], no];
+        fileName = [NSString stringWithFormat:@"%@(%d).xlsx", self.recordName, no];
     
     for(NSString* fileNameInDropbox in self.fileNamesInDropbox)
     {
-        NSLog(@"%@, %@, %d", fileName, fileNameInDropbox, [fileName isEqualToString:fileNameInDropbox]);
         if([fileName isEqualToString:fileNameInDropbox])
             return [self addTimeLineXlsxFileVersionNumber:no+1];
     }
@@ -878,11 +875,15 @@
 
 -(void) uploadXlsxFile:(NSArray*) parameters
 {
-    if([parameters[0] isEqualToString:[NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE]] && self.isGradeXlsxFileExistInDropbox)
+    if([parameters[0] isEqualToString:[NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE]])
     {
-        [self.restClient deletePath:[NSString stringWithFormat:@"/%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE]];
+        if(self.isGradeXlsxFileExistInDropbox)
+            [self.restClient deletePath:[NSString stringWithFormat:@"/%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE]];
+        else
+            [self.restClient uploadFile:[parameters objectAtIndex:0] toPath:@"/" withParentRev:nil fromPath:[parameters objectAtIndex:1]];
     }
-    [self.restClient uploadFile:[parameters objectAtIndex:0] toPath:@"/" withParentRev:nil fromPath:[parameters objectAtIndex:1]];
+    else
+        [self.restClient uploadFile:[parameters objectAtIndex:0] toPath:@"/" withParentRev:nil fromPath:[parameters objectAtIndex:1]];
 }
 
 #pragma mark - DataStruct Updating
@@ -903,7 +904,6 @@
             [totalDic setObject:[NSString stringWithFormat:@"%d", holdBallCount+1] forKey:KEY_FOR_HOLD_BALL_COUNT];
         }
     }
-
 }
 
 -(void) pushExchangeEventIntoTimeLineWithUpPlayerNo:(NSString*)upNo downPlayerNo:(NSString*)downNo
@@ -2821,7 +2821,11 @@
 - (void)restClient:(DBRestClient *)client deletedPath:(NSString *)path
 {
     NSLog(@"FILE deleted in Path:%@", path);
+    NSString *sheetPath = [NSString stringWithFormat:@"%@/Documents/%@.xlsx", NSHomeDirectory(), NAME_OF_THE_FINAL_XLSX_FILE];
+    NSString* filename = [NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE];
+    [self.restClient uploadFile:filename toPath:@"/" withParentRev:nil fromPath:sheetPath];
 }
+
 -(void)restClient:(DBRestClient *)client deletePathFailedWithError:(NSError *)error
 {
     NSLog(@"File deleted: %@", error);
