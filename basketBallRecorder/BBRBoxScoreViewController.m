@@ -34,14 +34,14 @@
     self.isRecordMode = YES;
     self.isTimerRunning = NO;
     self.playerSelectedIndex = 0;
-    self.defenseButtonNo = 0;
+    self.buttonNo = 0;
     self.quarterNo = 1;
     self.timeCounter = 0;
     
     self.restClient = [[DBRestClient alloc] initWithSession:[DBSession sharedSession]];
     self.restClient.delegate = self;
     
-    self.itemWayKeySet = [[NSArray alloc] initWithObjects:KEY_FOR_2_PTS, KEY_FOR_3_PTS, KEY_FOR_FREE_THROW, KEY_FOR_OR, KEY_FOR_DR, KEY_FOR_ASSIST, KEY_FOR_STEAL, KEY_FOR_BLOCK, KEY_FOR_TO, KEY_FOR_FOUL, KEY_FOR_TIME, nil];
+    self.itemWayKeySet = [[NSArray alloc] initWithObjects:KEY_FOR_2_PTS, KEY_FOR_3_PTS, KEY_FOR_FREE_THROW, KEY_FOR_OR, KEY_FOR_DR, KEY_FOR_ASSIST, KEY_FOR_STEAL, KEY_FOR_BLOCK, KEY_FOR_TO, KEY_FOR_FOUL, KEY_FOR_TOTAL_TIME_ON_FLOOR, nil];
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] init];
     self.navigationItem.rightBarButtonItem.title = @"本節結束";
@@ -390,7 +390,7 @@
 
 #pragma mark - DataStruct Updating
 
--(void) updateDefenseGrade
+-(void) updateGrade
 {
     self.OldPlayerDataArray = [NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:self.playerDataArray]];
     // first for the quarter grade, the last is for the overall grade
@@ -402,21 +402,27 @@
         NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:quarterNo[i]];
         for(int j=0; j<2; j++)
         {
-            NSMutableDictionary* gardeDic = [quarterGrade objectAtIndex:playerNo[j]];
-            int tag = self.defenseButtonNo - 20;
-            NSMutableDictionary* Dic;
-            if(tag < 8)         //Deflection
-                Dic = [gardeDic objectForKey:KEY_FOR_DEFLECTION_DEFENSE_GRADE];
-            else if(tag < 12)   //Good
-                Dic = [gardeDic objectForKey:KEY_FOR_GOOD_DEFENSE_GRADE];
-            else                //Bad
-                Dic = [gardeDic objectForKey:KEY_FOR_BAD_DEFENSE_GRADE];
-            
-   //         int value = [[Dic objectForKey:self.defenseWayKeySet[tag]] intValue] + 1;
-     //       [Dic setObject:[NSString stringWithFormat:@"%d", value] forKey:self.defenseWayKeySet[tag]];
-            
-            int totalVal = [[Dic objectForKey:KEY_FOR_TOTAL_COUNT] intValue] + 1;
-            [Dic setObject:[NSString stringWithFormat:@"%d", totalVal] forKey:KEY_FOR_TOTAL_COUNT];
+            NSMutableDictionary* gradeDic = [quarterGrade objectAtIndex:playerNo[j]];
+            int tag = self.buttonNo - 20;
+            if(tag < 6)
+            {
+                NSMutableDictionary* madeOrAttemptDic =[gradeDic objectForKey:self.itemWayKeySet[tag/2]];
+                int attemptCount = [[madeOrAttemptDic objectForKey:KEY_FOR_ATTEMPT_COUNT] intValue] + 1;
+                [madeOrAttemptDic setObject:[NSString stringWithFormat:@"%d", attemptCount] forKey:KEY_FOR_ATTEMPT_COUNT];
+                if(tag%2)
+                {
+                    int madeCount = [[madeOrAttemptDic objectForKey:KEY_FOR_MADE_COUNT] intValue]+1;
+                    [madeOrAttemptDic setObject:[NSString stringWithFormat:@"%d", madeCount] forKey:KEY_FOR_MADE_COUNT];
+                    int totalPts = [[gradeDic objectForKey:KEY_FOR_TOTAL_SCORE_GET] intValue];
+                    totalPts += (((tag/2)+1)%3)+1;
+                    [gradeDic setObject:[NSString stringWithFormat:@"%d", totalPts] forKey:KEY_FOR_TOTAL_SCORE_GET];
+                }
+            }
+            else
+            {
+                int val = [[gradeDic objectForKey:self.itemWayKeySet[tag-3]] intValue] + 1;
+                [gradeDic setObject:[NSString stringWithFormat:@"%d", val] forKey:self.itemWayKeySet[tag-3]];
+            }
         }
     }
     [self updateTmpPlist];
@@ -437,6 +443,7 @@
     NSMutableArray* playerAllGameGrade = [self.playerDataArray objectAtIndex:0];
     playerData = [playerAllGameGrade objectAtIndex:indexInPPPTableviewNo.intValue-1];
     time = timeOnFloor + ((NSNumber*)[playerData objectForKey:KEY_FOR_TOTAL_TIME_ON_FLOOR]).intValue;
+    
     [playerData setObject:[NSNumber numberWithInt:time] forKey:KEY_FOR_TOTAL_TIME_ON_FLOOR];
     [self updateTmpPlist];
 }
@@ -614,33 +621,32 @@
     
     NSArray* titleArray = [NSArray arrayWithObjects:@"2PTS", @"3PTS", @"Free Throw", nil];
 
+    int tag = 20;
     for(int i=0; i<titleArray.count; i++)
     {
         UILabel* titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, i*70, 100, 25)];
         titleLabel.text = titleArray[i];
-        //titleLabel.textAlignment = NSTextAlignmentCenter;
-       // titleLabel.layer.borderWidth = 1;
         [self.defenseRecordeView addSubview:titleLabel];
         
         UIButton* attemptButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetMinX(titleLabel.frame), CGRectGetMaxY(titleLabel.frame), 60, 40)];
         [attemptButton setTitle:@"Attempt" forState:UIControlStateNormal];
         [attemptButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-        attemptButton.tag = 0;
+        attemptButton.tag = tag++;
         attemptButton.layer.borderWidth = 1;
         attemptButton.titleLabel.textAlignment = NSTextAlignmentCenter;
         attemptButton.titleLabel.adjustsFontSizeToFitWidth = YES;
-        [attemptButton addTarget:self action:@selector(defenseButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
+        [attemptButton addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
         [attemptButton setShowsTouchWhenHighlighted:YES];
         [self.defenseRecordeView addSubview:attemptButton];
         
         UIButton* madeButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetMaxX(attemptButton.frame), CGRectGetMinY(attemptButton.frame), 60, 40)];
         [madeButton setTitle:@"Made" forState:UIControlStateNormal];
         [madeButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-        madeButton.tag = 0;
+        madeButton.tag = tag++;
         madeButton.layer.borderWidth = 1;
         madeButton.titleLabel.textAlignment = NSTextAlignmentCenter;
         madeButton.titleLabel.adjustsFontSizeToFitWidth = YES;
-        [madeButton addTarget:self action:@selector(defenseButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
+        [madeButton addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
         [madeButton setShowsTouchWhenHighlighted:YES];
         [self.defenseRecordeView addSubview:madeButton];
     }
@@ -648,22 +654,22 @@
     UIButton* orButton = [[UIButton alloc] initWithFrame:CGRectMake(180, 25, 60, 40)];
     [orButton setTitle:@"OR" forState:UIControlStateNormal];
     [orButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    orButton.tag = 0;
+    orButton.tag = tag++;
     orButton.layer.borderWidth = 1;
     orButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     orButton.titleLabel.adjustsFontSizeToFitWidth = YES;
-    [orButton addTarget:self action:@selector(defenseButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
+    [orButton addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
     [orButton setShowsTouchWhenHighlighted:YES];
     [self.defenseRecordeView addSubview:orButton];
     
     UIButton* drButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetMaxX(orButton.frame), CGRectGetMinY(orButton.frame), 60, 40)];
     [drButton setTitle:@"DR" forState:UIControlStateNormal];
     [drButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    drButton.tag = 0;
+    drButton.tag = tag++;
     drButton.layer.borderWidth = 1;
     drButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     drButton.titleLabel.adjustsFontSizeToFitWidth = YES;
-    [drButton addTarget:self action:@selector(defenseButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
+    [drButton addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
     [drButton setShowsTouchWhenHighlighted:YES];
     [self.defenseRecordeView addSubview:drButton];
     
@@ -685,18 +691,16 @@
         UIButton* Button = [[UIButton alloc] initWithFrame:CGRectMake(x, y, 60, 40)];
         [Button setTitle:othersArray[i] forState:UIControlStateNormal];
         [Button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-        Button.tag = 0;
+        Button.tag = tag++;
         Button.layer.borderWidth = 1;
         Button.titleLabel.textAlignment = NSTextAlignmentCenter;
         Button.titleLabel.adjustsFontSizeToFitWidth = YES;
-        [Button addTarget:self action:@selector(defenseButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
+        [Button addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
         [Button setShowsTouchWhenHighlighted:YES];
         [self.defenseRecordeView addSubview:Button];
     }
     
     [self.view addSubview:self.defenseRecordeView];
-    
-    
     
     //Show Grade Switch Button
     self.switchModeButton = [[UIButton alloc] init];
@@ -770,31 +774,32 @@
 
 #pragma mark - Button Clicked
 
--(void) defenseButtonClicked:(UIButton*) button
+-(void) buttonClicked:(UIButton*) button
 {
     if(self.playerSelectedIndex)
     {
-        self.defenseButtonNo = (int)button.tag;
-        [self updateDefenseGrade];
-        self.defenseButtonNo = 0;
+        self.buttonNo = (int)button.tag;
+        [self updateGrade];
+        self.buttonNo = 0;
+        NSLog(@"%@", self.playerDataArray);
         return;
     }
     
-    if(self.defenseButtonNo == button.tag)
+    if(self.buttonNo == button.tag)
     {
         button.backgroundColor = [UIColor whiteColor];
-        self.defenseButtonNo = 0;
+        self.buttonNo = 0;
     }
-    else if(!self.defenseButtonNo)
+    else if(!self.buttonNo)
     {
         button.backgroundColor = [UIColor blueColor];
-        self.defenseButtonNo = (int)button.tag;
+        self.buttonNo = (int)button.tag;
     }
     else
     {
-        ((UIButton*)[self.view viewWithTag:self.defenseButtonNo]).backgroundColor = [UIColor whiteColor];
+        ((UIButton*)[self.view viewWithTag:self.buttonNo]).backgroundColor = [UIColor whiteColor];
         button.backgroundColor = [UIColor blueColor];
-        self.defenseButtonNo = (int)button.tag;
+        self.buttonNo = (int)button.tag;
     }
 }
 
@@ -1038,6 +1043,8 @@
     {
         NSMutableArray* quarterData = [self.playerDataArray objectAtIndex:self.quarterNo];
         playerData = [quarterData objectAtIndex:self.playerSelectedIndex-1];
+        NSLog(@"%@", playerData);
+        
     }
     
     BBRTableViewCell* cell = [[BBRTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
@@ -1059,17 +1066,21 @@
     }
     else if(indexPath.row < 4)
     {
+        NSLog(@"%ld %@", indexPath.row, self.itemWayKeySet[indexPath.row-1]);
         label.text = self.itemWayKeySet[indexPath.row-1];
         NSDictionary* madeOrAttemptDic = [playerData objectForKey:self.itemWayKeySet[indexPath.row-1]];
+        NSLog(@"%@", madeOrAttemptDic);
+        
         NSString* madeCount = [madeOrAttemptDic objectForKey:KEY_FOR_MADE_COUNT];
-        NSString* attemptCount = [madeOrAttemptDic objectForKey:KEY_FOR_MADE_COUNT];
+        NSString* attemptCount = [madeOrAttemptDic objectForKey:KEY_FOR_ATTEMPT_COUNT];
+        NSLog(@"%@, %@ %d", madeCount, attemptCount, self.playerSelectedIndex);
         if(self.playerSelectedIndex)
             gradeValueLabel.text = [NSString stringWithFormat:@"%@/%@", madeCount, attemptCount];
         else
             gradeValueLabel.text = @"0/0";
         [cell addSubview:gradeValueLabel];
     }
-    else if(indexPath.row < self.itemWayKeySet.count+1)
+    else if(indexPath.row < self.itemWayKeySet.count)
     {
         label.text = self.itemWayKeySet[indexPath.row-1];
         
@@ -1077,6 +1088,26 @@
             gradeValueLabel.text = [playerData objectForKey:self.itemWayKeySet[indexPath.row-1]];
         else
             gradeValueLabel.text = @"0";
+        [cell addSubview:gradeValueLabel];
+    }
+    else if(indexPath.row == self.itemWayKeySet.count)
+    {
+        label.text = @"Time";
+        if(self.playerSelectedIndex)
+        {
+            if(self.playerSelectedIndex != self.playerCount+1)
+            {
+                NSLog(@"%@", playerData);
+                int time = [[playerData objectForKey:KEY_FOR_TOTAL_TIME_ON_FLOOR] intValue];
+                int min = time/60;
+                int sec = time%60;
+                gradeValueLabel.text = [NSString stringWithFormat:@"%02d:%02d", min, sec];
+            }
+            else
+                gradeValueLabel.text = @"-";
+        }
+        else
+            gradeValueLabel.text = @"00:00";
         [cell addSubview:gradeValueLabel];
     }
     else if(indexPath.row == self.itemWayKeySet.count+1)
@@ -1102,11 +1133,11 @@
             NSNumber *playerSelectedIndex = [dic objectForKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
             self.playerSelectedIndex = playerSelectedIndex.intValue;
             
-            if(self.defenseButtonNo)
+            if(self.buttonNo)
             {
-                ((UIButton*)[self.view viewWithTag:self.defenseButtonNo]).backgroundColor = [UIColor whiteColor];
-                [self updateDefenseGrade];
-                self.defenseButtonNo = 0;
+                ((UIButton*)[self.view viewWithTag:self.buttonNo]).backgroundColor = [UIColor whiteColor];
+                [self updateGrade];
+                self.buttonNo = 0;
             }
         }
         else
@@ -1117,7 +1148,7 @@
         if(!self.isRecordMode)
         {
             self.playerSelectedIndex = (int)indexPath.row;
-            [(UITableView*)[self.view viewWithTag:PLAYER_GRADE_TABLEVIEW_TAG] reloadData];
+            [self.playerDataTableView reloadData];
         }
         else if(indexPath.row != 0 && indexPath.row != self.playerCount+1)
         {
@@ -1135,16 +1166,16 @@
                     break;
                 }
                 UIAlertAction* playerOnFloorNoAction = [UIAlertAction actionWithTitle:cellOfChanged.NoLabel.text style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
-                                                        {
-                                                            //caculate the player being placed's time on floor
-                                                            [self updateTimeOnFloorOfPlayerWithIndexInOnFloorTableView:i-1];
+                    {
+                        //caculate the player being placed's time on floor
+                        [self updateTimeOnFloorOfPlayerWithIndexInOnFloorTableView:i-1];
                                                             
-                                                            //update the data of the player on floor
-                                                            NSMutableDictionary* dic = [self.playerOnFloorDataArray objectAtIndex:i-1];
-                                                            cellOfChanged.NoLabel.text = cellOfSelected.NoLabel.text;
-                                                            [dic setObject:[NSNumber numberWithInt:[cellOfSelected.NoLabel.text intValue]] forKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
-                                                            [dic setObject:[NSNumber numberWithInt:self.timeCounter] forKey:KEY_FOR_TIME_WHEN_GO_ON_FLOOR];
-                                                        }];
+                        //update the data of the player on floor
+                        NSMutableDictionary* dic = [self.playerOnFloorDataArray objectAtIndex:i-1];
+                        cellOfChanged.NoLabel.text = cellOfSelected.NoLabel.text;
+                        [dic setObject:[NSNumber numberWithInt:[cellOfSelected.NoLabel.text intValue]] forKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
+                        [dic setObject:[NSNumber numberWithInt:self.timeCounter] forKey:KEY_FOR_TIME_WHEN_GO_ON_FLOOR];
+                    }];
                 [changePlayerAlert addAction:playerOnFloorNoAction];
             }
             if(!isPlayerOnFloorAlready)

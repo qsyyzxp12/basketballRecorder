@@ -30,7 +30,7 @@
 @property int quarterNo;
 @property int showOldRecordNo;
 @property int timeCounter;
-@property int defenseButtonNo;
+@property int buttonNo;
 @property UIAlertController* nextQuarterAlert;
 @property UIAlertController* finishOrNotAlert;
 @property UIAlertController* playoffOrNotAlert;
