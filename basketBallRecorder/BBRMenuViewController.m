@@ -162,19 +162,6 @@
     [self.dirtyStatusAlert addAction:noAction];
 }
 
-- (IBAction)recordButtonClicked:(UIButton*)sender
-{
-    self.buttonClickedNo = (int)sender.tag;
-    NSString* recordPlistPath = [NSString stringWithFormat:@"%@/Documents/record.plist", NSHomeDirectory()];
-    NSArray* recordPlistArray = [NSArray arrayWithContentsOfFile:recordPlistPath];
-    self.showOldRecordNo = (int)[recordPlistArray count] - self.buttonClickedNo;
-    NSDictionary* dataDic = [recordPlistArray objectAtIndex:self.showOldRecordNo];
-    if([[dataDic objectForKey:KEY_FOR_DATA_TYPE] isEqualToString:OFFENSE_TYPE_DATA])
-        [self performSegueWithIdentifier:@"showOffenseController" sender:nil];
-    else if([[dataDic objectForKey:KEY_FOR_DATA_TYPE] isEqualToString:DEFENSE_TYPE_DATA])
-        [self performSegueWithIdentifier:@"showDefenseController" sender:nil];
-}
-
 -(void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     if([segue.identifier isEqualToString:SEGUE_ID_FOR_OFFENSE])
@@ -204,6 +191,23 @@
 }
 
 #pragma mark - Actions
+
+- (IBAction)recordButtonClicked:(UIButton*)sender
+{
+    self.buttonClickedNo = (int)sender.tag;
+    NSString* recordPlistPath = [NSString stringWithFormat:@"%@/Documents/record.plist", NSHomeDirectory()];
+    NSArray* recordPlistArray = [NSArray arrayWithContentsOfFile:recordPlistPath];
+    self.showOldRecordNo = (int)[recordPlistArray count] - self.buttonClickedNo;
+    NSDictionary* dataDic = [recordPlistArray objectAtIndex:self.showOldRecordNo];
+    if([[dataDic objectForKey:KEY_FOR_DATA_TYPE] isEqualToString:OFFENSE_TYPE_DATA])
+        [self performSegueWithIdentifier:SEGUE_ID_FOR_OFFENSE sender:nil];
+    else if([[dataDic objectForKey:KEY_FOR_DATA_TYPE] isEqualToString:DEFENSE_TYPE_DATA])
+        [self performSegueWithIdentifier:SEGUE_ID_FOR_DEFENSE sender:nil];
+    else if([[dataDic objectForKey:KEY_FOR_DATA_TYPE]isEqualToString:BOX_RECORD_TYPE_DATA])
+        [self performSegueWithIdentifier:SEGUE_ID_FOR_BOX_SCORE sender:nil];
+}
+
+
 
 - (IBAction)uploadButtonClicked:(UIButton*)sender
 {

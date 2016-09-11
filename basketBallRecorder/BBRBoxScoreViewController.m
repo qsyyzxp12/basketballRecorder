@@ -179,7 +179,7 @@
         [newItem setObject:self.playerDataArray forKey:KEY_FOR_GRADE];
         [newItem setObject:self.playerNoSet forKey:KEY_FOR_PLAYER_NO_SET];
         [newItem setObject:self.recordName forKey:KEY_FOR_NAME];
-        [newItem setObject:DEFENSE_TYPE_DATA forKey:KEY_FOR_DATA_TYPE];
+        [newItem setObject:BOX_RECORD_TYPE_DATA forKey:KEY_FOR_DATA_TYPE];
         
         if([recordPlistArray count] < 5)
             [recordPlistArray addObject:newItem];
