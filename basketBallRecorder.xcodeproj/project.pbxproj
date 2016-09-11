@@ -13,6 +13,7 @@
 		C74F48421C9D0A7000EB3BB0 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C74F48411C9D0A7000EB3BB0 /* libz.tbd */; };
 		C75BA2AD1D70AB8600DEC1BF /* spreadsheet_for_defense.xlsx in Resources */ = {isa = PBXBuildFile; fileRef = C75BA2AC1D70AB8600DEC1BF /* spreadsheet_for_defense.xlsx */; };
 		C75EA4E11D85328400480B35 /* BBRBoxScoreViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C75EA4E01D85328400480B35 /* BBRBoxScoreViewController.m */; };
+		C75EA4E71D857D8F00480B35 /* spreadsheet_for_boxScore.xlsx in Resources */ = {isa = PBXBuildFile; fileRef = C75EA4E61D857D8F00480B35 /* spreadsheet_for_boxScore.xlsx */; };
 		C768630D1CBCA730005074F3 /* BBRDropboxCheckViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C768630C1CBCA730005074F3 /* BBRDropboxCheckViewController.m */; };
 		C7AB3CE81C7F5E2600DA23A6 /* leftArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = C7AB3CE41C7F5E2600DA23A6 /* leftArrow.png */; };
 		C7AB3CEA1C7F5E2600DA23A6 /* rightArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = C7AB3CE61C7F5E2600DA23A6 /* rightArrow.png */; };
@@ -113,6 +114,7 @@
 		C75BA2AC1D70AB8600DEC1BF /* spreadsheet_for_defense.xlsx */ = {isa = PBXFileReference; lastKnownFileType = file; path = spreadsheet_for_defense.xlsx; sourceTree = "<group>"; };
 		C75EA4DF1D85328400480B35 /* BBRBoxScoreViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BBRBoxScoreViewController.h; sourceTree = "<group>"; };
 		C75EA4E01D85328400480B35 /* BBRBoxScoreViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BBRBoxScoreViewController.m; sourceTree = "<group>"; };
+		C75EA4E61D857D8F00480B35 /* spreadsheet_for_boxScore.xlsx */ = {isa = PBXFileReference; lastKnownFileType = file; path = spreadsheet_for_boxScore.xlsx; sourceTree = "<group>"; };
 		C768630B1CBCA730005074F3 /* BBRDropboxCheckViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BBRDropboxCheckViewController.h; sourceTree = "<group>"; };
 		C768630C1CBCA730005074F3 /* BBRDropboxCheckViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BBRDropboxCheckViewController.m; sourceTree = "<group>"; };
 		C7AB3CE41C7F5E2600DA23A6 /* leftArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = leftArrow.png; sourceTree = "<group>"; };
@@ -227,6 +229,7 @@
 		C7CC36E71C7AF17900B97149 /* basketBallRecorder */ = {
 			isa = PBXGroup;
 			children = (
+				C75EA4E61D857D8F00480B35 /* spreadsheet_for_boxScore.xlsx */,
 				C74E944E1D7AF4B00056DC4E /* PPP數據.xlsx */,
 				C74CEDD31D797D4D00B5E704 /* spreadsheet_for_timeLine.xlsx */,
 				C75BA2AC1D70AB8600DEC1BF /* spreadsheet_for_defense.xlsx */,
@@ -488,6 +491,7 @@
 				C7F5525D1C7C5066005CB9EC /* zone7-2.png in Resources */,
 				C7F5524B1C7B8320005CB9EC /* background.jpg in Resources */,
 				C7CC37361C7B7F1600B97149 /* zone3.png in Resources */,
+				C75EA4E71D857D8F00480B35 /* spreadsheet_for_boxScore.xlsx in Resources */,
 				C75BA2AD1D70AB8600DEC1BF /* spreadsheet_for_defense.xlsx in Resources */,
 				C7CC37351C7B7F1600B97149 /* zone2.png in Resources */,
 				C7CC373A1C7B7F1600B97149 /* zone7.png in Resources */,

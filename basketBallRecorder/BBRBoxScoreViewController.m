@@ -263,87 +263,92 @@
     [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
 }
 
+-(NSString*) cellRefGoRightWithOutIndex:(char*)outIndex interIndex:(char*)interIndex rowIndex:(int)rowIndex
+{
+    (*interIndex)++;
+    if(*interIndex == 91) // (int)'Z' == 90
+    {
+        if(*outIndex != '\0')
+            (*outIndex)++;
+        else
+            *outIndex = 'A';
+        *interIndex = 'A';
+    }
+    return [NSString stringWithFormat:@"%c%c%d", *outIndex, *interIndex, rowIndex];
+}
+
 -(void) xlsxFileGenerateAndUpload: (NSNumber*) quarterNo
 {
- /*   //Generate the xlsx file
-    NSString *documentPath = [[NSBundle mainBundle] pathForResource:@"spreadsheet_for_defense" ofType:@"xlsx"];
+    //Generate the xlsx file
+    NSString *documentPath = [[NSBundle mainBundle] pathForResource:@"spreadsheet_for_boxScore" ofType:@"xlsx"];
     BRAOfficeDocumentPackage *spreadsheet = [BRAOfficeDocumentPackage open:documentPath];
-    
-    for(int i=0; i<quarterNo.intValue+1; i++)
+    BRAWorksheet *worksheet = spreadsheet.workbook.worksheets[0];
+
+    NSString* cellRef;
+    NSArray* totalGradeArray = [self.playerDataArray objectAtIndex:0];
+    char outIndex = '\0';
+    char interIndex = 'A';
+    for(int i=0; i<self.playerCount+1; i++)
     {
-        BRAWorksheet *worksheet;
-        if(i == [spreadsheet.workbook.worksheets count])
+        char outI = outIndex;
+        char interI = interIndex;
+        cellRef = [NSString stringWithFormat:@"%c%c%d", outI, interI, i+2];
+        if(i < self.playerCount)
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:self.playerNoSet[i]];
+        else
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:@"全隊"];
+        
+        NSDictionary* playerDataDic = [totalGradeArray objectAtIndex:i];
+        
+        cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:i+2];
+        if(i != self.playerCount)
         {
-            NSString* worksheetName;
-            switch (i)
-            {
-                case 1: worksheetName = @"第一節"; break;
-                case 2: worksheetName = @"第二節"; break;
-                case 3: worksheetName = @"第三節"; break;
-                case 4: worksheetName = @"第四節"; break;
-                case 5: worksheetName = @"延長賽第一節"; break;
-                case 6: worksheetName = @"延長賽第二節"; break;
-                case 7: worksheetName = @"延長賽第三節"; break;
-                case 8: worksheetName = @"延長賽第四節"; break;
-                case 9: worksheetName = @"延長賽第五節"; break;
-                case 10: worksheetName = @"延長賽第六節"; break;
-            }
-            worksheet = [spreadsheet.workbook createWorksheetNamed:worksheetName byCopyingWorksheet:spreadsheet.workbook.worksheets[0]];
-            [worksheet save];
+            int time = [[playerDataDic objectForKey:KEY_FOR_TOTAL_TIME_ON_FLOOR] intValue];
+            int min = time/60;
+            int sec = time%60;
+            NSString* timeStr = [NSString stringWithFormat:@"%02d:%02d", min, sec];
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:timeStr];
         }
         else
-            worksheet = spreadsheet.workbook.worksheets[i];
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:@"-"];
         
-        NSString* cellRef;
-        NSArray* totalGradeArray = [self.playerDataArray objectAtIndex:i];
-        for(int i=0; i<self.playerCount+1; i++)
+        
+        for(int j=0; j<3; j++)
         {
-            char outIndex = '\0';
-            char interIndex = 'A';
-            cellRef = [NSString stringWithFormat:@"%c%c%d", outIndex, interIndex++, i+3];
-            if(i < self.playerCount)
-                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:self.playerNoSet[i]];
-            else
-                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:@"全隊"];
+            NSDictionary* madeOrAttemptDic = [playerDataDic objectForKey:self.itemWayKeySet[j]];
+            NSInteger madeCount = [[madeOrAttemptDic objectForKey:KEY_FOR_MADE_COUNT] integerValue];
+            cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:i+2];
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:madeCount];
             
-            NSDictionary* playerDataDic = [totalGradeArray objectAtIndex:i];
-            NSDictionary* deflectionDic = [playerDataDic objectForKey:KEY_FOR_DEFLECTION_DEFENSE_GRADE];
-            NSDictionary* goodDic = [playerDataDic objectForKey:KEY_FOR_GOOD_DEFENSE_GRADE];
-            NSDictionary* badDic = [playerDataDic objectForKey:KEY_FOR_BAD_DEFENSE_GRADE];
-            NSArray* dicArray = [NSArray arrayWithObjects:deflectionDic, goodDic, badDic, nil];
-            int top = 0;
-            for(int k=0; k<3; k++)
-            {
-                for(int l=0; l<[dicArray[k] count]-1; l++)
-                {
-                    NSString* gradeStr = [dicArray[k] objectForKey:self.defenseWayKeySet[top++]];
-                    if(interIndex == 91) // (int)'Z' == 90
-                    {
-                        if(outIndex != '\0')
-                            outIndex++;
-                        else
-                            outIndex = 'A';
-                        interIndex = 65;
-                    }
-                    cellRef = [NSString stringWithFormat:@"%c%c%d", outIndex, interIndex++, i+3];
-                    [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:gradeStr];
-                }
-            }
-            
-            int deflectionTotal = [[deflectionDic objectForKey:KEY_FOR_TOTAL_COUNT] intValue];
-            int goodTotal = deflectionTotal + [[goodDic objectForKey:KEY_FOR_TOTAL_COUNT] intValue];
-            int total = goodTotal - [[badDic objectForKey:KEY_FOR_TOTAL_COUNT] intValue];
-            
-            NSString* str = [NSString stringWithFormat:@"%d", total];
-            cellRef = [NSString stringWithFormat:@"S%d", i+3];
-            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:str];
-            
-            str = [NSString stringWithFormat:@"%d", deflectionTotal];
-            cellRef = [NSString stringWithFormat:@"T%d", i+3];
-            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:str];
+            NSInteger attemptCount =[[madeOrAttemptDic objectForKey:KEY_FOR_ATTEMPT_COUNT] integerValue];
+            cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:i+2];
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:attemptCount];
+        }
+        NSInteger orCount = [[playerDataDic objectForKey:self.itemWayKeySet[3]] integerValue];
+        cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:i+2];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:orCount];
+        
+        NSInteger drCount = [[playerDataDic objectForKey:self.itemWayKeySet[4]] integerValue];
+        cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:i+2];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:drCount];
+        
+        NSInteger trCount = orCount + drCount;
+        cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:i+2];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:trCount];
+
+        for(int j=5; j<self.itemWayKeySet.count-1; j++)
+        {
+            NSInteger count = [[playerDataDic objectForKey:self.itemWayKeySet[j]] integerValue];
+            cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:i+2];
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:count];
         }
         
+        NSInteger totalPts = [[playerDataDic objectForKey:KEY_FOR_TOTAL_SCORE_GET] integerValue];
+        cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:i+2];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:totalPts];
+        
     }
+    
     
     //Save the xlsx to the app space in the device
     NSString *sheetPath = [NSString stringWithFormat:@"%@/Documents/spreadsheet.xlsx", NSHomeDirectory()];
@@ -364,7 +369,7 @@
     NSArray* agus = [[NSArray alloc] initWithObjects:filename, sheetPath, nil];
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
     //  [self.restClient uploadFile:filename toPath:@"/" withParentRev:nil fromPath:sheetPath];
-    */
+    
 }
 
 -(void) uploadXlsxFile:(NSArray*) parameters
@@ -453,7 +458,6 @@
     self.playerDataArray = [NSMutableArray arrayWithCapacity:2];
     
     [self extendPlayerDataWithQuarter:0];
-    NSLog(@"%@", self.playerDataArray);
     [self extendPlayerDataWithQuarter:1];
     
     NSString* src = [[NSBundle mainBundle] pathForResource:@"tmp" ofType:@"plist"];
@@ -781,7 +785,6 @@
         self.buttonNo = (int)button.tag;
         [self updateGrade];
         self.buttonNo = 0;
-        NSLog(@"%@", self.playerDataArray);
         return;
     }
     
@@ -1043,7 +1046,6 @@
     {
         NSMutableArray* quarterData = [self.playerDataArray objectAtIndex:self.quarterNo];
         playerData = [quarterData objectAtIndex:self.playerSelectedIndex-1];
-        NSLog(@"%@", playerData);
         
     }
     
@@ -1066,14 +1068,11 @@
     }
     else if(indexPath.row < 4)
     {
-        NSLog(@"%ld %@", indexPath.row, self.itemWayKeySet[indexPath.row-1]);
         label.text = self.itemWayKeySet[indexPath.row-1];
         NSDictionary* madeOrAttemptDic = [playerData objectForKey:self.itemWayKeySet[indexPath.row-1]];
-        NSLog(@"%@", madeOrAttemptDic);
         
         NSString* madeCount = [madeOrAttemptDic objectForKey:KEY_FOR_MADE_COUNT];
         NSString* attemptCount = [madeOrAttemptDic objectForKey:KEY_FOR_ATTEMPT_COUNT];
-        NSLog(@"%@, %@ %d", madeCount, attemptCount, self.playerSelectedIndex);
         if(self.playerSelectedIndex)
             gradeValueLabel.text = [NSString stringWithFormat:@"%@/%@", madeCount, attemptCount];
         else
@@ -1097,7 +1096,6 @@
         {
             if(self.playerSelectedIndex != self.playerCount+1)
             {
-                NSLog(@"%@", playerData);
                 int time = [[playerData objectForKey:KEY_FOR_TOTAL_TIME_ON_FLOOR] intValue];
                 int min = time/60;
                 int sec = time%60;
