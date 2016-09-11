@@ -323,6 +323,20 @@
             NSInteger attemptCount =[[madeOrAttemptDic objectForKey:KEY_FOR_ATTEMPT_COUNT] integerValue];
             cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:i+2];
             [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:attemptCount];
+            
+            if(i == self.playerCount)
+            {
+                cellRef = [NSString stringWithFormat:@"%c%c%d", outI, interI, i+3];
+                NSString* ratioStr;
+                if(attemptCount)
+                {
+                    float ratio = (float)madeCount/attemptCount;
+                    ratioStr = [NSString stringWithFormat:@"%.0f%c", ratio*100, '%'];
+                }
+                else
+                    ratioStr = @"0%";
+                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:ratioStr];
+            }
         }
         NSInteger orCount = [[playerDataDic objectForKey:self.itemWayKeySet[3]] integerValue];
         cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:i+2];
@@ -347,6 +361,16 @@
         cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:i+2];
         [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:totalPts];
         
+    }
+    
+    char index = 'S';
+    for(int i=1; i<5; i++)
+    {
+        cellRef = [NSString stringWithFormat:@"%c2", index++];
+        NSArray* totalGradeArray = [self.playerDataArray objectAtIndex:i];
+        NSDictionary* dic = [totalGradeArray objectAtIndex:self.playerCount];
+        NSInteger pts = [[dic objectForKey:KEY_FOR_TOTAL_SCORE_GET] integerValue];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:pts];
     }
     
     
