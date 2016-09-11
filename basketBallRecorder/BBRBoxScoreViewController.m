@@ -41,7 +41,7 @@
     self.restClient = [[DBRestClient alloc] initWithSession:[DBSession sharedSession]];
     self.restClient.delegate = self;
     
-    self.defenseWayKeySet = [[NSArray alloc] initWithObjects:@"Tip", @"CloseOut", @"StopBall", @"BLK", @"STL", @"8/24", @"DoubleTeam", @"LooseBall", @"OR", @"DR", @"ORTip", @"AST", @"TO", @"WIDEOPEN", @"NOBLOCKOUT", @"DEFASS", @"BlownBy", nil];
+    self.itemWayKeySet = [[NSArray alloc] initWithObjects:KEY_FOR_2_PTS, KEY_FOR_3_PTS, KEY_FOR_FREE_THROW, KEY_FOR_OR, KEY_FOR_DR, KEY_FOR_ASSIST, KEY_FOR_STEAL, KEY_FOR_BLOCK, KEY_FOR_TO, KEY_FOR_FOUL, KEY_FOR_TIME, nil];
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] init];
     self.navigationItem.rightBarButtonItem.title = @"本節結束";
@@ -265,7 +265,7 @@
 
 -(void) xlsxFileGenerateAndUpload: (NSNumber*) quarterNo
 {
-    //Generate the xlsx file
+ /*   //Generate the xlsx file
     NSString *documentPath = [[NSBundle mainBundle] pathForResource:@"spreadsheet_for_defense" ofType:@"xlsx"];
     BRAOfficeDocumentPackage *spreadsheet = [BRAOfficeDocumentPackage open:documentPath];
     
@@ -364,7 +364,7 @@
     NSArray* agus = [[NSArray alloc] initWithObjects:filename, sheetPath, nil];
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
     //  [self.restClient uploadFile:filename toPath:@"/" withParentRev:nil fromPath:sheetPath];
-    
+    */
 }
 
 -(void) uploadXlsxFile:(NSArray*) parameters
@@ -412,8 +412,8 @@
             else                //Bad
                 Dic = [gardeDic objectForKey:KEY_FOR_BAD_DEFENSE_GRADE];
             
-            int value = [[Dic objectForKey:self.defenseWayKeySet[tag]] intValue] + 1;
-            [Dic setObject:[NSString stringWithFormat:@"%d", value] forKey:self.defenseWayKeySet[tag]];
+   //         int value = [[Dic objectForKey:self.defenseWayKeySet[tag]] intValue] + 1;
+     //       [Dic setObject:[NSString stringWithFormat:@"%d", value] forKey:self.defenseWayKeySet[tag]];
             
             int totalVal = [[Dic objectForKey:KEY_FOR_TOTAL_COUNT] intValue] + 1;
             [Dic setObject:[NSString stringWithFormat:@"%d", totalVal] forKey:KEY_FOR_TOTAL_COUNT];
@@ -446,6 +446,7 @@
     self.playerDataArray = [NSMutableArray arrayWithCapacity:2];
     
     [self extendPlayerDataWithQuarter:0];
+    NSLog(@"%@", self.playerDataArray);
     [self extendPlayerDataWithQuarter:1];
     
     NSString* src = [[NSBundle mainBundle] pathForResource:@"tmp" ofType:@"plist"];
@@ -482,24 +483,17 @@
         
         [playerDataItem setObject:[NSString stringWithFormat:@"%d", quarterNo] forKey:@"QUARTER"];
         
-        NSMutableDictionary* deflectionGradeDic = [[NSMutableDictionary alloc] init];
-        for(int j=0; j<8; j++)
-            [deflectionGradeDic setObject:@"0" forKey:self.defenseWayKeySet[j]];
-        [deflectionGradeDic setObject:@"0" forKey:KEY_FOR_TOTAL_COUNT];
-        [playerDataItem setObject:deflectionGradeDic forKey:KEY_FOR_DEFLECTION_DEFENSE_GRADE];
+        for(int j=0; j<3; j++)
+        {
+            NSMutableDictionary* madeOrAttemptDic = [[NSMutableDictionary alloc] init];
+            [madeOrAttemptDic setObject:@"0" forKey:KEY_FOR_MADE_COUNT];
+            [madeOrAttemptDic setObject:@"0" forKey:KEY_FOR_ATTEMPT_COUNT];
+            [playerDataItem setObject:madeOrAttemptDic forKey:self.itemWayKeySet[j]];
+        }
+        for(int j=3; j<self.itemWayKeySet.count; j++)
+            [playerDataItem setObject:@"0" forKey:self.itemWayKeySet[j]];
         
-        NSMutableDictionary* goodGradeDic = [[NSMutableDictionary alloc] init];
-        for(int j=8; j<12; j++)
-            [goodGradeDic setObject:@"0" forKey:self.defenseWayKeySet[j]];
-        [goodGradeDic setObject:@"0" forKey:KEY_FOR_TOTAL_COUNT];
-        [playerDataItem setObject:goodGradeDic forKey:KEY_FOR_GOOD_DEFENSE_GRADE];
-        
-        NSMutableDictionary* badGradeDic = [[NSMutableDictionary alloc] init];
-        for(int j=12; j<17; j++)
-            [badGradeDic setObject:@"0" forKey:self.defenseWayKeySet[j]];
-        [badGradeDic setObject:@"0" forKey:KEY_FOR_TOTAL_COUNT];
-        [playerDataItem setObject:badGradeDic forKey:KEY_FOR_BAD_DEFENSE_GRADE];
-        
+        [playerDataItem setObject:@"0" forKey:KEY_FOR_TOTAL_SCORE_GET];
         [quarterData addObject:playerDataItem];
     }
     [self.playerDataArray addObject:quarterData];
@@ -954,7 +948,7 @@
         return (self.playerCount + 2); //One for title, the other one for team grade
     else if(tableView.tag == PLAYER_ON_FLOOR_TABLEVIEW_TAG)
         return MIN(self.playerCount, 5)+1;
-    return [self.defenseWayKeySet count] + 5;
+    return [self.itemWayKeySet count] + 2;
 }
 
 - (NSInteger) numberOfSectionsInTableView:(UITableView *)tableView
@@ -1058,75 +1052,42 @@
     gradeValueLabel.textAlignment = NSTextAlignmentCenter;
     gradeValueLabel.layer.borderWidth = 1;
     
-    if(indexPath.row == 0)
+    if(!indexPath.row)
     {
-        label.text = @"GOOD";
+        label.text = @"成績";
         [label setFrame:CGRectMake(0, 0, tableView.frame.size.width, PLAYER_GRADE_TABLECELL_HEIGHT)];
     }
-    else if(indexPath.row < 13)
+    else if(indexPath.row < 4)
     {
-        NSMutableDictionary* Dic;
-        if(indexPath.row < 9)
-            Dic = [playerData objectForKey:KEY_FOR_DEFLECTION_DEFENSE_GRADE];
+        label.text = self.itemWayKeySet[indexPath.row-1];
+        NSDictionary* madeOrAttemptDic = [playerData objectForKey:self.itemWayKeySet[indexPath.row-1]];
+        NSString* madeCount = [madeOrAttemptDic objectForKey:KEY_FOR_MADE_COUNT];
+        NSString* attemptCount = [madeOrAttemptDic objectForKey:KEY_FOR_MADE_COUNT];
+        if(self.playerSelectedIndex)
+            gradeValueLabel.text = [NSString stringWithFormat:@"%@/%@", madeCount, attemptCount];
         else
-            Dic = [playerData objectForKey:KEY_FOR_GOOD_DEFENSE_GRADE];
-        
-        int index = (int)indexPath.row - 1;
-        label.text = self.defenseWayKeySet[index];
+            gradeValueLabel.text = @"0/0";
+        [cell addSubview:gradeValueLabel];
+    }
+    else if(indexPath.row < self.itemWayKeySet.count+1)
+    {
+        label.text = self.itemWayKeySet[indexPath.row-1];
         
         if(self.playerSelectedIndex)
-            gradeValueLabel.text = [Dic objectForKey:self.defenseWayKeySet[index]];
+            gradeValueLabel.text = [playerData objectForKey:self.itemWayKeySet[indexPath.row-1]];
         else
             gradeValueLabel.text = @"0";
         [cell addSubview:gradeValueLabel];
     }
-    else if(indexPath.row == 13)
+    else if(indexPath.row == self.itemWayKeySet.count+1)
     {
-        label.text = @"BAD";
-        [label setFrame:CGRectMake(0, 0, tableView.frame.size.width, PLAYER_GRADE_TABLECELL_HEIGHT)];
-    }
-    else if(indexPath.row < 19)
-    {
-        NSMutableDictionary* Dic = [playerData objectForKey:KEY_FOR_BAD_DEFENSE_GRADE];
-        
-        int index = (int)indexPath.row - 2;
-        label.text = self.defenseWayKeySet[index];
-        
+        label.text = @"總得分";
         if(self.playerSelectedIndex)
-            gradeValueLabel.text = [Dic objectForKey:self.defenseWayKeySet[index]];
+            gradeValueLabel.text = [playerData objectForKey:KEY_FOR_TOTAL_SCORE_GET];
         else
             gradeValueLabel.text = @"0";
         [cell addSubview:gradeValueLabel];
     }
-    else if(indexPath.row == [self.defenseWayKeySet count] + 3)
-    {
-        label.text = @"total";
-        
-        if(self.playerSelectedIndex)
-        {
-            NSMutableDictionary* deflectionDic = [playerData objectForKey:KEY_FOR_DEFLECTION_DEFENSE_GRADE];
-            int totalValue = [[deflectionDic objectForKey:KEY_FOR_TOTAL_COUNT] intValue];
-            NSMutableDictionary* goodDic = [playerData objectForKey:KEY_FOR_GOOD_DEFENSE_GRADE];
-            totalValue += [[goodDic objectForKey:KEY_FOR_TOTAL_COUNT] intValue];
-            NSMutableDictionary* badDic = [playerData objectForKey:KEY_FOR_BAD_DEFENSE_GRADE];
-            totalValue -= [[badDic objectForKey:KEY_FOR_TOTAL_COUNT] intValue];
-            gradeValueLabel.text = [NSString stringWithFormat:@"%d", totalValue];
-        }
-        else
-            gradeValueLabel.text = @"0";
-        [cell addSubview:gradeValueLabel];
-    }
-    else if(indexPath.row == [self.defenseWayKeySet count] + 4)
-    {
-        label.text = @"Deflection";
-        NSMutableDictionary* deflectionDic = [playerData objectForKey:KEY_FOR_DEFLECTION_DEFENSE_GRADE];
-        if(self.playerSelectedIndex)
-            gradeValueLabel.text = [deflectionDic objectForKey:KEY_FOR_TOTAL_COUNT];
-        else
-            gradeValueLabel.text = @"0";
-        [cell addSubview:gradeValueLabel];
-    }
-    
     [cell addSubview:label];
     return cell;
 }

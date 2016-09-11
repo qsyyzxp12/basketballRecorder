@@ -19,7 +19,7 @@
 @property NSMutableArray* playerDataArray;
 @property NSMutableArray* OldPlayerDataArray;
 @property NSMutableArray* fileNamesInDropbox;
-@property NSArray* defenseWayKeySet;
+@property NSArray* itemWayKeySet;
 @property NSArray* playerNoSet;
 @property BOOL isTmpPlistExist;
 @property BOOL isRecordMode;

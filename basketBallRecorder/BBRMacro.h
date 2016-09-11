@@ -53,6 +53,7 @@
 #define KEY_FOR_PLAYER_NO_SET @"PlayerNoSet"
 #define KEY_FOR_ON_FLOOR_PLAYER_DATA @"PlayersOnFloorData"
 
+//Offense
 #define KEY_FOR_FASTBREAK @"Fastbreak"
 #define KEY_FOR_ISOLATION @"Isolation"
 #define KEY_FOR_OFF_SCREEN @"OffScreen"
@@ -127,6 +128,17 @@
 #define SIGNAL_FOR_MADE @"Made"
 #define SIGNAL_FOR_TURNOVER @"TO"
 
+//Box Score
+#define KEY_FOR_2_PTS @"2PTS"
+#define KEY_FOR_3_PTS @"3PTS"
+#define KEY_FOR_FREE_THROW @"Free Throw"
+#define KEY_FOR_OR @"OR"
+#define KEY_FOR_DR @"DR"
+#define KEY_FOR_ASSIST @"Assist"
+#define KEY_FOR_STEAL @"Steal"
+#define KEY_FOR_BLOCK @"Block"
+#define KEY_FOR_TO @"Turnover"
+#define KEY_FOR_FOUL @"Foul"
 
 //Dropbox
 #define NAME_OF_THE_FINAL_XLSX_FILE @"PPP數據"
