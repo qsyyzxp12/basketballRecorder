@@ -10,6 +10,7 @@
 #import "BBROffenseViewController.h"
 #import "BBRDefenseViewController.h"
 #import "BRAOfficeDocumentPackage.h"
+#import "BBRBoxScoreViewController.h"
 #import "BBRMacro.h"
 
 #define KEY_FOR_ATTEMPT_COUNT @"attempCount"
@@ -144,9 +145,11 @@
             NSString* tmpPlistPath = [NSString stringWithFormat:@"%@/Documents/tmp.plist", NSHomeDirectory()];
             NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:tmpPlistPath];
             if([[tmpPlistDic objectForKey:KEY_FOR_DATA_TYPE] isEqualToString:OFFENSE_TYPE_DATA])
-                [self performSegueWithIdentifier:@"showOffenseController" sender:nil];
+                [self performSegueWithIdentifier:SEGUE_ID_FOR_OFFENSE sender:nil];
             else if([[tmpPlistDic objectForKey:KEY_FOR_DATA_TYPE] isEqualToString:DEFENSE_TYPE_DATA])
-                [self performSegueWithIdentifier:@"showDefenseController" sender:nil];
+                [self performSegueWithIdentifier:SEGUE_ID_FOR_DEFENSE sender:nil];
+            else if([[tmpPlistDic objectForKey:KEY_FOR_DATA_TYPE] isEqualToString:BOX_RECORD_TYPE_DATA])
+                [self performSegueWithIdentifier:SEGUE_ID_FOR_BOX_SCORE sender:nil];
         }];
     UIAlertAction* noAction = [UIAlertAction actionWithTitle:@"不要" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action)
         {
@@ -170,21 +173,26 @@
         [self performSegueWithIdentifier:@"showOffenseController" sender:nil];
     else if([[dataDic objectForKey:KEY_FOR_DATA_TYPE] isEqualToString:DEFENSE_TYPE_DATA])
         [self performSegueWithIdentifier:@"showDefenseController" sender:nil];
-        
 }
 
 -(void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    if([segue.identifier isEqualToString:@"showOffenseController"])
+    if([segue.identifier isEqualToString:SEGUE_ID_FOR_OFFENSE])
     {
         BBROffenseViewController* mainViewCntler = [segue destinationViewController];
         mainViewCntler.isTmpPlistExist = self.isTmpPlistExist;
         mainViewCntler.showOldRecordNo = self.showOldRecordNo + 1;
         NSLog(@"%d", mainViewCntler.showOldRecordNo);
     }
-    else if([segue.identifier isEqualToString:@"showDefenseController"])
+    else if([segue.identifier isEqualToString:SEGUE_ID_FOR_DEFENSE])
     {
         BBRDefenseViewController* defenseViewCntler = [segue destinationViewController];
+        defenseViewCntler.isTmpPlistExist = self.isTmpPlistExist;
+        defenseViewCntler.showOldRecordNo = self.showOldRecordNo + 1;
+    }
+    else if([segue.identifier isEqualToString:SEGUE_ID_FOR_BOX_SCORE])
+    {
+        BBRBoxScoreViewController* defenseViewCntler = [segue destinationViewController];
         defenseViewCntler.isTmpPlistExist = self.isTmpPlistExist;
         defenseViewCntler.showOldRecordNo = self.showOldRecordNo + 1;
     }
@@ -225,10 +233,14 @@
         [self generateGradeXlsx:dataDic];
         [self generateTimeLineXlsx:dataDic];
     }
-    else
+    else if([[dataDic objectForKey:KEY_FOR_DATA_TYPE] isEqualToString:DEFENSE_TYPE_DATA])
     {
         self.isUploadingDefenseXlsx = YES;
         [self generateDefenseXlsx:dataDic];
+    }
+    else if([[dataDic objectForKey:KEY_FOR_DATA_TYPE] isEqualToString:BOX_RECORD_TYPE_DATA])
+    {
+        self.isUploadingDefenseXlsx = YES;
     }
 }
 

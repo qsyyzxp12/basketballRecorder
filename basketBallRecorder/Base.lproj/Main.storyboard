@@ -113,7 +113,6 @@
                                 </state>
                                 <connections>
                                     <action selector="recordButtonClicked:" destination="PnF-Fq-esl" eventType="touchUpInside" id="N0K-ps-qav"/>
-                                    <segue destination="jNK-wz-JN3" kind="show" identifier="showDefenseController" id="Efh-o5-9Ry"/>
                                 </connections>
                             </button>
                             <button opaque="NO" tag="1" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VZ9-4U-4Jy">
@@ -180,6 +179,8 @@
                         <outlet property="lastTwoCompetitionButton" destination="Ul1-EA-RTw" id="l4R-8J-2s3"/>
                         <outlet property="lastTwoStatusButton" destination="e0w-f1-8E3" id="Ivz-tx-kXg"/>
                         <segue destination="nlD-tb-rTD" kind="show" identifier="showOffenseController" id="S2w-8f-xfv"/>
+                        <segue destination="WEa-sW-Kew" kind="show" identifier="showBoxScoreController" id="cZf-JD-AQi"/>
+                        <segue destination="jNK-wz-JN3" kind="show" identifier="showDefenseController" id="cB5-dq-Og9"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vR1-iG-3Fw" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -243,6 +244,7 @@
                     <connections>
                         <segue destination="nlD-tb-rTD" kind="show" identifier="showOffenseController" id="kiT-7J-pL3"/>
                         <segue destination="jNK-wz-JN3" kind="show" identifier="showDefenseController" id="xey-7J-jAi"/>
+                        <segue destination="WEa-sW-Kew" kind="show" identifier="showBoxScoreController" id="8ya-WF-3Sh"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -266,7 +268,27 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZKR-WI-5Fa" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-871" y="848"/>
+            <point key="canvasLocation" x="-1165" y="848"/>
+        </scene>
+        <!--Box Score View Controller-->
+        <scene sceneID="wQa-cr-9va">
+            <objects>
+                <viewController id="WEa-sW-Kew" customClass="BBRBoxScoreViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="keK-fg-6Ql"/>
+                        <viewControllerLayoutGuide type="bottom" id="uj8-aO-2Hz"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Q0T-Ps-TGH">
+                        <rect key="frame" x="0.0" y="0.0" width="568" height="320"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dSk-WK-BcG" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-484" y="848"/>
         </scene>
         <!--Defense View Controller-->
         <scene sceneID="LZD-DF-RmM">
@@ -285,11 +307,12 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="XXk-Cl-7cK" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-102" y="848"/>
+            <point key="canvasLocation" x="188" y="848"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
+        <segue reference="cB5-dq-Og9"/>
         <segue reference="S2w-8f-xfv"/>
-        <segue reference="Efh-o5-9Ry"/>
+        <segue reference="cZf-JD-AQi"/>
     </inferredMetricsTieBreakers>
 </document>

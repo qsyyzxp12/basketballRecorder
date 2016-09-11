@@ -11,6 +11,8 @@
 #import "BBRTableViewCell.h"
 #import "BBRMenuViewController.h"
 #import "BBRDefenseViewController.h"
+#import "BBRBoxScoreViewController.h"
+#import "BBRMacro.h"
 
 #define TITLE_CELL_HEIGHT 40
 #define CELL_HEIGHT 60
@@ -82,7 +84,7 @@
     [dateFormatter setDateFormat:@"YYYY_MM_dd"];
     NSString* recordName = [NSString stringWithFormat:@"%@_vs_%@", self.myTeamName, self.opponentName];
     
-    if([segue.identifier isEqualToString:@"showOffenseController"])
+    if([segue.identifier isEqualToString:SEGUE_ID_FOR_OFFENSE])
     {
         BBROffenseViewController* mainViewCntler = [segue destinationViewController];
         mainViewCntler.playerNoSet = resultArray;
@@ -92,13 +94,23 @@
         NSString* filename = [NSString stringWithFormat:@"%@-%@_進攻", recordName, [dateFormatter stringFromDate:[NSDate date]]];
         mainViewCntler.recordName = filename;
     }
-    else if([segue.identifier isEqualToString:@"showDefenseController"])
+    else if([segue.identifier isEqualToString:SEGUE_ID_FOR_DEFENSE])
     {
         BBRDefenseViewController* mainViewCntler = [segue destinationViewController];
         mainViewCntler.playerNoSet = resultArray;
         mainViewCntler.playerCount = self.playerCount;
         
         NSString* filename = [NSString stringWithFormat:@"%@-%@_防守", recordName, [dateFormatter stringFromDate:[NSDate date]]];
+        mainViewCntler.recordName = filename;
+    }
+    else if([segue.identifier isEqualToString:SEGUE_ID_FOR_BOX_SCORE])
+    {
+        BBRBoxScoreViewController* mainViewCntler = [segue destinationViewController];
+        NSLog(@"%@", resultArray);
+        mainViewCntler.playerNoSet = resultArray;
+        mainViewCntler.playerCount = self.playerCount;
+        
+        NSString* filename = [NSString stringWithFormat:@"%@-%@_技術", recordName, [dateFormatter stringFromDate:[NSDate date]]];
         mainViewCntler.recordName = filename;
     }
 }
@@ -119,7 +131,7 @@
         }
     }
 
-  /*  if(self.playerCount < 5)
+    if(self.playerCount < 5)
     {
         UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"人數小於5人" message:nil preferredStyle: UIAlertControllerStyleAlert];
         UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action){}];
@@ -128,21 +140,26 @@
     }
     else
     {
-*/        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"紀錄項目" message:nil preferredStyle: UIAlertControllerStyleAlert];
+        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"紀錄項目" message:nil preferredStyle: UIAlertControllerStyleAlert];
         UIAlertAction* offenseAction = [UIAlertAction actionWithTitle:@"進攻" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
             {
-                [self performSegueWithIdentifier:@"showOffenseController" sender:nil];
+                [self performSegueWithIdentifier:SEGUE_ID_FOR_OFFENSE sender:nil];
             }];
         UIAlertAction* defenseAction = [UIAlertAction actionWithTitle:@"防守" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
             {
-                [self performSegueWithIdentifier:@"showDefenseController" sender:nil];
+                [self performSegueWithIdentifier:SEGUE_ID_FOR_DEFENSE sender:nil];
+            }];
+        UIAlertAction* boxScoreAction = [UIAlertAction actionWithTitle:@"技術" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+            {
+                [self performSegueWithIdentifier:SEGUE_ID_FOR_BOX_SCORE sender:nil];
             }];
         UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action){}];
         [alert addAction:offenseAction];
         [alert addAction:defenseAction];
+        [alert addAction:boxScoreAction];
         [alert addAction:cancelAction];
         [self presentViewController:alert animated:YES completion:nil];
-  //  }
+    }
 }
 
 /*

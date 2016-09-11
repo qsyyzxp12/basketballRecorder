@@ -34,9 +34,16 @@
 
 #define KEY_FOR_LAST_RECORD_QUARTER @"LastRecordQuarter"
 
+
+//Segue ID
+#define SEGUE_ID_FOR_DEFENSE @"showDefenseController"
+#define SEGUE_ID_FOR_OFFENSE @"showOffenseController"
+#define SEGUE_ID_FOR_BOX_SCORE @"showBoxScoreController"
+
 //Key using in tmpPlistDic
 #define OFFENSE_TYPE_DATA @"Offense"
 #define DEFENSE_TYPE_DATA @"Defense"
+#define BOX_RECORD_TYPE_DATA @"Box Record"
 #define KEY_FOR_DATA_TYPE @"Type"
 #define KEY_FOR_TIMELINE @"timeLine"
 #define KEY_FOR_TIME @"time"
