@@ -689,15 +689,14 @@
     
     [spreadsheet saveAs:sheetPath];
     
+    while(!self.isLoadMetaFinished);
     NSString* filename = [self addTimeLineXlsxFileVersionNumber:1];
-    
     NSArray* agus = [[NSArray alloc] initWithObjects:filename, sheetPath, nil];
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
 }
 
 -(void) generateGradeXlsx
 {
-    while(!self.isLoadMetaFinished);
     NSString* xlsxFilePath;
     if(self.isGradeXlsxFileExistInDropbox)
     {

@@ -234,8 +234,8 @@
     if([[dataDic objectForKey:KEY_FOR_DATA_TYPE] isEqualToString:OFFENSE_TYPE_DATA])
     {
         self.isUploadingDefenseXlsx = NO;
-        [self generateGradeXlsx:dataDic];
         [self generateTimeLineXlsx:dataDic];
+        [self generateGradeXlsx:dataDic];
     }
     else if([[dataDic objectForKey:KEY_FOR_DATA_TYPE] isEqualToString:DEFENSE_TYPE_DATA])
     {
@@ -362,6 +362,7 @@
     if (![[DBSession sharedSession] isLinked])
         [[DBSession sharedSession] linkFromController:self];
     
+    while(!self.isLoadMetaFinished);
     NSString* filename = [self addDefenseXlsxFileVersionNumber:1 recordName:recordName];
     
     NSArray* agus = [[NSArray alloc] initWithObjects:filename, sheetPath, nil];

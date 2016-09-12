@@ -388,7 +388,7 @@
         [[DBSession sharedSession] linkFromController:self];
     
     while(!self.isLoadMetaFinished);
-    NSString* filename = [NSString stringWithFormat:@"%@.xlsx", self.recordName];
+    NSString* filename = [self addXlsxFileVersionNumber:1];
     
     NSArray* agus = [[NSArray alloc] initWithObjects:filename, sheetPath, nil];
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
@@ -402,7 +402,7 @@
 }
 
 
--(NSString*) addDefenseXlsxFileVersionNumber:(int)no
+-(NSString*) addXlsxFileVersionNumber:(int)no
 {
     NSString* fileName;
     if(no == 1)
@@ -412,7 +412,7 @@
     for(NSString* fileNameInDropbox in self.fileNamesInDropbox)
     {
         if([fileName isEqualToString:fileNameInDropbox])
-            return [self addDefenseXlsxFileVersionNumber:no+1];
+            return [self addXlsxFileVersionNumber:no+1];
     }
     return fileName;
 }

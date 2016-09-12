@@ -359,7 +359,7 @@
         [[DBSession sharedSession] linkFromController:self];
     
     while(!self.isLoadMetaFinished);
-    NSString* filename = [NSString stringWithFormat:@"%@.xlsx", self.recordName];
+    NSString* filename = [self addDefenseXlsxFileVersionNumber:1];
     
     NSArray* agus = [[NSArray alloc] initWithObjects:filename, sheetPath, nil];
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
