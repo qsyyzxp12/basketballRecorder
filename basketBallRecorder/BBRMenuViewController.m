@@ -245,6 +245,7 @@
     else if([[dataDic objectForKey:KEY_FOR_DATA_TYPE] isEqualToString:BOX_RECORD_TYPE_DATA])
     {
         self.isUploadingDefenseXlsx = YES;
+        [self generateBoxScoreXlsxAndUpload:dataDic];
     }
 }
 
@@ -363,7 +364,139 @@
         [[DBSession sharedSession] linkFromController:self];
     
     while(!self.isLoadMetaFinished);
-    NSString* filename = [self addDefenseXlsxFileVersionNumber:1 recordName:recordName];
+    NSString* filename = [self addXlsxFileVersionNumber:1 recordName:recordName];
+    
+    NSArray* agus = [[NSArray alloc] initWithObjects:filename, sheetPath, nil];
+    [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
+    //  [self.restClient uploadFile:filename toPath:@"/" withParentRev:nil fromPath:sheetPath];
+}
+
+-(void) generateBoxScoreXlsxAndUpload:(NSDictionary*)dataDic
+{
+    //Generate the xlsx file
+    NSArray* playerDataArray = [dataDic objectForKey:KEY_FOR_GRADE];
+    NSArray* playerNoSet = [dataDic objectForKey:KEY_FOR_PLAYER_NO_SET];
+    NSString* recordName = [dataDic objectForKey:KEY_FOR_NAME];
+    NSArray* itemWayKeySet = [[NSArray alloc] initWithObjects:KEY_FOR_2_PTS, KEY_FOR_3_PTS, KEY_FOR_FREE_THROW, KEY_FOR_OR, KEY_FOR_DR, KEY_FOR_ASSIST, KEY_FOR_STEAL, KEY_FOR_BLOCK, KEY_FOR_TO, KEY_FOR_FOUL, KEY_FOR_TOTAL_TIME_ON_FLOOR, nil];
+    
+    NSString *documentPath = [[NSBundle mainBundle] pathForResource:@"spreadsheet_for_boxScore" ofType:@"xlsx"];
+    BRAOfficeDocumentPackage *spreadsheet = [BRAOfficeDocumentPackage open:documentPath];
+    BRAWorksheet *worksheet = spreadsheet.workbook.worksheets[0];
+    
+    NSString* cellRef;
+    NSArray* totalGradeArray = [playerDataArray objectAtIndex:0];
+    char outIndex = '\0';
+    char interIndex = 'A';
+    for(int i=0; i<playerNoSet.count+1; i++)
+    {
+        char outI = outIndex;
+        char interI = interIndex;
+        cellRef = [NSString stringWithFormat:@"%c%c%d", outI, interI, i+2];
+        if(i < playerNoSet.count)
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:playerNoSet[i]];
+        else
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:@"全隊"];
+        
+        NSDictionary* playerDataDic = [totalGradeArray objectAtIndex:i];
+        
+        cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:i+2];
+        if(i != playerNoSet.count)
+        {
+            int time = [[playerDataDic objectForKey:KEY_FOR_TOTAL_TIME_ON_FLOOR] intValue];
+            int min = time/60;
+            int sec = time%60;
+            NSString* timeStr = [NSString stringWithFormat:@"%02d:%02d", min, sec];
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:timeStr];
+        }
+        else
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:@"-"];
+        
+        
+        for(int j=0; j<3; j++)
+        {
+            NSDictionary* madeOrAttemptDic = [playerDataDic objectForKey:itemWayKeySet[j]];
+            NSInteger madeCount = [[madeOrAttemptDic objectForKey:KEY_FOR_MADE_COUNT] integerValue];
+            cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:i+2];
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:madeCount];
+            
+            NSInteger attemptCount =[[madeOrAttemptDic objectForKey:KEY_FOR_ATTEMPT_COUNT] integerValue];
+            cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:i+2];
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:attemptCount];
+            
+            if(i == playerNoSet.count)
+            {
+                cellRef = [NSString stringWithFormat:@"%c%c%d", outI, interI, i+3];
+                NSString* ratioStr;
+                if(attemptCount)
+                {
+                    float ratio = (float)madeCount/attemptCount;
+                    ratioStr = [NSString stringWithFormat:@"%.0f%c", ratio*100, '%'];
+                }
+                else
+                    ratioStr = @"0%";
+                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:ratioStr];
+            }
+        }
+        NSInteger orCount = [[playerDataDic objectForKey:itemWayKeySet[3]] integerValue];
+        cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:i+2];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:orCount];
+        
+        NSInteger drCount = [[playerDataDic objectForKey:itemWayKeySet[4]] integerValue];
+        cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:i+2];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:drCount];
+        
+        NSInteger trCount = orCount + drCount;
+        cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:i+2];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:trCount];
+        
+        for(int j=5; j<itemWayKeySet.count-1; j++)
+        {
+            NSInteger count = [[playerDataDic objectForKey:itemWayKeySet[j]] integerValue];
+            cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:i+2];
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:count];
+        }
+        
+        NSInteger totalPts = [[playerDataDic objectForKey:KEY_FOR_TOTAL_SCORE_GET] integerValue];
+        cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:i+2];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:totalPts];
+        
+    }
+    
+    outIndex = '\0';
+    interIndex = 'R';
+    for(int i=1; i<playerDataArray.count; i++)
+    {
+        cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:1];
+        NSString* title;
+        if(i < 5)
+            title = [NSString stringWithFormat:@"%dth", i];
+        else
+            title = [NSString stringWithFormat:@"OT%d", i-4];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:title];
+        
+        cellRef = [NSString stringWithFormat:@"%c%c2", outIndex, interIndex];
+        NSArray* totalGradeArray = [playerDataArray objectAtIndex:i];
+        NSDictionary* dic = [totalGradeArray objectAtIndex:playerNoSet.count];
+        NSInteger pts = [[dic objectForKey:KEY_FOR_TOTAL_SCORE_GET] integerValue];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:pts];
+    }
+    
+    
+    //Save the xlsx to the app space in the device
+    NSString *sheetPath = [NSString stringWithFormat:@"%@/Documents/spreadsheet.xlsx", NSHomeDirectory()];
+    NSFileManager* fm = [[NSFileManager alloc] init];
+    
+    if([fm fileExistsAtPath:sheetPath])
+        [fm removeItemAtPath:sheetPath error:nil];
+    
+    [spreadsheet saveAs:sheetPath];
+    
+    //Dropbox
+    if (![[DBSession sharedSession] isLinked])
+        [[DBSession sharedSession] linkFromController:self];
+    
+    while(!self.isLoadMetaFinished);
+    NSString* filename = [self addXlsxFileVersionNumber:1 recordName:recordName];
     
     NSArray* agus = [[NSArray alloc] initWithObjects:filename, sheetPath, nil];
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
@@ -458,7 +591,7 @@
     [spreadsheet saveAs:sheetPath];
     
     while(!self.isLoadMetaFinished);
-    NSString* filename = [self addTimeLineXlsxFileVersionNumber:1 name:name];
+    NSString* filename = [self addXlsxFileVersionNumber:1 recordName:name];
     
     NSArray* agus = [[NSArray alloc] initWithObjects:filename, sheetPath, nil];
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
@@ -610,22 +743,7 @@
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
 }
 
--(NSString*) addTimeLineXlsxFileVersionNumber:(int)no name:(NSString*) name
-{
-    NSString* fileName;
-    if(no == 1)
-        fileName = [NSString stringWithFormat:@"%@.xlsx", name];
-    else
-        fileName = [NSString stringWithFormat:@"%@(%d).xlsx", name, no];
-    for(NSString* fileNameInDropbox in self.fileNamesInDropbox)
-    {
-        if([fileName isEqualToString:fileNameInDropbox])
-            return [self addTimeLineXlsxFileVersionNumber:no+1 name:name];
-    }
-    return fileName;
-}
-
--(NSString*) addDefenseXlsxFileVersionNumber:(int)no recordName:(NSString*) recordName
+-(NSString*) addXlsxFileVersionNumber:(int)no recordName:(NSString*) recordName
 {
     NSString* fileName;
     if(no == 1)
@@ -635,7 +753,7 @@
     for(NSString* fileNameInDropbox in self.fileNamesInDropbox)
     {
         if([fileName isEqualToString:fileNameInDropbox])
-            return [self addDefenseXlsxFileVersionNumber:no+1 recordName:recordName];
+            return [self addXlsxFileVersionNumber:no+1 recordName:recordName];
     }
     return fileName;
 }

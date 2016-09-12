@@ -206,7 +206,7 @@
         [self.view addSubview:self.spinner];
         [self.view addSubview:self.loadingLabel];
         
-        [self performSelectorInBackground:@selector(xlsxFileGenerateAndUpload:) withObject:[NSNumber numberWithInt:self.quarterNo]];
+        [self performSelectorInBackground:@selector(xlsxFileGenerateAndUpload) withObject:[NSNumber numberWithInt:self.quarterNo]];
         self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] init];
         self.navigationItem.leftBarButtonItem.title = @"＜選單";
         self.navigationItem.leftBarButtonItem.target = self;
@@ -277,7 +277,7 @@
     return [NSString stringWithFormat:@"%c%c%d", *outIndex, *interIndex, rowIndex];
 }
 
--(void) xlsxFileGenerateAndUpload: (NSNumber*) quarterNo
+-(void) xlsxFileGenerateAndUpload
 {
     //Generate the xlsx file
     NSString *documentPath = [[NSBundle mainBundle] pathForResource:@"spreadsheet_for_boxScore" ofType:@"xlsx"];
@@ -363,10 +363,19 @@
         
     }
     
-    char index = 'S';
-    for(int i=1; i<5; i++)
+    outIndex = '\0';
+    interIndex = 'R';
+    for(int i=1; i<self.playerDataArray.count; i++)
     {
-        cellRef = [NSString stringWithFormat:@"%c2", index++];
+        cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:1];
+        NSString* title;
+        if(i < 5)
+            title = [NSString stringWithFormat:@"%dth", i];
+        else
+            title = [NSString stringWithFormat:@"OT%d", i-4];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:title];
+        
+        cellRef = [NSString stringWithFormat:@"%c%c2", outIndex, interIndex];
         NSArray* totalGradeArray = [self.playerDataArray objectAtIndex:i];
         NSDictionary* dic = [totalGradeArray objectAtIndex:self.playerCount];
         NSInteger pts = [[dic objectForKey:KEY_FOR_TOTAL_SCORE_GET] integerValue];
