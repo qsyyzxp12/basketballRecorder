@@ -25,10 +25,15 @@
 @property NSArray* attackWayKeySet;
 @property NSArray* playerNoSet;
 @property NSArray* normalDetailItemKeyArray;
+@property NSArray* normalDetailTitleArray;
 @property NSArray* secondDetailItemKeyArray;
+@property NSArray* secondDetailTitleArray;
 @property NSArray* PNRDetailItemKeyArray;
+@property NSArray* PNRDetailTitleArray;
 @property NSArray* PUDetailItemKeyArray;
+@property NSArray* PUDetailTitleArray;
 @property NSArray* TotalDetailItemArray;
+@property NSArray* TotalDetailTitleArray;
 @property NSArray* turnOverArray;
 @property BOOL isShowZoneGrade;
 @property BOOL isTmpPlistExist;

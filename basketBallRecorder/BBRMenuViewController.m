@@ -570,14 +570,14 @@
             rowI++;
         }
         
-        cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+        cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowI];
         [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:@"持球數"];
         
-        cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+        cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowI];
         NSString* holdBallCountStr = [NSString stringWithFormat:@"%d", holdBallCount];
         [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:holdBallCountStr];
         
-        for(int i=0; i<8; i++)
+        for(int i=0; i<6; i++)
             cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowIndex];
     }
     

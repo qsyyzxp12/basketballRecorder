@@ -36,10 +36,15 @@
     self.restClient.delegate = self;
     
     self.normalDetailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, nil];
+    self.normalDetailTitleArray = [NSArray arrayWithObjects:TITLE_FOR_DRIVE, TITLE_FOR_PULL_UP, TITLE_FOR_SPOT_UP, nil];
     self.secondDetailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, KEY_FOR_PUT_BACK, nil];
+    self.secondDetailTitleArray = [NSArray arrayWithObjects:TITLE_FOR_DRIVE, TITLE_FOR_PULL_UP, TITLE_FOR_SPOT_UP, TITLE_FOR_PUT_BACK, nil];
     self.PNRDetailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_BP, KEY_FOR_BD, KEY_FOR_MR, KEY_FOR_MPP, KEY_FOR_MPD, KEY_FOR_MPS, nil];
+    self.PNRDetailTitleArray = [NSArray arrayWithObjects:TITLE_FOR_BP, TITLE_FOR_BD, TITLE_FOR_MR, TITLE_FOR_MPP, TITLE_FOR_MPD, TITLE_FOR_MPS, nil];
     self.PUDetailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, KEY_FOR_SF, KEY_FOR_LP, nil];
+    self.PUDetailTitleArray = [NSArray arrayWithObjects:TITLE_FOR_DRIVE, TITLE_FOR_PULL_UP, TITLE_FOR_SPOT_UP, TITLE_FOR_SF, TITLE_FOR_LP, nil];
     self.TotalDetailItemArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_SPOT_UP, KEY_FOR_PULL_UP, KEY_FOR_SF, KEY_FOR_LP, KEY_FOR_PUT_BACK, KEY_FOR_BD, KEY_FOR_BD, KEY_FOR_MPD, KEY_FOR_MR, KEY_FOR_MPS, KEY_FOR_MPP, nil];
+    self.TotalDetailTitleArray = [NSArray arrayWithObjects:TITLE_FOR_DRIVE, TITLE_FOR_SPOT_UP, TITLE_FOR_PULL_UP, TITLE_FOR_SF, TITLE_FOR_LP, TITLE_FOR_PUT_BACK, TITLE_FOR_BD, TITLE_FOR_BD, TITLE_FOR_MPD, TITLE_FOR_MR, TITLE_FOR_MPS, TITLE_FOR_MPP, nil];
     self.turnOverArray = [NSArray arrayWithObjects:KEY_FOR_STOLEN, KEY_FOR_BAD_PASS, KEY_FOR_CHARGING, KEY_FOR_DROP, KEY_FOR_3_SENCOND, KEY_FOR_TRAVELING, KEY_FOR_TEAM, nil];
     
     self.attackWaySet = [[NSArray alloc] initWithObjects:@"快攻(F)", @"拉開單打(I)", @"無球掩護(OS)", @"空切(C)", @"切傳(DK)", @"其他(O)", @"高位擋拆(PNR)", @"二波進攻(2)", @"低位(PU)", @"失誤(TO)", @"Bonus", @"Time", nil];
@@ -161,7 +166,7 @@
     
     UIAlertAction* attemptAction = [UIAlertAction actionWithTitle:@"Attempt" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
-            [self pushEventIntoTimeLineWithResultKey:SIGNAL_FOR_ATTEMPT pts:self.ptr];
+            [self pushEventIntoTimeLineWithResultKey:SIGNAL_FOR_AND_ONE pts:self.ptr];
             self.zoneNo = 0;
         }];
     
@@ -179,7 +184,7 @@
                     [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:1];
                 }
             }
-            [self pushEventIntoTimeLineWithResultKey:SIGNAL_FOR_MADE pts:self.ptr+1];
+            [self pushEventIntoTimeLineWithResultKey:SIGNAL_FOR_AND_ONE pts:self.ptr+1];
             [self updateTmpPlist];
             self.zoneNo = 0;
         }];
@@ -354,18 +359,23 @@
             [self presentViewController:turnoverDetailAlert animated:YES completion:nil];
         }];
     
-    NSArray* detailItemsArray = [NSArray arrayWithObjects:self.normalDetailItemKeyArray, self.secondDetailItemKeyArray, self.PUDetailItemKeyArray, self.PNRDetailItemKeyArray, nil];
-
+    NSArray* detailTitleArray = [NSArray arrayWithObjects:self.normalDetailTitleArray, self.secondDetailTitleArray, self.PUDetailTitleArray, self.PNRDetailTitleArray, nil];
+    NSArray* detailKeyArray = [NSArray arrayWithObjects:self.normalDetailItemKeyArray, self.secondDetailItemKeyArray, self.PUDetailItemKeyArray, self.PNRDetailItemKeyArray, nil];
+    
     NSMutableArray* alertPtrArray = [[NSMutableArray alloc] init];
-    for(NSArray* itemArray in detailItemsArray)
+    for(int i=0; i< detailTitleArray.count; i++)
     {
+        NSArray* titleArray = [detailTitleArray objectAtIndex:i];
+        NSArray* keyArray = [detailKeyArray objectAtIndex:i];
         UIAlertController *detailAlert = [UIAlertController alertControllerWithTitle:@"細節" message:nil preferredStyle:UIAlertControllerStyleAlert];
     
-        for(NSString* detailKey in itemArray)
+        for(int j=0; j<titleArray.count; j++)
         {
-            UIAlertAction* detailAction = [UIAlertAction actionWithTitle:detailKey style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+            NSString* title = titleArray[j];
+            NSString* key = keyArray[j];
+            UIAlertAction* detailAction = [UIAlertAction actionWithTitle:title style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
             {
-                self.keyOfDetail = detailKey;
+                self.keyOfDetail = key;
                 [self presentViewController:self.resultAlert animated:YES completion:nil];
             }];
             [detailAlert addAction:detailAction];
@@ -669,14 +679,14 @@
             rowI++;
         }
         
-        cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+        cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowI];
         [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:@"持球數"];
         
-        cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+        cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowI];
         NSString* holdBallCountStr = [NSString stringWithFormat:@"%d", holdBallCount];
         [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:holdBallCountStr];
         
-        for(int i=0; i<8; i++)
+        for(int i=0; i<6; i++)
             cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowIndex];
     }
     
