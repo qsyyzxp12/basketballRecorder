@@ -202,11 +202,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C75EA4E81D86D3A700480B35 /* spreadsheet */ = {
+			isa = PBXGroup;
+			children = (
+				C75EA4E61D857D8F00480B35 /* spreadsheet_for_boxScore.xlsx */,
+				C74E944E1D7AF4B00056DC4E /* PPP數據.xlsx */,
+				C74CEDD31D797D4D00B5E704 /* spreadsheet_for_timeLine.xlsx */,
+				C75BA2AC1D70AB8600DEC1BF /* spreadsheet_for_defense.xlsx */,
+			);
+			name = spreadsheet;
+			path = basketBallRecorder;
+			sourceTree = "<group>";
+		};
 		C7CC36DC1C7AF17900B97149 = {
 			isa = PBXGroup;
 			children = (
 				C7CC36E71C7AF17900B97149 /* basketBallRecorder */,
 				C7CFDA131C9E496200DA7157 /* framework */,
+				C75EA4E81D86D3A700480B35 /* spreadsheet */,
 				C7CC37261C7B7F1600B97149 /* image */,
 				C7CC37011C7AF17900B97149 /* basketBallRecorderTests */,
 				C7CC370C1C7AF17900B97149 /* basketBallRecorderUITests */,
@@ -229,10 +242,6 @@
 		C7CC36E71C7AF17900B97149 /* basketBallRecorder */ = {
 			isa = PBXGroup;
 			children = (
-				C75EA4E61D857D8F00480B35 /* spreadsheet_for_boxScore.xlsx */,
-				C74E944E1D7AF4B00056DC4E /* PPP數據.xlsx */,
-				C74CEDD31D797D4D00B5E704 /* spreadsheet_for_timeLine.xlsx */,
-				C75BA2AC1D70AB8600DEC1BF /* spreadsheet_for_defense.xlsx */,
 				C7CC36EB1C7AF17900B97149 /* AppDelegate.h */,
 				C7CC36EC1C7AF17900B97149 /* AppDelegate.m */,
 				C74D79891D6EF32400624286 /* BBRMacro.h */,
