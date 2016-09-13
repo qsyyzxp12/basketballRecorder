@@ -2105,6 +2105,13 @@
         if (self.zoneNo)
             ((UIImageView*)[self.view viewWithTag:self.zoneNo]).highlighted = NO;
         
+        for(int i=0; i<5; i++)
+        {
+            [self updateTimeOnFloorOfPlayerWithIndexInOnFloorTableView:i];
+            NSMutableDictionary* dic = [self.playerOnFloorDataArray objectAtIndex:i];
+            [dic setObject:[NSNumber numberWithInt:self.timeCounter] forKey:KEY_FOR_TIME_WHEN_GO_ON_FLOOR];
+        }
+        
         [self.switchModeButton setTitle:@"紀錄" forState:UIControlStateNormal];
         [self.playerDataTableView reloadData];
         self.nextQuarterButton.hidden = NO;
