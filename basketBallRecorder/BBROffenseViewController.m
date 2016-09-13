@@ -2536,25 +2536,31 @@
     }
 
     NSArray* keyArr;
+    NSArray* titleArr;
     switch (self.attackWayNo)
     {
         case 7:
             keyArr = self.PNRDetailItemKeyArray;
+            titleArr = self.PNRDetailTitleArray;
             break;
         case 8:
             keyArr = self.secondDetailItemKeyArray;
+            titleArr = self.secondDetailTitleArray;
             break;
         case 9:
             keyArr = self.PUDetailItemKeyArray;
+            titleArr = self.PUDetailTitleArray;
             break;
         case 10:
             keyArr = self.turnOverArray;
             break;
         case 13:
             keyArr = self.TotalDetailItemArray;
+            titleArr = self.TotalDetailTitleArray;
             break;
         default:
             keyArr = self.normalDetailItemKeyArray;
+            titleArr = self.normalDetailTitleArray;
             break;
     }
     
@@ -2602,7 +2608,7 @@
         label.textAlignment = NSTextAlignmentCenter;
         if((self.attackWayNo != 13 && (indexPath.row != keyArr.count+3)) ||
            (self.attackWayNo == 13 && (indexPath.row != keyArr.count+4))  )
-            label.text = keyArr[indexPath.row - 2];
+            label.text = titleArr[indexPath.row - 2];
         else
             label.text = @"總計";
         [cell addSubview:label];
