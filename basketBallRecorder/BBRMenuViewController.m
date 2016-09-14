@@ -89,11 +89,9 @@
     self.restClient = [[DBRestClient alloc] initWithSession:[DBSession sharedSession]];
     self.restClient.delegate = self;
     
-    self.isGradeXlsxFileExistInDropbox = NO;
-    self.isDownloadXlsxFileFinished = NO;
     self.isLoadMetaFinished = NO;
     self.loadMetaType = PPP_GRADE;
-    [self.restClient loadMetadata:@"/" atRev:nil];
+    [self.restClient loadMetadata:@"/"];
 }
 
 -(void) updateButtons
@@ -215,22 +213,32 @@
     self.loadingLabel.text = @"Uploading";
     [self.view addSubview:self.loadingLabel];
     [self.view addSubview:self.spinner];
-    self.isLoadMetaFinished = NO;
-    self.loadMetaType = FILE_NAMES;
-    [self.restClient loadMetadata:@"/"];
-    NSThread *newThread = [[NSThread alloc] initWithTarget:self selector:@selector(xlsxFileGenerateAndUpload:) object:sender];
-
-    [newThread start];
-}
-
--(void) xlsxFileGenerateAndUpload:(UIButton*) sender
-{
     NSString* recordPlistPath = [NSString stringWithFormat:@"%@/Documents/record.plist", NSHomeDirectory()];
     NSArray* recordPlistArray = [NSArray arrayWithContentsOfFile:recordPlistPath];
     
     int menuCount = (int)[recordPlistArray count];
     NSDictionary* dataDic = [recordPlistArray objectAtIndex:menuCount-(6-sender.tag)];
     
+    while(!self.isLoadMetaFinished);
+    self.isFolderExistAlready = NO;
+    self.isLoadMetaFinished = NO;
+    self.loadMetaType = FOLDER_EXIST;
+    self.folderName = [dataDic objectForKey:KEY_FOR_DATE];
+    [self.restClient loadMetadata:@"/"];
+    NSThread *newThread = [[NSThread alloc] initWithTarget:self selector:@selector(xlsxFileGenerateAndUpload:) object:dataDic];
+
+    [newThread start];
+}
+
+-(void) xlsxFileGenerateAndUpload:(NSDictionary*) dataDic
+{
+    while(!self.isLoadMetaFinished);
+    if(self.isFolderExistAlready)
+    {
+        self.isLoadMetaFinished = NO;
+        self.loadMetaType = FILE_NAMES;
+        [self performSelectorOnMainThread:@selector(loadFolderMetaData) withObject:nil waitUntilDone:NO];
+    }
     if([[dataDic objectForKey:KEY_FOR_DATA_TYPE] isEqualToString:OFFENSE_TYPE_DATA])
     {
         self.isUploadingDefenseXlsx = NO;
@@ -247,6 +255,12 @@
         self.isUploadingDefenseXlsx = YES;
         [self generateBoxScoreXlsxAndUpload:dataDic];
     }
+}
+
+-(void)loadFolderMetaData
+{
+    NSString* path = [NSString stringWithFormat:@"/%@", self.folderName];
+    [self.restClient loadMetadata:path];
 }
 
 -(void) uploadXlsxFile:(NSArray*) parameters
@@ -365,8 +379,9 @@
     
     while(!self.isLoadMetaFinished);
     NSString* filename = [self addXlsxFileVersionNumber:1 recordName:recordName];
+    NSString* dropBoxpath = [NSString stringWithFormat:@"%@/%@", self.folderName, filename];
     
-    NSArray* agus = [[NSArray alloc] initWithObjects:filename, sheetPath, nil];
+    NSArray* agus = [[NSArray alloc] initWithObjects: dropBoxpath, sheetPath, nil];
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
     //  [self.restClient uploadFile:filename toPath:@"/" withParentRev:nil fromPath:sheetPath];
 }
@@ -496,9 +511,11 @@
         [[DBSession sharedSession] linkFromController:self];
     
     while(!self.isLoadMetaFinished);
+    NSLog(@"%@", self.fileNamesInDropbox);
     NSString* filename = [self addXlsxFileVersionNumber:1 recordName:recordName];
+    NSString* dropBoxpath = [NSString stringWithFormat:@"%@/%@",self.folderName, filename];
     
-    NSArray* agus = [[NSArray alloc] initWithObjects:filename, sheetPath, nil];
+    NSArray* agus = [[NSArray alloc] initWithObjects: dropBoxpath, sheetPath, nil];
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
     //  [self.restClient uploadFile:filename toPath:@"/" withParentRev:nil fromPath:sheetPath];
 }
@@ -592,8 +609,9 @@
     
     while(!self.isLoadMetaFinished);
     NSString* filename = [self addXlsxFileVersionNumber:1 recordName:name];
+    NSString* dropBoxpath = [NSString stringWithFormat:@"%@/%@",self.folderName, filename];
     
-    NSArray* agus = [[NSArray alloc] initWithObjects:filename, sheetPath, nil];
+    NSArray* agus = [[NSArray alloc] initWithObjects:dropBoxpath, sheetPath, nil];
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
 }
 
@@ -794,33 +812,46 @@
 
 -(void)restClient:(DBRestClient *)client loadedMetadata:(DBMetadata *)metadata
 {
-    
-    self.fileNamesInDropbox = [[NSMutableArray alloc] init];
-    if(metadata.isDirectory)
+    if(self.loadMetaType == PPP_GRADE)
     {
-        if(self.loadMetaType == PPP_GRADE)
+        self.isGradeXlsxFileExistInDropbox = NO;
+        NSString* PPPxlsxFileName = [NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE];
+        for (DBMetadata *file in metadata.contents)
         {
-            NSString* PPPxlsxFileName = [NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE];
-            for (DBMetadata *file in metadata.contents)
+            if([file.filename isEqualToString:PPPxlsxFileName])
             {
-                [self.fileNamesInDropbox addObject:file.filename];
-                if([file.filename isEqualToString:PPPxlsxFileName])
-                {
-                    self.isGradeXlsxFileExistInDropbox = YES;
-                    NSString *sheetPath = [NSString stringWithFormat:@"%@/Documents/%@.xlsx", NSHomeDirectory(), NAME_OF_THE_FINAL_XLSX_FILE];
-                    self.isDownloadXlsxFileFinished = NO;
-                    [self.restClient loadFile:file.path atRev:nil intoPath:sheetPath];
-                }
+                self.isGradeXlsxFileExistInDropbox = YES;
+                NSString *sheetPath = [NSString stringWithFormat:@"%@/Documents/%@.xlsx", NSHomeDirectory(), NAME_OF_THE_FINAL_XLSX_FILE];
+                self.isDownloadXlsxFileFinished = NO;
+                [self.restClient loadFile:file.path atRev:nil intoPath:sheetPath];
             }
-            [self updateButtons];
         }
-        else
-        {
-            for (DBMetadata *file in metadata.contents)
-                [self.fileNamesInDropbox addObject:file.filename];
-        }
+        [self updateButtons];
+        self.isLoadMetaFinished = YES;
     }
-    self.isLoadMetaFinished = YES;
+    else if(self.loadMetaType == FOLDER_EXIST)
+    {
+        for (DBMetadata *folder in metadata.contents)
+        {
+            if(folder.isDirectory && [folder.filename isEqualToString:self.folderName])
+            {
+                self.isFolderExistAlready = YES;
+                break;
+            }
+        }
+        if(!self.isFolderExistAlready)
+            [self.restClient createFolder:[NSString stringWithFormat:@"/%@", self.folderName]];
+        else
+            self.isLoadMetaFinished = YES;
+        
+    }
+    else
+    {
+        self.fileNamesInDropbox = [[NSMutableArray alloc] init];
+        for (DBMetadata *file in metadata.contents)
+            [self.fileNamesInDropbox addObject:file.filename];
+        self.isLoadMetaFinished = YES;
+    }
 }
 
 - (void)restClient:(DBRestClient *)client loadMetadataFailedWithError:(NSError *)error
@@ -870,6 +901,12 @@
 -(void)restClient:(DBRestClient *)client deletePathFailedWithError:(NSError *)error
 {
     NSLog(@"File deleted: %@", error);
+}
+
+-(void)restClient:(DBRestClient *)client createdFolder:(DBMetadata *)folder
+{
+    NSLog(@"Folder created: %@", folder.path);
+    self.isLoadMetaFinished = YES;
 }
 
 /*

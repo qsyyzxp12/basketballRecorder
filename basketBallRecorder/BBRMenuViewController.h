@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <DropboxSDK/DropboxSDK.h>
 
-enum LoadMetaType {PPP_GRADE, FILE_NAMES};
+enum LoadMetaType {PPP_GRADE, FILE_NAMES, FOLDER_EXIST};
 
 @interface BBRMenuViewController : UIViewController <DBRestClientDelegate>
 @property (weak, nonatomic) IBOutlet UIButton *addNewCompetitionButton;
@@ -36,6 +36,8 @@ enum LoadMetaType {PPP_GRADE, FILE_NAMES};
 @property BOOL isLoadMetaFinished;
 @property BOOL isDownloadXlsxFileFinished;
 @property BOOL isUploadingDefenseXlsx;
+@property BOOL isFolderExistAlready;
+@property NSString* folderName;
 @property enum LoadMetaType loadMetaType;
 
 @property UIAlertController* dirtyStatusAlert;

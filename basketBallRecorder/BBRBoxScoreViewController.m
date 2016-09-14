@@ -171,6 +171,11 @@
     //Update Record.plist
     if(!self.showOldRecordNo)
     {
+        
+        NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"YYYY_MM_dd"];
+        NSString* date = [dateFormatter stringFromDate:[NSDate date]];
+        
         NSString* recordPlistPath = [NSString stringWithFormat:@"%@/Documents/record.plist", NSHomeDirectory()];
         NSMutableArray* recordPlistArray = [NSMutableArray arrayWithContentsOfFile:recordPlistPath];
         
@@ -180,6 +185,7 @@
         [newItem setObject:self.playerNoSet forKey:KEY_FOR_PLAYER_NO_SET];
         [newItem setObject:self.recordName forKey:KEY_FOR_NAME];
         [newItem setObject:BOX_RECORD_TYPE_DATA forKey:KEY_FOR_DATA_TYPE];
+        [newItem setObject:date forKey:KEY_FOR_DATE];
         
         if([recordPlistArray count] < 5)
             [recordPlistArray addObject:newItem];
@@ -1265,7 +1271,6 @@
         {
             for (DBMetadata *file in metadata.contents)
             {
-                NSLog(@"xxxx %@, %@", file.filename, folderName);
                 if(file.isDirectory && [file.filename isEqualToString:folderName])
                 {
                     self.isFolderExistAlready = YES;
@@ -1293,7 +1298,8 @@
 }
 
 - (void)restClient:(DBRestClient *)client uploadedFile:(NSString *)destPath
-              from:(NSString *)srcPath metadata:(DBMetadata *)metadata {
+              from:(NSString *)srcPath metadata:(DBMetadata *)metadata
+{
     NSLog(@"File uploaded successfully to path: %@", metadata.path);
     [self performSelectorOnMainThread:@selector(removeSpinningView) withObject:nil waitUntilDone:NO];
 }

@@ -492,6 +492,10 @@
     //Update Record.plist
     if(!self.showOldRecordNo)
     {
+        NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"YYYY_MM_dd"];
+        NSString* date = [dateFormatter stringFromDate:[NSDate date]];
+        
         NSString* recordPlistPath = [NSString stringWithFormat:@"%@/Documents/record.plist", NSHomeDirectory()];
         NSMutableArray* recordPlistArray = [NSMutableArray arrayWithContentsOfFile:recordPlistPath];
         
@@ -503,6 +507,7 @@
         [newItem setObject:self.opponentName forKey:KEY_FOR_OPPONENT_NAME];
         [newItem setObject:self.timeLineReordeArray forKey:KEY_FOR_TIMELINE];
         [newItem setObject:OFFENSE_TYPE_DATA forKey:KEY_FOR_DATA_TYPE];
+        [newItem setObject:date forKey:KEY_FOR_DATE];
         
         if([recordPlistArray count] < 5)
             [recordPlistArray addObject:newItem];
@@ -2821,7 +2826,6 @@
             NSString* PPPxlsxFileName = [NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE];
             for (DBMetadata *file in metadata.contents)
             {
-                NSLog(@"xxxx %@, %@", file.filename, folderName);
                 if(file.isDirectory && [file.filename isEqualToString:folderName])
                 {
                     self.isFolderExistAlready = YES;

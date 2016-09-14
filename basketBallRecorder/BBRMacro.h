@@ -52,6 +52,7 @@
 #define KEY_FOR_OPPONENT_NAME @"OpponentName"
 #define KEY_FOR_PLAYER_NO_SET @"PlayerNoSet"
 #define KEY_FOR_ON_FLOOR_PLAYER_DATA @"PlayersOnFloorData"
+#define KEY_FOR_DATE @"Date"
 
 //Offense
 #define KEY_FOR_FASTBREAK @"Fastbreak"
