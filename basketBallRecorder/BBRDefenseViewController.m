@@ -646,7 +646,7 @@
     goodLabel.layer.borderWidth = 1;
     [self.defenseRecordeView addSubview:goodLabel];
     
-    NSArray* defenseTypeArray = [NSArray arrayWithObjects:@"Tip", @"Close  Out", @"Stop Ball", @"BLK", @"STL", @"8/24", @"Double Team", @"Loose  Ball", @"OR", @"DR", @"OR Tip", @"AST", @"TO", @"WIDE OPEN", @"NO BLOCK OUT", @"DEF. ASS", @"Blown    BY", nil];
+    NSArray* defenseTypeArray = [NSArray arrayWithObjects:@"Tip", @"Close  Out", @"Stop Ball", @"BLK", @"STL", @"8/24", @"Double Team", @"Loose  Ball", @"OR", @"DR", @"OR Tip", @"AST", @"TO", @"WIDE OPEN", @"NO\nBLOCK\nOUT", @"DEF. ASS", @"Blown    BY", nil];
     
     for(int i=0; i<8; i++)
     {
@@ -691,7 +691,10 @@
         defenseButton.tag = 20+i+12;
         defenseButton.layer.borderWidth = 1;
         defenseButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-        defenseButton.titleLabel.numberOfLines = 2;
+        if(i != 2)
+            defenseButton.titleLabel.numberOfLines = 2;
+        else
+            defenseButton.titleLabel.numberOfLines = 3;
         defenseButton.titleLabel.adjustsFontSizeToFitWidth = YES;
         [defenseButton addTarget:self action:@selector(defenseButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
         [defenseButton setShowsTouchWhenHighlighted:YES];
