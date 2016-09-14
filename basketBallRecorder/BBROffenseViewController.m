@@ -2810,7 +2810,6 @@
 {
     if(self.isLoadingRootMeta)
     {
-        self.fileNamesInDropbox = [[NSMutableArray alloc] init];
         self.isGradeXlsxFileExistInDropbox = NO;
         
         NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
@@ -2845,6 +2844,7 @@
     }
     else
     {
+        self.fileNamesInDropbox = [[NSMutableArray alloc] init];
         for(DBMetadata* file in metadata.contents)
             [self.fileNamesInDropbox addObject:file.filename];
         self.isLoadFolderMetaFinished = YES;

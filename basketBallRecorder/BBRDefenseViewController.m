@@ -200,6 +200,7 @@
     if(generateXlsxFile)
     {
         self.isLoadMetaFinished = NO;
+        self.isLoadingRootMeta = YES;
         [self.restClient loadMetadata:@"/"];
         
         [self.view addSubview:self.spinView];
@@ -346,25 +347,41 @@
     }
     
     //Save the xlsx to the app space in the device
-    NSString *sheetPath = [NSString stringWithFormat:@"%@/Documents/spreadsheet.xlsx", NSHomeDirectory()];
+    NSString *localPath = [NSString stringWithFormat:@"%@/Documents/spreadsheet.xlsx", NSHomeDirectory()];
     NSFileManager* fm = [[NSFileManager alloc] init];
     
-    if([fm fileExistsAtPath:sheetPath])
-        [fm removeItemAtPath:sheetPath error:nil];
+    if([fm fileExistsAtPath:localPath])
+        [fm removeItemAtPath:localPath error:nil];
     
-    [spreadsheet saveAs:sheetPath];
+    [spreadsheet saveAs:localPath];
     
     //Dropbox
     if (![[DBSession sharedSession] isLinked])
         [[DBSession sharedSession] linkFromController:self];
     
     while(!self.isLoadMetaFinished);
+    NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"YYYY_MM_dd"];
+    if(self.isFolderExistAlready)
+    {
+        self.isLoadFolderMetaFinished = NO;
+        self.isLoadingRootMeta = NO;
+        [self performSelectorOnMainThread:@selector(loadFolderMetaData:) withObject:dateFormatter waitUntilDone:NO];
+        while(!self.isLoadFolderMetaFinished);
+    }
     NSString* filename = [self addDefenseXlsxFileVersionNumber:1];
+    NSString* dropBoxpath = [NSString stringWithFormat:@"%@/%@",[dateFormatter stringFromDate:[NSDate date]], filename];
     
-    NSArray* agus = [[NSArray alloc] initWithObjects:filename, sheetPath, nil];
+    NSArray* agus = [[NSArray alloc] initWithObjects:dropBoxpath, localPath, nil];
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
     //  [self.restClient uploadFile:filename toPath:@"/" withParentRev:nil fromPath:sheetPath];
   
+}
+
+-(void)loadFolderMetaData:(NSDateFormatter*) dateFormatter
+{
+    NSString* path = [NSString stringWithFormat:@"/%@", [dateFormatter stringFromDate:[NSDate date]]];
+    [self.restClient loadMetadata:path];
 }
 
 -(void) uploadXlsxFile:(NSArray*) parameters
@@ -1190,13 +1207,36 @@
 
 -(void)restClient:(DBRestClient *)client loadedMetadata:(DBMetadata *)metadata
 {
-    self.fileNamesInDropbox = [[NSMutableArray alloc] init];
-    if(metadata.isDirectory)
+    if(self.isLoadingRootMeta)
     {
-        for (DBMetadata *file in metadata.contents)
-            [self.fileNamesInDropbox addObject:file.filename];
+        NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"YYYY_MM_dd"];
+        NSString* folderName = [dateFormatter stringFromDate:[NSDate date]];
+        self.isFolderExistAlready = NO;
+        if(metadata.isDirectory)
+        {
+            for (DBMetadata *file in metadata.contents)
+            {
+                NSLog(@"xxxx %@, %@", file.filename, folderName);
+                if(file.isDirectory && [file.filename isEqualToString:folderName])
+                {
+                    self.isFolderExistAlready = YES;
+                    break;
+                }
+            }
+        }
+        if(!self.isFolderExistAlready)
+            [self.restClient createFolder:[NSString stringWithFormat:@"/%@", folderName]];
+        else
+            self.isLoadMetaFinished = YES;
     }
-    self.isLoadMetaFinished = YES;
+    else
+    {
+        self.fileNamesInDropbox = [[NSMutableArray alloc] init];
+        for(DBMetadata* file in metadata.contents)
+            [self.fileNamesInDropbox addObject:file.filename];
+        self.isLoadFolderMetaFinished = YES;
+    }
 }
 
 - (void)restClient:(DBRestClient *)client loadMetadataFailedWithError:(NSError *)error
@@ -1205,13 +1245,21 @@
 }
 
 - (void)restClient:(DBRestClient *)client uploadedFile:(NSString *)destPath
-              from:(NSString *)srcPath metadata:(DBMetadata *)metadata {
+              from:(NSString *)srcPath metadata:(DBMetadata *)metadata
+{
     NSLog(@"File uploaded successfully to path: %@", metadata.path);
     [self performSelectorOnMainThread:@selector(removeSpinningView) withObject:nil waitUntilDone:NO];
 }
 
-- (void)restClient:(DBRestClient *)client uploadFileFailedWithError:(NSError *)error {
+- (void)restClient:(DBRestClient *)client uploadFileFailedWithError:(NSError *)error
+{
     NSLog(@"File upload failed with error: %@", error);
+}
+
+-(void)restClient:(DBRestClient *)client createdFolder:(DBMetadata *)folder
+{
+    NSLog(@"Folder created: %@", folder.path);
+    self.isLoadMetaFinished = YES;
 }
 
 /*

@@ -27,6 +27,9 @@
 @property BOOL isRecordMode;
 @property BOOL isTimerRunning;
 @property BOOL isLoadMetaFinished;
+@property BOOL isLoadingRootMeta;
+@property BOOL isFolderExistAlready;
+@property BOOL isLoadFolderMetaFinished;
 @property int playerCount;
 @property int playerSelectedIndex;
 @property int quarterNo;
