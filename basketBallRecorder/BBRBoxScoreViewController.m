@@ -1302,6 +1302,12 @@
     NSLog(@"File upload failed with error: %@", error);
 }
 
+-(void)restClient:(DBRestClient *)client createdFolder:(DBMetadata *)folder
+{
+    NSLog(@"Folder created: %@", folder.path);
+    self.isLoadMetaFinished = YES;
+}
+
 /*
  #pragma mark - Navigation
  
