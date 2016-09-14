@@ -523,6 +523,7 @@
     if(generateXlsxFile)
     {
         self.isLoadMetaFinished = NO;
+        self.isLoadingRootMeta = YES;
         [self.restClient loadMetadata:@"/"];
         
         [self.view addSubview:self.spinView];
@@ -580,6 +581,7 @@
     self.playerNoSet = [tmpPlistDic objectForKey:KEY_FOR_PLAYER_NO_SET];
     self.quarterNo = [[tmpPlistDic objectForKey:KEY_FOR_LAST_RECORD_QUARTER] intValue];
     self.opponentName = [tmpPlistDic objectForKey:KEY_FOR_OPPONENT_NAME];
+    self.recordName = [tmpPlistDic objectForKey:KEY_FOR_NAME];
     self.timeCounter = [(NSNumber*)[tmpPlistDic objectForKey:KEY_FOR_TIME] intValue];
     self.playerCount = (int)[self.playerNoSet count];
     self.playerOnFloorDataArray = [tmpPlistDic objectForKey:KEY_FOR_ON_FLOOR_PLAYER_DATA];
@@ -691,18 +693,35 @@
     }
     
     //Save the xlsx to the app space in the device
-    NSString *sheetPath = [NSString stringWithFormat:@"%@/Documents/spreadsheet_for_timeLine.xlsx", NSHomeDirectory()];
+    NSString *localPath = [NSString stringWithFormat:@"%@/Documents/spreadsheet_for_timeLine.xlsx", NSHomeDirectory()];
     NSFileManager* fm = [[NSFileManager alloc] init];
     
-    if([fm fileExistsAtPath:sheetPath])
-        [fm removeItemAtPath:sheetPath error:nil];
+    if([fm fileExistsAtPath:localPath])
+        [fm removeItemAtPath:localPath error:nil];
     
-    [spreadsheet saveAs:sheetPath];
+    [spreadsheet saveAs:localPath];
     
     while(!self.isLoadMetaFinished);
+    NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"YYYY_MM_dd"];
+    if(self.isFolderExistAlready)
+    {
+        self.isLoadFolderMetaFinished = NO;
+        self.isLoadingRootMeta = NO;
+        [self performSelectorOnMainThread:@selector(loadFolderMetaData:) withObject:dateFormatter waitUntilDone:NO];
+        while(!self.isLoadFolderMetaFinished);
+    }
     NSString* filename = [self addTimeLineXlsxFileVersionNumber:1];
-    NSArray* agus = [[NSArray alloc] initWithObjects:filename, sheetPath, nil];
+    
+    NSString* dropBoxpath = [NSString stringWithFormat:@"%@/%@",[dateFormatter stringFromDate:[NSDate date]], filename];
+    NSArray* agus = [[NSArray alloc] initWithObjects:dropBoxpath, localPath, nil];
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
+}
+
+-(void)loadFolderMetaData:(NSDateFormatter*) dateFormatter
+{
+    NSString* path = [NSString stringWithFormat:@"/%@", [dateFormatter stringFromDate:[NSDate date]]];
+    [self.restClient loadMetadata:path];
 }
 
 -(void) generateGradeXlsx
@@ -2676,7 +2695,6 @@
             turnOverLabel.text = @"0";
         [cell addSubview:label];
         [cell addSubview:turnOverLabel];
-        
     }
     else
     {
@@ -2790,24 +2808,48 @@
 
 -(void)restClient:(DBRestClient *)client loadedMetadata:(DBMetadata *)metadata
 {
-    self.fileNamesInDropbox = [[NSMutableArray alloc] init];
-    self.isGradeXlsxFileExistInDropbox = NO;
-    if(metadata.isDirectory)
+    if(self.isLoadingRootMeta)
     {
-        NSString* PPPxlsxFileName = [NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE];
-        for (DBMetadata *file in metadata.contents)
+        self.fileNamesInDropbox = [[NSMutableArray alloc] init];
+        self.isGradeXlsxFileExistInDropbox = NO;
+        
+        NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"YYYY_MM_dd"];
+        NSString* folderName = [dateFormatter stringFromDate:[NSDate date]];
+        self.isFolderExistAlready = NO;
+        if(metadata.isDirectory)
         {
-            [self.fileNamesInDropbox addObject:file.filename];
-            if([file.filename isEqualToString:PPPxlsxFileName])
+            NSString* PPPxlsxFileName = [NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE];
+            for (DBMetadata *file in metadata.contents)
             {
-                self.isGradeXlsxFileExistInDropbox = YES;
-                NSString *sheetPath = [NSString stringWithFormat:@"%@/Documents/%@.xlsx", NSHomeDirectory(), NAME_OF_THE_FINAL_XLSX_FILE];
-                self.isDownloadXlsxFileFinished = NO;
-                [self.restClient loadFile:file.path intoPath:sheetPath];
+                NSLog(@"xxxx %@, %@", file.filename, folderName);
+                if(file.isDirectory && [file.filename isEqualToString:folderName])
+                {
+                    self.isFolderExistAlready = YES;
+                }
+                else if([file.filename isEqualToString:PPPxlsxFileName])
+                {
+                    self.isGradeXlsxFileExistInDropbox = YES;
+                    NSString *sheetPath = [NSString stringWithFormat:@"%@/Documents/%@.xlsx", NSHomeDirectory(), NAME_OF_THE_FINAL_XLSX_FILE];
+                    self.isDownloadXlsxFileFinished = NO;
+                    [self.restClient loadFile:file.path intoPath:sheetPath];
+                }
+                if(self.isFolderExistAlready && self.isGradeXlsxFileExistInDropbox)
+                    break;
             }
         }
+        if(!self.isFolderExistAlready)
+            [self.restClient createFolder:[NSString stringWithFormat:@"/%@", folderName]];
+        else
+            self.isLoadMetaFinished = YES;
     }
-    self.isLoadMetaFinished = YES;
+    else
+    {
+        for(DBMetadata* file in metadata.contents)
+            [self.fileNamesInDropbox addObject:file.filename];
+        self.isLoadFolderMetaFinished = YES;
+    }
+    
 }
 
 - (void)restClient:(DBRestClient *)client loadMetadataFailedWithError:(NSError *)error
@@ -2851,6 +2893,12 @@
 -(void)restClient:(DBRestClient *)client deletePathFailedWithError:(NSError *)error
 {
     NSLog(@"File deleted: %@", error);
+}
+
+-(void)restClient:(DBRestClient *)client createdFolder:(DBMetadata *)folder
+{
+    NSLog(@"Folder created: %@", folder.path);
+    self.isLoadMetaFinished = YES;
 }
 /*
 #pragma mark - Navigation

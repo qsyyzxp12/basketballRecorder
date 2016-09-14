@@ -43,6 +43,9 @@
 @property BOOL isGradeXlsxFileExistInDropbox;
 @property BOOL isLoadMetaFinished;
 @property BOOL isDownloadXlsxFileFinished;
+@property BOOL isLoadingRootMeta;
+@property BOOL isLoadFolderMetaFinished;
+@property BOOL isFolderExistAlready;
 @property int uploadFilesCount;
 @property int playerCount;
 @property int playerSelectedIndex;
