@@ -369,10 +369,10 @@
     [dateFormatter setDateFormat:@"YYYY_MM_dd"];
     if(self.isFolderExistAlready)
     {
-        self.isLoadFolderMetaFinished = NO;
+        self.isLoadMetaFinished = NO;
         self.isLoadingRootMeta = NO;
         [self performSelectorOnMainThread:@selector(loadFolderMetaData:) withObject:dateFormatter waitUntilDone:NO];
-        while(!self.isLoadFolderMetaFinished);
+        while(!self.isLoadMetaFinished);
     }
     NSString* filename = [self addDefenseXlsxFileVersionNumber:1];
     NSString* dropBoxpath = [NSString stringWithFormat:@"%@/%@",[dateFormatter stringFromDate:[NSDate date]], filename];
@@ -1239,7 +1239,7 @@
         self.fileNamesInDropbox = [[NSMutableArray alloc] init];
         for(DBMetadata* file in metadata.contents)
             [self.fileNamesInDropbox addObject:file.filename];
-        self.isLoadFolderMetaFinished = YES;
+        self.isLoadMetaFinished = YES;
     }
 }
 
