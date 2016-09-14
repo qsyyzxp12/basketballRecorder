@@ -2249,7 +2249,7 @@
                 cell.NoLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, CELL_WIDTH, TITLE_CELL_HEIGHT)];
                 cell.NoLabel.textAlignment = NSTextAlignmentCenter;
                 cell.NoLabel.backgroundColor = [UIColor lightGrayColor];
-                cell.NoLabel.text = @"PPP";
+                cell.NoLabel.text = TITLE_FOR_PLAYER_NO_TABLEVIEW;
                 [cell addSubview:cell.NoLabel];
                 cell.selectionStyle = UITableViewCellSelectionStyleNone;
             }

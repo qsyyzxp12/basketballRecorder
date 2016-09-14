@@ -34,6 +34,7 @@
 
 #define KEY_FOR_LAST_RECORD_QUARTER @"LastRecordQuarter"
 
+#define TITLE_FOR_PLAYER_NO_TABLEVIEW @"球員";
 
 //Segue ID
 #define SEGUE_ID_FOR_DEFENSE @"showDefenseController"
