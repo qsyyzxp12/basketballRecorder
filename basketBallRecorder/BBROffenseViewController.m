@@ -870,7 +870,7 @@
     {
         char outIndex = '\0';
         char interIndex = 'A';
-        int rowIndex = 1;
+        int rowIndex = 0;
         
         BRAWorksheet *worksheet = [self lookForWorkSheetWithPlayerIndex:i spreadSheet:spreadsheet type:SHOT_CHART];
         NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
@@ -880,7 +880,7 @@
         NSString *cellContent;
         do
         {
-            rowIndex++;
+            rowIndex = rowIndex + 2;
             cellRef = [NSString stringWithFormat:@"%c%c%d", outIndex, interIndex, rowIndex];
             cellContent = [[worksheet cellForCellReference:cellRef] stringValue];
         }while(cellContent && ![cellContent isEqualToString:@""]);
@@ -965,7 +965,6 @@
             [[worksheet cellForCellReference:ratioCellRefArray[j] shouldCreate:YES] setStringValue:ratio];
             [[worksheet cellForCellReference:madeAttemptCellRefArray[j] shouldCreate:YES] setStringValue:madeAndAttempt];
         }
-        
     }
     
     //Save the xlsx to the app space in the device
@@ -3036,7 +3035,7 @@
     NSLog(@"File uploaded successfully to path: %@", metadata.path);
     self.uploadFilesCount++;
     
-    if(self.uploadFilesCount == 3)
+    if(self.uploadFilesCount == 4)
         [self performSelectorOnMainThread:@selector(removeSpinningView) withObject:nil waitUntilDone:NO];
 }
 
@@ -3074,7 +3073,7 @@
     else if([path isEqualToString:shotCharPath])
     {
         NSString *localPath = [NSString stringWithFormat:@"%@/Documents/%@.xlsx", NSHomeDirectory(), NAME_OF_THE_SHOT_CHART_XLSX_FILE];
-        [self.restClient uploadFile:PPPPath toPath:@"/" withParentRev:nil fromPath:localPath];
+        [self.restClient uploadFile:shotCharPath toPath:@"/" withParentRev:nil fromPath:localPath];
     }
 }
 

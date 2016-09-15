@@ -11,8 +11,6 @@
 #import "BBRMenuViewController.h"
 #import <DropboxSDK/DropboxSDK.h>
 
-enum XlsxType{PPP, SHOT_CHART};
-
 @interface BBROffenseViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, DBRestClientDelegate>
 @property UITableView *playerListTableView;
 @property UITableView *playerOnFloorListTableView;
