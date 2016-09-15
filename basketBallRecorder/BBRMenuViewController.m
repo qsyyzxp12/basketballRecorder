@@ -114,7 +114,11 @@
         int buttonIndex = 0;
         for (int i=((int)[recordPlistContent count]-1); i >= 0; i--)
         {
-            NSString* gameName = [[recordPlistContent objectAtIndex:i] objectForKey:KEY_FOR_NAME];
+            NSString* gameName;
+            if([[[recordPlistContent objectAtIndex:i] objectForKey:KEY_FOR_DATA_TYPE] isEqualToString:OFFENSE_TYPE_DATA])
+                gameName = [NSString stringWithFormat:@"%@_進攻", [[recordPlistContent objectAtIndex:i] objectForKey:KEY_FOR_NAME]];
+            else
+                gameName = [[recordPlistContent objectAtIndex:i] objectForKey:KEY_FOR_NAME];
             [((UIButton*)self.buttonArray[buttonIndex]) setTitle:gameName forState:UIControlStateNormal];
             ((UIButton*)self.buttonArray[buttonIndex]).hidden = NO;
             ((UIButton*)self.statusButtonArray[buttonIndex]).hidden = NO;
@@ -608,7 +612,7 @@
     [spreadsheet saveAs:sheetPath];
     
     while(!self.isLoadMetaFinished);
-    NSString* filename = [self addXlsxFileVersionNumber:1 recordName:name];
+    NSString* filename = [self addTimeLineXlsxFileVersionNumber:1 recordName:name];
     NSString* dropBoxpath = [NSString stringWithFormat:@"%@/%@",self.folderName, filename];
     
     NSArray* agus = [[NSArray alloc] initWithObjects:dropBoxpath, sheetPath, nil];
@@ -759,6 +763,21 @@
     
     NSArray* agus = [[NSArray alloc] initWithObjects:filename, sheetPath, nil];
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
+}
+
+-(NSString*) addTimeLineXlsxFileVersionNumber:(int)no recordName:(NSString*) recordName
+{
+    NSString* fileName;
+    if(no == 1)
+        fileName = [NSString stringWithFormat:@"%@_時間軸.xlsx", recordName];
+    else
+        fileName = [NSString stringWithFormat:@"%@＿時間軸(%d).xlsx", recordName, no];
+    for(NSString* fileNameInDropbox in self.fileNamesInDropbox)
+    {
+        if([fileName isEqualToString:fileNameInDropbox])
+            return [self addTimeLineXlsxFileVersionNumber:no+1 recordName:recordName];
+    }
+    return fileName;
 }
 
 -(NSString*) addXlsxFileVersionNumber:(int)no recordName:(NSString*) recordName
