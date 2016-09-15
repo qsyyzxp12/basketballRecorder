@@ -11,6 +11,8 @@
 #import "BBRMenuViewController.h"
 #import <DropboxSDK/DropboxSDK.h>
 
+enum XlsxType{PPP, SHOT_CHART};
+
 @interface BBROffenseViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, DBRestClientDelegate>
 @property UITableView *playerListTableView;
 @property UITableView *playerOnFloorListTableView;
@@ -40,9 +42,11 @@
 @property BOOL isRecordMode;
 @property BOOL isTimerRunning;
 @property BOOL isDetailShowing;
-@property BOOL isGradeXlsxFileExistInDropbox;
+@property BOOL isPPPXlsxFileExistInDropbox;
+@property BOOL isShotChartXlsxFileExistInDropbox;
 @property BOOL isLoadMetaFinished;
-@property BOOL isDownloadXlsxFileFinished;
+@property BOOL isDownloadPPPXlsxFileFinished;
+@property BOOL isDownloadShotChartXlsxFileFinished;
 @property BOOL isLoadingRootMeta;
 @property BOOL isFolderExistAlready;
 @property int uploadFilesCount;

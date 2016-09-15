@@ -621,7 +621,7 @@
     return [NSString stringWithFormat:@"%c%c%d", *outIndex, *interIndex, rowIndex];
 }
 
--(void) generateTimeLineXlsx
+-(void) generateTimeLineXlsxAndUpload
 {
     NSString* orgDocumentPath = [[NSBundle mainBundle] pathForResource:@"spreadsheet_for_timeLine" ofType:@"xlsx"];
     BRAOfficeDocumentPackage *spreadsheet = [BRAOfficeDocumentPackage open:orgDocumentPath];
@@ -729,12 +729,12 @@
     [self.restClient loadMetadata:path];
 }
 
--(void) generateGradeXlsx
+-(void) generatePPPXlsxAndUpload
 {
     NSString* xlsxFilePath;
-    if(self.isGradeXlsxFileExistInDropbox)
+    if(self.isPPPXlsxFileExistInDropbox)
     {
-        while (!self.isDownloadXlsxFileFinished);
+        while (!self.isDownloadPPPXlsxFileFinished);
         xlsxFilePath = [NSString stringWithFormat:@"%@/Documents/%@.xlsx", NSHomeDirectory(), NAME_OF_THE_FINAL_XLSX_FILE];
     }
     else
@@ -747,7 +747,7 @@
         char interIndex = 'A';
         int rowIndex = 3;
         
-        BRAWorksheet *worksheet = [self lookForWorkSheetWithPlayerIndex:i spreadSheet:spreadsheet];
+        BRAWorksheet *worksheet = [self lookForWorkSheetWithPlayerIndex:i spreadSheet:spreadsheet type:PPP];
         NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
         [dateFormatter setDateFormat:@"YYYY/MM/dd"];
         
@@ -862,6 +862,86 @@
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
 }
 
+-(void) generateShotChartXlsxAndUpload
+{
+    NSString* xlsxFilePath;
+    if(self.isShotChartXlsxFileExistInDropbox)
+    {
+        while (!self.isDownloadShotChartXlsxFileFinished);
+        xlsxFilePath = [NSString stringWithFormat:@"%@/Documents/%@.xlsx", NSHomeDirectory(), NAME_OF_THE_SHOT_CHART_XLSX_FILE];
+    }
+    else
+        xlsxFilePath = [[NSBundle mainBundle] pathForResource:NAME_OF_THE_SHOT_CHART_XLSX_FILE ofType:@"xlsx"];
+    
+    BRAOfficeDocumentPackage *spreadsheet = [BRAOfficeDocumentPackage open:xlsxFilePath];
+    for(int i=0; i<self.playerNoSet.count; i++)
+    {
+        char outIndex = '\0';
+        char interIndex = 'A';
+        int rowIndex = 1;
+        
+        BRAWorksheet *worksheet = [self lookForWorkSheetWithPlayerIndex:i spreadSheet:spreadsheet type:SHOT_CHART];
+        NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"YYYY/MM/dd"];
+        
+        NSString* cellRef;
+        NSString *cellContent;
+        do
+        {
+            rowIndex++;
+            cellRef = [NSString stringWithFormat:@"%c%c%d", outIndex, interIndex, rowIndex];
+            cellContent = [[worksheet cellForCellReference:cellRef] stringValue];
+        }while(cellContent && ![cellContent isEqualToString:@""]);
+
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:
+         [dateFormatter stringFromDate:[NSDate date]]];
+        
+        cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowIndex];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:self.opponentName];
+        
+        NSArray* totalGradeArray = [self.playerDataArray objectAtIndex:0];
+        NSDictionary* playerGradeDic = [totalGradeArray objectAtIndex:i];
+        
+        
+        for(int i=0; i<11; i++)
+        {
+            NSString* key = [NSString stringWithFormat:@"zone%d", i+1];
+            NSDictionary* zoneGradeDic = [playerGradeDic objectForKey:key];
+            
+            cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowIndex];
+            int madeCount = [[zoneGradeDic objectForKey:KEY_FOR_MADE_COUNT] intValue];
+            int attemptCount = [[zoneGradeDic objectForKey:KEY_FOR_ATTEMPT_COUNT] intValue];
+            NSString* madeAndAttempt = [NSString stringWithFormat:@"%d/%d", madeCount, attemptCount];
+            
+            NSString* ratio = @"0%";
+            if(attemptCount)
+                ratio = [NSString stringWithFormat:@"%.0f%c", (float)madeCount/attemptCount, '%'];
+            
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:ratio];
+            
+            cellRef = [NSString stringWithFormat:@"%c%c%d", outIndex, interIndex, rowIndex+1];
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:madeAndAttempt];
+        }
+    }
+ 
+    if(!self.isShotChartXlsxFileExistInDropbox)
+        [spreadsheet.workbook removeWorksheetNamed:@"全隊"];
+    
+    //Save the xlsx to the app space in the device
+    NSString *localPath = [NSString stringWithFormat:@"%@/Documents/%@.xlsx", NSHomeDirectory(), NAME_OF_THE_SHOT_CHART_XLSX_FILE];
+    NSFileManager* fm = [[NSFileManager alloc] init];
+    
+    if([fm fileExistsAtPath:localPath])
+        [fm removeItemAtPath:localPath error:nil];
+    
+    [spreadsheet saveAs:localPath];
+    
+    NSString* filename = [NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_SHOT_CHART_XLSX_FILE];
+    
+    NSArray* agus = [[NSArray alloc] initWithObjects:filename, localPath, nil];
+    [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
+}
+
 -(NSString*) addTimeLineXlsxFileVersionNumber:(int)no
 {
     NSString* fileName;
@@ -884,11 +964,12 @@
     if (![[DBSession sharedSession] isLinked])
         [[DBSession sharedSession] linkFromController:self];
     
-    [self generateTimeLineXlsx];
-    [self generateGradeXlsx];
+    [self generateTimeLineXlsxAndUpload];
+    [self generatePPPXlsxAndUpload];
+    [self generateShotChartXlsxAndUpload];
 }
 
--(BRAWorksheet*) lookForWorkSheetWithPlayerIndex:(int)index spreadSheet:(BRAOfficeDocumentPackage*)spreadSheet
+-(BRAWorksheet*) lookForWorkSheetWithPlayerIndex:(int)index spreadSheet:(BRAOfficeDocumentPackage*)spreadSheet type:(enum XlsxType)xlsxType
 {
     if(index == self.playerNoSet.count)
         return spreadSheet.workbook.worksheets[0];
@@ -899,7 +980,11 @@
         if([self.playerNoSet[index] integerValue] == playerNo)
             return worksheet;
     }
-    NSString* orgXlsxFilePath = [[NSBundle mainBundle] pathForResource:NAME_OF_THE_FINAL_XLSX_FILE ofType:@"xlsx"];
+    NSString* orgXlsxFilePath;
+    if(xlsxType == PPP)
+        orgXlsxFilePath = [[NSBundle mainBundle] pathForResource:NAME_OF_THE_FINAL_XLSX_FILE ofType:@"xlsx"];
+    else
+        orgXlsxFilePath = [[NSBundle mainBundle] pathForResource:NAME_OF_THE_SHOT_CHART_XLSX_FILE ofType:@"xlsx"];
     BRAOfficeDocumentPackage *orgSpreadsheet = [BRAOfficeDocumentPackage open:orgXlsxFilePath];
     BRAWorksheet* newWorkSheet = [spreadSheet.workbook createWorksheetNamed:self.playerNoSet[index] byCopyingWorksheet:orgSpreadsheet.workbook.worksheets[0]];
     [[newWorkSheet cellForCellReference:@"A1" shouldCreate:YES] setIntegerValue:[self.playerNoSet[index] integerValue]];
@@ -910,8 +995,15 @@
 {
     if([parameters[0] isEqualToString:[NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE]])
     {
-        if(self.isGradeXlsxFileExistInDropbox)
+        if(self.isPPPXlsxFileExistInDropbox)
             [self.restClient deletePath:[NSString stringWithFormat:@"/%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE]];
+        else
+            [self.restClient uploadFile:[parameters objectAtIndex:0] toPath:@"/" withParentRev:nil fromPath:[parameters objectAtIndex:1]];
+    }
+    else if([parameters[0] isEqualToString:[NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_SHOT_CHART_XLSX_FILE]])
+    {
+        if(self.isShotChartXlsxFileExistInDropbox)
+            [self.restClient deletePath:[NSString stringWithFormat:@"/%@.xlsx", NAME_OF_THE_SHOT_CHART_XLSX_FILE]];
         else
             [self.restClient uploadFile:[parameters objectAtIndex:0] toPath:@"/" withParentRev:nil fromPath:[parameters objectAtIndex:1]];
     }
@@ -2815,8 +2907,8 @@
 {
     if(self.isLoadingRootMeta)
     {
-        self.isGradeXlsxFileExistInDropbox = NO;
-        
+        self.isPPPXlsxFileExistInDropbox = NO;
+        self.isShotChartXlsxFileExistInDropbox = NO;
         NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
         [dateFormatter setDateFormat:@"YYYY_MM_dd"];
         NSString* folderName = [dateFormatter stringFromDate:[NSDate date]];
@@ -2824,6 +2916,7 @@
         if(metadata.isDirectory)
         {
             NSString* PPPxlsxFileName = [NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE];
+            NSString* zoneXlsxFileName = [NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_SHOT_CHART_XLSX_FILE];
             for (DBMetadata *file in metadata.contents)
             {
                 if(file.isDirectory && [file.filename isEqualToString:folderName])
@@ -2832,12 +2925,19 @@
                 }
                 else if([file.filename isEqualToString:PPPxlsxFileName])
                 {
-                    self.isGradeXlsxFileExistInDropbox = YES;
+                    self.isPPPXlsxFileExistInDropbox = YES;
                     NSString *sheetPath = [NSString stringWithFormat:@"%@/Documents/%@.xlsx", NSHomeDirectory(), NAME_OF_THE_FINAL_XLSX_FILE];
-                    self.isDownloadXlsxFileFinished = NO;
+                    self.isDownloadPPPXlsxFileFinished = NO;
                     [self.restClient loadFile:file.path intoPath:sheetPath];
                 }
-                if(self.isFolderExistAlready && self.isGradeXlsxFileExistInDropbox)
+                else if([file.filename isEqualToString:zoneXlsxFileName])
+                {
+                    self.isShotChartXlsxFileExistInDropbox = YES;
+                    NSString* sheetPath = [NSString stringWithFormat:@"%@/Documents/%@.xlsx", NSHomeDirectory(), NAME_OF_THE_SHOT_CHART_XLSX_FILE];
+                    self.isDownloadShotChartXlsxFileFinished = NO;
+                    [self.restClient loadFile:file.path intoPath:sheetPath];
+                }
+                if(self.isFolderExistAlready && self.isPPPXlsxFileExistInDropbox && self.isShotChartXlsxFileExistInDropbox)
                     break;
             }
         }
@@ -2867,7 +2967,7 @@
     NSLog(@"File uploaded successfully to path: %@", metadata.path);
     self.uploadFilesCount++;
     
-    if(self.uploadFilesCount == 2)
+    if(self.uploadFilesCount == 3)
         [self performSelectorOnMainThread:@selector(removeSpinningView) withObject:nil waitUntilDone:NO];
 }
 
@@ -2878,7 +2978,12 @@
 - (void)restClient:(DBRestClient *)client loadedFile:(NSString *)localPath
        contentType:(NSString *)contentType metadata:(DBMetadata *)metadata
 {
-    self.isDownloadXlsxFileFinished = YES;
+    NSString* PPPName = [NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE];
+    NSString* shotchartName = [NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_SHOT_CHART_XLSX_FILE];
+    if([metadata.filename isEqualToString:PPPName])
+        self.isDownloadPPPXlsxFileFinished = YES;
+    else if([metadata.filename isEqualToString:shotchartName])
+        self.isDownloadShotChartXlsxFileFinished = YES;
     NSLog(@"File loaded into path: %@", localPath);
 }
 
@@ -2889,14 +2994,24 @@
 - (void)restClient:(DBRestClient *)client deletedPath:(NSString *)path
 {
     NSLog(@"FILE deleted in Path:%@", path);
-    NSString *sheetPath = [NSString stringWithFormat:@"%@/Documents/%@.xlsx", NSHomeDirectory(), NAME_OF_THE_FINAL_XLSX_FILE];
-    NSString* filename = [NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE];
-    [self.restClient uploadFile:filename toPath:@"/" withParentRev:nil fromPath:sheetPath];
+    NSString* PPPPath = [NSString stringWithFormat:@"/%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE];
+    NSString* shotCharPath = [NSString stringWithFormat:@"/%@.xlsx", NAME_OF_THE_SHOT_CHART_XLSX_FILE];
+    
+    if([path isEqualToString:PPPPath])
+    {
+        NSString *localPath = [NSString stringWithFormat:@"%@/Documents/%@.xlsx", NSHomeDirectory(), NAME_OF_THE_FINAL_XLSX_FILE];
+        [self.restClient uploadFile:PPPPath toPath:@"/" withParentRev:nil fromPath:localPath];
+    }
+    else if([path isEqualToString:shotCharPath])
+    {
+        NSString *localPath = [NSString stringWithFormat:@"%@/Documents/%@.xlsx", NSHomeDirectory(), NAME_OF_THE_SHOT_CHART_XLSX_FILE];
+        [self.restClient uploadFile:PPPPath toPath:@"/" withParentRev:nil fromPath:localPath];
+    }
 }
 
 -(void)restClient:(DBRestClient *)client deletePathFailedWithError:(NSError *)error
 {
-    NSLog(@"File deleted: %@", error);
+    NSLog(@"File deleted Error: %@", error);
 }
 
 -(void)restClient:(DBRestClient *)client createdFolder:(DBMetadata *)folder
