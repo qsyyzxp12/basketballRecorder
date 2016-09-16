@@ -953,7 +953,7 @@
         NSArray* madeAttemptCellRefArray = [NSArray arrayWithObjects:@"C4", @"E4", @"G7", @"I4", @"K4", @"D21", @"E12", @"G18", @"I12", @"J21", @"G24", nil];
         for(int j=0; j<11; j++)
         {
-            NSString* key = [NSString stringWithFormat:@"zone%d", j];
+            NSString* key = [NSString stringWithFormat:@"zone%d", j+1];
             NSDictionary* zoneDic = [playerGradeDic objectForKey:key];
             int madeCount = [[zoneDic objectForKey:KEY_FOR_MADE_COUNT] intValue];
             int attemptCount = [[zoneDic objectForKey:KEY_FOR_ATTEMPT_COUNT] intValue];
@@ -1971,7 +1971,7 @@
     [self.view addSubview:hitRateLabel];
     [self.view addSubview:gradeLabel];
     
-    //Draw Label for zone10
+    //Draw Label for zone11
     UIImageView* zone11 = [self.view viewWithTag:11];
     hitRateLabel = [[UILabel alloc] initWithFrame:CGRectMake(zone11.frame.origin.x, zone11.frame.origin.y+zone11.frame.size.height*TOP_PADDING_RATE1, zone11.frame.size.width, RECORD_LABEL_HEIGHT)];
     hitRateLabel.textAlignment = NSTextAlignmentCenter;

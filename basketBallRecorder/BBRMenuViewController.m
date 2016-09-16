@@ -398,7 +398,7 @@
         NSArray* madeAttemptCellRefArray = [NSArray arrayWithObjects:@"C4", @"E4", @"G7", @"I4", @"K4", @"D21", @"E12", @"G18", @"I12", @"J21", @"G24", nil];
         for(int j=0; j<11; j++)
         {
-            NSString* key = [NSString stringWithFormat:@"zone%d", j];
+            NSString* key = [NSString stringWithFormat:@"zone%d", j+1];
             NSDictionary* zoneDic = [playerGradeDic objectForKey:key];
             int madeCount = [[zoneDic objectForKey:KEY_FOR_MADE_COUNT] intValue];
             int attemptCount = [[zoneDic objectForKey:KEY_FOR_ATTEMPT_COUNT] intValue];
