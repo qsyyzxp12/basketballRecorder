@@ -12,6 +12,7 @@
 #import "BRAOfficeDocumentPackage.h"
 #import "BBRBoxScoreViewController.h"
 #import "BBRMacro.h"
+#import <DropboxSDK/DropboxSDK.h>
 
 #define KEY_FOR_ATTEMPT_COUNT @"attempCount"
 #define KEY_FOR_MADE_COUNT @"madeCount"
@@ -33,6 +34,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    if (![[DBSession sharedSession] isLinked])
+        [[DBSession sharedSession] linkFromController:self];
     
     [self constructAlertController];
     
@@ -703,6 +706,11 @@
         {
             outI =  outIndex;
             interI = interIndex;
+            
+            cellRef = [NSString stringWithFormat:@"%c%c%d", outI, interI, rowI];
+            NSString* timeStr = [eventDic objectForKey:KEY_FOR_TIME];
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:timeStr];
+            
             if([[eventDic objectForKey:KEY_FOR_TYPE] isEqualToString:SIGNAL_FOR_NON_EXCHANGE])
             {
                 cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
@@ -736,7 +744,7 @@
             else
             {
                 NSString* result = [eventDic objectForKey:KEY_FOR_RESULT];
-                cellRef = [NSString stringWithFormat:@"%c%c%d", outI, interI, rowI];
+                cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
                 [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:result];
             }
             rowI++;
@@ -922,7 +930,7 @@
     if(no == 1)
         fileName = [NSString stringWithFormat:@"%@_投籃分佈圖.xlsx", recordName];
     else
-        fileName = [NSString stringWithFormat:@"%@＿投籃分佈圖(%d).xlsx", recordName, no];
+        fileName = [NSString stringWithFormat:@"%@_投籃分佈圖(%d).xlsx", recordName, no];
     for(NSString* fileNameInDropbox in self.fileNamesInDropbox)
     {
         if([fileName isEqualToString:fileNameInDropbox])
@@ -937,7 +945,7 @@
     if(no == 1)
         fileName = [NSString stringWithFormat:@"%@_時間軸.xlsx", recordName];
     else
-        fileName = [NSString stringWithFormat:@"%@＿時間軸(%d).xlsx", recordName, no];
+        fileName = [NSString stringWithFormat:@"%@_時間軸(%d).xlsx", recordName, no];
     for(NSString* fileNameInDropbox in self.fileNamesInDropbox)
     {
         if([fileName isEqualToString:fileNameInDropbox])

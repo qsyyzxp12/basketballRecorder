@@ -645,6 +645,11 @@
         {
             outI =  outIndex;
             interI = interIndex;
+            
+            cellRef = [NSString stringWithFormat:@"%c%c%d", outI, interI, rowI];
+            NSString* timeStr = [eventDic objectForKey:KEY_FOR_TIME];
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:timeStr];
+            
             if([[eventDic objectForKey:KEY_FOR_TYPE] isEqualToString:SIGNAL_FOR_NON_EXCHANGE])
             {
                 cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
@@ -678,7 +683,7 @@
             else
             {
                 NSString* result = [eventDic objectForKey:KEY_FOR_RESULT];
-                cellRef = [NSString stringWithFormat:@"%c%c%d", outI, interI, rowI];
+                cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
                 [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:result];
             }
             rowI++;
@@ -1017,7 +1022,7 @@
     if(no == 1)
         fileName = [NSString stringWithFormat:@"%@_時間軸.xlsx", self.recordName];
     else
-        fileName = [NSString stringWithFormat:@"%@＿時間軸(%d).xlsx", self.recordName, no];
+        fileName = [NSString stringWithFormat:@"%@_時間軸(%d).xlsx", self.recordName, no];
     
     for(NSString* fileNameInDropbox in self.fileNamesInDropbox)
     {
@@ -1033,12 +1038,12 @@
     if(no == 1)
         fileName = [NSString stringWithFormat:@"%@_投籃分佈圖.xlsx", self.recordName];
     else
-        fileName = [NSString stringWithFormat:@"%@＿投籃分佈圖(%d).xlsx", self.recordName, no];
+        fileName = [NSString stringWithFormat:@"%@_投籃分佈圖(%d).xlsx", self.recordName, no];
     
     for(NSString* fileNameInDropbox in self.fileNamesInDropbox)
     {
         if([fileName isEqualToString:fileNameInDropbox])
-            return [self addTimeLineXlsxFileVersionNumber:no+1];
+            return [self addZoneGradeXlsxFileVersionNumber:no+1];
     }
     return fileName;
 }
@@ -1106,8 +1111,12 @@
     NSMutableDictionary* event = [[NSMutableDictionary alloc] init];
     [event setObject:SIGNAL_FOR_EXCHANGE forKey:KEY_FOR_TYPE];
     NSString* resultStr = [NSString stringWithFormat:@"%@↑%@↓", upNo, downNo];
-
     [event setObject:resultStr forKey:KEY_FOR_RESULT];
+    
+    int min = self.timeCounter/60;
+    int sec = self.timeCounter%60;
+    NSString* timeStr = [NSString stringWithFormat:@"%02d:%02d", min, sec];
+    [event setObject:timeStr forKey:KEY_FOR_TIME];
     
     [timeLineArray addObject:event];
 }
@@ -1118,12 +1127,17 @@
     NSMutableArray* timeLineArray = [quarterDic objectForKey:KEY_FOR_TIME_LINE_DATA];
     NSMutableDictionary* event = [[NSMutableDictionary alloc] init];
 
+    int min = self.timeCounter/60;
+    int sec = self.timeCounter%60;
+    NSString* timeStr = [NSString stringWithFormat:@"%02d:%02d", min, sec];
+    
     [event setObject:[NSString stringWithFormat:@"%@", self.playerNoSet[self.playerSelectedIndex-1]] forKey:KEY_FOR_PLAYER_NO];
     [event setObject:SIGNAL_FOR_NON_EXCHANGE forKey:KEY_FOR_TYPE];
     [event setObject:self.keyOfAttackWay forKey:KEY_FOR_ATTACK_WAY];
     [event setObject:self.keyOfDetail forKey:KEY_FOR_DETAIL];
     [event setObject:signalForResult forKey:KEY_FOR_RESULT];
     [event setObject:[NSString stringWithFormat:@"%d", pts] forKey:KEY_FOR_PTS];
+    [event setObject:timeStr forKey:KEY_FOR_TIME];
     
     if([signalForResult isEqualToString:SIGNAL_FOR_FOUL] || [signalForResult isEqualToString:SIGNAL_FOR_AND_ONE])
     {
@@ -1153,12 +1167,17 @@
     NSMutableDictionary* quarterDic = [self.timeLineReordeArray objectAtIndex:self.quarterNo-1];
     NSMutableArray* timeLineArray = [quarterDic objectForKey:KEY_FOR_TIME_LINE_DATA];
     NSMutableDictionary* turnoverEvent = [[NSMutableDictionary alloc] init];
+
+    int min = self.timeCounter/60;
+    int sec = self.timeCounter%60;
+    NSString* timeStr = [NSString stringWithFormat:@"%02d:%02d", min, sec];
     
     [turnoverEvent setObject:[NSString stringWithFormat:@"%@", self.playerNoSet[self.playerSelectedIndex-1]] forKey:KEY_FOR_PLAYER_NO];
     [turnoverEvent setObject:SIGNAL_FOR_NON_EXCHANGE forKey:KEY_FOR_TYPE];
     [turnoverEvent setObject:self.keyOfAttackWay forKey:KEY_FOR_ATTACK_WAY];
     [turnoverEvent setObject:SIGNAL_FOR_TURNOVER forKey:KEY_FOR_DETAIL];
     [turnoverEvent setObject:self.keyOfDetail forKey:KEY_FOR_RESULT];
+    [turnoverEvent setObject:timeStr forKey:KEY_FOR_TIME];
     [timeLineArray addObject:turnoverEvent];
     [self increaseHoldBallCountByOne];
 }

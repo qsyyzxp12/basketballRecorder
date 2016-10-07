@@ -423,7 +423,7 @@
 				TargetAttributes = {
 					C7CC36E41C7AF17900B97149 = {
 						CreatedOnToolsVersion = 7.2;
-						DevelopmentTeam = KRGS5BKS3M;
+						DevelopmentTeam = 3U5926BU7W;
 					};
 					C7CC36FD1C7AF17900B97149 = {
 						CreatedOnToolsVersion = 7.2;
@@ -707,8 +707,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Chih-An Lin (3U5926BU7W)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Chih-An Lin (3U5926BU7W)";
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -720,7 +720,7 @@
 				OTHER_LDFLAGS = "-all_load";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linchihan.basketBallRecorder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "200534d4-021b-4257-a755-4f22d3fa0113";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/basketBallRecorder/Header.h";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/XlsxReaderWriter/**";
 				VALID_ARCHS = "arm64 armv7 arm7s";
@@ -732,8 +732,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Chih-An Lin (3U5926BU7W)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Chih-An Lin (3U5926BU7W)";
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -745,7 +745,7 @@
 				OTHER_LDFLAGS = "-all_load";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linchihan.basketBallRecorder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "200534d4-021b-4257-a755-4f22d3fa0113";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/basketBallRecorder/Header.h";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/XlsxReaderWriter/**";
 				VALID_ARCHS = "arm64 armv7 arm7s";
@@ -800,6 +800,94 @@
 			};
 			name = Release;
 		};
+		C7D5D7751D9D1CDB009B0F21 /* Ad-Hoc */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/XlsxReaderWriter/";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = "Ad-Hoc";
+		};
+		C7D5D7761D9D1CDB009B0F21 /* Ad-Hoc */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Chih-An Lin (3U5926BU7W)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Chih-An Lin (3U5926BU7W)";
+				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/dropbox-ios-sdk-1.3.13",
+				);
+				HEADER_SEARCH_PATHS = "";
+				INFOPLIST_FILE = basketBallRecorder/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_LDFLAGS = "-all_load";
+				PRODUCT_BUNDLE_IDENTIFIER = org.linchihan.basketBallRecorder;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "200534d4-021b-4257-a755-4f22d3fa0113";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/basketBallRecorder/Header.h";
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/XlsxReaderWriter/**";
+				VALID_ARCHS = "arm64 armv7 arm7s";
+			};
+			name = "Ad-Hoc";
+		};
+		C7D5D7771D9D1CDB009B0F21 /* Ad-Hoc */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = basketBallRecorderTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = org.linchihan.basketBallRecorderTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/basketBallRecorder.app/basketBallRecorder";
+			};
+			name = "Ad-Hoc";
+		};
+		C7D5D7781D9D1CDB009B0F21 /* Ad-Hoc */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = basketBallRecorderUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = org.linchihan.basketBallRecorderUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = basketBallRecorder;
+				USES_XCTRUNNER = YES;
+			};
+			name = "Ad-Hoc";
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -808,6 +896,7 @@
 			buildConfigurations = (
 				C7CC37101C7AF17900B97149 /* Debug */,
 				C7CC37111C7AF17900B97149 /* Release */,
+				C7D5D7751D9D1CDB009B0F21 /* Ad-Hoc */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -817,6 +906,7 @@
 			buildConfigurations = (
 				C7CC37131C7AF17900B97149 /* Debug */,
 				C7CC37141C7AF17900B97149 /* Release */,
+				C7D5D7761D9D1CDB009B0F21 /* Ad-Hoc */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -826,6 +916,7 @@
 			buildConfigurations = (
 				C7CC37161C7AF17900B97149 /* Debug */,
 				C7CC37171C7AF17900B97149 /* Release */,
+				C7D5D7771D9D1CDB009B0F21 /* Ad-Hoc */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -835,6 +926,7 @@
 			buildConfigurations = (
 				C7CC37191C7AF17900B97149 /* Debug */,
 				C7CC371A1C7AF17900B97149 /* Release */,
+				C7D5D7781D9D1CDB009B0F21 /* Ad-Hoc */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
