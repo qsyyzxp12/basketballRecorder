@@ -613,9 +613,19 @@
     if (![[DBSession sharedSession] isLinked])
         [[DBSession sharedSession] linkFromController:self];
     
-    [self generateTimeLineXlsxAndUpload];
-    [self generatePPPXlsxAndUpload];
-    [self generateShotChartXlsxAndUpload];
+    while(!self.isLoadMetaFinished);
+    NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"YYYY_MM_dd"];
+    if(self.isFolderExistAlready)
+    {
+        self.isLoadMetaFinished = NO;
+        self.isLoadingRootMeta = NO;
+        [self performSelectorOnMainThread:@selector(loadFolderMetaData:) withObject:dateFormatter waitUntilDone:NO];
+    }
+    
+    [self performSelectorInBackground:@selector(generatePPPXlsxAndUpload) withObject:nil];
+    [self performSelectorInBackground:@selector(generateShotChartXlsxAndUpload) withObject:nil];
+    [self performSelectorInBackground:@selector(generateTimeLineXlsxAndUpload) withObject:nil];
     [self generateZoneGradeXlsxAndUpload];
 }
 
@@ -712,13 +722,13 @@
     while(!self.isLoadMetaFinished);
     NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"YYYY_MM_dd"];
-    if(self.isFolderExistAlready)
+/*    if(self.isFolderExistAlready)
     {
         self.isLoadMetaFinished = NO;
         self.isLoadingRootMeta = NO;
         [self performSelectorOnMainThread:@selector(loadFolderMetaData:) withObject:dateFormatter waitUntilDone:NO];
         while(!self.isLoadMetaFinished);
-    }
+    }*/
     NSString* filename = [self addTimeLineXlsxFileVersionNumber:1];
     
     NSString* dropBoxpath = [NSString stringWithFormat:@"%@/%@",[dateFormatter stringFromDate:[NSDate date]], filename];
@@ -981,6 +991,7 @@
     
     [spreadsheet saveAs:localPath];
     
+    while(!self.isLoadMetaFinished);
     NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"YYYY_MM_dd"];
     NSString* filename = [self addZoneGradeXlsxFileVersionNumber:1];
