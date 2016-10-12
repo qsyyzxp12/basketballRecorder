@@ -14,18 +14,6 @@
 #import "BBRMacro.h"
 #import <DropboxSDK/DropboxSDK.h>
 
-#define KEY_FOR_ATTEMPT_COUNT @"attempCount"
-#define KEY_FOR_MADE_COUNT @"madeCount"
-#define KEY_FOR_FOUL_COUNT @"foulCount"
-#define KEY_FOR_TURNOVER_COUNT @"turnoverCount"
-#define KEY_FOR_SCORE_GET @"scoreGet"
-
-#define KEY_FOR_TOTAL_MADE_COUNT @"totalMadeCount"
-#define KEY_FOR_TOTAL_ATTEMPT_COUNT @"totalAttemptCount"
-#define KEY_FOR_TOTAL_FOUL_COUNT @"totalFoulCount"
-#define KEY_FOR_TOTAL_TURNOVER_COUNT @"totalTurnoverCount"
-#define KEY_FOR_TOTAL_SCORE_GET @"totalScoreGet"
-
 @interface BBRMenuViewController ()
 
 @end
