@@ -178,7 +178,7 @@
         BBROffenseViewController* mainViewCntler = [segue destinationViewController];
         mainViewCntler.isTmpPlistExist = self.isTmpPlistExist;
         mainViewCntler.showOldRecordNo = self.showOldRecordNo + 1;
-        NSLog(@"%d", mainViewCntler.showOldRecordNo);
+      //  NSLog(@"%d", mainViewCntler.showOldRecordNo);
     }
     else if([segue.identifier isEqualToString:SEGUE_ID_FOR_DEFENSE])
     {
@@ -253,9 +253,11 @@
     if([[dataDic objectForKey:KEY_FOR_DATA_TYPE] isEqualToString:OFFENSE_TYPE_DATA])
     {
         self.isUploadingOffenseXlsx = YES;
-        [self generateTimeLineXlsx:dataDic];
-        [self generateGradeXlsx:dataDic];
-        [self generateShotChartXlsxAndUpload:dataDic];
+        
+        while(!self.isLoadMetaFinished);
+        [self performSelectorInBackground:@selector(generateTimeLineXlsx:) withObject:dataDic];
+        [self performSelectorInBackground:@selector(generateGradeXlsx:) withObject:dataDic];
+        [self performSelectorInBackground:@selector(generateShotChartXlsxAndUpload:) withObject:dataDic];
         [self generateZoneGradeXlsxAndUpload:dataDic];
     }
     else if([[dataDic objectForKey:KEY_FOR_DATA_TYPE] isEqualToString:DEFENSE_TYPE_DATA])
@@ -467,7 +469,6 @@
                 case 10: worksheetName = @"延長賽第六節"; break;
             }
             worksheet = [spreadsheet.workbook createWorksheetNamed:worksheetName byCopyingWorksheet:spreadsheet.workbook.worksheets[0]];
-            [worksheet save];
         }
         else
             worksheet = spreadsheet.workbook.worksheets[i];
@@ -492,7 +493,6 @@
             int top = 0;
             for(int k=0; k<3; k++)
             {
-                NSLog(@"%lu", (unsigned long)[dicArray[k] count]);
                 for(int l=0; l<[dicArray[k] count]-1; l++)
                 {
                     NSString* gradeStr = [dicArray[k] objectForKey:defenseWayKeySet[top++]];
@@ -671,7 +671,7 @@
         [[DBSession sharedSession] linkFromController:self];
     
     while(!self.isLoadMetaFinished);
-    NSLog(@"%@", self.fileNamesInDropbox);
+  //  NSLog(@"%@", self.fileNamesInDropbox);
     NSString* filename = [self addXlsxFileVersionNumber:1 recordName:recordName];
     NSString* dropBoxpath = [NSString stringWithFormat:@"%@/%@",self.folderName, filename];
     
@@ -772,7 +772,6 @@
     
     [spreadsheet saveAs:sheetPath];
     
-    while(!self.isLoadMetaFinished);
     NSString* filename = [self addTimeLineXlsxFileVersionNumber:1 recordName:name];
     NSString* dropBoxpath = [NSString stringWithFormat:@"%@/%@",self.folderName, filename];
     
@@ -1097,7 +1096,7 @@
         self.isDownloadPPPXlsxFileFinished = YES;
     else if([metadata.filename isEqualToString:shotchartName])
         self.isDownloadShotChartXlsxFileFinished = YES;
-    NSLog(@"File loaded into path: %@", localPath);
+  //  NSLog(@"File loaded into path: %@", localPath);
 }
 
 - (void)restClient:(DBRestClient *)client loadFileFailedWithError:(NSError *)error {

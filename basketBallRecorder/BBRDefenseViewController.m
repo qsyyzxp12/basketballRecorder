@@ -295,7 +295,7 @@
                 case 10: worksheetName = @"延長賽第六節"; break;
             }
             worksheet = [spreadsheet.workbook createWorksheetNamed:worksheetName byCopyingWorksheet:spreadsheet.workbook.worksheets[0]];
-            [worksheet save];
+
         }
         else
             worksheet = spreadsheet.workbook.worksheets[i];
@@ -1267,6 +1267,11 @@
 {
     NSLog(@"Folder created: %@", folder.path);
     self.isLoadMetaFinished = YES;
+}
+
+-(void)restClient:(DBRestClient *)client createFolderFailedWithError:(NSError *)error
+{
+    NSLog(@"Folder created failed with error: %@", error);
 }
 
 /*
