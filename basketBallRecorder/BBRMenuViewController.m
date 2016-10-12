@@ -39,6 +39,8 @@
     
     [self constructAlertController];
     
+    [self.navigationItem setHidesBackButton:YES];
+    
     self.spinView = [[UIView alloc] initWithFrame:self.view.frame];
     self.spinView.backgroundColor = [UIColor grayColor];
     self.spinView.alpha = 0.8;

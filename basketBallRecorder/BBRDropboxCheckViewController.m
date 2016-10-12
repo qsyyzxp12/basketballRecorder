@@ -24,15 +24,15 @@
 
 - (void)checkingDropboxAuthorization
 {
- //   if (![[DBSession sharedSession] isLinked])
-   //     [[DBSession sharedSession] linkFromController:self];
-  //  while (![[DBSession sharedSession] isLinked])
+    if (![[DBSession sharedSession] isLinked])
+        [[DBSession sharedSession] linkFromController:self];
+    while (![[DBSession sharedSession] isLinked]);
   //  {
     //    NSLog(@"xxx");
    // };
-  //  [self performSelectorOnMainThread:@selector(showMenuSegue) withObject:nil waitUntilDone:NO];
+    [self performSelectorOnMainThread:@selector(showMenuSegue) withObject:nil waitUntilDone:NO];
 
-    [self performSegueWithIdentifier:@"showMenuSegue" sender:nil];
+    //[self performSegueWithIdentifier:@"showMenuSegue" sender:nil];
 }
 
 -(void) showMenuSegue

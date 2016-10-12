@@ -721,7 +721,7 @@
 				OTHER_LDFLAGS = "-all_load";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linchihan.basketBallRecorder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "27cade43-d3a2-4e5b-aca6-fd62d2514cc7";
+				PROVISIONING_PROFILE = "1e4397ba-aac0-474d-b134-61ee7813e1aa";
 				PROVISIONING_PROFILE_SPECIFIER = "XC Ad Hoc: *";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/basketBallRecorder/Header.h";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/XlsxReaderWriter/**";
@@ -748,7 +748,7 @@
 				OTHER_LDFLAGS = "-all_load";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linchihan.basketBallRecorder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "27cade43-d3a2-4e5b-aca6-fd62d2514cc7";
+				PROVISIONING_PROFILE = "1e4397ba-aac0-474d-b134-61ee7813e1aa";
 				PROVISIONING_PROFILE_SPECIFIER = "XC Ad Hoc: *";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/basketBallRecorder/Header.h";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/XlsxReaderWriter/**";
@@ -862,7 +862,7 @@
 				OTHER_LDFLAGS = "-all_load";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linchihan.basketBallRecorder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "27cade43-d3a2-4e5b-aca6-fd62d2514cc7";
+				PROVISIONING_PROFILE = "1e4397ba-aac0-474d-b134-61ee7813e1aa";
 				PROVISIONING_PROFILE_SPECIFIER = "XC Ad Hoc: *";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/basketBallRecorder/Header.h";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/XlsxReaderWriter/**";
