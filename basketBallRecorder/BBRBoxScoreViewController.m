@@ -1205,10 +1205,8 @@
             [self.playerDataTableView reloadData];
         }
         else if(indexPath.row != 0 && indexPath.row != self.playerCount+1)
-        {
-            BBRTableViewCell* cellOfSelected = [tableView cellForRowAtIndexPath:indexPath];
+        {BBRTableViewCell* cellOfSelected = [tableView cellForRowAtIndexPath:indexPath];
             
-            UIAlertController* changePlayerAlert = [UIAlertController alertControllerWithTitle:@"下場球員" message:nil preferredStyle: UIAlertControllerStyleAlert];
             BOOL isPlayerOnFloorAlready = NO;
             for(int i=1; i<6; i++)
             {
@@ -1219,6 +1217,19 @@
                     isPlayerOnFloorAlready = YES;
                     break;
                 }
+            }
+            if(isPlayerOnFloorAlready)
+            {
+                [tableView deselectRowAtIndexPath:indexPath animated:NO];
+                return;
+            }
+            
+            UIAlertController* changePlayerAlert = [UIAlertController alertControllerWithTitle:@"下場球員" message:nil preferredStyle: UIAlertControllerStyleAlert];
+            for(int i=1; i<6; i++)
+            {
+                NSIndexPath* index = [NSIndexPath indexPathForRow:i inSection:0];
+                BBRTableViewCell* cellOfChanged = [self.playerOnFloorListTableView cellForRowAtIndexPath:index];
+                
                 UIAlertAction* playerOnFloorNoAction = [UIAlertAction actionWithTitle:cellOfChanged.NoLabel.text style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
                     {
                         //caculate the player being placed's time on floor
@@ -1229,16 +1240,18 @@
                         cellOfChanged.NoLabel.text = cellOfSelected.NoLabel.text;
                         [dic setObject:[NSNumber numberWithInteger:indexPath.row] forKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
                         [dic setObject:[NSNumber numberWithInt:self.timeCounter] forKey:KEY_FOR_TIME_WHEN_GO_ON_FLOOR];
+                                                            
+                        [self updateTmpPlist];
                     }];
                 [changePlayerAlert addAction:playerOnFloorNoAction];
             }
-            if(!isPlayerOnFloorAlready)
-            {
-                UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action){}];
-                [changePlayerAlert addAction:cancelAction];
-                [self presentViewController:changePlayerAlert animated:YES completion:nil];
-            }
+            
+            UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action){}];
+            [changePlayerAlert addAction:cancelAction];
+            [self presentViewController:changePlayerAlert animated:YES completion:nil];
+            
             [tableView deselectRowAtIndexPath:indexPath animated:NO];
+
         }
         else if(indexPath.row == self.playerCount+1)
             [tableView deselectRowAtIndexPath:indexPath animated:NO];
