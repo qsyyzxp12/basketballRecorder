@@ -1227,7 +1227,7 @@
                         //update the data of the player on floor
                         NSMutableDictionary* dic = [self.playerOnFloorDataArray objectAtIndex:i-1];
                         cellOfChanged.NoLabel.text = cellOfSelected.NoLabel.text;
-                        [dic setObject:[NSNumber numberWithInt:[cellOfSelected.NoLabel.text intValue]] forKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
+                        [dic setObject:[NSNumber numberWithInteger:indexPath.row] forKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
                         [dic setObject:[NSNumber numberWithInt:self.timeCounter] forKey:KEY_FOR_TIME_WHEN_GO_ON_FLOOR];
                     }];
                 [changePlayerAlert addAction:playerOnFloorNoAction];
