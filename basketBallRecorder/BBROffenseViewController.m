@@ -317,6 +317,11 @@
             [self presentViewController:self.andOneAlert animated:YES completion:nil];
         }];
     
+    cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action)
+    {
+        self.zoneNo = 0;
+    }];
+    
     [self.resultAlert addAction:yesAction];
     [self.resultAlert addAction:noAction];
     [self.resultAlert addAction:andOneAction];
@@ -352,12 +357,12 @@
             }];
         [turnoverDetailAlert addAction:detailAction];
     }
-    [turnoverDetailAlert addAction:cancelAction];
     
-    UIAlertAction* turnoverAction = [UIAlertAction actionWithTitle:@"失誤(TO)" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+    cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action)
         {
-            [self presentViewController:turnoverDetailAlert animated:YES completion:nil];
+            self.zoneNo = 0;
         }];
+    [turnoverDetailAlert addAction:cancelAction];
     
     NSArray* detailTitleArray = [NSArray arrayWithObjects:self.normalDetailTitleArray, self.secondDetailTitleArray, self.PUDetailTitleArray, self.PNRDetailTitleArray, nil];
     NSArray* detailKeyArray = [NSArray arrayWithObjects:self.normalDetailItemKeyArray, self.secondDetailItemKeyArray, self.PUDetailItemKeyArray, self.PNRDetailItemKeyArray, nil];
@@ -380,6 +385,17 @@
             }];
             [detailAlert addAction:detailAction];
         }
+        
+        cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action)
+            {
+                self.zoneNo = 0;
+            }];
+        
+        UIAlertAction* turnoverAction = [UIAlertAction actionWithTitle:@"失誤(TO)" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+            {
+                [self presentViewController:turnoverDetailAlert animated:YES completion:nil];
+            }];
+        
         [detailAlert addAction:turnoverAction];
         [detailAlert addAction:cancelAction];
         [alertPtrArray addObject:detailAlert];
@@ -406,6 +422,11 @@
             }];
         [self.attackWayAlert addAction:action];
     }
+    
+    cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action)
+                    {
+                        self.zoneNo = 0;
+                    }];
     [self.attackWayAlert addAction:cancelAction];
 
     //Next Quarter Alert

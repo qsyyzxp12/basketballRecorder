@@ -106,7 +106,7 @@
     else if([segue.identifier isEqualToString:SEGUE_ID_FOR_BOX_SCORE])
     {
         BBRBoxScoreViewController* mainViewCntler = [segue destinationViewController];
-        NSLog(@"%@", resultArray);
+        //NSLog(@"%@", resultArray);
         mainViewCntler.playerNoSet = resultArray;
         mainViewCntler.playerCount = self.playerCount;
         
