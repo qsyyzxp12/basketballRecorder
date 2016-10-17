@@ -29,8 +29,8 @@ enum LoadMetaType {PPP_AND_SHOT_CHART, FILE_NAMES, FOLDER_EXIST};
 @property UILabel* loadingLabel;
 @property UIActivityIndicatorView* spinner;
 
-@property NSArray* statusButtonArray;
-@property NSArray* buttonArray;
+@property NSArray<UIButton*> *statusButtonArray;
+@property NSArray<UIButton*> *buttonArray;
 
 @property NSMutableArray* fileNamesInDropbox;
 @property BOOL isGradeXlsxFileExistInDropbox;

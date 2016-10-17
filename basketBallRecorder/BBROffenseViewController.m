@@ -2234,7 +2234,6 @@
             NSMutableDictionary* dic = [self.playerOnFloorDataArray objectAtIndex:i];
             [dic setObject:[NSNumber numberWithInt:self.timeCounter] forKey:KEY_FOR_TIME_WHEN_GO_ON_FLOOR];
         }
-        
     }
 }
 

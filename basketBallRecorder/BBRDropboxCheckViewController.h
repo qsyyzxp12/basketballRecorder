@@ -9,5 +9,6 @@
 #import <UIKit/UIKit.h>
 
 @interface BBRDropboxCheckViewController : UIViewController
+@property (weak, nonatomic) IBOutlet UILabel *Label;
 
 @end

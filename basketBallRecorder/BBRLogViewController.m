@@ -25,8 +25,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    self.BBRtableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 33, self.view.frame.size.width, self.view.frame.size.height-33)];
+    self.BBRtableView = [[UITableView alloc] initWithFrame:CGRectMake(self.view.frame.size.width*0.2, self.view.frame.size.height*0.1, self.view.frame.size.width*0.6, self.view.frame.size.height*0.85)];
     
     self.BBRtableView.delegate = self;
     self.BBRtableView.dataSource = self;
@@ -60,7 +59,7 @@
         }];
     UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action)
         {
-            [self.navigationController popToRootViewControllerAnimated:YES];
+            [self.navigationController popToViewController:[self.navigationController.viewControllers objectAtIndex:1] animated:YES];
         }];
     
     [nameAlert addTextFieldWithConfigurationHandler:^(UITextField *textField)

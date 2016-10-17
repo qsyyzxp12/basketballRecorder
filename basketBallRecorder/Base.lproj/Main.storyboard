@@ -46,6 +46,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="Sle-t4-Xce"/>
                     <connections>
+                        <outlet property="Label" destination="8iu-nJ-hdZ" id="xNz-J7-LIM"/>
                         <segue destination="PnF-Fq-esl" kind="showDetail" identifier="showMenuSegue" action="showViewController:sender:" id="Nnu-Ny-c7o"/>
                     </connections>
                 </viewController>
@@ -320,8 +321,8 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="xey-7J-jAi"/>
-        <segue reference="8ya-WF-3Sh"/>
-        <segue reference="kiT-7J-pL3"/>
+        <segue reference="S2w-8f-xfv"/>
+        <segue reference="cZf-JD-AQi"/>
+        <segue reference="cB5-dq-Og9"/>
     </inferredMetricsTieBreakers>
 </document>

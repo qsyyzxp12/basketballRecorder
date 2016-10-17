@@ -29,6 +29,8 @@
     
     [self.navigationItem setHidesBackButton:YES];
     
+    [self.addNewCompetitionButton setFrame:CGRectMake(CGRectGetMidX(self.view.frame)-76, self.view.frame.size.height*0.12, 152, 30)];
+    
     self.spinView = [[UIView alloc] initWithFrame:self.view.frame];
     self.spinView.backgroundColor = [UIColor grayColor];
     self.spinView.alpha = 0.8;
@@ -56,8 +58,15 @@
     
     for(int i=0; i<5; i++)
     {
-        ((UIButton*)(self.buttonArray[i])).hidden = YES;
-        ((UIButton*)(self.statusButtonArray[i])).hidden = YES;
+        if(!i)
+            [(self.buttonArray[i]) setFrame:CGRectMake(0, CGRectGetMaxY(self.addNewCompetitionButton.frame)+30, self.view.frame.size.width*0.6, 30)];
+        else
+            [(self.buttonArray[i]) setFrame:CGRectMake(0, CGRectGetMaxY(self.buttonArray[i-1].frame)+12, self.view.frame.size.width*0.6, 30)];
+        
+        [(self.statusButtonArray[i]) setFrame:CGRectMake(CGRectGetMaxX(self.buttonArray[i].frame), CGRectGetMinY(self.buttonArray[i].frame), self.view.frame.size.width*0.4, 30)];
+        
+        self.buttonArray[i].hidden = YES;
+        self.statusButtonArray[i].hidden = YES;
     }
     
     self.isTmpPlistExist = NO;
@@ -114,18 +123,18 @@
                 gameName = [NSString stringWithFormat:@"%@_進攻", [[recordPlistContent objectAtIndex:i] objectForKey:KEY_FOR_NAME]];
             else
                 gameName = [[recordPlistContent objectAtIndex:i] objectForKey:KEY_FOR_NAME];
-            [((UIButton*)self.buttonArray[buttonIndex]) setTitle:gameName forState:UIControlStateNormal];
-            ((UIButton*)self.buttonArray[buttonIndex]).hidden = NO;
-            ((UIButton*)self.statusButtonArray[buttonIndex]).hidden = NO;
-            [((UIButton*)self.statusButtonArray[buttonIndex]) setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
-            [((UIButton*)self.statusButtonArray[buttonIndex]) setTitle:@"上傳" forState:UIControlStateNormal];
-            ((UIButton*)self.statusButtonArray[buttonIndex]).userInteractionEnabled = YES;
+            [self.buttonArray[buttonIndex] setTitle:gameName forState:UIControlStateNormal];
+            self.buttonArray[buttonIndex].hidden = NO;
+            self.statusButtonArray[buttonIndex].hidden = NO;
+            [self.statusButtonArray[buttonIndex] setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+            [self.statusButtonArray[buttonIndex] setTitle:@"上傳" forState:UIControlStateNormal];
+            self.statusButtonArray[buttonIndex].userInteractionEnabled = YES;
             buttonIndex++;
         }
         for(int i=(int)[recordPlistContent count]; i<5; i++)
         {
-            ((UIButton*)self.buttonArray[i]).hidden = YES;
-            ((UIButton*)self.statusButtonArray[i]).hidden = YES;
+            self.buttonArray[i].hidden = YES;
+            self.statusButtonArray[i].hidden = YES;
         }
     }
     [self.spinView removeFromSuperview];

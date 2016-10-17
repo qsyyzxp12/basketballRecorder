@@ -19,6 +19,7 @@
     [super viewDidLoad];
 //    if ([[DBSession sharedSession] isLinked])
   //      [[DBSession sharedSession] unlinkAll];
+    [self.Label setFrame:CGRectMake(self.view.frame.size.width-480, self.view.frame.size.height-76, 480, 76)];
     [self performSelectorInBackground:@selector(checkingDropboxAuthorization) withObject:nil];
 }
 
