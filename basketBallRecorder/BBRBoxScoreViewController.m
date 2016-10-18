@@ -48,6 +48,10 @@
     self.navigationItem.rightBarButtonItem.target = self;
     self.navigationItem.rightBarButtonItem.action = @selector(nextQuarterButtonClicked);
     
+    int bar_height = 33;
+    if ( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
+       bar_height = 64;
+    
     if(self.isTmpPlistExist)
         [self reloadPlayerGradeFromTmpPlist];
     else if(self.showOldRecordNo)
@@ -60,7 +64,7 @@
         self.navigationItem.leftBarButtonItem.target = self;
         self.navigationItem.leftBarButtonItem.action = @selector(backButtonClicked);
     }
-    int tableViewHeight = TITLE_CELL_HEIGHT + CELL_HEIGHT * (self.playerCount+1) + BAR_HEIGHT;
+    int tableViewHeight = TITLE_CELL_HEIGHT + CELL_HEIGHT * (self.playerCount+1) + bar_height;
     if (tableViewHeight + 20 > self.view.frame.size.height)
         tableViewHeight = self.view.frame.size.height - 20;
     
@@ -71,7 +75,7 @@
     self.playerListTableView.tag = NO_TABLEVIEW_TAG;
     [self.view addSubview:self.playerListTableView];
     
-    self.playerOnFloorListTableView = [[UITableView alloc] initWithFrame:CGRectMake(10, 10+BAR_HEIGHT, CELL_WIDTH, TITLE_CELL_HEIGHT + CELL_HEIGHT * MIN(self.playerCount, 5))];
+    self.playerOnFloorListTableView = [[UITableView alloc] initWithFrame:CGRectMake(10, 10+bar_height, CELL_WIDTH, TITLE_CELL_HEIGHT + CELL_HEIGHT * MIN(self.playerCount, 5))];
     self.playerOnFloorListTableView.delegate = self;
     self.playerOnFloorListTableView.dataSource = self;
     self.playerOnFloorListTableView.tag = PLAYER_ON_FLOOR_TABLEVIEW_TAG;
@@ -596,41 +600,18 @@
 {
     switch(self.quarterNo)
     {
-        case 0:
-            self.navigationItem.title = @"總成績";
-            break;
-        case 1:
-            self.navigationItem.title = @"第一節成績";
-            break;
-        case 2:
-            self.navigationItem.title = @"第二節成績";
-            break;
-        case 3:
-            self.navigationItem.title = @"第三節成績";
-            break;
-        case 4:
-            self.navigationItem.title = @"第四節成績";
-            break;
-        case 5:
-            self.navigationItem.title = @"延長賽第一節成績";
-            break;
-        case 6:
-            self.navigationItem.title = @"延長賽第二節成績";
-            break;
-        case 7:
-            self.navigationItem.title = @"延長賽第三節成績";
-            break;
-        case 8:
-            self.navigationItem.title = @"延長賽第四節成績";
-            break;
-        case 9:
-            self.navigationItem.title = @"延長賽第五節成績";
-            break;
-        case 10:
-            self.navigationItem.title = @"延長賽第六節成績";
-            break;
+        case 0: self.navigationItem.title = @"總成績"; break;
+        case 1: self.navigationItem.title = @"第一節成績"; break;
+        case 2: self.navigationItem.title = @"第二節成績"; break;
+        case 3: self.navigationItem.title = @"第三節成績"; break;
+        case 4: self.navigationItem.title = @"第四節成績"; break;
+        case 5: self.navigationItem.title = @"延長賽第一節成績"; break;
+        case 6: self.navigationItem.title = @"延長賽第二節成績"; break;
+        case 7: self.navigationItem.title = @"延長賽第三節成績"; break;
+        case 8: self.navigationItem.title = @"延長賽第四節成績"; break;
+        case 9: self.navigationItem.title = @"延長賽第五節成績"; break;
+        case 10: self.navigationItem.title = @"延長賽第六節成績"; break;
     }
-    
     [(UITableView*)[self.view viewWithTag:PLAYER_GRADE_TABLEVIEW_TAG] reloadData];
 }
 
@@ -638,45 +619,33 @@
 {
     switch(self.quarterNo)
     {
-        case 1:
-            self.navigationItem.title = @"第一節";
-            break;
-        case 2:
-            self.navigationItem.title = @"第二節";
-            break;
-        case 3:
-            self.navigationItem.title = @"第三節";
-            break;
-        case 4:
-            self.navigationItem.title = @"第四節";
-            break;
-        case 5:
-            self.navigationItem.title = @"延長賽第一節";
-            break;
-        case 6:
-            self.navigationItem.title = @"延長賽第二節";
-            break;
-        case 7:
-            self.navigationItem.title = @"延長賽第三節";
-            break;
-        case 8:
-            self.navigationItem.title = @"延長賽第四節";
-            break;
-        case 9:
-            self.navigationItem.title = @"延長賽第五節";
-            break;
-        case 10:
-            self.navigationItem.title = @"延長賽第六節";
-            break;
+        case 1: self.navigationItem.title = @"第一節"; break;
+        case 2: self.navigationItem.title = @"第二節"; break;
+        case 3: self.navigationItem.title = @"第三節"; break;
+        case 4: self.navigationItem.title = @"第四節"; break;
+        case 5: self.navigationItem.title = @"延長賽第一節"; break;
+        case 6: self.navigationItem.title = @"延長賽第二節"; break;
+        case 7: self.navigationItem.title = @"延長賽第三節"; break;
+        case 8: self.navigationItem.title = @"延長賽第四節"; break;
+        case 9: self.navigationItem.title = @"延長賽第五節"; break;
+        case 10: self.navigationItem.title = @"延長賽第六節"; break;
     }
 }
 
 - (void) drawPicture
 {
-    CGFloat x = (self.view.frame.size.width- CGRectGetMaxX(self.playerListTableView.frame) - BACKGROUND_WIDTH)/5 + CGRectGetMaxX(self.playerListTableView.frame);
-    CGFloat y = (self.view.frame.size.height - BAR_HEIGHT - BACKGROUND_HEIGHT)/2 + BAR_HEIGHT;
+    int scale = 1;
+    int bar_height = 33;
+    if ( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
+    {
+        scale = 2;
+        bar_height = 64;
+    }
     
-    self.defenseRecordeView = [[UIView alloc] initWithFrame:CGRectMake(x, y, BACKGROUND_WIDTH, BACKGROUND_HEIGHT)];
+    CGFloat x = (self.view.frame.size.width- CGRectGetMaxX(self.playerListTableView.frame) - BACKGROUND_WIDTH*scale)/5 + CGRectGetMaxX(self.playerListTableView.frame);
+    CGFloat y = (self.view.frame.size.height - bar_height - BACKGROUND_HEIGHT*scale)/2 + bar_height;
+    
+    self.defenseRecordeView = [[UIView alloc] initWithFrame:CGRectMake(x, y, BACKGROUND_WIDTH*scale, BACKGROUND_HEIGHT*scale)];
     self.defenseRecordeView.backgroundColor = [UIColor whiteColor];
     
     NSArray* titleArray = [NSArray arrayWithObjects:@"2PTS", @"3PTS", @"Free Throw", nil];
@@ -684,26 +653,27 @@
     int tag = 20;
     for(int i=0; i<titleArray.count; i++)
     {
-        UILabel* titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, i*70, 100, 25)];
+        UILabel* titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, i*70*scale, 100*scale, 25*scale)];
         titleLabel.text = titleArray[i];
+        [titleLabel setAdjustsFontSizeToFitWidth:YES];
         [self.defenseRecordeView addSubview:titleLabel];
         
-        UIButton* attemptButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetMinX(titleLabel.frame), CGRectGetMaxY(titleLabel.frame), 60, 40)];
+        UIButton* attemptButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetMinX(titleLabel.frame), CGRectGetMaxY(titleLabel.frame), 60*scale, 40*scale)];
         [attemptButton setTitle:@"Attempt" forState:UIControlStateNormal];
         [attemptButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         attemptButton.tag = tag++;
-        attemptButton.layer.borderWidth = 1;
+        attemptButton.layer.borderWidth = 1*scale;
         attemptButton.titleLabel.textAlignment = NSTextAlignmentCenter;
         attemptButton.titleLabel.adjustsFontSizeToFitWidth = YES;
         [attemptButton addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
         [attemptButton setShowsTouchWhenHighlighted:YES];
         [self.defenseRecordeView addSubview:attemptButton];
         
-        UIButton* madeButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetMaxX(attemptButton.frame), CGRectGetMinY(attemptButton.frame), 60, 40)];
+        UIButton* madeButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetMaxX(attemptButton.frame), CGRectGetMinY(attemptButton.frame), 60*scale, 40*scale)];
         [madeButton setTitle:@"Made" forState:UIControlStateNormal];
         [madeButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         madeButton.tag = tag++;
-        madeButton.layer.borderWidth = 1;
+        madeButton.layer.borderWidth = 1*scale;
         madeButton.titleLabel.textAlignment = NSTextAlignmentCenter;
         madeButton.titleLabel.adjustsFontSizeToFitWidth = YES;
         [madeButton addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
@@ -711,22 +681,22 @@
         [self.defenseRecordeView addSubview:madeButton];
     }
    
-    UIButton* orButton = [[UIButton alloc] initWithFrame:CGRectMake(180, 25, 60, 40)];
+    UIButton* orButton = [[UIButton alloc] initWithFrame:CGRectMake(180*scale, 25*scale, 60*scale, 40*scale)];
     [orButton setTitle:@"OR" forState:UIControlStateNormal];
     [orButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     orButton.tag = tag++;
-    orButton.layer.borderWidth = 1;
+    orButton.layer.borderWidth = 1*scale;
     orButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     orButton.titleLabel.adjustsFontSizeToFitWidth = YES;
     [orButton addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
     [orButton setShowsTouchWhenHighlighted:YES];
     [self.defenseRecordeView addSubview:orButton];
     
-    UIButton* drButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetMaxX(orButton.frame), CGRectGetMinY(orButton.frame), 60, 40)];
+    UIButton* drButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetMaxX(orButton.frame), CGRectGetMinY(orButton.frame), 60*scale, 40*scale)];
     [drButton setTitle:@"DR" forState:UIControlStateNormal];
     [drButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     drButton.tag = tag++;
-    drButton.layer.borderWidth = 1;
+    drButton.layer.borderWidth = 1*scale;
     drButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     drButton.titleLabel.adjustsFontSizeToFitWidth = YES;
     [drButton addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
@@ -740,19 +710,19 @@
         CGFloat x, y;
         if(i < 2)
         {
-            x = CGRectGetMinX(orButton.frame) + i*60;
-            y = CGRectGetMaxY(orButton.frame) + 30;
+            x = CGRectGetMinX(orButton.frame) + i*60*scale;
+            y = CGRectGetMaxY(orButton.frame) + 30*scale;
         }
         else
         {
-            x = CGRectGetMinX(orButton.frame) + (i-2)*60;
-            y = CGRectGetMaxY(orButton.frame) + 70;
+            x = CGRectGetMinX(orButton.frame) + (i-2)*60*scale;
+            y = CGRectGetMaxY(orButton.frame) + 70*scale;
         }
-        UIButton* Button = [[UIButton alloc] initWithFrame:CGRectMake(x, y, 60, 40)];
+        UIButton* Button = [[UIButton alloc] initWithFrame:CGRectMake(x, y, 60*scale, 40*scale)];
         [Button setTitle:othersArray[i] forState:UIControlStateNormal];
         [Button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         Button.tag = tag++;
-        Button.layer.borderWidth = 1;
+        Button.layer.borderWidth = 1*scale;
         Button.titleLabel.textAlignment = NSTextAlignmentCenter;
         Button.titleLabel.adjustsFontSizeToFitWidth = YES;
         [Button addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];

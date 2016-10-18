@@ -80,5 +80,6 @@
 @property UIView* spinView;
 @property UILabel* loadingLabel;
 @property UIActivityIndicatorView* spinner;
+@property int bar_height;
 @property (nonatomic, strong) DBRestClient *restClient;
 @end

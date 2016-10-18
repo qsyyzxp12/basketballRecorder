@@ -1650,7 +1650,16 @@
 
 - (void) drawPicture
 {
-    int tableViewHeight = TITLE_CELL_HEIGHT + CELL_HEIGHT * (self.playerCount+1) + BAR_HEIGHT;
+    
+    int scale = 1;
+    int bar_height = 33;
+    if ( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
+    {
+        scale = 2;
+        bar_height = 64;
+    }
+    
+    int tableViewHeight = TITLE_CELL_HEIGHT + CELL_HEIGHT * (self.playerCount+1) + bar_height;
     if (tableViewHeight + 20 > self.view.frame.size.height)
         tableViewHeight = self.view.frame.size.height - 20;
     
@@ -1661,7 +1670,7 @@
     self.playerListTableView.tag = NO_TABLEVIEW_TAG;
     [self.view addSubview:self.playerListTableView];
     
-    self.playerOnFloorListTableView = [[UITableView alloc] initWithFrame:CGRectMake(10, 10+BAR_HEIGHT, CELL_WIDTH, TITLE_CELL_HEIGHT + CELL_HEIGHT * MIN(self.playerCount, 5))];
+    self.playerOnFloorListTableView = [[UITableView alloc] initWithFrame:CGRectMake(10, 10+bar_height, CELL_WIDTH, TITLE_CELL_HEIGHT + CELL_HEIGHT * MIN(self.playerCount, 5))];
     self.playerOnFloorListTableView.delegate = self;
     self.playerOnFloorListTableView.dataSource = self;
     self.playerOnFloorListTableView.tag = PLAYER_ON_FLOOR_TABLEVIEW_TAG;
@@ -1669,10 +1678,10 @@
     
     self.backgroundImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"background.jpg"]];
     
-    CGFloat x = (self.view.frame.size.width- CGRectGetMaxX(self.playerListTableView.frame) - BACKGROUND_WIDTH)/5 + CGRectGetMaxX(self.playerListTableView.frame);
-    CGFloat y = (self.view.frame.size.height - BAR_HEIGHT - BACKGROUND_HEIGHT)/2 + BAR_HEIGHT;
+    CGFloat x = (self.view.frame.size.width- CGRectGetMaxX(self.playerListTableView.frame) - BACKGROUND_WIDTH*scale)/5 + CGRectGetMaxX(self.playerListTableView.frame);
+    CGFloat y = (self.view.frame.size.height - bar_height - BACKGROUND_HEIGHT*scale)/2 + bar_height;
     
-    self.backgroundImageView.frame = CGRectMake(x, y, BACKGROUND_WIDTH, BACKGROUND_HEIGHT);
+    self.backgroundImageView.frame = CGRectMake(x, y,BACKGROUND_WIDTH*scale, BACKGROUND_HEIGHT*scale);
     self.backgroundImageView.tag = BACKGROUND_IMAGEVIEW_TAG;
     
     self.backgroundImageView.contentMode = UIViewContentModeScaleAspectFit;
@@ -1684,9 +1693,10 @@
     UIImageView* zoneImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"zone1.png"] highlightedImage:[UIImage imageNamed:@"zone1-2.png"]];
     
     [zoneImageView sizeToFit];
-    zoneImageView.frame = CGRectMake(self.backgroundImageView.frame.origin.x+2, self.backgroundImageView.frame.origin.y+2, zoneImageView.frame.size.width*IMAGE_SCALE, zoneImageView.frame.size.height*IMAGE_SCALE);
+    zoneImageView.frame = CGRectMake(self.backgroundImageView.frame.origin.x+2*scale, self.backgroundImageView.frame.origin.y+2*scale, zoneImageView.frame.size.width*IMAGE_SCALE*scale, zoneImageView.frame.size.height*IMAGE_SCALE*scale);
     
     zoneImageView.tag = 1;
+    zoneImageView.backgroundColor = [UIColor redColor];
     
     [zoneImageView setUserInteractionEnabled:YES];
     UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc]
@@ -1700,10 +1710,10 @@
     [zoneImageViewArray addObject:zoneImageView];
     
     //ZONE 2
-    CGPoint zonePosition = CGPointMake(zoneImageView.frame.origin.x+zoneImageView.frame.size.width+2, zoneImageView.frame.origin.y);
+    CGPoint zonePosition = CGPointMake(CGRectGetMaxX(zoneImageView.frame)+2*scale, zoneImageView.frame.origin.y);
     zoneImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"zone2.png"] highlightedImage:[UIImage imageNamed:@"zone2-2.png"]];
     [zoneImageView sizeToFit];
-    zoneImageView.frame = CGRectMake(zonePosition.x, zonePosition.y, zoneImageView.frame.size.width*IMAGE_SCALE, zoneImageView.frame.size.height*IMAGE_SCALE);
+    zoneImageView.frame = CGRectMake(zonePosition.x, zonePosition.y, zoneImageView.frame.size.width*IMAGE_SCALE*scale, zoneImageView.frame.size.height*IMAGE_SCALE*scale);
     
     zoneImageView.tag = 2;
     
@@ -1719,10 +1729,10 @@
     [zoneImageViewArray addObject:zoneImageView];
     
     //ZONE 3
-    zonePosition = CGPointMake(zoneImageView.frame.origin.x+zoneImageView.frame.size.width+2, zoneImageView.frame.origin.y);
+    zonePosition = CGPointMake(CGRectGetMaxX(zoneImageView.frame)+2*scale, zoneImageView.frame.origin.y);
     zoneImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"zone3.png"] highlightedImage:[UIImage imageNamed:@"zone3-2.png"]];
     [zoneImageView sizeToFit];
-    zoneImageView.frame = CGRectMake(zonePosition.x, zonePosition.y, zoneImageView.frame.size.width*IMAGE_SCALE, zoneImageView.frame.size.height*IMAGE_SCALE);
+    zoneImageView.frame = CGRectMake(zonePosition.x, zonePosition.y, zoneImageView.frame.size.width*IMAGE_SCALE*scale, zoneImageView.frame.size.height*IMAGE_SCALE*scale);
     
     zoneImageView.tag = 3;
     
@@ -1738,10 +1748,10 @@
     [zoneImageViewArray addObject:zoneImageView];
     
     //ZONE 4
-    zonePosition = CGPointMake(zoneImageView.frame.origin.x+zoneImageView.frame.size.width+2, zoneImageView.frame.origin.y);
+    zonePosition = CGPointMake(CGRectGetMaxX(zoneImageView.frame)+2*scale, zoneImageView.frame.origin.y);
     zoneImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"zone4.png"] highlightedImage:[UIImage imageNamed:@"zone4-2.png"]];
     [zoneImageView sizeToFit];
-    zoneImageView.frame = CGRectMake(zonePosition.x, zonePosition.y, zoneImageView.frame.size.width*IMAGE_SCALE-2, zoneImageView.frame.size.height*IMAGE_SCALE);
+    zoneImageView.frame = CGRectMake(zonePosition.x, zonePosition.y, zoneImageView.frame.size.width*IMAGE_SCALE*scale-2, zoneImageView.frame.size.height*IMAGE_SCALE*scale);
     
     zoneImageView.tag = 4;
     
@@ -1757,10 +1767,10 @@
     [zoneImageViewArray addObject:zoneImageView];
     
     //ZONE 5
-    zonePosition = CGPointMake(zoneImageView.frame.origin.x+zoneImageView.frame.size.width+2, zoneImageView.frame.origin.y);
+    zonePosition = CGPointMake(CGRectGetMaxX(zoneImageView.frame)+2*scale, zoneImageView.frame.origin.y);
     zoneImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"zone5.png"] highlightedImage:[UIImage imageNamed:@"zone5-2.png"]];
     [zoneImageView sizeToFit];
-    zoneImageView.frame = CGRectMake(zonePosition.x, zonePosition.y, zoneImageView.frame.size.width*IMAGE_SCALE, zoneImageView.frame.size.height*IMAGE_SCALE);
+    zoneImageView.frame = CGRectMake(zonePosition.x, zonePosition.y, zoneImageView.frame.size.width*IMAGE_SCALE*scale, zoneImageView.frame.size.height*IMAGE_SCALE*scale);
     
     zoneImageView.tag = 5;
     
@@ -1777,10 +1787,10 @@
     
     //ZONE 6
     UIImageView* zone1 = [self.view viewWithTag:1];
-    zonePosition = CGPointMake(zone1.frame.origin.x, zone1.frame.origin.y+zone1.frame.size.height+2);
+    zonePosition = CGPointMake(zone1.frame.origin.x, CGRectGetMaxY(zone1.frame)+2*scale);
     zoneImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"zone6.png"] highlightedImage:[UIImage imageNamed:@"zone6-2.png"]];
     [zoneImageView sizeToFit];
-    zoneImageView.frame = CGRectMake(zonePosition.x, zonePosition.y, zoneImageView.frame.size.width*IMAGE_SCALE, zoneImageView.frame.size.height*IMAGE_SCALE-1);
+    zoneImageView.frame = CGRectMake(zonePosition.x, zonePosition.y, zoneImageView.frame.size.width*IMAGE_SCALE*scale, zoneImageView.frame.size.height*IMAGE_SCALE*scale-1);
     
     zoneImageView.tag = 6;
     
@@ -1797,10 +1807,10 @@
     
     //ZONE 7
     UIImageView* zone2 = [self.view viewWithTag:2];
-    zonePosition = CGPointMake(zone2.frame.origin.x, zone2.frame.origin.y+zone2.frame.size.height+2);
+    zonePosition = CGPointMake(zone2.frame.origin.x, CGRectGetMaxY(zone2.frame)+2*scale);
     zoneImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"zone7.png"] highlightedImage:[UIImage imageNamed:@"zone7-2.png"]];
     [zoneImageView sizeToFit];
-    zoneImageView.frame = CGRectMake(zonePosition.x, zonePosition.y, zoneImageView.frame.size.width*IMAGE_SCALE, zoneImageView.frame.size.height*IMAGE_SCALE);
+    zoneImageView.frame = CGRectMake(zonePosition.x, zonePosition.y, zoneImageView.frame.size.width*IMAGE_SCALE*scale, zoneImageView.frame.size.height*IMAGE_SCALE*scale);
     
     zoneImageView.tag = 7;
     
@@ -1817,10 +1827,10 @@
     
     //ZONE 10
     UIImageView* zone4 = [self.view viewWithTag:4];
-    zonePosition = CGPointMake(zone4.frame.origin.x, zone4.frame.origin.y+zone4.frame.size.height+2);
+    zonePosition = CGPointMake(zone4.frame.origin.x, CGRectGetMaxY(zone4.frame)+2*scale);
     zoneImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"zone10.png"] highlightedImage:[UIImage imageNamed:@"zone10-2.png"]];
     [zoneImageView sizeToFit];
-    zoneImageView.frame = CGRectMake(zonePosition.x, zonePosition.y, zoneImageView.frame.size.width*IMAGE_SCALE-2, zoneImageView.frame.size.height*IMAGE_SCALE-2);
+    zoneImageView.frame = CGRectMake(zonePosition.x, zonePosition.y, zoneImageView.frame.size.width*IMAGE_SCALE*scale-2, zoneImageView.frame.size.height*IMAGE_SCALE*scale-2);
     
     zoneImageView.tag = 10;
     
@@ -1836,10 +1846,10 @@
     [zoneImageViewArray addObject:zoneImageView];
     
     //ZONE 9
-    zonePosition = CGPointMake(zone4.frame.origin.x, zone4.frame.origin.y+zone4.frame.size.height+2);
+    zonePosition = CGPointMake(zone4.frame.origin.x, CGRectGetMaxY(zone4.frame)+2*scale);
     zoneImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"zone9.png"] highlightedImage:[UIImage imageNamed:@"zone9-2.png"]];
     [zoneImageView sizeToFit];
-    zoneImageView.frame = CGRectMake(zonePosition.x, zonePosition.y, zoneImageView.frame.size.width*IMAGE_SCALE-1, zoneImageView.frame.size.height*IMAGE_SCALE-1);
+    zoneImageView.frame = CGRectMake(zonePosition.x, zonePosition.y, zoneImageView.frame.size.width*IMAGE_SCALE*scale-1, zoneImageView.frame.size.height*IMAGE_SCALE*scale-1);
     
     zoneImageView.tag = 9;
     
@@ -1859,7 +1869,7 @@
     UIImageView* zone6 = [self.view viewWithTag:6];
     zoneImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"zone11.png"] highlightedImage:[UIImage imageNamed:@"zone11-2.png"]];
     [zoneImageView sizeToFit];
-    CGPoint zoneSize = CGPointMake(zoneImageView.frame.size.width*IMAGE_SCALE-2, zoneImageView.frame.size.height*IMAGE_SCALE-1);
+    CGPoint zoneSize = CGPointMake(zoneImageView.frame.size.width*IMAGE_SCALE*scale-2, zoneImageView.frame.size.height*IMAGE_SCALE*scale-1);
     zonePosition = CGPointMake(zone3.frame.origin.x+1, CGRectGetMaxY(zone6.frame)-zoneSize.y);
     
     zoneImageView.frame = CGRectMake(zonePosition.x, zonePosition.y, zoneSize.x, zoneSize.y);
@@ -1879,10 +1889,10 @@
     
     
     //ZONE 8
-    zonePosition = CGPointMake(zone3.frame.origin.x, zone3.frame.origin.y+zone3.frame.size.height+2);
+    zonePosition = CGPointMake(zone3.frame.origin.x, CGRectGetMaxY(zone3.frame)+2);
     zoneImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"zone8.png"] highlightedImage:[UIImage imageNamed:@"zone8-2.png"]];
     [zoneImageView sizeToFit];
-    zoneImageView.frame = CGRectMake(zonePosition.x+1, zonePosition.y, zoneImageView.frame.size.width*IMAGE_SCALE-2, zoneImageView.frame.size.height*IMAGE_SCALE);
+    zoneImageView.frame = CGRectMake(zonePosition.x+1, zonePosition.y, zoneImageView.frame.size.width*IMAGE_SCALE*scale-2, zoneImageView.frame.size.height*IMAGE_SCALE*scale);
     
     zoneImageView.tag = 8;
     
@@ -1897,6 +1907,7 @@
     [self.view addSubview:zoneImageView];
     [zoneImageViewArray addObject:zoneImageView];
     
+    
     //Draw Label for zone1
     UILabel* hitRateLabel = [[UILabel alloc] initWithFrame:CGRectMake(zone1.frame.origin.x, zone1.frame.origin.y + zone1.frame.size.height*TOP_PADDING_RATE1, zone1.frame.size.width, RECORD_LABEL_HEIGHT)];
     hitRateLabel.textAlignment = NSTextAlignmentCenter;
@@ -1908,7 +1919,7 @@
     gradeLabel.text = @"0/0";
     [self.view addSubview:hitRateLabel];
     [self.view addSubview:gradeLabel];
-    
+
     //Draw Label for zone2
     hitRateLabel = [[UILabel alloc] initWithFrame:CGRectMake(zone2.frame.origin.x, zone2.frame.origin.y + zone2.frame.size.height*TOP_PADDING_RATE1, zone2.frame.size.width, RECORD_LABEL_HEIGHT)];
     hitRateLabel.textAlignment = NSTextAlignmentCenter;
@@ -2034,7 +2045,7 @@
     gradeLabel.text = @"0/0";
     [self.view addSubview:hitRateLabel];
     [self.view addSubview:gradeLabel];
-    
+   
     //Bonus Zone
     UILabel* bonusZone = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(self.backgroundImageView.frame)+5, CGRectGetMaxY(self.backgroundImageView.frame)-80, 60, RECORD_LABEL_HEIGHT)];
     bonusZone.textAlignment = NSTextAlignmentCenter;
@@ -2066,7 +2077,7 @@
     [self.view addSubview:bonusZone];
     [self.view addSubview:hitRateLabel];
     [self.view addSubview:gradeLabel];
-    
+ 
     //Show Grade Switch Button
     self.switchModeButton = [[UIButton alloc] init];
     [self.switchModeButton setFrame:CGRectMake(CGRectGetMinX(bonusZone.frame), CGRectGetMinY(self.backgroundImageView.frame), bonusZone.frame.size.width, bonusZone.frame.size.height)];

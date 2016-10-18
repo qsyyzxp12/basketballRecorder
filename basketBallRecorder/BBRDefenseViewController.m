@@ -21,6 +21,10 @@
 {
     [super viewDidLoad];
     
+    int bar_height = 33;
+    if ( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
+        bar_height = 64;
+    
     self.playerOnFloorDataArray = [NSMutableArray arrayWithCapacity:5];
     for(int i=0; i<5; i++)
     {
@@ -60,7 +64,7 @@
         self.navigationItem.leftBarButtonItem.target = self;
         self.navigationItem.leftBarButtonItem.action = @selector(backButtonClicked);
     }
-    int tableViewHeight = TITLE_CELL_HEIGHT + CELL_HEIGHT * (self.playerCount+1) + BAR_HEIGHT;
+    int tableViewHeight = TITLE_CELL_HEIGHT + CELL_HEIGHT * (self.playerCount+1) + bar_height;
     if (tableViewHeight + 20 > self.view.frame.size.height)
         tableViewHeight = self.view.frame.size.height - 20;
     
@@ -71,7 +75,7 @@
     self.playerListTableView.tag = NO_TABLEVIEW_TAG;
     [self.view addSubview:self.playerListTableView];
     
-    self.playerOnFloorListTableView = [[UITableView alloc] initWithFrame:CGRectMake(10, 10+BAR_HEIGHT, CELL_WIDTH, TITLE_CELL_HEIGHT + CELL_HEIGHT * MIN(self.playerCount, 5))];
+    self.playerOnFloorListTableView = [[UITableView alloc] initWithFrame:CGRectMake(10, 10+bar_height, CELL_WIDTH, TITLE_CELL_HEIGHT + CELL_HEIGHT * MIN(self.playerCount, 5))];
     self.playerOnFloorListTableView.delegate = self;
     self.playerOnFloorListTableView.dataSource = self;
     self.playerOnFloorListTableView.tag = PLAYER_ON_FLOOR_TABLEVIEW_TAG;
@@ -557,41 +561,18 @@
 {
     switch(self.quarterNo)
     {
-        case 0:
-            self.navigationItem.title = @"總成績";
-            break;
-        case 1:
-            self.navigationItem.title = @"第一節成績";
-            break;
-        case 2:
-            self.navigationItem.title = @"第二節成績";
-            break;
-        case 3:
-            self.navigationItem.title = @"第三節成績";
-            break;
-        case 4:
-            self.navigationItem.title = @"第四節成績";
-            break;
-        case 5:
-            self.navigationItem.title = @"延長賽第一節成績";
-            break;
-        case 6:
-            self.navigationItem.title = @"延長賽第二節成績";
-            break;
-        case 7:
-            self.navigationItem.title = @"延長賽第三節成績";
-            break;
-        case 8:
-            self.navigationItem.title = @"延長賽第四節成績";
-            break;
-        case 9:
-            self.navigationItem.title = @"延長賽第五節成績";
-            break;
-        case 10:
-            self.navigationItem.title = @"延長賽第六節成績";
-            break;
+        case 0: self.navigationItem.title = @"總成績"; break;
+        case 1: self.navigationItem.title = @"第一節成績"; break;
+        case 2: self.navigationItem.title = @"第二節成績"; break;
+        case 3: self.navigationItem.title = @"第三節成績"; break;
+        case 4: self.navigationItem.title = @"第四節成績"; break;
+        case 5: self.navigationItem.title = @"延長賽第一節成績"; break;
+        case 6: self.navigationItem.title = @"延長賽第二節成績"; break;
+        case 7: self.navigationItem.title = @"延長賽第三節成績"; break;
+        case 8: self.navigationItem.title = @"延長賽第四節成績"; break;
+        case 9: self.navigationItem.title = @"延長賽第五節成績"; break;
+        case 10: self.navigationItem.title = @"延長賽第六節成績"; break;
     }
-    
     [(UITableView*)[self.view viewWithTag:PLAYER_GRADE_TABLEVIEW_TAG] reloadData];
 }
 
@@ -599,62 +580,50 @@
 {
     switch(self.quarterNo)
     {
-        case 1:
-            self.navigationItem.title = @"第一節";
-            break;
-        case 2:
-            self.navigationItem.title = @"第二節";
-            break;
-        case 3:
-            self.navigationItem.title = @"第三節";
-            break;
-        case 4:
-            self.navigationItem.title = @"第四節";
-            break;
-        case 5:
-            self.navigationItem.title = @"延長賽第一節";
-            break;
-        case 6:
-            self.navigationItem.title = @"延長賽第二節";
-            break;
-        case 7:
-            self.navigationItem.title = @"延長賽第三節";
-            break;
-        case 8:
-            self.navigationItem.title = @"延長賽第四節";
-            break;
-        case 9:
-            self.navigationItem.title = @"延長賽第五節";
-            break;
-        case 10:
-            self.navigationItem.title = @"延長賽第六節";
-            break;
+        case 1: self.navigationItem.title = @"第一節"; break;
+        case 2: self.navigationItem.title = @"第二節"; break;
+        case 3: self.navigationItem.title = @"第三節"; break;
+        case 4: self.navigationItem.title = @"第四節"; break;
+        case 5: self.navigationItem.title = @"延長賽第一節"; break;
+        case 6: self.navigationItem.title = @"延長賽第二節"; break;
+        case 7: self.navigationItem.title = @"延長賽第三節"; break;
+        case 8: self.navigationItem.title = @"延長賽第四節"; break;
+        case 9: self.navigationItem.title = @"延長賽第五節"; break;
+        case 10: self.navigationItem.title = @"延長賽第六節"; break;
     }
 }
 
 - (void) drawPicture
 {
-    CGFloat x = (self.view.frame.size.width- CGRectGetMaxX(self.playerListTableView.frame) - BACKGROUND_WIDTH)/5 + CGRectGetMaxX(self.playerListTableView.frame);
-    CGFloat y = (self.view.frame.size.height - BAR_HEIGHT - BACKGROUND_HEIGHT)/2 + BAR_HEIGHT;
+    int scale = 1;
+    int bar_height = 33;
+    if ( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
+    {
+        scale = 2;
+        bar_height = 64;
+    }
     
-    self.defenseRecordeView = [[UIView alloc] initWithFrame:CGRectMake(x, y, BACKGROUND_WIDTH, BACKGROUND_HEIGHT)];
+    CGFloat x = (self.view.frame.size.width- CGRectGetMaxX(self.playerListTableView.frame) - BACKGROUND_WIDTH*scale)/5 + CGRectGetMaxX(self.playerListTableView.frame);
+    CGFloat y = (self.view.frame.size.height - bar_height - BACKGROUND_HEIGHT*scale)/2 + bar_height;
+    
+    self.defenseRecordeView = [[UIView alloc] initWithFrame:CGRectMake(x, y, BACKGROUND_WIDTH*scale, BACKGROUND_HEIGHT*scale)];
     self.defenseRecordeView.backgroundColor = [UIColor whiteColor];
     
-    UILabel* goodLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 10, 52, 28)];
+    UILabel* goodLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 10, 52*scale, 28*scale)];
     goodLabel.text = @"GOOD";
     goodLabel.textAlignment = NSTextAlignmentCenter;
-    goodLabel.layer.borderWidth = 1;
+    goodLabel.layer.borderWidth = 1*scale;
     [self.defenseRecordeView addSubview:goodLabel];
     
     NSArray* defenseTypeArray = [NSArray arrayWithObjects:@"Tip", @"Close  Out", @"Stop Ball", @"BLK", @"STL", @"8/24", @"Double Team", @"Loose  Ball", @"OR", @"DR", @"OR Tip", @"AST", @"TO", @"WIDE OPEN", @"NO\nBLOCK\nOUT", @"DEF. ASS", @"Blown    BY", nil];
     
     for(int i=0; i<8; i++)
     {
-        UIButton* deflectionButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetMaxX(goodLabel.frame)+40*i, CGRectGetMaxY(goodLabel.frame), 40, 40)];
+        UIButton* deflectionButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetMaxX(goodLabel.frame)+40*scale*i, CGRectGetMaxY(goodLabel.frame), 40*scale, 40*scale)];
         [deflectionButton setTitle:defenseTypeArray[i] forState:UIControlStateNormal];
         [deflectionButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         deflectionButton.tag = 20+i;
-        deflectionButton.layer.borderWidth = 1;
+        deflectionButton.layer.borderWidth = 1*scale;
         deflectionButton.titleLabel.textAlignment = NSTextAlignmentCenter;
         deflectionButton.titleLabel.numberOfLines = 2;
         deflectionButton.titleLabel.adjustsFontSizeToFitWidth = YES;
@@ -664,11 +633,11 @@
     }
     for(int i=0; i<4; i++)
     {
-        UIButton* defenseButton = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetMaxX(goodLabel.frame)+40*i, CGRectGetMaxY(goodLabel.frame)+50, 40, 40)];
+        UIButton* defenseButton = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetMaxX(goodLabel.frame)+40*i*scale, CGRectGetMaxY(goodLabel.frame)+50*scale, 40*scale, 40*scale)];
         [defenseButton setTitle:defenseTypeArray[i+8] forState:UIControlStateNormal];
         [defenseButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         defenseButton.tag = 20+i+8;
-        defenseButton.layer.borderWidth = 1;
+        defenseButton.layer.borderWidth = 1*scale;
         defenseButton.titleLabel.textAlignment = NSTextAlignmentCenter;
         defenseButton.titleLabel.numberOfLines = 2;
         defenseButton.titleLabel.adjustsFontSizeToFitWidth = YES;
@@ -677,19 +646,19 @@
         [self.defenseRecordeView addSubview:defenseButton];
     }
     
-    UILabel* badLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(goodLabel.frame)+100, 52, 28)];
+    UILabel* badLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(goodLabel.frame)+100*scale, 52*scale, 28*scale)];
     badLabel.text = @"BAD";
     badLabel.textAlignment = NSTextAlignmentCenter;
-    badLabel.layer.borderWidth = 1;
+    badLabel.layer.borderWidth = 1*scale;
     [self.defenseRecordeView addSubview:badLabel];
     
     for(int i=0; i<5; i++)
     {
-        UIButton* defenseButton = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetMaxX(badLabel.frame)+40*i, CGRectGetMaxY(badLabel.frame), 40, 40)];
+        UIButton* defenseButton = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetMaxX(badLabel.frame)+40*i*scale, CGRectGetMaxY(badLabel.frame), 40*scale, 40*scale)];
         [defenseButton setTitle:defenseTypeArray[i+12] forState:UIControlStateNormal];
         [defenseButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         defenseButton.tag = 20+i+12;
-        defenseButton.layer.borderWidth = 1;
+        defenseButton.layer.borderWidth = 1*scale;
         defenseButton.titleLabel.textAlignment = NSTextAlignmentCenter;
         if(i != 2)
             defenseButton.titleLabel.numberOfLines = 2;
@@ -703,7 +672,6 @@
     
     [self.view addSubview:self.defenseRecordeView];
     
-  //  CGRectGetMaxX(self.backgroundImageView.frame)+5, CGRectGetMaxY(self.backgroundImageView.frame)-80, 60, RECORD_LABEL_HEIGHT
     //Show Grade Switch Button
     self.switchModeButton = [[UIButton alloc] init];
     [self.switchModeButton setFrame:CGRectMake(CGRectGetMaxX(self.defenseRecordeView.frame)+5, CGRectGetMinY(self.defenseRecordeView.frame), 60, RECORD_LABEL_HEIGHT)];

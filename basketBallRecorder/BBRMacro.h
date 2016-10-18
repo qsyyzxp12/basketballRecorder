@@ -24,7 +24,7 @@
 #define TOP_PADDING_RATE3 0.6       //for zone 6, 10
 #define TOP_PADDING_RATE4 0         //for zone 8
 //#define BAR_HEIGHT 33               // for iphones
-#define BAR_HEIGHT 64
+//#define BAR_HEIGHT 64
 
 #define NO_TABLEVIEW_TAG -1
 #define PLAYER_ON_FLOOR_TABLEVIEW_TAG -2
