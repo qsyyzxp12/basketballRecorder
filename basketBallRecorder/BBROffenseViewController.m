@@ -1532,39 +1532,17 @@
 {
     switch(self.quarterNo)
     {
-        case 0:
-            self.navigationItem.title = @"總成績";
-            break;
-        case 1:
-            self.navigationItem.title = @"第一節成績";
-            break;
-        case 2:
-            self.navigationItem.title = @"第二節成績";
-            break;
-        case 3:
-            self.navigationItem.title = @"第三節成績";
-            break;
-        case 4:
-            self.navigationItem.title = @"第四節成績";
-            break;
-        case 5:
-            self.navigationItem.title = @"延長賽第一節成績";
-            break;
-        case 6:
-            self.navigationItem.title = @"延長賽第二節成績";
-            break;
-        case 7:
-            self.navigationItem.title = @"延長賽第三節成績";
-            break;
-        case 8:
-            self.navigationItem.title = @"延長賽第四節成績";
-            break;
-        case 9:
-            self.navigationItem.title = @"延長賽第五節成績";
-            break;
-        case 10:
-            self.navigationItem.title = @"延長賽第六節成績";
-            break;
+        case 0: self.navigationItem.title = @"總成績"; break;
+        case 1: self.navigationItem.title = @"第一節成績"; break;
+        case 2: self.navigationItem.title = @"第二節成績"; break;
+        case 3: self.navigationItem.title = @"第三節成績"; break;
+        case 4: self.navigationItem.title = @"第四節成績"; break;
+        case 5: self.navigationItem.title = @"延長賽第一節成績"; break;
+        case 6: self.navigationItem.title = @"延長賽第二節成績"; break;
+        case 7: self.navigationItem.title = @"延長賽第三節成績"; break;
+        case 8: self.navigationItem.title = @"延長賽第四節成績"; break;
+        case 9: self.navigationItem.title = @"延長賽第五節成績"; break;
+        case 10: self.navigationItem.title = @"延長賽第六節成績"; break;
     }
     
     if(self.isShowZoneGrade)
@@ -1614,36 +1592,16 @@
 {
     switch(self.quarterNo)
     {
-        case 1:
-            self.navigationItem.title = @"第一節";
-            break;
-        case 2:
-            self.navigationItem.title = @"第二節";
-            break;
-        case 3:
-            self.navigationItem.title = @"第三節";
-            break;
-        case 4:
-            self.navigationItem.title = @"第四節";
-            break;
-        case 5:
-            self.navigationItem.title = @"延長賽第一節";
-            break;
-        case 6:
-            self.navigationItem.title = @"延長賽第二節";
-            break;
-        case 7:
-            self.navigationItem.title = @"延長賽第三節";
-            break;
-        case 8:
-            self.navigationItem.title = @"延長賽第四節";
-            break;
-        case 9:
-            self.navigationItem.title = @"延長賽第五節";
-            break;
-        case 10:
-            self.navigationItem.title = @"延長賽第六節";
-            break;
+        case 1: self.navigationItem.title = @"第一節"; break;
+        case 2: self.navigationItem.title = @"第二節"; break;
+        case 3: self.navigationItem.title = @"第三節"; break;
+        case 4: self.navigationItem.title = @"第四節"; break;
+        case 5: self.navigationItem.title = @"延長賽第一節"; break;
+        case 6: self.navigationItem.title = @"延長賽第二節"; break;
+        case 7: self.navigationItem.title = @"延長賽第三節"; break;
+        case 8: self.navigationItem.title = @"延長賽第四節"; break;
+        case 9: self.navigationItem.title = @"延長賽第五節"; break;
+        case 10: self.navigationItem.title = @"延長賽第六節"; break;
     }
 }
 

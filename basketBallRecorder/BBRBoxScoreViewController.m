@@ -561,8 +561,17 @@
             [madeOrAttemptDic setObject:@"0" forKey:KEY_FOR_ATTEMPT_COUNT];
             [playerDataItem setObject:madeOrAttemptDic forKey:self.itemWayKeySet[j]];
         }
-        for(int j=3; j<self.itemWayKeySet.count; j++)
-            [playerDataItem setObject:@"0" forKey:self.itemWayKeySet[j]];
+        for(int j=3; j<self.itemWayKeySet.count-1; j++)
+                [playerDataItem setObject:@"0" forKey:self.itemWayKeySet[j]];
+        
+        if(quarterNo < 2)
+            [playerDataItem setObject:@"0" forKey:KEY_FOR_TOTAL_TIME_ON_FLOOR];
+        else
+        {
+            NSMutableArray* lastQuarterData = [self.playerDataArray objectAtIndex:quarterNo-1];
+            NSNumber* lastQuarterTimeOnFloor = [[lastQuarterData objectAtIndex:i] objectForKey:KEY_FOR_TOTAL_TIME_ON_FLOOR];
+            [playerDataItem setObject:lastQuarterTimeOnFloor forKey:KEY_FOR_TOTAL_TIME_ON_FLOOR];
+        }
         
         [playerDataItem setObject:@"0" forKey:KEY_FOR_TOTAL_SCORE_GET];
         [quarterData addObject:playerDataItem];
