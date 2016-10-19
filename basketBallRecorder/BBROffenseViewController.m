@@ -200,7 +200,6 @@
             self.zoneNo = 0;
         }];
     
-    
     cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action)
         {
             self.zoneNo = 0;
@@ -1760,7 +1759,9 @@
         NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
         [tmpPlistDic setObject:[NSNumber numberWithInt:self.timeCounter] forKey:KEY_FOR_TIME];
         [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
-        if(self.timeCounter == 600)
+        if( self.quarterNo < 5 && self.timeCounter == 600)
+            [self timeButtonClicked];
+        else if(self.quarterNo > 4 && self.timeCounter == 300)
             [self timeButtonClicked];
     }
 }
