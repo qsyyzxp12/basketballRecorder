@@ -1356,7 +1356,14 @@
             [turnoverDic setObject:@"0" forKey:turnOverDetailKey];
         [playerDataItem setObject:turnoverDic forKey:KEY_FOR_TURNOVER];
         
-        [playerDataItem setObject:@"0" forKey:KEY_FOR_TOTAL_TIME_ON_FLOOR];
+        if(quarterNo < 2)
+            [playerDataItem setObject:@"0" forKey:KEY_FOR_TOTAL_TIME_ON_FLOOR];
+        else
+        {
+            NSMutableArray* lastQuarterData = [self.playerDataArray objectAtIndex:quarterNo-1];
+            NSNumber* lastQuarterTimeOnFloor = [[lastQuarterData objectAtIndex:i] objectForKey:KEY_FOR_TOTAL_TIME_ON_FLOOR];
+            [playerDataItem setObject:lastQuarterTimeOnFloor forKey:KEY_FOR_TOTAL_TIME_ON_FLOOR];
+        }
         
         [quarterData addObject:playerDataItem];
     }
@@ -1650,7 +1657,6 @@
 
 - (void) drawPicture
 {
-    
     int scale = 1;
     int bar_height = 33;
     if ( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
