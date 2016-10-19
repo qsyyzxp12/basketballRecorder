@@ -56,15 +56,11 @@
 @property int timeCounter;
 @property int attackWayNo;
 @property int ptr;
-@property UIAlertController* madeOrNotAlert;
 @property UIAlertController* attackWayAlert;
-@property UIAlertController* resultAlert;
-@property UIAlertController* bonusAlertFor2Chance;
-@property UIAlertController* bonusAlertFor3Chance;
-@property UIAlertController* andOneAlert;
 @property UIAlertController* nextQuarterAlert;
 @property UIAlertController* playoffOrNotAlert;
 @property UIAlertController* finishOrNotAlert;
+@property UIAlertController* bonusAlert;
 @property UIImageView* backgroundImageView;
 @property NSString* tmpPlistPath;
 @property NSString* opponentName;

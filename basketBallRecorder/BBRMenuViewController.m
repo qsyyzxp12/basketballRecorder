@@ -710,7 +710,7 @@
             NSString* timeStr = [eventDic objectForKey:KEY_FOR_TIME];
             [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:timeStr];
             
-            if([[eventDic objectForKey:KEY_FOR_TYPE] isEqualToString:SIGNAL_FOR_NON_EXCHANGE])
+            if([[eventDic objectForKey:KEY_FOR_TYPE] isEqualToString:SIGNAL_FOR_NORMAL])
             {
                 cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
                 NSString* playerNoStr = [eventDic objectForKey:KEY_FOR_PLAYER_NO];
@@ -734,6 +734,26 @@
                     NSString* bonusStr = [eventDic objectForKey:KEY_FOR_BONUS];
                     [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:bonusStr];
                 }
+                
+                cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+                NSString* ptsStr = [eventDic objectForKey:KEY_FOR_PTS];
+                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:ptsStr];
+                holdBallCount++;
+            }
+            else if([[eventDic objectForKey:KEY_FOR_TYPE] isEqualToString:SIGNAL_FOR_BONUS])
+            {
+                cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+                NSString* playerNoStr = [eventDic objectForKey:KEY_FOR_PLAYER_NO];
+                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:playerNoStr];
+                
+                cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:SIGNAL_FOR_BONUS];
+                
+                cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+                cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+                cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+                NSString* bonusStr = [eventDic objectForKey:KEY_FOR_BONUS];
+                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:bonusStr];
                 
                 cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
                 NSString* ptsStr = [eventDic objectForKey:KEY_FOR_PTS];

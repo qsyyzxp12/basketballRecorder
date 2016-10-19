@@ -77,9 +77,8 @@
 
 - (void) constructAlertControllers
 {
-    //Bonus alert
-    self.bonusAlertFor2Chance = [UIAlertController alertControllerWithTitle:@"罰球得分" message:nil preferredStyle: UIAlertControllerStyleAlert];
-    self.bonusAlertFor3Chance = [UIAlertController alertControllerWithTitle:@"罰球得分" message:nil preferredStyle: UIAlertControllerStyleAlert];
+    //Bonus alert for 2
+    UIAlertController* bonusAlertFor2Chance = [UIAlertController alertControllerWithTitle:@"罰球得分" message:nil preferredStyle: UIAlertControllerStyleAlert];
     
     UIAlertAction* zeroPointAction = [UIAlertAction actionWithTitle:@"0分" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
@@ -125,6 +124,63 @@
             self.zoneNo = 0;
         }];
     
+    UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action)
+        {
+            self.zoneNo = 0;
+        }];
+    
+    [bonusAlertFor2Chance addAction:zeroPointAction];
+    [bonusAlertFor2Chance addAction:onePointAction];
+    [bonusAlertFor2Chance addAction:twoPointAction];
+    [bonusAlertFor2Chance addAction:cancelAction];
+    
+    //Bonus alert for 3
+    UIAlertController* bonusAlertFor3Chance = [UIAlertController alertControllerWithTitle:@"罰球得分" message:nil preferredStyle: UIAlertControllerStyleAlert];
+    
+    zeroPointAction = [UIAlertAction actionWithTitle:@"0分" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+        {
+            [self pushEventIntoTimeLineWithResultKey:SIGNAL_FOR_FOUL pts:0];
+            self.zoneNo = 0;
+        }];
+    
+    onePointAction = [UIAlertAction actionWithTitle:@"1分" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+        {
+            int quarterNo[2] = {self.quarterNo, QUARTER_NO_FOR_ENTIRE_GAME};
+            int playerNo[2] = {self.playerSelectedIndex-1, self.playerCount};
+            for(int i=0; i<2; i++)
+            {
+                NSMutableArray* quarterGrade= [self.playerDataArray objectAtIndex:quarterNo[i]];
+                for(int j=0; j<2; j++)
+                {
+                    NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
+                    [self increaseOffenseScoreGetToPlayerData:playerData by:1];
+                    [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:1];
+                }
+            }
+            [self pushEventIntoTimeLineWithResultKey:SIGNAL_FOR_FOUL pts:1];
+            [self updateTmpPlist];
+            self.zoneNo = 0;
+        }];
+    
+    twoPointAction = [UIAlertAction actionWithTitle:@"2分" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+        {
+            int quarterNo[2] = {self.quarterNo, QUARTER_NO_FOR_ENTIRE_GAME};
+            int playerNo[2] = {self.playerSelectedIndex-1, self.playerCount};
+            for(int i=0; i<2; i++)
+            {
+                NSMutableArray* quarterGrade= [self.playerDataArray objectAtIndex:quarterNo[i]];
+                for(int j=0; j<2; j++)
+                {
+                    NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
+                    [self increaseOffenseScoreGetToPlayerData:playerData by:2];
+                    [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:2];
+                }
+            }
+            [self pushEventIntoTimeLineWithResultKey:SIGNAL_FOR_FOUL pts:2];
+            [self updateTmpPlist];
+            self.zoneNo = 0;
+        }];
+    
     UIAlertAction* threePointAction = [UIAlertAction actionWithTitle:@"3分" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
             int quarterNo[2] = {self.quarterNo, QUARTER_NO_FOR_ENTIRE_GAME};
@@ -145,24 +201,19 @@
         }];
     
     
-    UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action)
+    cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action)
         {
             self.zoneNo = 0;
         }];
     
-    [self.bonusAlertFor2Chance addAction:zeroPointAction];
-    [self.bonusAlertFor2Chance addAction:onePointAction];
-    [self.bonusAlertFor2Chance addAction:twoPointAction];
-    [self.bonusAlertFor2Chance addAction:cancelAction];
-    
-    [self.bonusAlertFor3Chance addAction:zeroPointAction];
-    [self.bonusAlertFor3Chance addAction:onePointAction];
-    [self.bonusAlertFor3Chance addAction:twoPointAction];
-    [self.bonusAlertFor3Chance addAction:threePointAction];
-    [self.bonusAlertFor3Chance addAction:cancelAction];
+    [bonusAlertFor3Chance addAction:zeroPointAction];
+    [bonusAlertFor3Chance addAction:onePointAction];
+    [bonusAlertFor3Chance addAction:twoPointAction];
+    [bonusAlertFor3Chance addAction:threePointAction];
+    [bonusAlertFor3Chance addAction:cancelAction];
     
     //And One Alert
-    self.andOneAlert = [UIAlertController alertControllerWithTitle:@"罰球結果" message:nil preferredStyle: UIAlertControllerStyleAlert];
+    UIAlertController* andOneAlert = [UIAlertController alertControllerWithTitle:@"罰球結果" message:nil preferredStyle: UIAlertControllerStyleAlert];
     
     UIAlertAction* attemptAction = [UIAlertAction actionWithTitle:@"Attempt" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
@@ -189,13 +240,12 @@
             self.zoneNo = 0;
         }];
     
-    [self.andOneAlert addAction:madeAction];
-    [self.andOneAlert addAction:attemptAction];
+    [andOneAlert addAction:madeAction];
+    [andOneAlert addAction:attemptAction];
 
     
     //Result & Made or Not Alert
-    self.resultAlert = [UIAlertController alertControllerWithTitle:@"結果" message:nil preferredStyle: UIAlertControllerStyleAlert];
-    self.madeOrNotAlert = [UIAlertController alertControllerWithTitle:@"結果" message:nil preferredStyle: UIAlertControllerStyleAlert];
+    UIAlertController* resultAlert = [UIAlertController alertControllerWithTitle:@"結果" message:nil preferredStyle: UIAlertControllerStyleAlert];
     
     UIAlertAction* yesAction = [UIAlertAction actionWithTitle:@"Made" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
@@ -209,9 +259,6 @@
                 case 1: case 5: case 6: case 10: case 11:
                     offset = 3;
                     break;
-                case 12:
-                    offset = 1;
-                    break;
             }
             int quarterNo[2] = {self.quarterNo, QUARTER_NO_FOR_ENTIRE_GAME};
             int playerNo[2] = {self.playerSelectedIndex-1, self.playerCount};
@@ -222,8 +269,7 @@
                 for(int j=0; j<2; j++)
                 {
                     NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
-                    if(self.zoneNo != 12)
-                        [self updateOffenseGradeForOneMadeToPlayerData:playerData];
+                    [self updateOffenseGradeForOneMadeToPlayerData:playerData];
                     [self updateZoneGradeForOneMadeToPlayerData:playerData];
                     [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:offset];
                 }
@@ -245,8 +291,7 @@
                 for(int j=0; j<2; j++)
                 {
                     NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
-                    if(self.zoneNo != 12)
-                        [self updateOffenseGradeForOneAttempToPlayerData:playerData];
+                    [self updateOffenseGradeForOneAttempToPlayerData:playerData];
                     [self updateZoneGradeForOndeAttemptToPlayerData:playerData];
                 }
             }
@@ -275,11 +320,11 @@
             switch (self.zoneNo)
             {
                 case 2: case 3: case 4: case 7: case 8: case 9:
-                    [self presentViewController:self.bonusAlertFor2Chance animated:YES completion:nil];
+                    [self presentViewController:bonusAlertFor2Chance animated:YES completion:nil];
                     break;
                     
                 default: //case 1: case 6: case 10: case 11:
-                    [self presentViewController:self.bonusAlertFor3Chance animated:YES completion:nil];
+                    [self presentViewController:bonusAlertFor3Chance animated:YES completion:nil];
                     break;
             }
         }];
@@ -314,7 +359,7 @@
                     [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:self.ptr];
                 }
             }
-            [self presentViewController:self.andOneAlert animated:YES completion:nil];
+            [self presentViewController:andOneAlert animated:YES completion:nil];
         }];
     
     cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action)
@@ -322,15 +367,166 @@
         self.zoneNo = 0;
     }];
     
-    [self.resultAlert addAction:yesAction];
-    [self.resultAlert addAction:noAction];
-    [self.resultAlert addAction:andOneAction];
-    [self.resultAlert addAction:foulAction];
-    [self.resultAlert addAction:cancelAction];
+    [resultAlert addAction:yesAction];
+    [resultAlert addAction:noAction];
+    [resultAlert addAction:andOneAction];
+    [resultAlert addAction:foulAction];
+    [resultAlert addAction:cancelAction];
     
-    [self.madeOrNotAlert addAction:yesAction];
-    [self.madeOrNotAlert addAction:noAction];
-    [self.madeOrNotAlert addAction:cancelAction];
+    UIAlertController* madeOrNotAlert = [UIAlertController alertControllerWithTitle:@"結果" message:nil preferredStyle: UIAlertControllerStyleAlert];
+    
+    yesAction = [UIAlertAction actionWithTitle:@"Made" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+        {
+            self.OldPlayerDataArray = [NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:self.playerDataArray]];
+            int offset = 1;
+            int quarterNo[2] = {self.quarterNo, QUARTER_NO_FOR_ENTIRE_GAME};
+            int playerNo[2] = {self.playerSelectedIndex-1, self.playerCount};
+                                    
+            for(int i=0; i<2; i++)
+            {
+                NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:quarterNo[i]];
+                for(int j=0; j<2; j++)
+                {
+                    NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
+                    [self updateZoneGradeForOneMadeToPlayerData:playerData];
+                    [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:offset];
+                }
+            }
+            [self pushBonusEventIntoTimeLineWithMadeCount:1 attemptCount:1];
+            [self updateTmpPlist];
+            NSArray* quarterArray = [self.playerDataArray objectAtIndex:self.quarterNo];
+            NSLog(@"%@", quarterArray);
+            self.zoneNo = 0;
+        }];
+    noAction = [UIAlertAction actionWithTitle:@"Attempt" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+        {
+            self.OldPlayerDataArray = [NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:self.playerDataArray]];
+                                   
+            int quarterNo[2] = {self.quarterNo, QUARTER_NO_FOR_ENTIRE_GAME};
+            int playerNo[2] = {self.playerSelectedIndex-1, self.playerCount};
+                                   
+            for(int i=0; i<2; i++)
+            {
+                NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:quarterNo[i]];
+                for(int j=0; j<2; j++)
+                {
+                    NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
+                    [self updateZoneGradeForOndeAttemptToPlayerData:playerData];
+                }
+            }
+            [self pushBonusEventIntoTimeLineWithMadeCount:0 attemptCount:1];
+            [self updateTmpPlist];
+            self.zoneNo = 0;
+        }];
+    
+    cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action)
+        {
+            self.zoneNo = 0;
+        }];
+    
+    [madeOrNotAlert addAction:yesAction];
+    [madeOrNotAlert addAction:noAction];
+    [madeOrNotAlert addAction:cancelAction];
+    
+    
+    UIAlertController* twoBonusResult = [UIAlertController alertControllerWithTitle:@"進球數" message:nil preferredStyle: UIAlertControllerStyleAlert];
+    
+    UIAlertAction* noMadeAction = [UIAlertAction actionWithTitle:@"0" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+        {
+            self.OldPlayerDataArray = [NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:self.playerDataArray]];
+            int quarterNo[2] = {self.quarterNo, QUARTER_NO_FOR_ENTIRE_GAME};
+            int playerNo[2] = {self.playerSelectedIndex-1, self.playerCount};
+                                        
+            for(int i=0; i<2; i++)
+            {
+                NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:quarterNo[i]];
+                for(int j=0; j<2; j++)
+                {
+                    NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
+                    [self updateZoneGradeForOndeAttemptToPlayerData:playerData];
+                    [self updateZoneGradeForOndeAttemptToPlayerData:playerData];
+                }
+            }
+            [self pushBonusEventIntoTimeLineWithMadeCount:0 attemptCount:2];
+            [self updateTmpPlist];
+            self.zoneNo = 0;
+        }];
+    
+    UIAlertAction* oneMadeAction = [UIAlertAction actionWithTitle:@"1" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+        {
+            self.OldPlayerDataArray = [NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:self.playerDataArray]];
+            int quarterNo[2] = {self.quarterNo, QUARTER_NO_FOR_ENTIRE_GAME};
+            int playerNo[2] = {self.playerSelectedIndex-1, self.playerCount};
+            
+            for(int i=0; i<2; i++)
+            {
+                NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:quarterNo[i]];
+                for(int j=0; j<2; j++)
+                {
+                    NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
+                    [self updateZoneGradeForOneMadeToPlayerData:playerData];
+                    [self updateZoneGradeForOndeAttemptToPlayerData:playerData];
+                    [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:1];
+                }
+            }
+            [self pushBonusEventIntoTimeLineWithMadeCount:1 attemptCount:2];
+            [self updateTmpPlist];
+            self.zoneNo = 0;
+        }];
+    
+    UIAlertAction* twoMadeAction = [UIAlertAction actionWithTitle:@"2" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+        {
+            self.OldPlayerDataArray = [NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:self.playerDataArray]];
+            int quarterNo[2] = {self.quarterNo, QUARTER_NO_FOR_ENTIRE_GAME};
+            int playerNo[2] = {self.playerSelectedIndex-1, self.playerCount};
+                                        
+            for(int i=0; i<2; i++)
+            {
+                NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:quarterNo[i]];
+                for(int j=0; j<2; j++)
+                {
+                    NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
+                    [self updateZoneGradeForOneMadeToPlayerData:playerData];
+                    [self updateZoneGradeForOneMadeToPlayerData:playerData];
+                    [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:2];
+                }
+            }
+            [self pushBonusEventIntoTimeLineWithMadeCount:2 attemptCount:2];
+            [self updateTmpPlist];
+            self.zoneNo = 0;
+        }];
+    
+    cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action)
+        {
+            self.zoneNo = 0;
+        }];
+    
+    [twoBonusResult addAction:noMadeAction];
+    [twoBonusResult addAction:oneMadeAction];
+    [twoBonusResult addAction:twoMadeAction];
+    [twoBonusResult addAction:cancelAction];
+    
+    //Bonus Alert
+    self.bonusAlert = [UIAlertController alertControllerWithTitle:@"罰球數" message:nil preferredStyle: UIAlertControllerStyleAlert];
+    
+    UIAlertAction* oneAction = [UIAlertAction actionWithTitle:@"1" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+        {
+            [self presentViewController:madeOrNotAlert animated:YES completion:nil];
+        }];
+    
+    UIAlertAction* twoAction = [UIAlertAction actionWithTitle:@"2" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+        {
+            [self presentViewController:twoBonusResult animated:YES completion:nil];
+        }];
+    
+    cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action)
+        {
+            self.zoneNo = 0;
+        }];
+    [self.bonusAlert addAction:oneAction];
+    [self.bonusAlert addAction:twoAction];
+    [self.bonusAlert addAction:cancelAction];
+    
     
     UIAlertController *turnoverDetailAlert = [UIAlertController alertControllerWithTitle:@"細節" message:nil preferredStyle:UIAlertControllerStyleAlert];
     for(NSString* detailKey in self.turnOverArray)
@@ -381,7 +577,7 @@
             UIAlertAction* detailAction = [UIAlertAction actionWithTitle:title style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
             {
                 self.keyOfDetail = key;
-                [self presentViewController:self.resultAlert animated:YES completion:nil];
+                [self presentViewController:resultAlert animated:YES completion:nil];
             }];
             [detailAlert addAction:detailAction];
         }
@@ -681,7 +877,7 @@
             NSString* timeStr = [eventDic objectForKey:KEY_FOR_TIME];
             [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:timeStr];
             
-            if([[eventDic objectForKey:KEY_FOR_TYPE] isEqualToString:SIGNAL_FOR_NON_EXCHANGE])
+            if([[eventDic objectForKey:KEY_FOR_TYPE] isEqualToString:SIGNAL_FOR_NORMAL])
             {
                 cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
                 NSString* playerNoStr = [eventDic objectForKey:KEY_FOR_PLAYER_NO];
@@ -711,7 +907,27 @@
                 [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:ptsStr];
                 holdBallCount++;
             }
-            else
+            else if([[eventDic objectForKey:KEY_FOR_TYPE] isEqualToString:SIGNAL_FOR_BONUS])
+            {
+                cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+                NSString* playerNoStr = [eventDic objectForKey:KEY_FOR_PLAYER_NO];
+                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:playerNoStr];
+                
+                cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:SIGNAL_FOR_BONUS];
+                
+                cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+                cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+                cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+                NSString* bonusStr = [eventDic objectForKey:KEY_FOR_BONUS];
+                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:bonusStr];
+                
+                cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
+                NSString* ptsStr = [eventDic objectForKey:KEY_FOR_PTS];
+                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:ptsStr];
+                holdBallCount++;
+            }
+            else //if([[eventDic objectForKey:KEY_FOR_TYPE] isEqualToString:SIGNAL_FOR_EXCHANGE])
             {
                 NSString* result = [eventDic objectForKey:KEY_FOR_RESULT];
                 cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
@@ -1164,7 +1380,7 @@
     NSString* timeStr = [NSString stringWithFormat:@"%02d:%02d", min, sec];
     
     [event setObject:[NSString stringWithFormat:@"%@", self.playerNoSet[self.playerSelectedIndex-1]] forKey:KEY_FOR_PLAYER_NO];
-    [event setObject:SIGNAL_FOR_NON_EXCHANGE forKey:KEY_FOR_TYPE];
+    [event setObject:SIGNAL_FOR_NORMAL forKey:KEY_FOR_TYPE];
     [event setObject:self.keyOfAttackWay forKey:KEY_FOR_ATTACK_WAY];
     [event setObject:self.keyOfDetail forKey:KEY_FOR_DETAIL];
     [event setObject:signalForResult forKey:KEY_FOR_RESULT];
@@ -1194,6 +1410,25 @@
     [self increaseHoldBallCountByOne];
 }
 
+-(void) pushBonusEventIntoTimeLineWithMadeCount:(int)madeCount attemptCount:(int)attempCount
+{
+    NSMutableDictionary* quarterDic = [self.timeLineReordeArray objectAtIndex:self.quarterNo-1];
+    NSMutableArray* timeLineArray = [quarterDic objectForKey:KEY_FOR_TIME_LINE_DATA];
+    NSMutableDictionary* bonusEvent = [[NSMutableDictionary alloc] init];
+    
+    int min = self.timeCounter/60;
+    int sec = self.timeCounter%60;
+    NSString* timeStr = [NSString stringWithFormat:@"%02d:%02d", min, sec];
+    
+    [bonusEvent setObject:SIGNAL_FOR_BONUS forKey:KEY_FOR_TYPE];
+    [bonusEvent setObject:[NSString stringWithFormat:@"%@", self.playerNoSet[self.playerSelectedIndex-1]] forKey:KEY_FOR_PLAYER_NO];
+    [bonusEvent setObject:[NSString stringWithFormat:@"%d-%d", madeCount, attempCount] forKey:KEY_FOR_BONUS];
+    [bonusEvent setObject:[NSString stringWithFormat:@"%d", madeCount] forKey:KEY_FOR_PTS];
+    [bonusEvent setObject:timeStr forKey:KEY_FOR_TIME];
+    [timeLineArray addObject:bonusEvent];
+    [self increaseHoldBallCountByOne];
+}
+
 -(void)pushTurnoverIntoTimeLine
 {
     NSMutableDictionary* quarterDic = [self.timeLineReordeArray objectAtIndex:self.quarterNo-1];
@@ -1205,7 +1440,7 @@
     NSString* timeStr = [NSString stringWithFormat:@"%02d:%02d", min, sec];
     
     [turnoverEvent setObject:[NSString stringWithFormat:@"%@", self.playerNoSet[self.playerSelectedIndex-1]] forKey:KEY_FOR_PLAYER_NO];
-    [turnoverEvent setObject:SIGNAL_FOR_NON_EXCHANGE forKey:KEY_FOR_TYPE];
+    [turnoverEvent setObject:SIGNAL_FOR_NORMAL forKey:KEY_FOR_TYPE];
     [turnoverEvent setObject:self.keyOfAttackWay forKey:KEY_FOR_ATTACK_WAY];
     [turnoverEvent setObject:SIGNAL_FOR_TURNOVER forKey:KEY_FOR_DETAIL];
     [turnoverEvent setObject:self.keyOfDetail forKey:KEY_FOR_RESULT];
@@ -1525,6 +1760,8 @@
         NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
         [tmpPlistDic setObject:[NSNumber numberWithInt:self.timeCounter] forKey:KEY_FOR_TIME];
         [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
+        if(self.timeCounter == 600)
+            [self timeButtonClicked];
     }
 }
 
@@ -2010,7 +2247,7 @@
     [self.view addSubview:hitRateLabel];
     [self.view addSubview:gradeLabel];
    
-    //Bonus Zone
+    //Bonus Zone, Zone 12
     UILabel* bonusZone = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(self.backgroundImageView.frame)+5, CGRectGetMaxY(self.backgroundImageView.frame)-80, 60, RECORD_LABEL_HEIGHT)];
     bonusZone.textAlignment = NSTextAlignmentCenter;
     bonusZone.layer.borderWidth = 1;
@@ -2137,7 +2374,7 @@
     }
     else
     {
-        [self presentViewController:self.madeOrNotAlert animated:YES completion:^
+        [self presentViewController:self.bonusAlert animated:YES completion:^
          {
              [(UIImageView*)[self.view viewWithTag:self.zoneNo] setHighlighted:NO];
          }];

@@ -137,7 +137,8 @@
 #define KEY_FOR_TYPE @"type"
 
 #define SIGNAL_FOR_EXCHANGE @"Exchange"
-#define SIGNAL_FOR_NON_EXCHANGE @"NoneExchange"
+#define SIGNAL_FOR_NORMAL @"Normal"
+#define SIGNAL_FOR_BONUS @"Bonus"
 #define SIGNAL_FOR_FOUL @"Foul"
 #define SIGNAL_FOR_AND_ONE @"And 1"
 #define SIGNAL_FOR_ATTEMPT @"Attempt"

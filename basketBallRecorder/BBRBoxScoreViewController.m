@@ -602,6 +602,9 @@
         NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
         [tmpPlistDic setObject:[NSNumber numberWithInt:self.timeCounter] forKey:KEY_FOR_TIME];
         [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
+        
+        if(self.timeCounter == 600)
+            [self timeButtonClicked];
     }
 }
 
