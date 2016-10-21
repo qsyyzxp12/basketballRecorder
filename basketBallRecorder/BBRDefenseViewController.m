@@ -1167,7 +1167,10 @@
                         NSMutableDictionary* dic = [self.playerOnFloorDataArray objectAtIndex:i-1];
                         NSNumber* playerNoGoDown = [dic objectForKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
                         if(playerNoGoDown.intValue == self.playerSelectedIndex)
+                        {
                             self.playerSelectedIndex = (int)indexPath.row;
+                            [self updateGradeView];
+                        }
                         
                         //update the data of the player on floor
                         cellOfChanged.NoLabel.text = cellOfSelected.NoLabel.text;
