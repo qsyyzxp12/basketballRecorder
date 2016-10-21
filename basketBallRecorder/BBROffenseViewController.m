@@ -293,6 +293,7 @@
                     [self updateOffenseGradeForOneAttempToPlayerData:playerData];
                     [self updateZoneGradeForOndeAttemptToPlayerData:playerData];
                 }
+                NSLog(@"%@", quarterGrade);
             }
             [self pushEventIntoTimeLineWithResultKey:SIGNAL_FOR_ATTEMPT pts:0];
             [self updateTmpPlist];
@@ -3085,7 +3086,7 @@
             {
                 NSDictionary* detailDic = [attackDic objectForKey:keyArr[indexPath.row-2]];
                 NSString* madeCount = [detailDic objectForKey:KEY_FOR_MADE_COUNT];
-                NSString* attemptCount = [detailDic objectForKey:KEY_FOR_MADE_COUNT];
+                NSString* attemptCount = [detailDic objectForKey:KEY_FOR_ATTEMPT_COUNT];
             
                 madeAndAttemptLabel.text = [NSString stringWithFormat:@"%@/%@", madeCount, attemptCount];
                 foulLabel.text = [detailDic objectForKey:KEY_FOR_FOUL_COUNT];
