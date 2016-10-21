@@ -1218,9 +1218,14 @@
                     {
                         //caculate the player being placed's time on floor
                         [self updateTimeOnFloorOfPlayerWithIndexInOnFloorTableView:i-1];
-                                                            
-                        //update the data of the player on floor
+                        
+                        //if the cell which the player changed down in is being selected, fix the playerSelectedIndex
                         NSMutableDictionary* dic = [self.playerOnFloorDataArray objectAtIndex:i-1];
+                        NSNumber* playerNoGoDown = [dic objectForKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
+                        if(playerNoGoDown.intValue == self.playerSelectedIndex)
+                            self.playerSelectedIndex = (int)indexPath.row;
+                        
+                        //update the data of the player on floor
                         cellOfChanged.NoLabel.text = cellOfSelected.NoLabel.text;
                         [dic setObject:[NSNumber numberWithInteger:indexPath.row] forKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
                         [dic setObject:[NSNumber numberWithInt:self.timeCounter] forKey:KEY_FOR_TIME_WHEN_GO_ON_FLOOR];
