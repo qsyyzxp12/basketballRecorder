@@ -99,6 +99,7 @@
 #define KEY_FOR_BAD_PASS @"Bad Pass"
 #define KEY_FOR_CHARGING @"Charging"
 #define KEY_FOR_DROP @"Drop"
+#define KEY_FOR_LINE @"Line"
 #define KEY_FOR_3_SENCOND @"Three Second"
 #define KEY_FOR_TRAVELING @"Traveling"
 #define KEY_FOR_TEAM @"Team"
