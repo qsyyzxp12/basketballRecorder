@@ -273,6 +273,7 @@
                     [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:offset];
                 }
             }
+            
             [self pushEventIntoTimeLineWithResultKey:SIGNAL_FOR_MADE pts:offset];
             [self updateTmpPlist];
             self.zoneNo = 0;
@@ -1036,6 +1037,7 @@
                 detailArray = self.normalDetailItemKeyArray;
             
             NSDictionary* attackDic = [playerGradeDic objectForKey:keyForAttackWay];
+            NSLog(@"%@", attackDic);
             for(NSString* keyForDetail in detailArray)
             {
                 NSDictionary* detailDic = [attackDic objectForKey:keyForDetail];
@@ -1660,15 +1662,18 @@
     //Update the Quarter Grade
     NSArray* attackDicArray = [NSArray arrayWithObjects:[playerData objectForKey:self.keyOfAttackWay], [playerData objectForKey:KEY_FOR_TOTAL], nil];
     
+    int pts = 0;
     switch (self.zoneNo)
     {
         case 2: case 3: case 4: case 7: case 8: case 9:
-            [self increaseOffenseScoreGetToPlayerData:playerData by:2];
+            pts = 2;
             break;
         case 1: case 5: case 6: case 10: case 11:
-            [self increaseOffenseScoreGetToPlayerData:playerData by:3];
+            pts = 3;
             break;
     }
+    
+    [self increaseOffenseScoreGetToPlayerData:playerData by:pts];
     
     for(NSMutableDictionary* attackDic in attackDicArray)
     {
@@ -1679,6 +1684,9 @@
     
         int madeCount = [[detailDic objectForKey:KEY_FOR_MADE_COUNT] intValue];
         [detailDic setObject:[NSString stringWithFormat:@"%d", madeCount+1] forKey:KEY_FOR_MADE_COUNT];
+        
+        int scoreGet = [[attackDic objectForKey:KEY_FOR_SCORE_GET] intValue];
+        [detailDic setObject:[NSString stringWithFormat:@"%d", scoreGet+pts] forKey:KEY_FOR_SCORE_GET];
     
         int totalAttemptCount = [[attackDic objectForKey:KEY_FOR_TOTAL_ATTEMPT_COUNT] intValue];
         [attackDic setObject:[NSString stringWithFormat:@"%d", totalAttemptCount+1] forKey:KEY_FOR_TOTAL_ATTEMPT_COUNT];
