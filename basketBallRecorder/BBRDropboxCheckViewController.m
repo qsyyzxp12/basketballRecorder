@@ -17,23 +17,27 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-//    if ([[DBSession sharedSession] isLinked])
-  //      [[DBSession sharedSession] unlinkAll];
     [self.Label setFrame:CGRectMake(self.view.frame.size.width-480, self.view.frame.size.height-76, 480, 76)];
-    [self performSelectorInBackground:@selector(checkingDropboxAuthorization) withObject:nil];
+    self.appearCount = 0;
+}
+
+-(void)viewDidAppear:(BOOL)animated
+{
+    NSLog(@"%d", self.appearCount);
+    if(!(self.appearCount%2))
+        [self performSelectorInBackground:@selector(checkingDropboxAuthorization) withObject:nil];
+    self.appearCount++;
 }
 
 - (void)checkingDropboxAuthorization
 {
     if (![[DBSession sharedSession] isLinked])
+    {
+        NSLog(@"NO!!!!!!");
         [[DBSession sharedSession] linkFromController:self];
+    }
     while (![[DBSession sharedSession] isLinked]);
-  //  {
-    //    NSLog(@"xxx");
-   // };
     [self performSelectorOnMainThread:@selector(showMenuSegue) withObject:nil waitUntilDone:NO];
-
-    //[self performSegueWithIdentifier:@"showMenuSegue" sender:nil];
 }
 
 -(void) showMenuSegue

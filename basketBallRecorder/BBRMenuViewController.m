@@ -56,6 +56,11 @@
     self.navigationItem.rightBarButtonItem.target = self;
     self.navigationItem.rightBarButtonItem.action = @selector(viewWillAppear:);
     
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] init];
+    self.navigationItem.leftBarButtonItem.title = @"資料庫切換";
+    self.navigationItem.leftBarButtonItem.target = self;
+    self.navigationItem.leftBarButtonItem.action = @selector(leftBarButtonClicked);
+    
     for(int i=0; i<5; i++)
     {
         if(!i)
@@ -197,6 +202,17 @@
 }
 
 #pragma mark - Actions
+
+- (void)leftBarButtonClicked
+{
+    if ([[DBSession sharedSession] isLinked])
+    {
+        [[DBSession sharedSession] unlinkAll];
+        if(![[DBSession sharedSession] isLinked])
+            NSLog(@"NO!!!");
+    }
+    [self.navigationController popToRootViewControllerAnimated:YES];
+}
 
 - (IBAction)recordButtonClicked:(UIButton*)sender
 {

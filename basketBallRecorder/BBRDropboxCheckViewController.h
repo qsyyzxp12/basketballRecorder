@@ -10,5 +10,5 @@
 
 @interface BBRDropboxCheckViewController : UIViewController
 @property (weak, nonatomic) IBOutlet UILabel *Label;
-
+@property int appearCount;
 @end
