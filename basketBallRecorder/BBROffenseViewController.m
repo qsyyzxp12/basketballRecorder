@@ -294,7 +294,6 @@
                     [self updateOffenseGradeForOneAttempToPlayerData:playerData];
                     [self updateZoneGradeForOndeAttemptToPlayerData:playerData];
                 }
-                NSLog(@"%@", quarterGrade);
             }
             [self pushEventIntoTimeLineWithResultKey:SIGNAL_FOR_ATTEMPT pts:0];
             [self updateTmpPlist];
@@ -396,7 +395,6 @@
             [self pushBonusEventIntoTimeLineWithMadeCount:1 attemptCount:1];
             [self updateTmpPlist];
             NSArray* quarterArray = [self.playerDataArray objectAtIndex:self.quarterNo];
-            NSLog(@"%@", quarterArray);
             self.zoneNo = 0;
         }];
     noAction = [UIAlertAction actionWithTitle:@"Attempt" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
@@ -722,6 +720,7 @@
         [newItem setObject:self.playerDataArray forKey:KEY_FOR_GRADE];
         [newItem setObject:self.playerNoSet forKey:KEY_FOR_PLAYER_NO_SET];
         [newItem setObject:self.recordName forKey:KEY_FOR_NAME];
+        [newItem setObject:self.myTeamName forKey:KEY_FOR_MY_TEAM_NAME];
         [newItem setObject:self.opponentName forKey:KEY_FOR_OPPONENT_NAME];
         [newItem setObject:self.timeLineReordeArray forKey:KEY_FOR_TIMELINE];
         [newItem setObject:OFFENSE_TYPE_DATA forKey:KEY_FOR_DATA_TYPE];
@@ -786,8 +785,6 @@
     NSArray* recordPlistArray = [NSArray arrayWithContentsOfFile:recordPlistPath];
     NSDictionary* dataDic = [recordPlistArray objectAtIndex:self.showOldRecordNo-1];
     
-    NSLog(@"%@", dataDic);
-    
     self.playerDataArray = [dataDic objectForKey:KEY_FOR_GRADE];
     self.playerNoSet = [dataDic objectForKey:KEY_FOR_PLAYER_NO_SET];
     self.quarterNo = END;
@@ -804,6 +801,7 @@
     self.playerNoSet = [tmpPlistDic objectForKey:KEY_FOR_PLAYER_NO_SET];
     self.quarterNo = [[tmpPlistDic objectForKey:KEY_FOR_LAST_RECORD_QUARTER] intValue];
     self.opponentName = [tmpPlistDic objectForKey:KEY_FOR_OPPONENT_NAME];
+    self.myTeamName = [tmpPlistDic objectForKey:KEY_FOR_MY_TEAM_NAME];
     self.recordName = [tmpPlistDic objectForKey:KEY_FOR_NAME];
     self.timeCounter = [(NSNumber*)[tmpPlistDic objectForKey:KEY_FOR_TIME] intValue];
     self.playerCount = (int)[self.playerNoSet count];
@@ -977,7 +975,7 @@
 -(void) generatePPPXlsxAndUpload
 {
     NSString* xlsxFilePath;
-    if(self.isPPPXlsxFileExistInDropbox)
+    if(self.isPPPXlsxFileExistInDropbox && [self.myTeamName isEqualToString:NAME_OF_NTU_MALE_BASKETBALL])
     {
         while (!self.isDownloadPPPXlsxFileFinished);
         xlsxFilePath = [NSString stringWithFormat:@"%@/Documents/%@.xlsx", NSHomeDirectory(), NAME_OF_THE_FINAL_XLSX_FILE];
@@ -1037,7 +1035,7 @@
                 detailArray = self.normalDetailItemKeyArray;
             
             NSDictionary* attackDic = [playerGradeDic objectForKey:keyForAttackWay];
-            NSLog(@"%@", attackDic);
+            
             for(NSString* keyForDetail in detailArray)
             {
                 NSDictionary* detailDic = [attackDic objectForKey:keyForDetail];
@@ -1102,16 +1100,24 @@
     
     [spreadsheet saveAs:sheetPath];
 
-    NSString* filename = [NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE];
-    
-    NSArray* agus = [[NSArray alloc] initWithObjects:filename, sheetPath, nil];
+    NSString* dropboxPath;
+    if(![self.myTeamName isEqualToString:NAME_OF_NTU_MALE_BASKETBALL])
+    {
+        NSString* fileName = [self addPPPXlsxFileVersionNumber:1];
+        NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"YYYY_MM_dd"];
+        dropboxPath = [NSString stringWithFormat:@"%@/%@",[dateFormatter stringFromDate:[NSDate date]], fileName];
+    }
+    else
+        dropboxPath = [NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE];
+    NSArray* agus = [[NSArray alloc] initWithObjects:dropboxPath, sheetPath, nil];
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
 }
 
 -(void) generateShotChartXlsxAndUpload
 {
     NSString* xlsxFilePath;
-    if(self.isShotChartXlsxFileExistInDropbox)
+    if(self.isShotChartXlsxFileExistInDropbox && [self.myTeamName isEqualToString:NAME_OF_NTU_MALE_BASKETBALL])
     {
         while (!self.isDownloadShotChartXlsxFileFinished);
         xlsxFilePath = [NSString stringWithFormat:@"%@/Documents/%@.xlsx", NSHomeDirectory(), NAME_OF_THE_SHOT_CHART_XLSX_FILE];
@@ -1170,7 +1176,7 @@
         }
     }
  
-    if(!self.isShotChartXlsxFileExistInDropbox)
+    if(!self.isShotChartXlsxFileExistInDropbox || ![self.myTeamName isEqualToString:NAME_OF_NTU_MALE_BASKETBALL])
         [spreadsheet.workbook removeWorksheetNamed:@"全隊"];
     
     //Save the xlsx to the app space in the device
@@ -1182,9 +1188,18 @@
     
     [spreadsheet saveAs:localPath];
     
-    NSString* filename = [NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_SHOT_CHART_XLSX_FILE];
-    
-    NSArray* agus = [[NSArray alloc] initWithObjects:filename, localPath, nil];
+    NSString* dropboxPath;
+    if(![self.myTeamName isEqualToString:NAME_OF_NTU_MALE_BASKETBALL])
+    {
+        NSString* fileName = [self addShotChartXlsxFileVersionNumber:1];
+        NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"YYYY_MM_dd"];
+        dropboxPath = [NSString stringWithFormat:@"%@/%@",[dateFormatter stringFromDate:[NSDate date]], fileName];
+    }
+    else
+        dropboxPath = [NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_SHOT_CHART_XLSX_FILE];
+
+    NSArray* agus = [[NSArray alloc] initWithObjects:dropboxPath, localPath, nil];
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
 }
 
@@ -1242,7 +1257,7 @@
 
 -(void) uploadXlsxFile:(NSArray*) parameters
 {
-    if([parameters[0] isEqualToString:[NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE]])
+    if([parameters[0] isEqualToString:[NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE]] )
     {
         if(self.isPPPXlsxFileExistInDropbox)
             [self.restClient deletePath:[NSString stringWithFormat:@"/%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE]];
@@ -1264,6 +1279,38 @@
 {
     NSString* path = [NSString stringWithFormat:@"/%@", [dateFormatter stringFromDate:[NSDate date]]];
     [self.restClient loadMetadata:path];
+}
+
+-(NSString*) addShotChartXlsxFileVersionNumber:(int)no
+{
+    NSString* fileName;
+    if(no == 1)
+        fileName = [NSString stringWithFormat:@"%@_%@.xlsx", self.recordName, NAME_OF_THE_SHOT_CHART_XLSX_FILE];
+    else
+        fileName = [NSString stringWithFormat:@"%@_%@(%d).xlsx", self.recordName, NAME_OF_THE_SHOT_CHART_XLSX_FILE, no];
+    
+    for(NSString* fileNameInDropbox in self.fileNamesInDropbox)
+    {
+        if([fileName isEqualToString:fileNameInDropbox])
+            return [self addShotChartXlsxFileVersionNumber:no+1];
+    }
+    return fileName;
+}
+
+-(NSString*) addPPPXlsxFileVersionNumber:(int)no
+{
+    NSString* fileName;
+    if(no == 1)
+        fileName = [NSString stringWithFormat:@"%@_%@.xlsx", self.recordName, NAME_OF_THE_FINAL_XLSX_FILE];
+    else
+        fileName = [NSString stringWithFormat:@"%@_%@(%d).xlsx", self.recordName, NAME_OF_THE_FINAL_XLSX_FILE, no];
+    
+    for(NSString* fileNameInDropbox in self.fileNamesInDropbox)
+    {
+        if([fileName isEqualToString:fileNameInDropbox])
+            return [self addPPPXlsxFileVersionNumber:no+1];
+    }
+    return fileName;
 }
 
 -(NSString*) addTimeLineXlsxFileVersionNumber:(int)no
@@ -1499,6 +1546,7 @@
     [tmpPlistDic setObject:[NSNumber numberWithInt:1] forKey:KEY_FOR_LAST_RECORD_QUARTER];
     [tmpPlistDic setObject:self.playerDataArray forKey:KEY_FOR_GRADE];
     [tmpPlistDic setObject:self.playerNoSet forKey:KEY_FOR_PLAYER_NO_SET];
+    [tmpPlistDic setObject:self.myTeamName forKey:KEY_FOR_MY_TEAM_NAME];
     [tmpPlistDic setObject:self.opponentName forKey:KEY_FOR_OPPONENT_NAME];
     [tmpPlistDic setObject:self.recordName forKey:KEY_FOR_NAME];
     [tmpPlistDic setObject:[NSNumber numberWithInt:0] forKey:KEY_FOR_TIME];

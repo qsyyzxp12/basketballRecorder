@@ -64,6 +64,7 @@
 @property UIImageView* backgroundImageView;
 @property NSString* tmpPlistPath;
 @property NSString* opponentName;
+@property NSString* myTeamName;
 @property NSString* recordName;
 @property NSString* keyOfAttackWay;
 @property NSString* keyOfDetail;

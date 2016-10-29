@@ -35,7 +35,8 @@
 
 #define KEY_FOR_LAST_RECORD_QUARTER @"LastRecordQuarter"
 
-#define TITLE_FOR_PLAYER_NO_TABLEVIEW @"球員";
+#define TITLE_FOR_PLAYER_NO_TABLEVIEW @"球員"
+#define NAME_OF_NTU_MALE_BASKETBALL @"台大校男籃"
 
 //Segue ID
 #define SEGUE_ID_FOR_DEFENSE @"showDefenseController"
@@ -51,6 +52,7 @@
 #define KEY_FOR_TIME @"time"
 #define KEY_FOR_GRADE @"Grade"
 #define KEY_FOR_NAME @"Name"
+#define KEY_FOR_MY_TEAM_NAME @"myTeam"
 #define KEY_FOR_OPPONENT_NAME @"OpponentName"
 #define KEY_FOR_PLAYER_NO_SET @"PlayerNoSet"
 #define KEY_FOR_ON_FLOOR_PLAYER_DATA @"PlayersOnFloorData"

@@ -75,7 +75,7 @@
     [self.teamNameView addSubview:NTUCheckboxButton];
     
     UILabel* NTUTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(NTUCheckboxButton.frame)+5, CGRectGetMinY(homeTeamLabel.frame), CGRectGetWidth(self.teamNameView.frame)*0.5, CGRectGetHeight(self.teamNameView.frame)*0.17)];
-    NTUTitleLabel.text = @"台大校男籃";
+    NTUTitleLabel.text = NAME_OF_NTU_MALE_BASKETBALL;
     NTUTitleLabel.textAlignment = NSTextAlignmentCenter;
     [NTUTitleLabel setFont:[UIFont systemFontOfSize:18]];
     [NTUTitleLabel setAdjustsFontSizeToFitWidth:YES];
@@ -123,35 +123,6 @@
     [cancelButton setTitleColor:[UIColor grayColor] forState:UIControlStateHighlighted];
     [cancelButton setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
     [self.teamNameView addSubview:cancelButton];
-    
-    /*
-    UIAlertController* nameAlert = [UIAlertController alertControllerWithTitle:@"比賽隊伍" message:@"" preferredStyle:UIAlertControllerStyleAlert];
-
-    UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"完成" style:UIAlertActionStyleDefault
-        handler:^(UIAlertAction *action)
-        {
-            UITextField *teamName = nameAlert.textFields.firstObject;
-            UITextField *anotherTeamName = nameAlert.textFields.lastObject;
-            self.myTeamName = teamName.text;
-            self.opponentName = anotherTeamName.text;
-        }];
-    UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action)
-        {
-            [self.navigationController popToViewController:[self.navigationController.viewControllers objectAtIndex:1] animated:YES];
-        }];
-    
-    [nameAlert addTextFieldWithConfigurationHandler:^(UITextField *textField)
-     {
-         textField.placeholder = @"你的隊伍名稱";
-     }];
-    [nameAlert addTextFieldWithConfigurationHandler:^(UITextField *textField)
-     {
-         textField.placeholder = @"對手隊伍名稱";
-     }];
-    [nameAlert addAction:okAction];
-    [nameAlert addAction:cancelAction];
-    
-    [self presentViewController:nameAlert animated:YES completion:nil];*/
 }
 
 -(void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -166,7 +137,7 @@
         BBROffenseViewController* mainViewCntler = [segue destinationViewController];
         mainViewCntler.playerNoSet = resultArray;
         mainViewCntler.playerCount = self.playerCount;
-    
+        mainViewCntler.myTeamName = self.myTeamName;
         mainViewCntler.opponentName = self.opponentName;
         NSString* filename = [NSString stringWithFormat:@"%@-%@", recordName, [dateFormatter stringFromDate:[NSDate date]]];
         mainViewCntler.recordName = filename;
