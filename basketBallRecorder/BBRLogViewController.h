@@ -16,5 +16,7 @@
 @property NSMutableArray* playerNoSet;
 @property NSString* myTeamName;
 @property NSString* opponentName;
+@property UIView* teamNameView;
+@property UIView* fogView;
 @end
 

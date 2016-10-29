@@ -32,10 +32,8 @@
 - (void)checkingDropboxAuthorization
 {
     if (![[DBSession sharedSession] isLinked])
-    {
-        NSLog(@"NO!!!!!!");
         [[DBSession sharedSession] linkFromController:self];
-    }
+    
     while (![[DBSession sharedSession] isLinked]);
     [self performSelectorOnMainThread:@selector(showMenuSegue) withObject:nil waitUntilDone:NO];
 }

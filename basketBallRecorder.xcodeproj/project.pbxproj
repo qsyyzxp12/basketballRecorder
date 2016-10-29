@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C7350D291DC3578700AFEEEE /* checkbox_unselected.png in Resources */ = {isa = PBXBuildFile; fileRef = C7350D271DC3578700AFEEEE /* checkbox_unselected.png */; };
+		C7350D2A1DC3578700AFEEEE /* checkbox_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = C7350D281DC3578700AFEEEE /* checkbox_selected.png */; };
 		C74CEDD41D797D4D00B5E704 /* spreadsheet_for_timeLine.xlsx in Resources */ = {isa = PBXBuildFile; fileRef = C74CEDD31D797D4D00B5E704 /* spreadsheet_for_timeLine.xlsx */; };
 		C74D79881D6EF18400624286 /* BBRDefenseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C74D79871D6EF18400624286 /* BBRDefenseViewController.m */; };
 		C74E944F1D7AF4B00056DC4E /* PPP數據.xlsx in Resources */ = {isa = PBXBuildFile; fileRef = C74E944E1D7AF4B00056DC4E /* PPP數據.xlsx */; };
@@ -107,6 +109,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C7350D271DC3578700AFEEEE /* checkbox_unselected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_unselected.png; sourceTree = "<group>"; };
+		C7350D281DC3578700AFEEEE /* checkbox_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_selected.png; sourceTree = "<group>"; };
 		C74CEDD31D797D4D00B5E704 /* spreadsheet_for_timeLine.xlsx */ = {isa = PBXFileReference; lastKnownFileType = file; path = spreadsheet_for_timeLine.xlsx; sourceTree = "<group>"; };
 		C74D79861D6EF18400624286 /* BBRDefenseViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BBRDefenseViewController.h; sourceTree = "<group>"; };
 		C74D79871D6EF18400624286 /* BBRDefenseViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BBRDefenseViewController.m; sourceTree = "<group>"; };
@@ -305,6 +309,8 @@
 		C7CC37261C7B7F1600B97149 /* image */ = {
 			isa = PBXGroup;
 			children = (
+				C7350D271DC3578700AFEEEE /* checkbox_unselected.png */,
+				C7350D281DC3578700AFEEEE /* checkbox_selected.png */,
 				C7AB3CE41C7F5E2600DA23A6 /* leftArrow.png */,
 				C7AB3CE61C7F5E2600DA23A6 /* rightArrow.png */,
 				C7F552501C7C5066005CB9EC /* zone3-2.png */,
@@ -522,7 +528,9 @@
 				C7CC36F31C7AF17900B97149 /* Main.storyboard in Resources */,
 				C74CEDD41D797D4D00B5E704 /* spreadsheet_for_timeLine.xlsx in Resources */,
 				C7F5525C1C7C5066005CB9EC /* zone6-2.png in Resources */,
+				C7350D291DC3578700AFEEEE /* checkbox_unselected.png in Resources */,
 				C74E944F1D7AF4B00056DC4E /* PPP數據.xlsx in Resources */,
+				C7350D2A1DC3578700AFEEEE /* checkbox_selected.png in Resources */,
 				C7CC37371C7B7F1600B97149 /* zone4.png in Resources */,
 				C75EA4EC1D8A92BC00480B35 /* Shot Chart.xlsx in Resources */,
 				C7CC37341C7B7F1600B97149 /* zone11.png in Resources */,

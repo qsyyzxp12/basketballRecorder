@@ -206,11 +206,7 @@
 - (void)leftBarButtonClicked
 {
     if ([[DBSession sharedSession] isLinked])
-    {
         [[DBSession sharedSession] unlinkAll];
-        if(![[DBSession sharedSession] isLinked])
-            NSLog(@"NO!!!");
-    }
     [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
