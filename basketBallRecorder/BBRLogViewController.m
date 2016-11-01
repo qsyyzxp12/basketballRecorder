@@ -42,82 +42,210 @@
 
 //    [nameUncompleteAlert addAction:okAction];
     
+    UIAlertController* otherAlert = [UIAlertController alertControllerWithTitle:@"比賽隊伍" message:@"" preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"完成" style:UIAlertActionStyleDefault
+                                                     handler:^(UIAlertAction *action)
+    {
+        UITextField *teamName = otherAlert.textFields.firstObject;
+        UITextField *anotherTeamName = otherAlert.textFields.lastObject;
+     /* if([teamName.text isEqualToString:@""] || [anotherTeamName isEqual:@""])
+        {
+            [self presentViewController:nameUncompleteAlert animated:YES completion:nil];
+        }
+        else*/
+            self.myTeamName = teamName.text;
+            self.opponentName = anotherTeamName.text;
+        }];
+    UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action)
+        {
+            [self.navigationController popToViewController:[self.navigationController.viewControllers objectAtIndex:1] animated:YES];
+        }];
+    
+    [otherAlert addTextFieldWithConfigurationHandler:^(UITextField *textField)
+     {
+         textField.placeholder = @"你的隊伍名稱";
+     }];
+    [otherAlert addTextFieldWithConfigurationHandler:^(UITextField *textField)
+     {
+         textField.placeholder = @"對手隊伍名稱";
+     }];
+    [otherAlert addAction:okAction];
+    [otherAlert addAction:cancelAction];
+    
+    UIAlertController* opponentAlert = [UIAlertController alertControllerWithTitle:@"對手球隊" message:@"" preferredStyle:UIAlertControllerStyleAlert];
+    [opponentAlert addTextFieldWithConfigurationHandler:^(UITextField *textField)
+    {
+        textField.placeholder = @"名稱";
+    }];
+    okAction = [UIAlertAction actionWithTitle:@"確定" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action)
+        {
+            self.opponentName = opponentAlert.textFields.firstObject.text;
+        }];
+    cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action)
+        {
+            [self.navigationController popToViewController:[self.navigationController.viewControllers objectAtIndex:1] animated:YES];
+        }];
+    [opponentAlert addAction:okAction];
+    [opponentAlert addAction:cancelAction];
+    
+    
+    NSArray<NSString*> *SBLTeamNameArray = [NSArray arrayWithObjects:@"裕隆納智捷", @"璞園建築", @"台灣啤酒", @"富邦勇士", @"台灣銀行", @"金門酒廠", @"達欣工程", nil];
+    
+    UIAlertController* SBLAlert2 = [UIAlertController alertControllerWithTitle:@"對手隊伍" message:@"" preferredStyle:UIAlertControllerStyleAlert];
+    
+    for(NSString* name in SBLTeamNameArray)
+    {
+        UIAlertAction* nameAction = [UIAlertAction actionWithTitle:name style:UIAlertActionStyleDefault handler:^(UIAlertAction *action)
+            {
+                self.opponentName = name;
+                [self.view addSubview:self.fogView];
+                [self.view addSubview:self.teamNameView];
+            }];
+        [SBLAlert2 addAction:nameAction];
+    }
+    cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action)
+        {
+            [self.navigationController popToViewController:[self.navigationController.viewControllers objectAtIndex:1] animated:YES];
+        }];
+    [SBLAlert2 addAction:cancelAction];
+    
+    
+    UIAlertController* SBLAlert = [UIAlertController alertControllerWithTitle:@"你的隊伍" message:@"" preferredStyle:UIAlertControllerStyleAlert];
+    
+    for(NSString* name in SBLTeamNameArray)
+    {
+        UIAlertAction* nameAction = [UIAlertAction actionWithTitle:name style:UIAlertActionStyleDefault handler:^(UIAlertAction *action)
+            {
+                self.myTeamName = name;
+                [self presentViewController:SBLAlert2 animated:YES completion:nil];
+            }];
+        [SBLAlert addAction:nameAction];
+    }
+    cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action)
+        {
+            [self.navigationController popToViewController:[self.navigationController.viewControllers objectAtIndex:1] animated:YES];
+        }];
+    [SBLAlert addAction:cancelAction];
+    
+    UIAlertController* youtTeamAlert = [UIAlertController alertControllerWithTitle:@"你的球隊" message:@"" preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction* NTUAction = [UIAlertAction actionWithTitle:NAME_OF_NTU_MALE_BASKETBALL style:UIAlertActionStyleDefault handler:^(UIAlertAction *action)
+        {
+            self.myTeamName = NAME_OF_NTU_MALE_BASKETBALL;
+            self.isSBLGame = NO;
+            [self presentViewController:opponentAlert animated:YES completion:nil];
+        }];
+    
+    UIAlertAction* SBLAction = [UIAlertAction actionWithTitle:@"SBL球隊" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action)
+        {
+            self.isSBLGame = YES;
+            [self presentViewController:SBLAlert animated:YES completion:nil];
+        }];
+    
+    UIAlertAction* otherAction = [UIAlertAction actionWithTitle:@"其他" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action)
+        {
+            self.isSBLGame = NO;
+            [self presentViewController:otherAlert animated:YES completion:nil];
+        }];
+    
+    cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action)
+        {
+            [self.navigationController popToViewController:[self.navigationController.viewControllers objectAtIndex:1] animated:YES];
+        }];
+    [youtTeamAlert addAction:NTUAction];
+    [youtTeamAlert addAction:SBLAction];
+    [youtTeamAlert addAction:otherAction];
+    [youtTeamAlert addAction:cancelAction];
+    [self presentViewController:youtTeamAlert animated:YES completion:nil];
+    
+    
+    
     self.fogView = [[UIView alloc] initWithFrame:self.view.frame];
     self.fogView.backgroundColor = [UIColor blackColor];
     self.fogView.alpha = 0.6;
-    [self.view addSubview:self.fogView];
     
-    self.teamNameView = [[UIView alloc] initWithFrame:CGRectMake(CGRectGetWidth(self.view.frame)*0.3, CGRectGetHeight(self.view.frame)*0.25, CGRectGetWidth(self.view.frame)*0.4, CGRectGetHeight(self.view.frame)*0.5)];
+    self.teamNameView = [[UIView alloc] initWithFrame:CGRectMake(CGRectGetWidth(self.view.frame)*0.3, CGRectGetHeight(self.view.frame)*0.2, CGRectGetWidth(self.view.frame)*0.4, CGRectGetHeight(self.view.frame)*0.6)];
     self.teamNameView.layer.cornerRadius = 10;
     self.teamNameView.backgroundColor = [UIColor whiteColor];
-   // self.teamNameView.layer.borderWidth = 2;
-    [self.view addSubview:self.teamNameView];
     
-    UILabel* title = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetWidth(self.teamNameView.frame)*0.3, 0, CGRectGetWidth(self.teamNameView.frame)*0.4, CGRectGetHeight(self.teamNameView.frame)*0.17)];
-    title.text = @"比賽隊伍";
+    UILabel* title = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetWidth(self.teamNameView.frame)*0.3, 0, CGRectGetWidth(self.teamNameView.frame)*0.4, CGRectGetHeight(self.teamNameView.frame)*0.133)];
+    title.text = @"比賽資訊";
     title.textAlignment = NSTextAlignmentCenter;
     [title setFont:[UIFont systemFontOfSize:20]];
     [title setAdjustsFontSizeToFitWidth:YES];
     [self.teamNameView addSubview:title];
     
-    UILabel* homeTeamLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, CGRectGetMaxY(title.frame), CGRectGetWidth(self.teamNameView.frame)*0.3, CGRectGetHeight(self.teamNameView.frame)*0.17)];
-    homeTeamLabel.text = @"你的隊伍：";
+    UILabel* homeTeamLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, CGRectGetMaxY(title.frame)+CGRectGetHeight(self.teamNameView.frame)*0.02, CGRectGetWidth(self.teamNameView.frame)*0.3, CGRectGetHeight(self.teamNameView.frame)*0.133)];
+    homeTeamLabel.text = @"比賽類型：";
     homeTeamLabel.textAlignment = NSTextAlignmentCenter;
     [homeTeamLabel setFont:[UIFont systemFontOfSize:18]];
     [homeTeamLabel setAdjustsFontSizeToFitWidth:YES];
     [self.teamNameView addSubview:homeTeamLabel];
     
-    UIButton* NTUCheckboxButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetMaxX(homeTeamLabel.frame), CGRectGetMinY(homeTeamLabel.frame)+(CGRectGetHeight(homeTeamLabel.frame)-18)/2, 18, 18)];
-    NTUCheckboxButton.tag = 1;
-    [NTUCheckboxButton setImage:[UIImage imageNamed:@"checkbox_unselected.png"] forState:UIControlStateNormal];
-    [NTUCheckboxButton setImage:[UIImage imageNamed:@"checkbox_selected.png"] forState:UIControlStateSelected];
-    [NTUCheckboxButton addTarget:self action:@selector(checkboxButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
-    [self.teamNameView addSubview:NTUCheckboxButton];
+    UIButton* RegularCheckboxButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetMaxX(homeTeamLabel.frame), CGRectGetMinY(homeTeamLabel.frame)+(CGRectGetHeight(homeTeamLabel.frame)-18)/2, 18, 18)];
+    RegularCheckboxButton.tag = 1;
+    [RegularCheckboxButton setImage:[UIImage imageNamed:@"checkbox_unselected.png"] forState:UIControlStateNormal];
+    [RegularCheckboxButton setImage:[UIImage imageNamed:@"checkbox_selected.png"] forState:UIControlStateSelected];
+    [RegularCheckboxButton addTarget:self action:@selector(checkboxButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
+    [self.teamNameView addSubview:RegularCheckboxButton];
     
-    UILabel* NTUTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(NTUCheckboxButton.frame)+5, CGRectGetMinY(homeTeamLabel.frame), CGRectGetWidth(self.teamNameView.frame)*0.5, CGRectGetHeight(self.teamNameView.frame)*0.17)];
-    NTUTitleLabel.text = NAME_OF_NTU_MALE_BASKETBALL;
-    NTUTitleLabel.textAlignment = NSTextAlignmentCenter;
-    [NTUTitleLabel setFont:[UIFont systemFontOfSize:18]];
-    [NTUTitleLabel setAdjustsFontSizeToFitWidth:YES];
-    [self.teamNameView addSubview:NTUTitleLabel];
+    UILabel* RegularTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(RegularCheckboxButton.frame)+5, CGRectGetMinY(homeTeamLabel.frame), CGRectGetWidth(self.teamNameView.frame)*0.5, CGRectGetHeight(self.teamNameView.frame)*0.133)];
+    RegularTitleLabel.text = @"例行賽";
+    RegularTitleLabel.textAlignment = NSTextAlignmentCenter;
+    [RegularTitleLabel setFont:[UIFont systemFontOfSize:18]];
+    [RegularTitleLabel setAdjustsFontSizeToFitWidth:YES];
+    [self.teamNameView addSubview:RegularTitleLabel];
     
-    UIButton* otherCheckboxButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetMaxX(homeTeamLabel.frame), CGRectGetMaxY(homeTeamLabel.frame)+(CGRectGetHeight(homeTeamLabel.frame)-18)/2, 18, 18)];
-    otherCheckboxButton.tag = 2;
-    [otherCheckboxButton setImage:[UIImage imageNamed:@"checkbox_unselected.png"] forState:UIControlStateNormal];
-    [otherCheckboxButton setImage:[UIImage imageNamed:@"checkbox_selected.png"] forState:UIControlStateSelected];
-    [otherCheckboxButton addTarget:self action:@selector(checkboxButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
-    [self.teamNameView addSubview:otherCheckboxButton];
+    UIButton* PlayoffCheckboxButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetMaxX(homeTeamLabel.frame), CGRectGetMaxY(homeTeamLabel.frame)+(CGRectGetHeight(homeTeamLabel.frame)-18)/2, 18, 18)];
+    PlayoffCheckboxButton.tag = 2;
+    [PlayoffCheckboxButton setImage:[UIImage imageNamed:@"checkbox_unselected.png"] forState:UIControlStateNormal];
+    [PlayoffCheckboxButton setImage:[UIImage imageNamed:@"checkbox_selected.png"] forState:UIControlStateSelected];
+    [PlayoffCheckboxButton addTarget:self action:@selector(checkboxButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
+    [self.teamNameView addSubview:PlayoffCheckboxButton];
     
-    UITextField* otherTeamNameTextField = [[UITextField alloc] initWithFrame:CGRectMake(CGRectGetMaxX(otherCheckboxButton.frame)+5, CGRectGetMaxY(homeTeamLabel.frame), CGRectGetWidth(self.teamNameView.frame)*0.5, CGRectGetHeight(self.teamNameView.frame)*0.17)];
-    otherTeamNameTextField.tag = 3;
-    otherTeamNameTextField.layer.cornerRadius = 5;
-    otherTeamNameTextField.layer.borderWidth = 1;
-    otherTeamNameTextField.placeholder = @"其他";
-    otherTeamNameTextField.textAlignment = NSTextAlignmentCenter;
-    [self.teamNameView addSubview:otherTeamNameTextField];
+    UILabel* PlayoffTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(PlayoffCheckboxButton.frame)+5, CGRectGetMaxY(RegularTitleLabel.frame), CGRectGetWidth(self.teamNameView.frame)*0.5, CGRectGetHeight(self.teamNameView.frame)*0.133)];
+    PlayoffTitleLabel.text = @"季後賽";
+    PlayoffTitleLabel.textAlignment = NSTextAlignmentCenter;
+    [PlayoffTitleLabel setFont:[UIFont systemFontOfSize:18]];
+    [PlayoffTitleLabel setAdjustsFontSizeToFitWidth:YES];
+    [self.teamNameView addSubview:PlayoffTitleLabel];
     
-    UILabel* awayTeamLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, CGRectGetMaxY(otherTeamNameTextField.frame)+CGRectGetHeight(self.teamNameView.frame)*0.08, CGRectGetWidth(self.teamNameView.frame)*0.3, CGRectGetHeight(self.teamNameView.frame)*0.17)];
-    awayTeamLabel.text = @"對手隊伍：";
-    awayTeamLabel.textAlignment = NSTextAlignmentCenter;
-    [awayTeamLabel setFont:[UIFont systemFontOfSize:18]];
-    [awayTeamLabel setAdjustsFontSizeToFitWidth:YES];
-    [self.teamNameView addSubview:awayTeamLabel];
+    UILabel* sessionNoLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, CGRectGetMaxY(PlayoffTitleLabel.frame)+CGRectGetHeight(self.teamNameView.frame)*0.0667, CGRectGetWidth(self.teamNameView.frame)*0.3, CGRectGetHeight(self.teamNameView.frame)*0.133)];
+    sessionNoLabel.text = @"球季編號：";
+    sessionNoLabel.textAlignment = NSTextAlignmentCenter;
+    [sessionNoLabel setFont:[UIFont systemFontOfSize:18]];
+    [sessionNoLabel setAdjustsFontSizeToFitWidth:YES];
+    [self.teamNameView addSubview:sessionNoLabel];
     
-    UITextField* awayTeamNameTextField = [[UITextField alloc] initWithFrame:CGRectMake(CGRectGetMaxX(awayTeamLabel.frame)+5, CGRectGetMinY(awayTeamLabel.frame), CGRectGetWidth(self.teamNameView.frame)*0.6, CGRectGetHeight(self.teamNameView.frame)*0.17)];
-    awayTeamNameTextField.tag = 4;
-    awayTeamNameTextField.layer.cornerRadius = 5;
-    awayTeamNameTextField.layer.borderWidth = 1;
-    awayTeamNameTextField.textAlignment = NSTextAlignmentCenter;
-    [self.teamNameView addSubview:awayTeamNameTextField];
+    UITextField* sessionNoTextField = [[UITextField alloc] initWithFrame:CGRectMake(CGRectGetMaxX(sessionNoLabel.frame)+5, CGRectGetMinY(sessionNoLabel.frame), CGRectGetWidth(self.teamNameView.frame)*0.6, CGRectGetHeight(self.teamNameView.frame)*0.133)];
+    sessionNoTextField.tag = 4;
+    sessionNoTextField.layer.cornerRadius = 5;
+    sessionNoTextField.layer.borderWidth = 1;
+    sessionNoTextField.textAlignment = NSTextAlignmentCenter;
+    [self.teamNameView addSubview:sessionNoTextField];
     
-    UIButton* okButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetWidth(self.teamNameView.frame)*0.1, CGRectGetMaxY(awayTeamNameTextField.frame)+CGRectGetHeight(self.teamNameView.frame)*0.02, CGRectGetWidth(self.teamNameView.frame)*0.35, CGRectGetHeight(self.teamNameView.frame)*0.2)];
+    UILabel* gameNoLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, CGRectGetMaxY(sessionNoLabel.frame)+CGRectGetHeight(self.teamNameView.frame)*0.06, CGRectGetWidth(self.teamNameView.frame)*0.3, CGRectGetHeight(self.teamNameView.frame)*0.133)];
+    gameNoLabel.text = @"比賽編號：";
+    gameNoLabel.textAlignment = NSTextAlignmentCenter;
+    [gameNoLabel setFont:[UIFont systemFontOfSize:18]];
+    [gameNoLabel setAdjustsFontSizeToFitWidth:YES];
+    [self.teamNameView addSubview:gameNoLabel];
+    
+    UITextField* gameNoTextField = [[UITextField alloc] initWithFrame:CGRectMake(CGRectGetMaxX(gameNoLabel.frame)+5, CGRectGetMinY(gameNoLabel.frame), CGRectGetWidth(self.teamNameView.frame)*0.6, CGRectGetHeight(self.teamNameView.frame)*0.133)];
+    gameNoTextField.tag = 5;
+    gameNoTextField.layer.cornerRadius = 5;
+    gameNoTextField.layer.borderWidth = 1;
+    gameNoTextField.textAlignment = NSTextAlignmentCenter;
+    [self.teamNameView addSubview:gameNoTextField];
+    
+    UIButton* okButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetWidth(self.teamNameView.frame)*0.1, CGRectGetMaxY(gameNoTextField.frame)+CGRectGetHeight(self.teamNameView.frame)*0.02, CGRectGetWidth(self.teamNameView.frame)*0.35, CGRectGetHeight(self.teamNameView.frame)*0.15)];
     [okButton addTarget:self action:@selector(okButtonClicked) forControlEvents:UIControlEventTouchUpInside];
     [okButton setTitle:@"確定" forState:UIControlStateNormal];
     [okButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateHighlighted];
     [okButton setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
     [self.teamNameView addSubview:okButton];
     
-    UIButton* cancelButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetMaxX(okButton.frame)+CGRectGetWidth(self.teamNameView.frame)*0.1, CGRectGetMaxY(awayTeamNameTextField.frame)+CGRectGetHeight(self.teamNameView.frame)*0.02, CGRectGetWidth(self.teamNameView.frame)*0.35, CGRectGetHeight(self.teamNameView.frame)*0.2)];
+    UIButton* cancelButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetMaxX(okButton.frame)+CGRectGetWidth(self.teamNameView.frame)*0.1, CGRectGetMinY(okButton.frame), CGRectGetWidth(self.teamNameView.frame)*0.35, CGRectGetHeight(self.teamNameView.frame)*0.15)];
     [cancelButton addTarget:self action:@selector(cancelButtonClicked) forControlEvents:UIControlEventTouchUpInside];
     [cancelButton setTitle:@"取消" forState:UIControlStateNormal];
     [cancelButton setTitleColor:[UIColor grayColor] forState:UIControlStateHighlighted];
@@ -139,6 +267,9 @@
         mainViewCntler.playerCount = self.playerCount;
         mainViewCntler.myTeamName = self.myTeamName;
         mainViewCntler.opponentName = self.opponentName;
+        mainViewCntler.isSBLGame = self.isSBLGame;
+        mainViewCntler.sessionNo = self.sessionNo;
+        mainViewCntler.gameNo = self.gameNo;
         NSString* filename = [NSString stringWithFormat:@"%@-%@", recordName, [dateFormatter stringFromDate:[NSDate date]]];
         mainViewCntler.recordName = filename;
     }
@@ -147,6 +278,9 @@
         BBRDefenseViewController* mainViewCntler = [segue destinationViewController];
         mainViewCntler.playerNoSet = resultArray;
         mainViewCntler.playerCount = self.playerCount;
+        mainViewCntler.isSBLGame = self.isSBLGame;
+        mainViewCntler.sessionNo = self.sessionNo;
+        mainViewCntler.gameNo = self.gameNo;
         
         NSString* filename = [NSString stringWithFormat:@"%@-%@_防守", recordName, [dateFormatter stringFromDate:[NSDate date]]];
         mainViewCntler.recordName = filename;
@@ -157,6 +291,9 @@
         //NSLog(@"%@", resultArray);
         mainViewCntler.playerNoSet = resultArray;
         mainViewCntler.playerCount = self.playerCount;
+        mainViewCntler.isSBLGame = self.isSBLGame;
+        mainViewCntler.sessionNo = self.sessionNo;
+        mainViewCntler.gameNo = self.gameNo;
         
         NSString* filename = [NSString stringWithFormat:@"%@-%@_技術", recordName, [dateFormatter stringFromDate:[NSDate date]]];
         mainViewCntler.recordName = filename;
@@ -172,18 +309,18 @@
 
 - (void)okButtonClicked
 {
-    UIButton* NTUCheckboxButton = (UIButton*)[self.teamNameView viewWithTag:1];
-    UIButton* otherCheckboxButton = (UIButton*)[self.teamNameView viewWithTag:2];
+    UIButton* regularCheckboxButton = (UIButton*)[self.teamNameView viewWithTag:1];
+    UIButton* playoffCheckboxButton = (UIButton*)[self.teamNameView viewWithTag:2];
     
-    if(!NTUCheckboxButton.isSelected && !otherCheckboxButton.isSelected)
+    if(!regularCheckboxButton.isSelected && !playoffCheckboxButton.isSelected)
     {
-        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"請選擇你的隊伍" message:@"" preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"請選擇比賽類型" message:@"" preferredStyle:UIAlertControllerStyleAlert];
         UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"好" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){}];
         [alert addAction:okAction];
         [self presentViewController:alert animated:YES completion:nil];
         return;
     }
-    else if(NTUCheckboxButton.isSelected)
+    else if(regularCheckboxButton.isSelected)
         self.myTeamName = @"台大校男籃";
     else
     {
@@ -191,8 +328,11 @@
         self.myTeamName = otherTeamNameTextField.text;
     }
     
-    UITextField* opponentNameTextField = (UITextField*)[self.teamNameView viewWithTag:4];
-    self.opponentName = opponentNameTextField.text;
+    UITextField* sessionNoTextField = (UITextField*)[self.teamNameView viewWithTag:4];
+    self.sessionNo = [sessionNoTextField.text intValue];
+    
+    UITextField* gameNoTextField = (UITextField*)[self.teamNameView viewWithTag:5];
+    self.gameNo = [gameNoTextField.text intValue];
     
     [self.teamNameView removeFromSuperview];
     [self.fogView removeFromSuperview];

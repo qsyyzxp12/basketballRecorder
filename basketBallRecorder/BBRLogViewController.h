@@ -16,6 +16,9 @@
 @property NSMutableArray* playerNoSet;
 @property NSString* myTeamName;
 @property NSString* opponentName;
+@property BOOL isSBLGame;
+@property int sessionNo;
+@property int gameNo;
 @property UIView* teamNameView;
 @property UIView* fogView;
 @end

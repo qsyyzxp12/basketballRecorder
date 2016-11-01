@@ -47,6 +47,7 @@
 @property BOOL isDownloadShotChartXlsxFileFinished;
 @property BOOL isLoadingRootMeta;
 @property BOOL isFolderExistAlready;
+@property BOOL isSBLGame;
 @property int uploadFilesCount;
 @property int playerCount;
 @property int playerSelectedIndex;
@@ -56,6 +57,8 @@
 @property int timeCounter;
 @property int attackWayNo;
 @property int ptr;
+@property int sessionNo;
+@property int gameNo;
 @property UIAlertController* attackWayAlert;
 @property UIAlertController* nextQuarterAlert;
 @property UIAlertController* playoffOrNotAlert;

@@ -27,6 +27,9 @@
 @property BOOL isLoadMetaFinished;
 @property BOOL isLoadingRootMeta;
 @property BOOL isFolderExistAlready;
+@property BOOL isSBLGame;
+@property int sessionNo;
+@property int gameNo;
 @property int playerCount;
 @property int playerSelectedIndex;
 @property int quarterNo;

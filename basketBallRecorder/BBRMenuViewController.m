@@ -22,8 +22,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    if (![[DBSession sharedSession] isLinked])
-        [[DBSession sharedSession] linkFromController:self];
+  //  if (![[DBSession sharedSession] isLinked])
+    //    [[DBSession sharedSession] linkFromController:self];
     
     [self constructAlertController];
     
