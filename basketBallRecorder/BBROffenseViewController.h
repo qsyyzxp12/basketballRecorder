@@ -71,6 +71,7 @@
 @property NSString* recordName;
 @property NSString* keyOfAttackWay;
 @property NSString* keyOfDetail;
+@property NSString* gameType;
 @property UIButton* undoButton;
 @property UIButton* switchModeButton;
 @property UIButton* nextQuarterButton;

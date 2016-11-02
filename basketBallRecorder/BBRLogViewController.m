@@ -64,10 +64,12 @@
     
     [otherAlert addTextFieldWithConfigurationHandler:^(UITextField *textField)
      {
+         textField.delegate = self;
          textField.placeholder = @"你的隊伍名稱";
      }];
     [otherAlert addTextFieldWithConfigurationHandler:^(UITextField *textField)
      {
+         textField.delegate = self;
          textField.placeholder = @"對手隊伍名稱";
      }];
     [otherAlert addAction:okAction];
@@ -76,6 +78,7 @@
     UIAlertController* opponentAlert = [UIAlertController alertControllerWithTitle:@"對手球隊" message:@"" preferredStyle:UIAlertControllerStyleAlert];
     [opponentAlert addTextFieldWithConfigurationHandler:^(UITextField *textField)
     {
+        textField.delegate = self;
         textField.placeholder = @"名稱";
     }];
     okAction = [UIAlertAction actionWithTitle:@"確定" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action)
@@ -219,6 +222,7 @@
     
     UITextField* sessionNoTextField = [[UITextField alloc] initWithFrame:CGRectMake(CGRectGetMaxX(sessionNoLabel.frame)+5, CGRectGetMinY(sessionNoLabel.frame), CGRectGetWidth(self.teamNameView.frame)*0.6, CGRectGetHeight(self.teamNameView.frame)*0.133)];
     sessionNoTextField.tag = 4;
+    sessionNoTextField.delegate = self;
     sessionNoTextField.layer.cornerRadius = 5;
     sessionNoTextField.layer.borderWidth = 1;
     sessionNoTextField.textAlignment = NSTextAlignmentCenter;
@@ -233,6 +237,7 @@
     
     UITextField* gameNoTextField = [[UITextField alloc] initWithFrame:CGRectMake(CGRectGetMaxX(gameNoLabel.frame)+5, CGRectGetMinY(gameNoLabel.frame), CGRectGetWidth(self.teamNameView.frame)*0.6, CGRectGetHeight(self.teamNameView.frame)*0.133)];
     gameNoTextField.tag = 5;
+    gameNoTextField.delegate = self;
     gameNoTextField.layer.cornerRadius = 5;
     gameNoTextField.layer.borderWidth = 1;
     gameNoTextField.textAlignment = NSTextAlignmentCenter;
@@ -270,6 +275,7 @@
         mainViewCntler.isSBLGame = self.isSBLGame;
         mainViewCntler.sessionNo = self.sessionNo;
         mainViewCntler.gameNo = self.gameNo;
+        mainViewCntler.gameType = self.gameType;
         NSString* filename = [NSString stringWithFormat:@"%@-%@", recordName, [dateFormatter stringFromDate:[NSDate date]]];
         mainViewCntler.recordName = filename;
     }
@@ -281,6 +287,7 @@
         mainViewCntler.isSBLGame = self.isSBLGame;
         mainViewCntler.sessionNo = self.sessionNo;
         mainViewCntler.gameNo = self.gameNo;
+        mainViewCntler.gameType = self.gameType;
         
         NSString* filename = [NSString stringWithFormat:@"%@-%@_防守", recordName, [dateFormatter stringFromDate:[NSDate date]]];
         mainViewCntler.recordName = filename;
@@ -294,6 +301,7 @@
         mainViewCntler.isSBLGame = self.isSBLGame;
         mainViewCntler.sessionNo = self.sessionNo;
         mainViewCntler.gameNo = self.gameNo;
+        mainViewCntler.gameType = self.gameType;
         
         NSString* filename = [NSString stringWithFormat:@"%@-%@_技術", recordName, [dateFormatter stringFromDate:[NSDate date]]];
         mainViewCntler.recordName = filename;
@@ -321,12 +329,9 @@
         return;
     }
     else if(regularCheckboxButton.isSelected)
-        self.myTeamName = @"台大校男籃";
+        self.gameType = REGULAR_GAME;
     else
-    {
-        UITextField* otherTeamNameTextField = (UITextField*)[self.teamNameView viewWithTag:3];
-        self.myTeamName = otherTeamNameTextField.text;
-    }
+        self.gameType = PLAYOFFS_GAME;
     
     UITextField* sessionNoTextField = (UITextField*)[self.teamNameView viewWithTag:4];
     self.sessionNo = [sessionNoTextField.text intValue];
@@ -489,12 +494,23 @@
 
 - (BOOL)textFieldShouldEndEditing:(UITextField *)textField
 {
+    self.teamNameView.frame = CGRectMake(CGRectGetWidth(self.view.frame)*0.3, CGRectGetHeight(self.view.frame)*0.2, CGRectGetWidth(self.view.frame)*0.4, CGRectGetHeight(self.view.frame)*0.6);
     [self.textFieldArray setObject:textField.text atIndexedSubscript:textField.tag-1];
     return YES;
 }
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
 {
+    if([textField isDescendantOfView:self.teamNameView])
+    {
+        CGRect textFieldRectInView = [self.teamNameView convertRect:textField.frame toView:self.view];
+        if(CGRectGetMaxY(textFieldRectInView) > CGRectGetHeight(self.view.frame)-258)
+        {
+            CGFloat x = self.teamNameView.frame.origin.x;
+            CGFloat y = self.teamNameView.frame.origin.y - 100 /*+ CGRectGetMaxY(self.teamNameView.frame) - (CGRectGetHeight(self.view.frame)-258)*/;
+            self.teamNameView.frame = CGRectMake(x, y, self.teamNameView.frame.size.width, self.teamNameView.frame.size.height);
+        }
+    }
     self.editingTextField = textField;
     return YES;
 }

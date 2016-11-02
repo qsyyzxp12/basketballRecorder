@@ -42,6 +42,7 @@
 @property NSString* tmpPlistPath;
 @property NSString* recordName;
 @property NSString* keyForSearch;
+@property NSString* gameType;
 @property UIButton* undoButton;
 @property UIButton* switchModeButton;
 @property UIButton* nextQuarterButton;

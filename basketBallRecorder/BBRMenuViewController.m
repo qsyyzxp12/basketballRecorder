@@ -25,6 +25,8 @@
   //  if (![[DBSession sharedSession] isLinked])
     //    [[DBSession sharedSession] linkFromController:self];
     
+    NSLog(@"xxxxx");
+    
     [self constructAlertController];
     
     [self.navigationItem setHidesBackButton:YES];
@@ -202,6 +204,101 @@
 }
 
 #pragma mark - Actions
+- (IBAction)testButtonClicked:(id)sender
+{
+    NSURL* url = [NSURL URLWithString:@"http://basketball.beta.biji.co/api/addSblPlayerGeneralStats"];
+  //  NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:120];
+    NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:url];
+    
+    NSMutableDictionary* dataDic = [[NSMutableDictionary alloc] init];
+    [dataDic setObject:@"1" forKey:KEY_FOR_GAME_SESSION];
+    [dataDic setObject:@"例行賽" forKeyedSubscript:KEY_FOR_GAME_TYPE];
+    [dataDic setObject:@"2" forKeyedSubscript:KEY_FOR_GAME_NO];
+    [dataDic setObject:@"台灣啤酒" forKeyedSubscript:KEY_FOR_TEAM_NAME];
+    [dataDic setObject:@"7" forKeyedSubscript:KEY_FOR_PLAYER_NO];
+    [dataDic setObject:@"1" forKeyedSubscript:KEY_FOR_STARTING];
+    [dataDic setObject:@"3" forKeyedSubscript:KEY_FOR_2PT_MADE];
+    [dataDic setObject:@"4" forKeyedSubscript:KEY_FOR_2PT_ATTEMPT];
+    [dataDic setObject:@"5" forKeyedSubscript:KEY_FOR_3PT_MADE];
+    [dataDic setObject:@"6" forKeyedSubscript:KEY_FOR_3PT_ATTEMPT];
+    [dataDic setObject:@"7" forKeyedSubscript:KEY_FOR_FT_MADE];
+    [dataDic setObject:@"8" forKeyedSubscript:KEY_FOR_FT_ATTEMPT];
+    [dataDic setObject:@"9" forKeyedSubscript:KEY_FOR_OFF_REB];
+    [dataDic setObject:@"10" forKeyedSubscript:KEY_FOR_DEF_REB];
+    [dataDic setObject:@"11" forKey:KEY_FOR_TOTAL_REB];
+    [dataDic setObject:@"12" forKey:KEY_FOR_ASSIST];
+    [dataDic setObject:@"13" forKey:KEY_FOR_STEAL];
+    [dataDic setObject:@"14" forKey:KEY_FOR_BLOCK];
+    [dataDic setObject:@"15" forKey:KEY_FOR_TURNOVER];
+    [dataDic setObject:@"16" forKey:KEY_FOR_FOUL];
+    [dataDic setObject:@"17" forKey:KEY_FOR_POINT];
+    [dataDic setObject:@"18" forKey:KEY_FOR_PLAY_TIME];
+    
+    NSString *post = [NSString stringWithFormat:@"Username=%@&Password=%@",@"_username",@"_password"];
+    NSData *data = [post dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
+    
+    NSError* error;
+  //  NSData* data = [NSJSONSerialization dataWithJSONObject:dataDic options:0 error:&error];
+    NSString *postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[data length]];
+    
+    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    [request setHTTPMethod:@"POST"];
+    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+    if(error)
+        NSLog(@"%@", error);
+    [request setHTTPBody:data];
+    
+    NSLog(@"xxx");
+    error = nil;
+    NSURLResponse *response = nil;
+    NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+    
+    if(responseData)  {
+        NSDictionary *results = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments  error:&error];
+        NSLog(@"res---%@", results);
+    }
+    else
+        NSLog(@"No responseData");
+  //  NSURLConnection* connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
+    
+ /*   NSData* receive = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:&error];
+    if(error)
+    {
+        NSLog(@"ERRORRRRRRRRR!!!!!");
+        NSLog(@"%@", error);
+    }
+    NSString* strl = [[NSString alloc]initWithData:receive encoding:NSUTF8StringEncoding];
+    NSLog(@"%@", strl);*/
+}
+
+
+/***************************************************************************************/
+
+-(void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
+{
+    NSHTTPURLResponse *res = (NSHTTPURLResponse *)response;
+    NSLog(@"%@",[res allHeaderFields]);
+    self.receiveData = [NSMutableData data];
+}
+
+-(void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
+{
+    [self.receiveData appendData:data];
+}
+
+-(void)connectionDidFinishLoading:(NSURLConnection *)connection
+{
+    NSString *receiveStr = [[NSString alloc]initWithData:self.receiveData encoding:NSUTF8StringEncoding];
+    NSLog(@"%@",receiveStr);
+}
+
+-(void)connection:(NSURLConnection *)connection
+ didFailWithError:(NSError *)error
+{
+    NSLog(@"%@",[error localizedDescription]);
+}
+
+/***************************************************************************************/
 
 - (void)leftBarButtonClicked
 {

@@ -131,7 +131,7 @@
 //Key for timeLine event
 #define KEY_FOR_PLAYER_ON_FLOOR @"playerOnFloor"
 #define KEY_FOR_TIME_LINE_DATA @"timeLineData"
-#define KEY_FOR_PLAYER_NO @"PlayerNo"
+#define KEY_FOR_PLAYER_NO @"playerNo"
 #define KEY_FOR_ATTACK_WAY @"AttackWay"
 #define KEY_FOR_DETAIL @"Detail"
 #define KEY_FOR_RESULT @"Result"
@@ -154,16 +154,47 @@
 #define KEY_FOR_FREE_THROW @"Free Throw"
 #define KEY_FOR_OR @"OR"
 #define KEY_FOR_DR @"DR"
-#define KEY_FOR_ASSIST @"Assist"
-#define KEY_FOR_STEAL @"Steal"
-#define KEY_FOR_BLOCK @"Block"
+#define KEY_FOR_ASSIST @"assist"
+#define KEY_FOR_STEAL @"steal"
+#define KEY_FOR_BLOCK @"block"
 #define KEY_FOR_TO @"Turnover"
-#define KEY_FOR_FOUL @"Foul"
+#define KEY_FOR_FOUL @"foul"
 
 //Dropbox
 #define NAME_OF_THE_FINAL_XLSX_FILE @"PPP數據"
 #define NAME_OF_THE_SHOT_CHART_XLSX_FILE @"Shot Chart"
 #define NAME_OF_THE_ZONE_GRADE_XLSX_FILE @"投籃分佈圖"
+
+//Signal For Game Type
+#define REGULAR_GAME @"例行賽"
+#define PLAYOFFS_GAME @"季後賽"
+
+//Key For POST Request
+#define KEY_FOR_GAME_SESSION @"gameSession"
+#define KEY_FOR_GAME_TYPE @"gameType"
+#define KEY_FOR_GAME_NO @"gameNo"
+#define KEY_FOR_TEAM_NAME @"teamName"
+//#define KEY_FOR_PLAYER_NO @"playerNo"
+#define KEY_FOR_STARTING @"starting"
+#define KEY_FOR_2PT_MADE @"2ptMade"
+#define KEY_FOR_2PT_ATTEMPT @"2ptAtt"
+#define KEY_FOR_3PT_MADE @"3ptMade"
+#define KEY_FOR_3PT_ATTEMPT @"3ptAtt"
+#define KEY_FOR_FT_MADE @"ftMade"
+#define KEY_FOR_FT_ATTEMPT @"ftAtt"
+#define KEY_FOR_OFF_REB @"offReb"
+#define KEY_FOR_DEF_REB @"defReb"
+#define KEY_FOR_TOTAL_REB @"totalReb"
+//#define KEY_FOR_ASSIST @"assist"
+//#define KEY_FOR_STEAL @"steal"
+//#define KEY_FOR_BLOCK @"block"
+//#define KEY_FOR_TURNOVER @"turnover"
+//#define KEY_FOR_FOUL @"foul"
+#define KEY_FOR_POINT @"point"
+#define KEY_FOR_PLAY_TIME @"playTime"
+
+#define KEY_FOR_ @""
+
 
 #define END -1
 #define QUARTER_NO_FOR_ENTIRE_GAME 0

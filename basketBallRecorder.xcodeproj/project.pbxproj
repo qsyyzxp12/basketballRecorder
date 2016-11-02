@@ -430,7 +430,7 @@
 					C7CC36E41C7AF17900B97149 = {
 						CreatedOnToolsVersion = 7.2;
 						DevelopmentTeam = 3U5926BU7W;
-						ProvisioningStyle = Manual;
+						ProvisioningStyle = Automatic;
 					};
 					C7CC36FD1C7AF17900B97149 = {
 						CreatedOnToolsVersion = 7.2;
@@ -721,8 +721,8 @@
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Chih-An Lin (3U5926BU7W)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Chih-An Lin (3U5926BU7W)";
-				DEVELOPMENT_TEAM = 3U5926BU7W;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -734,8 +734,8 @@
 				OTHER_LDFLAGS = "-all_load";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linchihan.basketBallRecorder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "8af70f4b-adfd-4278-a145-d7554738e346";
-				PROVISIONING_PROFILE_SPECIFIER = BasketballRecorder;
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/basketBallRecorder/Header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/XlsxReaderWriter/**";
@@ -749,8 +749,8 @@
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Chih-An Lin (3U5926BU7W)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Chih-An Lin (3U5926BU7W)";
-				DEVELOPMENT_TEAM = 3U5926BU7W;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -762,8 +762,8 @@
 				OTHER_LDFLAGS = "-all_load";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linchihan.basketBallRecorder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "8af70f4b-adfd-4278-a145-d7554738e346";
-				PROVISIONING_PROFILE_SPECIFIER = BasketballRecorder;
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/basketBallRecorder/Header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/XlsxReaderWriter/**";
@@ -866,8 +866,8 @@
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Chih-An Lin (3U5926BU7W)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Chih-An Lin (3U5926BU7W)";
-				DEVELOPMENT_TEAM = 3U5926BU7W;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -879,8 +879,8 @@
 				OTHER_LDFLAGS = "-all_load";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linchihan.basketBallRecorder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "8af70f4b-adfd-4278-a145-d7554738e346";
-				PROVISIONING_PROFILE_SPECIFIER = BasketballRecorder;
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/basketBallRecorder/Header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/XlsxReaderWriter/**";
