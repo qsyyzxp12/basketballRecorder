@@ -303,6 +303,7 @@
         mainViewCntler.sessionNo = self.sessionNo;
         mainViewCntler.gameNo = self.gameNo;
         mainViewCntler.gameType = self.gameType;
+        mainViewCntler.myTeamName = self.myTeamName;
         
         NSString* filename = [NSString stringWithFormat:@"%@-%@_技術", recordName, [dateFormatter stringFromDate:[NSDate date]]];
         mainViewCntler.recordName = filename;

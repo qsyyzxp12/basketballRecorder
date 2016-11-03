@@ -452,7 +452,6 @@
         else
             NSLog(@"No responseData");
     }
-
 }
 
 -(void)loadFolderMetaData:(NSDateFormatter*) dateFormatter

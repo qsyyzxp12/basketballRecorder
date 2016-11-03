@@ -41,7 +41,7 @@
     self.restClient = [[DBRestClient alloc] initWithSession:[DBSession sharedSession]];
     self.restClient.delegate = self;
     
-    self.itemWayKeySet = [[NSArray alloc] initWithObjects:KEY_FOR_2_PTS, KEY_FOR_3_PTS, KEY_FOR_FREE_THROW, KEY_FOR_OR, KEY_FOR_DR, KEY_FOR_ASSIST, KEY_FOR_STEAL, KEY_FOR_BLOCK, KEY_FOR_TO, KEY_FOR_FOUL, KEY_FOR_TOTAL_TIME_ON_FLOOR, nil];
+    self.itemWayKeySet = [[NSArray alloc] initWithObjects:KEY_FOR_2_PTS, KEY_FOR_3_PTS, KEY_FOR_FREE_THROW, KEY_FOR_OFF_REB, KEY_FOR_DEF_REB, KEY_FOR_ASSIST, KEY_FOR_STEAL, KEY_FOR_BLOCK, KEY_FOR_TURNOVER, KEY_FOR_FOUL, KEY_FOR_TOTAL_TIME_ON_FLOOR, nil];
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] init];
     self.navigationItem.rightBarButtonItem.title = @"本節結束";
@@ -93,6 +93,10 @@
     
     if(self.quarterNo == END)
         [self showConclusionAndGernateXlsxFile:NO];
+    
+    NSArray* totalGradeOftheGameArr = [self.playerDataArray objectAtIndex:QUARTER_NO_FOR_ENTIRE_GAME];
+    NSDictionary* playerGradeDic = totalGradeOftheGameArr[0];
+    NSLog(@"%@", playerGradeDic);
 }
 
 - (void) constructAlertControllers
@@ -290,6 +294,8 @@
 
 -(void) xlsxFileGenerateAndUpload
 {
+    [self performSelectorInBackground:@selector(sendDataToBasketballBiji) withObject:nil];
+    
     //Generate the xlsx file
     NSString *documentPath = [[NSBundle mainBundle] pathForResource:@"spreadsheet_for_boxScore" ofType:@"xlsx"];
     BRAOfficeDocumentPackage *spreadsheet = [BRAOfficeDocumentPackage open:documentPath];
@@ -426,19 +432,96 @@
     
 }
 
--(void)loadFolderMetaData:(NSDateFormatter*) dateFormatter
+- (void)sendDataToBasketballBiji
+{
+    
+    NSURL* url = [NSURL URLWithString:@"http://basketball.beta.biji.co/api/addSblPlayerDefenseStats"];
+    
+    NSArray* totalGradeOftheGameArr = [self.playerDataArray objectAtIndex:QUARTER_NO_FOR_ENTIRE_GAME];
+    for(NSDictionary* playerGradeDic in totalGradeOftheGameArr)
+    {
+        NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:url];
+        [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+        [request setHTTPMethod:@"POST"];
+        
+        NSMutableDictionary* postDataDic = [[NSMutableDictionary alloc] init];
+        [postDataDic setObject:self.sessionNo forKey:KEY_FOR_GAME_SESSION];
+        [postDataDic setObject:self.gameType forKey:KEY_FOR_GAME_TYPE];
+        [postDataDic setObject:self.gameNo forKey:KEY_FOR_GAME_NO];
+        [postDataDic setObject:self.myTeamName forKey:KEY_FOR_TEAM_NAME];
+        [postDataDic setObject:[playerGradeDic objectForKey:KEY_FOR_PLAYER_NO] forKey:KEY_FOR_PLAYER_NO];
+   //     [postDataDic setObject:@"0" forKey:KEY_FOR_STARTING];
+        
+        int point = 0;
+        NSDictionary* twoPtsDic = [playerGradeDic objectForKey:KEY_FOR_2_PTS];
+        NSString* madeCount = [twoPtsDic objectForKey:KEY_FOR_MADE_COUNT];
+        [postDataDic setObject:madeCount forKey:KEY_FOR_2PT_MADE];
+        [postDataDic setObject:[twoPtsDic objectForKey:KEY_FOR_ATTEMPT_COUNT] forKey:KEY_FOR_2PT_ATTEMPT];
+        point += madeCount.intValue * 2;
+        
+        NSDictionary* threePtsDic = [playerGradeDic objectForKey:KEY_FOR_3_PTS];
+        madeCount = [threePtsDic objectForKey:KEY_FOR_MADE_COUNT];
+        [postDataDic setObject:madeCount forKey:KEY_FOR_3PT_MADE];
+        [postDataDic setObject:[threePtsDic objectForKey:KEY_FOR_ATTEMPT_COUNT] forKey:KEY_FOR_3PT_ATTEMPT];
+        point += madeCount.intValue * 3;
+        
+        NSDictionary* freeThrowDic = [playerGradeDic objectForKey:KEY_FOR_FREE_THROW];
+        madeCount = [freeThrowDic objectForKey:KEY_FOR_MADE_COUNT];
+        [postDataDic setObject:madeCount forKey:KEY_FOR_FT_MADE];
+        [postDataDic setObject:[freeThrowDic objectForKey:KEY_FOR_ATTEMPT_COUNT] forKey:KEY_FOR_FT_ATTEMPT];
+        point += madeCount.intValue;
+        
+        for(int i=3; i<10; i++)
+        {
+            NSString* key = self.itemWayKeySet[i];
+            [postDataDic setObject:[playerGradeDic objectForKey:key] forKey:key];
+        }
+        
+        int totalRef = [[playerGradeDic objectForKey:KEY_FOR_DEF_REB] intValue] + [[playerGradeDic objectForKey:KEY_FOR_OFF_REB] intValue];
+        [postDataDic setObject:[NSString stringWithFormat:@"%d", totalRef] forKey:KEY_FOR_TOTAL_REB];
+        
+        [postDataDic setObject:[NSString stringWithFormat:@"%d", point] forKey:KEY_FOR_POINT];
+        
+        double playTime = [[playerGradeDic objectForKey:KEY_FOR_TOTAL_TIME_ON_FLOOR] doubleValue];
+        NSString* playTimeStr = [NSString stringWithFormat:@"%.f", playTime/60];
+        [postDataDic setObject:playTimeStr forKey:KEY_FOR_PLAY_TIME];
+        
+        NSError* error = nil;
+        NSData* data = [NSJSONSerialization dataWithJSONObject:postDataDic options:0 error:&error];
+        if(error)
+            NSLog(@"%@", error);
+        
+        NSString *postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[data length]];
+        
+        [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+        [request setHTTPBody:data];
+        
+        error = nil;
+        NSURLResponse *response = nil;
+        NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+        
+        if(responseData)  {
+            NSDictionary *results = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments  error:&error];
+            NSLog(@"res---%@", results);
+        }
+        else
+            NSLog(@"No responseData");
+    }
+}
+
+- (void)loadFolderMetaData:(NSDateFormatter*) dateFormatter
 {
     NSString* path = [NSString stringWithFormat:@"/%@", [dateFormatter stringFromDate:[NSDate date]]];
     [self.restClient loadMetadata:path];
 }
 
--(void) uploadXlsxFile:(NSArray*) parameters
+- (void)uploadXlsxFile:(NSArray*) parameters
 {
     [self.restClient uploadFile:[parameters objectAtIndex:0] toPath:@"/" withParentRev:nil fromPath:[parameters objectAtIndex:1]];
 }
 
 
--(NSString*) addXlsxFileVersionNumber:(int)no
+- (NSString*)addXlsxFileVersionNumber:(int)no
 {
     NSString* fileName;
     if(no == 1)

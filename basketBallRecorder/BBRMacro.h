@@ -169,12 +169,9 @@
 #define KEY_FOR_2_PTS @"2PTS"
 #define KEY_FOR_3_PTS @"3PTS"
 #define KEY_FOR_FREE_THROW @"Free Throw"
-#define KEY_FOR_OR @"OR"
-#define KEY_FOR_DR @"DR"
 #define KEY_FOR_ASSIST @"assist"
 #define KEY_FOR_STEAL @"steal"
 #define KEY_FOR_BLOCK @"block"
-#define KEY_FOR_TO @"Turnover"
 #define KEY_FOR_FOUL @"foul"
 
 //Dropbox
@@ -206,6 +203,7 @@
 #define KEY_FOR_TOTAL_REB @"totalReb"
 #define KEY_FOR_POINT @"point"
 #define KEY_FOR_PLAY_TIME @"playTime"
+
 
 #define END -1
 #define QUARTER_NO_FOR_ENTIRE_GAME 0

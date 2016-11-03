@@ -43,6 +43,7 @@
 @property NSString* gameType;
 @property NSString* sessionNo;
 @property NSString* gameNo;
+@property NSString* myTeamName;
 @property UIButton* undoButton;
 @property UIButton* switchModeButton;
 @property UIButton* nextQuarterButton;
