@@ -73,10 +73,6 @@
     
     if(self.quarterNo == END)
         [self showConclusionAndGernateXlsxFile:NO];
-    
-    NSArray* totalGradeOftheGameArr = [self.playerDataArray objectAtIndex:QUARTER_NO_FOR_ENTIRE_GAME];
-    NSDictionary* playerGradeDic = totalGradeOftheGameArr[0];
-    NSLog(@"%@", playerGradeDic);
 }
 
 - (void) constructAlertControllers
@@ -864,10 +860,10 @@
         
         NSMutableDictionary* postDataDic = [[NSMutableDictionary alloc] init];
         [postDataDic setObject:self.sessionNo forKey:KEY_FOR_GAME_SESSION];
-        [postDataDic setObject:self.gameType forKeyedSubscript:KEY_FOR_GAME_TYPE];
-        [postDataDic setObject:self.gameNo forKeyedSubscript:KEY_FOR_GAME_NO];
-        [postDataDic setObject:self.myTeamName forKeyedSubscript:KEY_FOR_TEAM_NAME];
-        [postDataDic setObject:[playerGradeDic objectForKey:KEY_FOR_PLAYER_NO] forKeyedSubscript:KEY_FOR_PLAYER_NO];
+        [postDataDic setObject:self.gameType forKey:KEY_FOR_GAME_TYPE];
+        [postDataDic setObject:self.gameNo forKey:KEY_FOR_GAME_NO];
+        [postDataDic setObject:self.myTeamName forKey:KEY_FOR_TEAM_NAME];
+        [postDataDic setObject:[playerGradeDic objectForKey:KEY_FOR_PLAYER_NO] forKey:KEY_FOR_PLAYER_NO];
         for(int i=1; i<12; i++)
         {
             NSString* key = [NSString stringWithFormat:@"zone%d", i];

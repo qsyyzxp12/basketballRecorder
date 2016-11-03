@@ -284,6 +284,7 @@
         BBRDefenseViewController* mainViewCntler = [segue destinationViewController];
         mainViewCntler.playerNoSet = resultArray;
         mainViewCntler.playerCount = self.playerCount;
+        mainViewCntler.myTeamName = self.myTeamName;
         mainViewCntler.isSBLGame = self.isSBLGame;
         mainViewCntler.sessionNo = self.sessionNo;
         mainViewCntler.gameNo = self.gameNo;

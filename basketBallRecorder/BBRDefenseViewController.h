@@ -39,6 +39,7 @@
 @property UIAlertController* nextQuarterAlert;
 @property UIAlertController* finishOrNotAlert;
 @property UIAlertController* playoffOrNotAlert;
+@property NSString* myTeamName;
 @property NSString* tmpPlistPath;
 @property NSString* recordName;
 @property NSString* keyForSearch;

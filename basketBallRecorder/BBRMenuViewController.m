@@ -598,9 +598,9 @@
                 [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:@"全隊"];
             
             NSDictionary* playerDataDic = [totalGradeArray objectAtIndex:i];
-            NSDictionary* deflectionDic = [playerDataDic objectForKey:KEY_FOR_DEFLECTION_DEFENSE_GRADE];
-            NSDictionary* goodDic = [playerDataDic objectForKey:KEY_FOR_GOOD_DEFENSE_GRADE];
-            NSDictionary* badDic = [playerDataDic objectForKey:KEY_FOR_BAD_DEFENSE_GRADE];
+            NSDictionary* deflectionDic = [playerDataDic objectForKey:KEY_FOR_DEFLECTION];
+            NSDictionary* goodDic = [playerDataDic objectForKey:KEY_FOR_GOOD];
+            NSDictionary* badDic = [playerDataDic objectForKey:KEY_FOR_BAD];
             NSArray* dicArray = [NSArray arrayWithObjects:deflectionDic, goodDic, badDic, nil];
             int top = 0;
             for(int k=0; k<3; k++)

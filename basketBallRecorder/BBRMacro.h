@@ -123,9 +123,9 @@
 #define KEY_FOR_INDEX_IN_PPP_TABLEVIEW @"indexInPPPTableview"
 
 #define KEY_FOR_DEFENSE_GRADE @"defenseGrade"
-#define KEY_FOR_DEFLECTION_DEFENSE_GRADE @"deflection"
-#define KEY_FOR_GOOD_DEFENSE_GRADE @"good"
-#define KEY_FOR_BAD_DEFENSE_GRADE @"bad"
+#define KEY_FOR_DEFLECTION @"deflection"
+#define KEY_FOR_GOOD @"good"
+#define KEY_FOR_BAD @"bad"
 #define KEY_FOR_TOTAL_COUNT @"total"
 
 //Key for timeLine event
@@ -147,6 +147,23 @@
 #define SIGNAL_FOR_ATTEMPT @"Attempt"
 #define SIGNAL_FOR_MADE @"Made"
 #define SIGNAL_FOR_TURNOVER @"TO"
+
+//Defense
+#define KEY_FOR_TIP @"tip"
+#define KEY_FOR_CLOSE_OUT @"closeOut"
+#define KEY_FOR_STOP_BALL @"stopBall"
+#define KEY_FOR_BLOCK @"block"
+#define KEY_FOR_STEAL @"steal"
+#define KEY_FOR_EIGHT_24 @"eight24"
+#define KEY_FOR_DOUBLE_TEAM @"doubleTeam"
+#define KEY_FOR_LOOSE_BALL @"looseBall"
+#define KEY_FOR_OFF_REB @"offReb"
+#define KEY_FOR_DEF_REB @"defReb"
+#define KEY_FOR_OFF_REB_TIP @"offRebTip"
+#define KEY_FOR_WIDE_OPEN @"wideOpen"
+#define KEY_FOR_NO_BLOCK_OUT @"noBlockOut"
+#define KEY_FOR_DEF_ASSIST @"defAssist"
+#define KEY_FOR_BLOWN_BY @"blownBy"
 
 //Box Score
 #define KEY_FOR_2_PTS @"2PTS"
@@ -189,8 +206,6 @@
 #define KEY_FOR_TOTAL_REB @"totalReb"
 #define KEY_FOR_POINT @"point"
 #define KEY_FOR_PLAY_TIME @"playTime"
-
-
 
 #define END -1
 #define QUARTER_NO_FOR_ENTIRE_GAME 0

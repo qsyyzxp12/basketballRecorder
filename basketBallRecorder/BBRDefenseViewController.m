@@ -45,7 +45,7 @@
     self.restClient = [[DBRestClient alloc] initWithSession:[DBSession sharedSession]];
     self.restClient.delegate = self;
     
-    self.defenseWayKeySet = [[NSArray alloc] initWithObjects:@"Tip", @"CloseOut", @"StopBall", @"BLK", @"STL", @"8/24", @"DoubleTeam", @"LooseBall", @"OR", @"DR", @"ORTip", @"AST", @"TO", @"WIDEOPEN", @"NOBLOCKOUT", @"DEFASS", @"BlownBy", nil];
+    self.defenseWayKeySet = [[NSArray alloc] initWithObjects:KEY_FOR_TIP, KEY_FOR_CLOSE_OUT, KEY_FOR_STOP_BALL, KEY_FOR_BLOCK, KEY_FOR_STEAL, KEY_FOR_EIGHT_24, KEY_FOR_DOUBLE_TEAM, KEY_FOR_LOOSE_BALL, KEY_FOR_OFF_REB, KEY_FOR_DEF_REB, KEY_FOR_OFF_REB_TIP, KEY_FOR_ASSIST, KEY_FOR_TURNOVER, KEY_FOR_WIDE_OPEN, KEY_FOR_NO_BLOCK_OUT, KEY_FOR_DEF_ASSIST, KEY_FOR_BLOWN_BY, nil];
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] init];
     self.navigationItem.rightBarButtonItem.title = @"本節結束";
@@ -275,6 +275,9 @@
 
 -(void) xlsxFileGenerateAndUpload: (NSNumber*) quarterNo
 {
+    [self performSelectorInBackground:@selector(sendDataToBasketballBiji) withObject:nil];
+    
+    
     //Generate the xlsx file
     NSString *documentPath = [[NSBundle mainBundle] pathForResource:@"spreadsheet_for_defense" ofType:@"xlsx"];
     BRAOfficeDocumentPackage *spreadsheet = [BRAOfficeDocumentPackage open:documentPath];
@@ -317,9 +320,9 @@
                 [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:@"全隊"];
             
             NSDictionary* playerDataDic = [totalGradeArray objectAtIndex:i];
-            NSDictionary* deflectionDic = [playerDataDic objectForKey:KEY_FOR_DEFLECTION_DEFENSE_GRADE];
-            NSDictionary* goodDic = [playerDataDic objectForKey:KEY_FOR_GOOD_DEFENSE_GRADE];
-            NSDictionary* badDic = [playerDataDic objectForKey:KEY_FOR_BAD_DEFENSE_GRADE];
+            NSDictionary* deflectionDic = [playerDataDic objectForKey:KEY_FOR_DEFLECTION];
+            NSDictionary* goodDic = [playerDataDic objectForKey:KEY_FOR_GOOD];
+            NSDictionary* badDic = [playerDataDic objectForKey:KEY_FOR_BAD];
             NSArray* dicArray = [NSArray arrayWithObjects:deflectionDic, goodDic, badDic, nil];
             int top = 0;
             for(int k=0; k<3; k++)
@@ -384,7 +387,72 @@
     NSArray* agus = [[NSArray alloc] initWithObjects:dropBoxpath, localPath, nil];
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
     //  [self.restClient uploadFile:filename toPath:@"/" withParentRev:nil fromPath:sheetPath];
-  
+}
+
+-(void)sendDataToBasketballBiji
+{
+    NSURL* url = [NSURL URLWithString:@"http://basketball.beta.biji.co/api/addSblPlayerDefenseStats"];
+    
+    NSArray* totalGradeOftheGameArr = [self.playerDataArray objectAtIndex:QUARTER_NO_FOR_ENTIRE_GAME];
+    for(NSDictionary* playerGradeDic in totalGradeOftheGameArr)
+    {
+        NSDictionary* goodDic = [playerGradeDic objectForKey:KEY_FOR_GOOD];
+        NSDictionary* badDic = [playerGradeDic objectForKey:KEY_FOR_BAD];
+        NSDictionary* deflectionDic = [playerGradeDic objectForKey:KEY_FOR_DEFLECTION];
+        
+        NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:url];
+        [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+        [request setHTTPMethod:@"POST"];
+        
+        NSMutableDictionary* postDataDic = [[NSMutableDictionary alloc] init];
+        [postDataDic setObject:self.sessionNo forKey:KEY_FOR_GAME_SESSION];
+        [postDataDic setObject:self.gameType forKey:KEY_FOR_GAME_TYPE];
+        [postDataDic setObject:self.gameNo forKey:KEY_FOR_GAME_NO];
+        [postDataDic setObject:self.myTeamName forKey:KEY_FOR_TEAM_NAME];
+        [postDataDic setObject:[playerGradeDic objectForKey:KEY_FOR_PLAYER_NO] forKey:KEY_FOR_PLAYER_NO];
+        
+        for(int i=0; i<8; i++)
+        {
+            NSString* key = [self.defenseWayKeySet objectAtIndex:i];
+            [postDataDic setObject:[deflectionDic objectForKey:key] forKey:key];
+        }
+        for(int i=8; i<12; i++)
+        {
+            NSString* key = [self.defenseWayKeySet objectAtIndex:i];
+            [postDataDic setObject:[goodDic objectForKey:key] forKey:key];
+        }
+        for(int i=12; i<17; i++)
+        {
+            NSString* key = [self.defenseWayKeySet objectAtIndex:i];
+            [postDataDic setObject:[badDic objectForKey:key] forKey:key];
+        }
+        
+        [postDataDic setObject:[deflectionDic objectForKey:KEY_FOR_TOTAL_COUNT] forKey:KEY_FOR_DEFLECTION];
+        int total = [[deflectionDic objectForKey:KEY_FOR_TOTAL_COUNT] intValue] + [[goodDic objectForKey:KEY_FOR_TOTAL_COUNT] intValue] - [[badDic objectForKey:KEY_FOR_TOTAL_COUNT] intValue];
+        [postDataDic setObject:[NSString stringWithFormat:@"%d", total] forKey:KEY_FOR_TOTAL_COUNT];
+        
+        NSError* error = nil;
+        NSData* data = [NSJSONSerialization dataWithJSONObject:postDataDic options:0 error:&error];
+        if(error)
+            NSLog(@"%@", error);
+        
+        NSString *postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[data length]];
+        
+        [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+        [request setHTTPBody:data];
+        
+        error = nil;
+        NSURLResponse *response = nil;
+        NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+        
+        if(responseData)  {
+            NSDictionary *results = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments  error:&error];
+            NSLog(@"res---%@", results);
+        }
+        else
+            NSLog(@"No responseData");
+    }
+
 }
 
 -(void)loadFolderMetaData:(NSDateFormatter*) dateFormatter
@@ -432,11 +500,11 @@
             int tag = self.defenseButtonNo - 20;
             NSMutableDictionary* Dic;
             if(tag < 8)         //Deflection
-                Dic = [gardeDic objectForKey:KEY_FOR_DEFLECTION_DEFENSE_GRADE];
+                Dic = [gardeDic objectForKey:KEY_FOR_DEFLECTION];
             else if(tag < 12)   //Good
-                Dic = [gardeDic objectForKey:KEY_FOR_GOOD_DEFENSE_GRADE];
+                Dic = [gardeDic objectForKey:KEY_FOR_GOOD];
             else                //Bad
-                Dic = [gardeDic objectForKey:KEY_FOR_BAD_DEFENSE_GRADE];
+                Dic = [gardeDic objectForKey:KEY_FOR_BAD];
             
             int value = [[Dic objectForKey:self.defenseWayKeySet[tag]] intValue] + 1;
             [Dic setObject:[NSString stringWithFormat:@"%d", value] forKey:self.defenseWayKeySet[tag]];
@@ -512,19 +580,19 @@
         for(int j=0; j<8; j++)
             [deflectionGradeDic setObject:@"0" forKey:self.defenseWayKeySet[j]];
         [deflectionGradeDic setObject:@"0" forKey:KEY_FOR_TOTAL_COUNT];
-        [playerDataItem setObject:deflectionGradeDic forKey:KEY_FOR_DEFLECTION_DEFENSE_GRADE];
+        [playerDataItem setObject:deflectionGradeDic forKey:KEY_FOR_DEFLECTION];
         
         NSMutableDictionary* goodGradeDic = [[NSMutableDictionary alloc] init];
         for(int j=8; j<12; j++)
             [goodGradeDic setObject:@"0" forKey:self.defenseWayKeySet[j]];
         [goodGradeDic setObject:@"0" forKey:KEY_FOR_TOTAL_COUNT];
-        [playerDataItem setObject:goodGradeDic forKey:KEY_FOR_GOOD_DEFENSE_GRADE];
+        [playerDataItem setObject:goodGradeDic forKey:KEY_FOR_GOOD];
         
         NSMutableDictionary* badGradeDic = [[NSMutableDictionary alloc] init];
         for(int j=12; j<17; j++)
             [badGradeDic setObject:@"0" forKey:self.defenseWayKeySet[j]];
         [badGradeDic setObject:@"0" forKey:KEY_FOR_TOTAL_COUNT];
-        [playerDataItem setObject:badGradeDic forKey:KEY_FOR_BAD_DEFENSE_GRADE];
+        [playerDataItem setObject:badGradeDic forKey:KEY_FOR_BAD];
         
         [quarterData addObject:playerDataItem];
     }
@@ -1040,9 +1108,9 @@
     {
         NSMutableDictionary* Dic;
         if(indexPath.row < 9)
-            Dic = [playerData objectForKey:KEY_FOR_DEFLECTION_DEFENSE_GRADE];
+            Dic = [playerData objectForKey:KEY_FOR_DEFLECTION];
         else
-            Dic = [playerData objectForKey:KEY_FOR_GOOD_DEFENSE_GRADE];
+            Dic = [playerData objectForKey:KEY_FOR_GOOD];
         
         int index = (int)indexPath.row - 1;
         label.text = self.defenseWayKeySet[index];
@@ -1060,7 +1128,7 @@
     }
     else if(indexPath.row < 19)
     {
-        NSMutableDictionary* Dic = [playerData objectForKey:KEY_FOR_BAD_DEFENSE_GRADE];
+        NSMutableDictionary* Dic = [playerData objectForKey:KEY_FOR_BAD];
             
         int index = (int)indexPath.row - 2;
         label.text = self.defenseWayKeySet[index];
@@ -1077,11 +1145,11 @@
         
         if(self.playerSelectedIndex)
         {
-            NSMutableDictionary* deflectionDic = [playerData objectForKey:KEY_FOR_DEFLECTION_DEFENSE_GRADE];
+            NSMutableDictionary* deflectionDic = [playerData objectForKey:KEY_FOR_DEFLECTION];
             int totalValue = [[deflectionDic objectForKey:KEY_FOR_TOTAL_COUNT] intValue];
-            NSMutableDictionary* goodDic = [playerData objectForKey:KEY_FOR_GOOD_DEFENSE_GRADE];
+            NSMutableDictionary* goodDic = [playerData objectForKey:KEY_FOR_GOOD];
             totalValue += [[goodDic objectForKey:KEY_FOR_TOTAL_COUNT] intValue];
-            NSMutableDictionary* badDic = [playerData objectForKey:KEY_FOR_BAD_DEFENSE_GRADE];
+            NSMutableDictionary* badDic = [playerData objectForKey:KEY_FOR_BAD];
             totalValue -= [[badDic objectForKey:KEY_FOR_TOTAL_COUNT] intValue];
             gradeValueLabel.text = [NSString stringWithFormat:@"%d", totalValue];
         }
@@ -1092,7 +1160,7 @@
     else if(indexPath.row == [self.defenseWayKeySet count] + 4)
     {
         label.text = @"Deflection";
-        NSMutableDictionary* deflectionDic = [playerData objectForKey:KEY_FOR_DEFLECTION_DEFENSE_GRADE];
+        NSMutableDictionary* deflectionDic = [playerData objectForKey:KEY_FOR_DEFLECTION];
         if(self.playerSelectedIndex)
             gradeValueLabel.text = [deflectionDic objectForKey:KEY_FOR_TOTAL_COUNT];
         else
