@@ -16,10 +16,10 @@
 @property NSMutableArray* playerNoSet;
 @property NSString* myTeamName;
 @property NSString* opponentName;
+@property NSString* sessionNo;
 @property NSString* gameType;
+@property NSString* gameNo;
 @property BOOL isSBLGame;
-@property int sessionNo;
-@property int gameNo;
 @property UIView* teamNameView;
 @property UIView* fogView;
 @end

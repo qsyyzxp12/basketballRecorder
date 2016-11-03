@@ -156,7 +156,7 @@
             [self.navigationController popToViewController:[self.navigationController.viewControllers objectAtIndex:1] animated:YES];
         }];
     [youtTeamAlert addAction:NTUAction];
-    [youtTeamAlert addAction:SBLAction];
+  //  [youtTeamAlert addAction:SBLAction];
     [youtTeamAlert addAction:otherAction];
     [youtTeamAlert addAction:cancelAction];
     [self presentViewController:youtTeamAlert animated:YES completion:nil];
@@ -334,10 +334,10 @@
         self.gameType = PLAYOFFS_GAME;
     
     UITextField* sessionNoTextField = (UITextField*)[self.teamNameView viewWithTag:4];
-    self.sessionNo = [sessionNoTextField.text intValue];
+    self.sessionNo = sessionNoTextField.text;
     
     UITextField* gameNoTextField = (UITextField*)[self.teamNameView viewWithTag:5];
-    self.gameNo = [gameNoTextField.text intValue];
+    self.gameNo = gameNoTextField.text;
     
     [self.teamNameView removeFromSuperview];
     [self.fogView removeFromSuperview];
@@ -495,7 +495,10 @@
 - (BOOL)textFieldShouldEndEditing:(UITextField *)textField
 {
     self.teamNameView.frame = CGRectMake(CGRectGetWidth(self.view.frame)*0.3, CGRectGetHeight(self.view.frame)*0.2, CGRectGetWidth(self.view.frame)*0.4, CGRectGetHeight(self.view.frame)*0.6);
-    [self.textFieldArray setObject:textField.text atIndexedSubscript:textField.tag-1];
+    
+    NSLog(@"%ld", (long)textField.tag);
+    if([textField isDescendantOfView:self.BBRtableView])
+        [self.textFieldArray setObject:textField.text atIndexedSubscript:textField.tag-1];
     return YES;
 }
 

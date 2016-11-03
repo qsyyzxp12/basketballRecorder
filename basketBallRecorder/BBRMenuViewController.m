@@ -23,9 +23,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
   //  if (![[DBSession sharedSession] isLinked])
-    //    [[DBSession sharedSession] linkFromController:self];
-    
-    NSLog(@"xxxxx");
+    //    [[DBSession sharedSession] linkFromController:self];-
     
     [self constructAlertController];
     
@@ -206,7 +204,7 @@
 #pragma mark - Actions
 - (IBAction)testButtonClicked:(id)sender
 {
-    NSURL* url = [NSURL URLWithString:@"http://basketball.beta.biji.co/api/addSblPlayerGeneralStats"];
+    NSURL* url = [NSURL URLWithString:@"http://basketball.beta.biji.co/api/addSblPlayerShotStats"];
   //  NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:120];
     NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:url];
     
@@ -215,7 +213,7 @@
     [dataDic setObject:@"例行賽" forKeyedSubscript:KEY_FOR_GAME_TYPE];
     [dataDic setObject:@"2" forKeyedSubscript:KEY_FOR_GAME_NO];
     [dataDic setObject:@"台灣啤酒" forKeyedSubscript:KEY_FOR_TEAM_NAME];
-    [dataDic setObject:@"7" forKeyedSubscript:KEY_FOR_PLAYER_NO];
+    [dataDic setObject:@"5" forKeyedSubscript:KEY_FOR_PLAYER_NO];
     [dataDic setObject:@"1" forKeyedSubscript:KEY_FOR_STARTING];
     [dataDic setObject:@"3" forKeyedSubscript:KEY_FOR_2PT_MADE];
     [dataDic setObject:@"4" forKeyedSubscript:KEY_FOR_2PT_ATTEMPT];
@@ -234,11 +232,8 @@
     [dataDic setObject:@"17" forKey:KEY_FOR_POINT];
     [dataDic setObject:@"18" forKey:KEY_FOR_PLAY_TIME];
     
-    NSString *post = [NSString stringWithFormat:@"Username=%@&Password=%@",@"_username",@"_password"];
-    NSData *data = [post dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
-    
     NSError* error;
-  //  NSData* data = [NSJSONSerialization dataWithJSONObject:dataDic options:0 error:&error];
+    NSData* data = [NSJSONSerialization dataWithJSONObject:dataDic options:0 error:&error];
     NSString *postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[data length]];
     
     [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];

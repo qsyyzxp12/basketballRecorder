@@ -169,12 +169,14 @@
 #define REGULAR_GAME @"例行賽"
 #define PLAYOFFS_GAME @"季後賽"
 
+
 //Key For POST Request
 #define KEY_FOR_GAME_SESSION @"gameSession"
 #define KEY_FOR_GAME_TYPE @"gameType"
 #define KEY_FOR_GAME_NO @"gameNo"
 #define KEY_FOR_TEAM_NAME @"teamName"
-//#define KEY_FOR_PLAYER_NO @"playerNo"
+
+//Key For POST Request "addSblPlayerGeneralStats"
 #define KEY_FOR_STARTING @"starting"
 #define KEY_FOR_2PT_MADE @"2ptMade"
 #define KEY_FOR_2PT_ATTEMPT @"2ptAtt"
@@ -185,15 +187,9 @@
 #define KEY_FOR_OFF_REB @"offReb"
 #define KEY_FOR_DEF_REB @"defReb"
 #define KEY_FOR_TOTAL_REB @"totalReb"
-//#define KEY_FOR_ASSIST @"assist"
-//#define KEY_FOR_STEAL @"steal"
-//#define KEY_FOR_BLOCK @"block"
-//#define KEY_FOR_TURNOVER @"turnover"
-//#define KEY_FOR_FOUL @"foul"
 #define KEY_FOR_POINT @"point"
 #define KEY_FOR_PLAY_TIME @"playTime"
 
-#define KEY_FOR_ @""
 
 
 #define END -1

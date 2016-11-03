@@ -57,8 +57,6 @@
 @property int timeCounter;
 @property int attackWayNo;
 @property int ptr;
-@property int sessionNo;
-@property int gameNo;
 @property UIAlertController* attackWayAlert;
 @property UIAlertController* nextQuarterAlert;
 @property UIAlertController* playoffOrNotAlert;
@@ -72,6 +70,8 @@
 @property NSString* keyOfAttackWay;
 @property NSString* keyOfDetail;
 @property NSString* gameType;
+@property NSString* sessionNo;
+@property NSString* gameNo;
 @property UIButton* undoButton;
 @property UIButton* switchModeButton;
 @property UIButton* nextQuarterButton;

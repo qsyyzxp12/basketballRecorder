@@ -23,7 +23,6 @@
 
 -(void)viewDidAppear:(BOOL)animated
 {
-    NSLog(@"%d", self.appearCount);
     if(!(self.appearCount%2))
         [self performSelectorInBackground:@selector(checkingDropboxAuthorization) withObject:nil];
     self.appearCount++;
@@ -31,11 +30,11 @@
 
 - (void)checkingDropboxAuthorization
 {
- /*   if (![[DBSession sharedSession] isLinked])
+    if (![[DBSession sharedSession] isLinked])
         [[DBSession sharedSession] linkFromController:self];
     
     while (![[DBSession sharedSession] isLinked]);
-   */ [self performSelectorOnMainThread:@selector(showMenuSegue) withObject:nil waitUntilDone:NO];
+    [self performSelectorOnMainThread:@selector(showMenuSegue) withObject:nil waitUntilDone:NO];
 }
 
 -(void) showMenuSegue

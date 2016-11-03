@@ -30,8 +30,6 @@
 @property BOOL isLoadingRootMeta;
 @property BOOL isFolderExistAlready;
 @property BOOL isSBLGame;
-@property int sessionNo;
-@property int gameNo;
 @property int playerCount;
 @property int playerSelectedIndex;
 @property int quarterNo;
@@ -45,6 +43,8 @@
 @property NSString* recordName;
 @property NSString* keyForSearch;
 @property NSString* gameType;
+@property NSString* sessionNo;
+@property NSString* gameNo;
 @property UIButton* undoButton;
 @property UIButton* switchModeButton;
 @property UIButton* nextQuarterButton;

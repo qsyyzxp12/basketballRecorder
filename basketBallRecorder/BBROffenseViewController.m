@@ -73,6 +73,10 @@
     
     if(self.quarterNo == END)
         [self showConclusionAndGernateXlsxFile:NO];
+    
+    NSArray* totalGradeOftheGameArr = [self.playerDataArray objectAtIndex:QUARTER_NO_FOR_ENTIRE_GAME];
+    NSDictionary* playerGradeDic = totalGradeOftheGameArr[0];
+    NSLog(@"%@", playerGradeDic);
 }
 
 - (void) constructAlertControllers
@@ -842,7 +846,68 @@
     [self performSelectorInBackground:@selector(generatePPPXlsxAndUpload) withObject:nil];
     [self performSelectorInBackground:@selector(generateShotChartXlsxAndUpload) withObject:nil];
     [self performSelectorInBackground:@selector(generateTimeLineXlsxAndUpload) withObject:nil];
-    [self generateZoneGradeXlsxAndUpload];
+    [self performSelectorInBackground:@selector(generateZoneGradeXlsxAndUpload) withObject:nil];
+    if(self.isSBLGame)
+        [self sendDataToBasketballBiji];
+}
+
+-(void)sendDataToBasketballBiji
+{
+    NSURL* url = [NSURL URLWithString:@"http://basketball.beta.biji.co/api/addSblPlayerShotStats"];
+    
+    NSArray* totalGradeOftheGameArr = [self.playerDataArray objectAtIndex:QUARTER_NO_FOR_ENTIRE_GAME];
+    for(NSDictionary* playerGradeDic in totalGradeOftheGameArr)
+    {
+        NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:url];
+        [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+        [request setHTTPMethod:@"POST"];
+        
+        NSMutableDictionary* postDataDic = [[NSMutableDictionary alloc] init];
+        [postDataDic setObject:self.sessionNo forKey:KEY_FOR_GAME_SESSION];
+        [postDataDic setObject:self.gameType forKeyedSubscript:KEY_FOR_GAME_TYPE];
+        [postDataDic setObject:self.gameNo forKeyedSubscript:KEY_FOR_GAME_NO];
+        [postDataDic setObject:self.myTeamName forKeyedSubscript:KEY_FOR_TEAM_NAME];
+        [postDataDic setObject:[playerGradeDic objectForKey:KEY_FOR_PLAYER_NO] forKeyedSubscript:KEY_FOR_PLAYER_NO];
+        for(int i=1; i<12; i++)
+        {
+            NSString* key = [NSString stringWithFormat:@"zone%d", i];
+            NSDictionary* zoneGradeDic = [playerGradeDic objectForKey:key];
+            double madeCount = [[zoneGradeDic objectForKey:KEY_FOR_MADE_COUNT] doubleValue];
+            double attemptCount = [[zoneGradeDic objectForKey:KEY_FOR_ATTEMPT_COUNT] doubleValue];
+            double percent = 0;
+            if(attemptCount != 0)
+                percent = madeCount/attemptCount*100;
+            key = [NSString stringWithFormat:@"zone%dMade", i];
+            [postDataDic setObject:[NSString stringWithFormat:@"%.0f", madeCount] forKey:key];
+            
+            key = [NSString stringWithFormat:@"zone%dAtt", i];
+            [postDataDic setObject:[NSString stringWithFormat:@"%.0f", attemptCount] forKey:key];
+            
+            key = [NSString stringWithFormat:@"zone%dPct", i];
+            [postDataDic setObject:[NSString stringWithFormat:@"%.0f", percent] forKey:key];
+        }
+        NSError* error = nil;
+        NSData* data = [NSJSONSerialization dataWithJSONObject:postDataDic options:0 error:&error];
+        if(error)
+            NSLog(@"%@", error);
+        
+        NSString *postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[data length]];
+        
+        [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+        [request setHTTPBody:data];
+        
+        error = nil;
+        NSURLResponse *response = nil;
+        NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+        
+        if(responseData)  {
+            NSDictionary *results = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments  error:&error];
+            NSLog(@"res---%@", results);
+        }
+        else
+            NSLog(@"No responseData");
+    }
+    
 }
 
 -(void) generateTimeLineXlsxAndUpload
@@ -1587,9 +1652,9 @@
         NSMutableDictionary* playerDataItem = [[NSMutableDictionary alloc] init];
         
         if(i < [self.playerNoSet count])
-            [playerDataItem setObject:[self.playerNoSet objectAtIndex:i] forKey:@"no"];
+            [playerDataItem setObject:[self.playerNoSet objectAtIndex:i] forKey:KEY_FOR_PLAYER_NO];
         else
-            [playerDataItem setObject:@"Team" forKey:@"no"];
+            [playerDataItem setObject:@"Team" forKey:KEY_FOR_PLAYER_NO];
         
         [playerDataItem setObject:[NSString stringWithFormat:@"%d", quarterNo] forKey:@"QUARTER"];
         for(int k=0; k<12; k++)
