@@ -435,7 +435,7 @@
 - (void)sendDataToBasketballBiji
 {
     
-    NSURL* url = [NSURL URLWithString:@"http://basketball.beta.biji.co/api/addSblPlayerDefenseStats"];
+    NSURL* url = [NSURL URLWithString:URL_FOR_GENERAL_REQUEST];
     
     NSArray* totalGradeOftheGameArr = [self.playerDataArray objectAtIndex:QUARTER_NO_FOR_ENTIRE_GAME];
     for(NSDictionary* playerGradeDic in totalGradeOftheGameArr)

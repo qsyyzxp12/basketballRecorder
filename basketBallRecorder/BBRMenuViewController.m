@@ -832,11 +832,11 @@
                 [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:playerNoStr];
                 
                 cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
-                NSString* attackWayStr = [eventDic objectForKey:KEY_FOR_ATTACK_WAY];
+                NSString* attackWayStr = [eventDic objectForKey:KEY_FOR_OFF_MODE];
                 [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:attackWayStr];
                 
                 cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
-                NSString* detailStr = [eventDic objectForKey:KEY_FOR_DETAIL];
+                NSString* detailStr = [eventDic objectForKey:KEY_FOR_SHOT_MODE];
                 [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:detailStr];
                 
                 cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];

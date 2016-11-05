@@ -132,9 +132,9 @@
 #define KEY_FOR_PLAYER_ON_FLOOR @"playerOnFloor"
 #define KEY_FOR_TIME_LINE_DATA @"timeLineData"
 #define KEY_FOR_PLAYER_NO @"playerNo"
-#define KEY_FOR_ATTACK_WAY @"AttackWay"
-#define KEY_FOR_DETAIL @"Detail"
-#define KEY_FOR_RESULT @"Result"
+#define KEY_FOR_OFF_MODE @"offMode"
+#define KEY_FOR_SHOT_MODE @"shotMode"
+#define KEY_FOR_RESULT @"result"
 #define KEY_FOR_PTS @"Pts"
 #define KEY_FOR_BONUS @"Bonus"
 #define KEY_FOR_TYPE @"type"
@@ -183,6 +183,12 @@
 #define REGULAR_GAME @"例行賽"
 #define PLAYOFFS_GAME @"季後賽"
 
+//URL For Post Request
+#define URL_FOR_GENERAL_REQUEST @"http://basketball.beta.biji.co/api/addSblPlayerGeneralStats"
+#define URL_FOR_SHOT_CHART_REQUEST @"http://basketball.beta.biji.co/api/addSblPlayerShotStats"
+#define URL_FOR_DEFENSE_REQUEST @"http://basketball.beta.biji.co/api/addSblPlayerDefenseStats"
+#define URL_FOR_TIME_LINE_REQUEST @"http://basketball.beta.biji.co/api/addSblPlayerTimelineStats"
+#define URL_FOR_GAME_SCORE_REQUEST @"http://basketball.beta.biji.co/api/updateSblGameScores"
 
 //Key For POST Request
 #define KEY_FOR_GAME_SESSION @"gameSession"
@@ -203,6 +209,9 @@
 #define KEY_FOR_TOTAL_REB @"totalReb"
 #define KEY_FOR_POINT @"point"
 #define KEY_FOR_PLAY_TIME @"playTime"
+
+//Key For Post Request "addSblPlayerTimelineStats"
+#define KEY_FOR_GAME_QUARTER @"gameQuarter"
 
 
 #define END -1

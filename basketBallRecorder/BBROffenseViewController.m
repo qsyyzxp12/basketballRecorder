@@ -43,8 +43,8 @@
     self.PNRDetailTitleArray = [NSArray arrayWithObjects:TITLE_FOR_BP, TITLE_FOR_BD, TITLE_FOR_MR, TITLE_FOR_MPP, TITLE_FOR_MPD, TITLE_FOR_MPS, nil];
     self.PUDetailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, KEY_FOR_SF, KEY_FOR_LP, nil];
     self.PUDetailTitleArray = [NSArray arrayWithObjects:TITLE_FOR_DRIVE, TITLE_FOR_PULL_UP, TITLE_FOR_SPOT_UP, TITLE_FOR_SF, TITLE_FOR_LP, nil];
-    self.TotalDetailItemArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_SPOT_UP, KEY_FOR_PULL_UP, KEY_FOR_SF, KEY_FOR_LP, KEY_FOR_PUT_BACK, KEY_FOR_BD, KEY_FOR_BD, KEY_FOR_MPD, KEY_FOR_MR, KEY_FOR_MPS, KEY_FOR_MPP, nil];
-    self.TotalDetailTitleArray = [NSArray arrayWithObjects:TITLE_FOR_DRIVE, TITLE_FOR_SPOT_UP, TITLE_FOR_PULL_UP, TITLE_FOR_SF, TITLE_FOR_LP, TITLE_FOR_PUT_BACK, TITLE_FOR_BD, TITLE_FOR_BD, TITLE_FOR_MPD, TITLE_FOR_MR, TITLE_FOR_MPS, TITLE_FOR_MPP, nil];
+    self.TotalDetailItemArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, KEY_FOR_SF, KEY_FOR_LP, KEY_FOR_PUT_BACK, KEY_FOR_BD, KEY_FOR_BD, KEY_FOR_MPD, KEY_FOR_MR, KEY_FOR_MPS, KEY_FOR_MPP, nil];
+    self.TotalDetailTitleArray = [NSArray arrayWithObjects:TITLE_FOR_DRIVE, TITLE_FOR_PULL_UP, TITLE_FOR_SPOT_UP, TITLE_FOR_SF, TITLE_FOR_LP, TITLE_FOR_PUT_BACK, TITLE_FOR_BD, TITLE_FOR_BD, TITLE_FOR_MPD, TITLE_FOR_MR, TITLE_FOR_MPS, TITLE_FOR_MPP, nil];
     self.turnOverArray = [NSArray arrayWithObjects:KEY_FOR_STOLEN, KEY_FOR_BAD_PASS, KEY_FOR_CHARGING, KEY_FOR_DROP, KEY_FOR_LINE, KEY_FOR_3_SENCOND, KEY_FOR_TRAVELING, KEY_FOR_TEAM, nil];
     
     self.attackWaySet = [[NSArray alloc] initWithObjects:@"快攻(F)", @"拉開單打(I)", @"無球掩護(OS)", @"空切(C)", @"切傳(DK)", @"其他(O)", @"高位擋拆(PNR)", @"二波進攻(2)", @"低位(PU)", @"失誤(TO)", @"Bonus", @"Time", nil];
@@ -394,7 +394,6 @@
             }
             [self pushBonusEventIntoTimeLineWithMadeCount:1 attemptCount:1];
             [self updateTmpPlist];
-            NSArray* quarterArray = [self.playerDataArray objectAtIndex:self.quarterNo];
             self.zoneNo = 0;
         }];
     noAction = [UIAlertAction actionWithTitle:@"Attempt" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
@@ -847,65 +846,6 @@
         [self sendDataToBasketballBiji];
 }
 
--(void)sendDataToBasketballBiji
-{
-    NSURL* url = [NSURL URLWithString:@"http://basketball.beta.biji.co/api/addSblPlayerShotStats"];
-    
-    NSArray* totalGradeOftheGameArr = [self.playerDataArray objectAtIndex:QUARTER_NO_FOR_ENTIRE_GAME];
-    for(NSDictionary* playerGradeDic in totalGradeOftheGameArr)
-    {
-        NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:url];
-        [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-        [request setHTTPMethod:@"POST"];
-        
-        NSMutableDictionary* postDataDic = [[NSMutableDictionary alloc] init];
-        [postDataDic setObject:self.sessionNo forKey:KEY_FOR_GAME_SESSION];
-        [postDataDic setObject:self.gameType forKey:KEY_FOR_GAME_TYPE];
-        [postDataDic setObject:self.gameNo forKey:KEY_FOR_GAME_NO];
-        [postDataDic setObject:self.myTeamName forKey:KEY_FOR_TEAM_NAME];
-        [postDataDic setObject:[playerGradeDic objectForKey:KEY_FOR_PLAYER_NO] forKey:KEY_FOR_PLAYER_NO];
-        for(int i=1; i<12; i++)
-        {
-            NSString* key = [NSString stringWithFormat:@"zone%d", i];
-            NSDictionary* zoneGradeDic = [playerGradeDic objectForKey:key];
-            double madeCount = [[zoneGradeDic objectForKey:KEY_FOR_MADE_COUNT] doubleValue];
-            double attemptCount = [[zoneGradeDic objectForKey:KEY_FOR_ATTEMPT_COUNT] doubleValue];
-            double percent = 0;
-            if(attemptCount != 0)
-                percent = madeCount/attemptCount*100;
-            key = [NSString stringWithFormat:@"zone%dMade", i];
-            [postDataDic setObject:[NSString stringWithFormat:@"%.0f", madeCount] forKey:key];
-            
-            key = [NSString stringWithFormat:@"zone%dAtt", i];
-            [postDataDic setObject:[NSString stringWithFormat:@"%.0f", attemptCount] forKey:key];
-            
-            key = [NSString stringWithFormat:@"zone%dPct", i];
-            [postDataDic setObject:[NSString stringWithFormat:@"%.0f", percent] forKey:key];
-        }
-        NSError* error = nil;
-        NSData* data = [NSJSONSerialization dataWithJSONObject:postDataDic options:0 error:&error];
-        if(error)
-            NSLog(@"%@", error);
-        
-        NSString *postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[data length]];
-        
-        [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
-        [request setHTTPBody:data];
-        
-        error = nil;
-        NSURLResponse *response = nil;
-        NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-        
-        if(responseData)  {
-            NSDictionary *results = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments  error:&error];
-            NSLog(@"res---%@", results);
-        }
-        else
-            NSLog(@"No responseData");
-    }
-    
-}
-
 -(void) generateTimeLineXlsxAndUpload
 {
     NSString* orgDocumentPath = [[NSBundle mainBundle] pathForResource:@"spreadsheet_for_timeLine" ofType:@"xlsx"];
@@ -916,7 +856,7 @@
     char interIndex = 'A';
     int rowIndex = 2;
     NSString* cellRef = [NSString stringWithFormat:@"%c%c%d", outIndex, interIndex, rowIndex];
-
+    
     for(NSMutableDictionary* quarterDic in self.timeLineReordeArray)
     {
         NSString* playersOnFloorStr = [quarterDic objectForKey:KEY_FOR_PLAYER_ON_FLOOR];
@@ -944,12 +884,12 @@
                 [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:playerNoStr];
                 
                 cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
-                NSString* attackWayStr = [eventDic objectForKey:KEY_FOR_ATTACK_WAY];
+                NSString* attackWayStr = [eventDic objectForKey:KEY_FOR_OFF_MODE];
                 [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:attackWayStr];
                 
                 cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
-                NSString* detailStr = [eventDic objectForKey:KEY_FOR_DETAIL];
-                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:detailStr];
+                NSString* shotModeStr = [eventDic objectForKey:KEY_FOR_SHOT_MODE];
+                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:shotModeStr];
                 
                 cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowI];
                 NSString* resultStr = [eventDic objectForKey:KEY_FOR_RESULT];
@@ -1019,13 +959,13 @@
     while(!self.isLoadMetaFinished);
     NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"YYYY_MM_dd"];
-/*    if(self.isFolderExistAlready)
-    {
-        self.isLoadMetaFinished = NO;
-        self.isLoadingRootMeta = NO;
-        [self performSelectorOnMainThread:@selector(loadFolderMetaData:) withObject:dateFormatter waitUntilDone:NO];
-        while(!self.isLoadMetaFinished);
-    }*/
+    /*    if(self.isFolderExistAlready)
+     {
+     self.isLoadMetaFinished = NO;
+     self.isLoadingRootMeta = NO;
+     [self performSelectorOnMainThread:@selector(loadFolderMetaData:) withObject:dateFormatter waitUntilDone:NO];
+     while(!self.isLoadMetaFinished);
+     }*/
     NSString* filename = [self addTimeLineXlsxFileVersionNumber:1];
     
     NSString* dropBoxpath = [NSString stringWithFormat:@"%@/%@",[dateFormatter stringFromDate:[NSDate date]], filename];
@@ -1442,6 +1382,186 @@
     return [NSString stringWithFormat:@"%c%c%d", *outIndex, *interIndex, rowIndex];
 }
 
+#pragma mark - Post Request To Basketball Biji
+
+-(void)sendDataToBasketballBiji
+{
+    [self sendDataToBasketballBiji];
+    [self sendTimeLineToBasketballBiji];
+}
+
+-(void)sendSblGameScoreToBasketballBiji
+{
+    
+}
+
+- (void)sendTimeLineToBasketballBiji
+{
+    NSURL* url = [NSURL URLWithString:URL_FOR_TIME_LINE_REQUEST];
+    
+    int quarterNo = 1;
+    for(NSMutableDictionary* quarterDic in self.timeLineReordeArray)
+    {
+        NSArray* timeLineRecordArray = [quarterDic objectForKey:KEY_FOR_TIME_LINE_DATA];
+        for(NSDictionary* eventDic in timeLineRecordArray)
+        {
+            NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:url];
+            [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+            [request setHTTPMethod:@"POST"];
+            
+            NSMutableDictionary* postDataDic = [[NSMutableDictionary alloc] init];
+            [postDataDic setObject:self.sessionNo forKey:KEY_FOR_GAME_SESSION];
+            [postDataDic setObject:self.gameType forKey:KEY_FOR_GAME_TYPE];
+            [postDataDic setObject:self.gameNo forKey:KEY_FOR_GAME_NO];
+            [postDataDic setObject:[NSString stringWithFormat:@"%d", quarterNo] forKey:KEY_FOR_GAME_QUARTER];
+            [postDataDic setObject:self.myTeamName forKey:KEY_FOR_TEAM_NAME];
+            
+            NSString* eventType = [eventDic objectForKey:KEY_FOR_TYPE];
+            if([eventType isEqualToString:SIGNAL_FOR_NORMAL])
+            {
+                [postDataDic setObject:[eventDic objectForKey:KEY_FOR_PLAYER_NO] forKey:KEY_FOR_PLAYER_NO];
+                [postDataDic setObject:[eventDic objectForKey:KEY_FOR_OFF_MODE] forKey:KEY_FOR_OFF_MODE];
+                [postDataDic setObject:[eventDic objectForKey:KEY_FOR_SHOT_MODE] forKey:KEY_FOR_SHOT_MODE];
+                
+                NSString* result = [eventDic objectForKey:KEY_FOR_RESULT];
+                [postDataDic setObject:result forKey:KEY_FOR_RESULT];
+                if([result isEqualToString:SIGNAL_FOR_FOUL] || [result isEqualToString:SIGNAL_FOR_AND_ONE])
+                {
+                    NSString* bonusStr = [eventDic objectForKey:KEY_FOR_BONUS];
+                    NSArray* bonus = [bonusStr componentsSeparatedByString:@"-"];
+                    [postDataDic setObject:bonus[0] forKey:KEY_FOR_FT_MADE];
+                    [postDataDic setObject:bonus[1] forKey:KEY_FOR_FT_ATTEMPT];
+                }
+                else
+                {
+                    [postDataDic setObject:@"0" forKey:KEY_FOR_FT_MADE];
+                    [postDataDic setObject:@"0" forKey:KEY_FOR_FT_ATTEMPT];
+                }
+                [postDataDic setObject:[eventDic objectForKey:KEY_FOR_PTS] forKey:KEY_FOR_POINT];
+            }
+            else if([eventType isEqualToString:SIGNAL_FOR_BONUS])
+            {
+                [postDataDic setObject:[eventDic objectForKey:KEY_FOR_PLAYER_NO] forKey:KEY_FOR_PLAYER_NO];
+            }
+            else// if([eventType isEqualToString:SIGNAL_FOR_EXCHANGE])
+            {
+            }
+        }
+        quarterNo++;
+    }
+    NSArray* totalGradeOftheGameArr = [self.playerDataArray objectAtIndex:QUARTER_NO_FOR_ENTIRE_GAME];
+    for(NSDictionary* playerGradeDic in totalGradeOftheGameArr)
+    {
+        NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:url];
+        [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+        [request setHTTPMethod:@"POST"];
+        
+        NSMutableDictionary* postDataDic = [[NSMutableDictionary alloc] init];
+        [postDataDic setObject:self.sessionNo forKey:KEY_FOR_GAME_SESSION];
+        [postDataDic setObject:self.gameType forKey:KEY_FOR_GAME_TYPE];
+        [postDataDic setObject:self.gameNo forKey:KEY_FOR_GAME_NO];
+        [postDataDic setObject:self.myTeamName forKey:KEY_FOR_TEAM_NAME];
+        [postDataDic setObject:[playerGradeDic objectForKey:KEY_FOR_PLAYER_NO] forKey:KEY_FOR_PLAYER_NO];
+        for(int i=1; i<12; i++)
+        {
+            NSString* key = [NSString stringWithFormat:@"zone%d", i];
+            NSDictionary* zoneGradeDic = [playerGradeDic objectForKey:key];
+            double madeCount = [[zoneGradeDic objectForKey:KEY_FOR_MADE_COUNT] doubleValue];
+            double attemptCount = [[zoneGradeDic objectForKey:KEY_FOR_ATTEMPT_COUNT] doubleValue];
+            double percent = 0;
+            if(attemptCount != 0)
+                percent = madeCount/attemptCount*100;
+            key = [NSString stringWithFormat:@"zone%dMade", i];
+            [postDataDic setObject:[NSString stringWithFormat:@"%.0f", madeCount] forKey:key];
+            
+            key = [NSString stringWithFormat:@"zone%dAtt", i];
+            [postDataDic setObject:[NSString stringWithFormat:@"%.0f", attemptCount] forKey:key];
+            
+            key = [NSString stringWithFormat:@"zone%dPct", i];
+            [postDataDic setObject:[NSString stringWithFormat:@"%.0f", percent] forKey:key];
+        }
+        NSError* error = nil;
+        NSData* data = [NSJSONSerialization dataWithJSONObject:postDataDic options:0 error:&error];
+        if(error)
+            NSLog(@"%@", error);
+        
+        NSString *postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[data length]];
+        
+        [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+        [request setHTTPBody:data];
+        
+        error = nil;
+        NSURLResponse *response = nil;
+        NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+        
+        if(responseData)  {
+            NSDictionary *results = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments  error:&error];
+            NSLog(@"res---%@", results);
+        }
+        else
+            NSLog(@"No responseData");
+    }
+    
+}
+
+- (void)sendShotChartToBasketballBiji
+{
+    NSURL* url = [NSURL URLWithString:URL_FOR_SHOT_CHART_REQUEST];
+    
+    NSArray* totalGradeOftheGameArr = [self.playerDataArray objectAtIndex:QUARTER_NO_FOR_ENTIRE_GAME];
+    for(NSDictionary* playerGradeDic in totalGradeOftheGameArr)
+    {
+        NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:url];
+        [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+        [request setHTTPMethod:@"POST"];
+        
+        NSMutableDictionary* postDataDic = [[NSMutableDictionary alloc] init];
+        [postDataDic setObject:self.sessionNo forKey:KEY_FOR_GAME_SESSION];
+        [postDataDic setObject:self.gameType forKey:KEY_FOR_GAME_TYPE];
+        [postDataDic setObject:self.gameNo forKey:KEY_FOR_GAME_NO];
+        [postDataDic setObject:self.myTeamName forKey:KEY_FOR_TEAM_NAME];
+        [postDataDic setObject:[playerGradeDic objectForKey:KEY_FOR_PLAYER_NO] forKey:KEY_FOR_PLAYER_NO];
+        for(int i=1; i<12; i++)
+        {
+            NSString* key = [NSString stringWithFormat:@"zone%d", i];
+            NSDictionary* zoneGradeDic = [playerGradeDic objectForKey:key];
+            double madeCount = [[zoneGradeDic objectForKey:KEY_FOR_MADE_COUNT] doubleValue];
+            double attemptCount = [[zoneGradeDic objectForKey:KEY_FOR_ATTEMPT_COUNT] doubleValue];
+            double percent = 0;
+            if(attemptCount != 0)
+                percent = madeCount/attemptCount*100;
+            key = [NSString stringWithFormat:@"zone%dMade", i];
+            [postDataDic setObject:[NSString stringWithFormat:@"%.0f", madeCount] forKey:key];
+            
+            key = [NSString stringWithFormat:@"zone%dAtt", i];
+            [postDataDic setObject:[NSString stringWithFormat:@"%.0f", attemptCount] forKey:key];
+            
+            key = [NSString stringWithFormat:@"zone%dPct", i];
+            [postDataDic setObject:[NSString stringWithFormat:@"%.0f", percent] forKey:key];
+        }
+        NSError* error = nil;
+        NSData* data = [NSJSONSerialization dataWithJSONObject:postDataDic options:0 error:&error];
+        if(error)
+            NSLog(@"%@", error);
+        
+        NSString *postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[data length]];
+        
+        [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+        [request setHTTPBody:data];
+        
+        error = nil;
+        NSURLResponse *response = nil;
+        NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+        
+        if(responseData)  {
+            NSDictionary *results = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments  error:&error];
+            NSLog(@"res---%@", results);
+        }
+        else
+            NSLog(@"No responseData");
+    }
+}
+
 #pragma mark - DataStruct Updating
 
 -(void)increaseHoldBallCountByOne
@@ -1491,8 +1611,8 @@
     
     [event setObject:[NSString stringWithFormat:@"%@", self.playerNoSet[self.playerSelectedIndex-1]] forKey:KEY_FOR_PLAYER_NO];
     [event setObject:SIGNAL_FOR_NORMAL forKey:KEY_FOR_TYPE];
-    [event setObject:self.keyOfAttackWay forKey:KEY_FOR_ATTACK_WAY];
-    [event setObject:self.keyOfDetail forKey:KEY_FOR_DETAIL];
+    [event setObject:self.keyOfAttackWay forKey:KEY_FOR_OFF_MODE];
+    [event setObject:self.keyOfDetail forKey:KEY_FOR_SHOT_MODE];
     [event setObject:signalForResult forKey:KEY_FOR_RESULT];
     [event setObject:[NSString stringWithFormat:@"%d", pts] forKey:KEY_FOR_PTS];
     [event setObject:timeStr forKey:KEY_FOR_TIME];
@@ -1551,8 +1671,8 @@
     
     [turnoverEvent setObject:[NSString stringWithFormat:@"%@", self.playerNoSet[self.playerSelectedIndex-1]] forKey:KEY_FOR_PLAYER_NO];
     [turnoverEvent setObject:SIGNAL_FOR_NORMAL forKey:KEY_FOR_TYPE];
-    [turnoverEvent setObject:self.keyOfAttackWay forKey:KEY_FOR_ATTACK_WAY];
-    [turnoverEvent setObject:SIGNAL_FOR_TURNOVER forKey:KEY_FOR_DETAIL];
+    [turnoverEvent setObject:self.keyOfAttackWay forKey:KEY_FOR_OFF_MODE];
+    [turnoverEvent setObject:SIGNAL_FOR_TURNOVER forKey:KEY_FOR_SHOT_MODE];
     [turnoverEvent setObject:self.keyOfDetail forKey:KEY_FOR_RESULT];
     [turnoverEvent setObject:timeStr forKey:KEY_FOR_TIME];
     [timeLineArray addObject:turnoverEvent];
