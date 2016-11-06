@@ -156,7 +156,7 @@
             [self.navigationController popToViewController:[self.navigationController.viewControllers objectAtIndex:1] animated:YES];
         }];
     [youtTeamAlert addAction:NTUAction];
-  //  [youtTeamAlert addAction:SBLAction];
+    [youtTeamAlert addAction:SBLAction];
     [youtTeamAlert addAction:otherAction];
     [youtTeamAlert addAction:cancelAction];
     [self presentViewController:youtTeamAlert animated:YES completion:nil];
@@ -498,7 +498,6 @@
 {
     self.teamNameView.frame = CGRectMake(CGRectGetWidth(self.view.frame)*0.3, CGRectGetHeight(self.view.frame)*0.2, CGRectGetWidth(self.view.frame)*0.4, CGRectGetHeight(self.view.frame)*0.6);
     
-    NSLog(@"%ld", (long)textField.tag);
     if([textField isDescendantOfView:self.BBRtableView])
         [self.textFieldArray setObject:textField.text atIndexedSubscript:textField.tag-1];
     return YES;

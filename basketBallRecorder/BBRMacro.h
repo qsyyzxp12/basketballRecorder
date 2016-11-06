@@ -59,15 +59,15 @@
 #define KEY_FOR_DATE @"Date"
 
 //Offense
-#define KEY_FOR_FASTBREAK @"Fastbreak"
-#define KEY_FOR_ISOLATION @"Isolation"
-#define KEY_FOR_OFF_SCREEN @"OffScreen"
-#define KEY_FOR_CUT @"Cut"
-#define KEY_FOR_DK @"DK"
-#define KEY_FOR_OTHERS @"Others"
-#define KEY_FOR_PNR @"PNR"
-#define KEY_FOR_SECOND @"Second"
-#define KEY_FOR_PU @"PU"
+#define KEY_FOR_FASTBREAK @"fb"
+#define KEY_FOR_ISOLATION @"isolation"
+#define KEY_FOR_OFF_SCREEN @"os"
+#define KEY_FOR_CUT @"cut"
+#define KEY_FOR_DK @"dk"
+#define KEY_FOR_OTHERS @"others"
+#define KEY_FOR_PNR @"pnr"
+#define KEY_FOR_SECOND @"sb"
+#define KEY_FOR_PU @"pu"
 #define KEY_FOR_TURNOVER @"turnover"
 #define KEY_FOR_TOTAL @"Total"
 
@@ -84,18 +84,18 @@
 #define TITLE_FOR_SF @"要位第一拍出手(SF)"
 #define TITLE_FOR_LP @"低位單打(LP)"
 
-#define KEY_FOR_DRIVE @"D"
-#define KEY_FOR_PULL_UP @"P"
-#define KEY_FOR_SPOT_UP @"S"
-#define KEY_FOR_BP @"BP"
-#define KEY_FOR_BD @"BD"
-#define KEY_FOR_MR @"MR"
-#define KEY_FOR_MPP @"MPP"
-#define KEY_FOR_MPD @"MPD"
-#define KEY_FOR_MPS @"MPS"
-#define KEY_FOR_PUT_BACK @"PB"
-#define KEY_FOR_SF @"SF"
-#define KEY_FOR_LP @"LP"
+#define KEY_FOR_DRIVE @"drive"
+#define KEY_FOR_PULL_UP @"pu"
+#define KEY_FOR_SPOT_UP @"su"
+#define KEY_FOR_BP @"bp"
+#define KEY_FOR_BD @"bd"
+#define KEY_FOR_MR @"mr"
+#define KEY_FOR_MPP @"mpp"
+#define KEY_FOR_MPD @"mpd"
+#define KEY_FOR_MPS @"mps"
+#define KEY_FOR_PUT_BACK @"pb"
+#define KEY_FOR_SF @"sf"
+#define KEY_FOR_LP @"lp"
 
 #define KEY_FOR_STOLEN @"Stolen"
 #define KEY_FOR_BAD_PASS @"Bad Pass"
@@ -141,12 +141,12 @@
 
 #define SIGNAL_FOR_EXCHANGE @"Exchange"
 #define SIGNAL_FOR_NORMAL @"Normal"
-#define SIGNAL_FOR_BONUS @"Bonus"
-#define SIGNAL_FOR_FOUL @"Foul"
+#define SIGNAL_FOR_BONUS @"bonus"
+#define SIGNAL_FOR_FOUL @"foul"
 #define SIGNAL_FOR_AND_ONE @"And 1"
-#define SIGNAL_FOR_ATTEMPT @"Attempt"
-#define SIGNAL_FOR_MADE @"Made"
-#define SIGNAL_FOR_TURNOVER @"TO"
+#define SIGNAL_FOR_ATTEMPT @"noMade"
+#define SIGNAL_FOR_MADE @"made"
+#define SIGNAL_FOR_TURNOVER @"turnover"
 
 //Defense
 #define KEY_FOR_TIP @"tip"
@@ -188,6 +188,7 @@
 #define URL_FOR_SHOT_CHART_REQUEST @"http://basketball.beta.biji.co/api/addSblPlayerShotStats"
 #define URL_FOR_DEFENSE_REQUEST @"http://basketball.beta.biji.co/api/addSblPlayerDefenseStats"
 #define URL_FOR_TIME_LINE_REQUEST @"http://basketball.beta.biji.co/api/addSblPlayerTimelineStats"
+#define URL_FOR_TIME_LINE_UP_AND_DOWN_REQUEST @"http://basketball.beta.biji.co/api/addSblPlayerTimelineUpAndDown"
 #define URL_FOR_GAME_SCORE_REQUEST @"http://basketball.beta.biji.co/api/updateSblGameScores"
 
 //Key For POST Request
@@ -212,7 +213,20 @@
 
 //Key For Post Request "addSblPlayerTimelineStats"
 #define KEY_FOR_GAME_QUARTER @"gameQuarter"
+#define KEY_FOR_QUARTER_MIN @"quarterMin"
+#define KEY_FOR_QUARTER_SEC @"quarterSec"
 
+//Key For Post Request "addSblPlayerTimelineUpAndDown"
+#define KEY_FOR_UP_ONE @"upPlayer1No"
+#define KEY_FOR_UP_TWO @"upPlayer2No"
+#define KEY_FOR_UP_THREE @"upPlayer3No"
+#define KEY_FOR_UP_FOUR @"upPlayer4No"
+#define KEY_FOR_UP_FIVE @"upPlayer5No"
+#define KEY_FOR_DOWN_ONE @"downPlayer1No"
+#define KEY_FOR_DOWN_TWO @"downPlayer2No"
+#define KEY_FOR_DOWN_THREE @"downPlayer3No"
+#define KEY_FOR_DOWN_FOUR @"downPlayer4No"
+#define KEY_FOR_DOWN_FIVE @"downPlayer5No"
 
 #define END -1
 #define QUARTER_NO_FOR_ENTIRE_GAME 0
