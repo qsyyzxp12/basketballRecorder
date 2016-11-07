@@ -156,12 +156,10 @@
             [self.navigationController popToViewController:[self.navigationController.viewControllers objectAtIndex:1] animated:YES];
         }];
     [youtTeamAlert addAction:NTUAction];
-    [youtTeamAlert addAction:SBLAction];
+   // [youtTeamAlert addAction:SBLAction];
     [youtTeamAlert addAction:otherAction];
     [youtTeamAlert addAction:cancelAction];
     [self presentViewController:youtTeamAlert animated:YES completion:nil];
-    
-    
     
     self.fogView = [[UIView alloc] initWithFrame:self.view.frame];
     self.fogView.backgroundColor = [UIColor blackColor];

@@ -97,7 +97,6 @@
                 {
                     NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
                     [self increaseOffenseScoreGetToPlayerData:playerData by:1];
-                    [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:1];
                 }
             }
             [self pushEventIntoTimeLineWithResultKey:SIGNAL_FOR_FOUL pts:1];
@@ -116,7 +115,6 @@
                 {
                     NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
                     [self increaseOffenseScoreGetToPlayerData:playerData by:2];
-                    [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:2];
                 }
             }
             [self pushEventIntoTimeLineWithResultKey:SIGNAL_FOR_FOUL pts:2];
@@ -154,7 +152,6 @@
                 {
                     NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
                     [self increaseOffenseScoreGetToPlayerData:playerData by:1];
-                    [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:1];
                 }
             }
             [self pushEventIntoTimeLineWithResultKey:SIGNAL_FOR_FOUL pts:1];
@@ -173,7 +170,6 @@
                 {
                     NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
                     [self increaseOffenseScoreGetToPlayerData:playerData by:2];
-                    [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:2];
                 }
             }
             [self pushEventIntoTimeLineWithResultKey:SIGNAL_FOR_FOUL pts:2];
@@ -192,7 +188,6 @@
                 {
                     NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
                     [self increaseOffenseScoreGetToPlayerData:playerData by:3];
-                    [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:3];
                 }
             }
             [self pushEventIntoTimeLineWithResultKey:SIGNAL_FOR_FOUL pts:3];
@@ -231,7 +226,6 @@
                 {
                     NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
                     [self increaseOffenseScoreGetToPlayerData:playerData by:1];
-                    [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:1];
                 }
             }
             [self pushEventIntoTimeLineWithResultKey:SIGNAL_FOR_AND_ONE pts:self.ptr+1];
@@ -270,7 +264,6 @@
                     NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
                     [self updateOffenseGradeForOneMadeToPlayerData:playerData];
                     [self updateZoneGradeForOneMadeToPlayerData:playerData];
-                    [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:offset];
                 }
             }
             
@@ -356,7 +349,6 @@
                     [self updateOffenseGradeForOneMadeToPlayerData:playerData];
                     [self updateOffenseGradeForOneFoulToPlayerData:playerData];
                     [self updateZoneGradeForOneMadeToPlayerData:playerData];
-                    [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:self.ptr];
                 }
             }
             [self presentViewController:andOneAlert animated:YES completion:nil];
@@ -378,7 +370,6 @@
     yesAction = [UIAlertAction actionWithTitle:@"Made" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
         {
             self.OldPlayerDataArray = [NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:self.playerDataArray]];
-            int offset = 1;
             int quarterNo[2] = {self.quarterNo, QUARTER_NO_FOR_ENTIRE_GAME};
             int playerNo[2] = {self.playerSelectedIndex-1, self.playerCount};
                                     
@@ -389,7 +380,7 @@
                 {
                     NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
                     [self updateZoneGradeForOneMadeToPlayerData:playerData];
-                    [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:offset];
+                    [self increaseTotalOffenseScoreGetToPlayerData:playerData withScore:1];
                 }
             }
             [self pushBonusEventIntoTimeLineWithMadeCount:1 attemptCount:1];
@@ -838,11 +829,11 @@
         [self performSelectorOnMainThread:@selector(loadFolderMetaData:) withObject:dateFormatter waitUntilDone:NO];
     }
     
-   // [self performSelectorInBackground:@selector(generatePPPXlsxAndUpload) withObject:nil];
-   // [self performSelectorInBackground:@selector(generateShotChartXlsxAndUpload) withObject:nil];
-   // [self performSelectorInBackground:@selector(generateTimeLineXlsxAndUpload) withObject:nil];
-   // [self performSelectorInBackground:@selector(generateZoneGradeXlsxAndUpload) withObject:nil];
- //   if(self.isSBLGame)
+    [self performSelectorInBackground:@selector(generatePPPXlsxAndUpload) withObject:nil];
+    [self performSelectorInBackground:@selector(generateShotChartXlsxAndUpload) withObject:nil];
+    [self performSelectorInBackground:@selector(generateTimeLineXlsxAndUpload) withObject:nil];
+    [self performSelectorInBackground:@selector(generateZoneGradeXlsxAndUpload) withObject:nil];
+    if(self.isSBLGame)
         [self sendDataToBasketballBiji];
 }
 
@@ -1386,7 +1377,7 @@
 
 -(void)sendDataToBasketballBiji
 {
-  //  [self sendDataToBasketballBiji];
+    [self sendDataToBasketballBiji];
     [self sendTimeLineToBasketballBiji];
 }
 
@@ -1407,8 +1398,6 @@
         NSArray* timeLineRecordArray = [quarterDic objectForKey:KEY_FOR_TIME_LINE_DATA];
         for(NSDictionary* eventDic in timeLineRecordArray)
         {
-            NSLog(@"%d, %@", i, eventDic);
-            
             NSMutableURLRequest* request = [[NSMutableURLRequest alloc] init];
             [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
             [request setHTTPMethod:@"POST"];
@@ -1470,8 +1459,6 @@
                 NSArray* down = [upAndDown[1] componentsSeparatedByString:@"↓"];
                 [postDataDic setObject:down[0] forKey:KEY_FOR_DOWN_ONE];
             }
-            
-            NSLog(@"%d, %@", i++, postDataDic);
             
             NSError* error = nil;
             NSData* data = [NSJSONSerialization dataWithJSONObject:postDataDic options:0 error:&error];
@@ -1900,6 +1887,7 @@
     
     for(NSMutableDictionary* attackDic in attackDicArray)
     {
+        NSLog(@"%@", attackDic);
         NSMutableDictionary* detailDic = [attackDic objectForKey:self.keyOfDetail];
         
         int attemptCount = [[detailDic objectForKey:KEY_FOR_ATTEMPT_COUNT] intValue];
@@ -1908,9 +1896,6 @@
         int madeCount = [[detailDic objectForKey:KEY_FOR_MADE_COUNT] intValue];
         [detailDic setObject:[NSString stringWithFormat:@"%d", madeCount+1] forKey:KEY_FOR_MADE_COUNT];
         
-        int scoreGet = [[attackDic objectForKey:KEY_FOR_SCORE_GET] intValue];
-        [detailDic setObject:[NSString stringWithFormat:@"%d", scoreGet+pts] forKey:KEY_FOR_SCORE_GET];
-    
         int totalAttemptCount = [[attackDic objectForKey:KEY_FOR_TOTAL_ATTEMPT_COUNT] intValue];
         [attackDic setObject:[NSString stringWithFormat:@"%d", totalAttemptCount+1] forKey:KEY_FOR_TOTAL_ATTEMPT_COUNT];
     
@@ -1960,6 +1945,15 @@
     int totalScoreGet = [[attackDic objectForKey:KEY_FOR_TOTAL_SCORE_GET] intValue];
     NSString* totalScoreGetStr = [NSString stringWithFormat:@"%d", totalScoreGet+offset];
     [attackDic setObject:totalScoreGetStr forKey:KEY_FOR_TOTAL_SCORE_GET];
+    
+    NSMutableDictionary* totalDic = [playerData objectForKey:KEY_FOR_TOTAL];
+    detailDic = [totalDic objectForKey:self.keyOfDetail];
+    scoreGet = [[detailDic objectForKey:KEY_FOR_SCORE_GET] intValue];
+    [detailDic setObject:[NSString stringWithFormat:@"%d", scoreGet+offset] forKey:KEY_FOR_SCORE_GET];
+    
+    totalScoreGet = [[totalDic objectForKey:KEY_FOR_TOTAL_SCORE_GET] intValue];
+    totalScoreGetStr = [NSString stringWithFormat:@"%d", totalScoreGet+offset];
+    [totalDic setObject:totalScoreGetStr forKey:KEY_FOR_TOTAL_SCORE_GET];
 }
 
 -(void) increaseTotalOffenseScoreGetToPlayerData:(NSMutableDictionary*) playerData withScore:(int)score
