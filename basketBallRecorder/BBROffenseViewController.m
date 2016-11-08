@@ -24,7 +24,7 @@
     self.isShowZoneGrade = YES;
     self.isRecordMode = YES;
     self.isTimerRunning = NO;
-    self.isDetailShowing = NO;
+    self.isShotModeShowing = NO;
     self.playerSelectedIndex = 0;
     self.zoneNo = 0;
     self.quarterNo = 1;
@@ -35,23 +35,23 @@
     self.restClient = [[DBRestClient alloc] initWithSession:[DBSession sharedSession]];
     self.restClient.delegate = self;
     
-    self.normalDetailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, nil];
-    self.normalDetailTitleArray = [NSArray arrayWithObjects:TITLE_FOR_DRIVE, TITLE_FOR_PULL_UP, TITLE_FOR_SPOT_UP, nil];
+    self.normalShotModeKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, nil];
+    self.normalShotModeTitleArray = [NSArray arrayWithObjects:TITLE_FOR_DRIVE, TITLE_FOR_PULL_UP, TITLE_FOR_SPOT_UP, nil];
     
-    self.secondDetailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, KEY_FOR_PUT_BACK, nil];
-    self.secondDetailTitleArray = [NSArray arrayWithObjects:TITLE_FOR_DRIVE, TITLE_FOR_PULL_UP, TITLE_FOR_SPOT_UP, TITLE_FOR_PUT_BACK, nil];
+    self.secondShotModeKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, KEY_FOR_PUT_BACK, nil];
+    self.secondShotModeTitleArray = [NSArray arrayWithObjects:TITLE_FOR_DRIVE, TITLE_FOR_PULL_UP, TITLE_FOR_SPOT_UP, TITLE_FOR_PUT_BACK, nil];
     
     self.hpShotModeTitleArray = [NSArray arrayWithObjects:TITLE_FOR_DRIVE, TITLE_FOR_PULL_UP, TITLE_FOR_SPOT_UP, TITLE_FOR_HL, nil];
     self.hpShotModeKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, KEY_FOR_HL, nil];
     
-    self.PNRDetailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_BP, KEY_FOR_BD, KEY_FOR_MR, KEY_FOR_MPP, KEY_FOR_MPD, KEY_FOR_MPS, nil];
-    self.PNRDetailTitleArray = [NSArray arrayWithObjects:TITLE_FOR_BP, TITLE_FOR_BD, TITLE_FOR_MR, TITLE_FOR_MPP, TITLE_FOR_MPD, TITLE_FOR_MPS, nil];
+    self.PNRShotModeKeyArray = [NSArray arrayWithObjects:KEY_FOR_BP, KEY_FOR_BD, KEY_FOR_MR, KEY_FOR_MPP, KEY_FOR_MPD, KEY_FOR_MPS, nil];
+    self.PNRShotModeTitleArray = [NSArray arrayWithObjects:TITLE_FOR_BP, TITLE_FOR_BD, TITLE_FOR_MR, TITLE_FOR_MPP, TITLE_FOR_MPD, TITLE_FOR_MPS, nil];
     
-    self.PUDetailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, KEY_FOR_SF, KEY_FOR_LP, nil];
-    self.PUDetailTitleArray = [NSArray arrayWithObjects:TITLE_FOR_DRIVE, TITLE_FOR_PULL_UP, TITLE_FOR_SPOT_UP, TITLE_FOR_SF, TITLE_FOR_LP, nil];
+    self.PUShotModeKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, KEY_FOR_SF, KEY_FOR_LP, nil];
+    self.PUShotModeTitleArray = [NSArray arrayWithObjects:TITLE_FOR_DRIVE, TITLE_FOR_PULL_UP, TITLE_FOR_SPOT_UP, TITLE_FOR_SF, TITLE_FOR_LP, nil];
     
-    self.TotalDetailItemArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, KEY_FOR_SF, KEY_FOR_LP, KEY_FOR_HL, KEY_FOR_PUT_BACK, KEY_FOR_BD, KEY_FOR_BD, KEY_FOR_MPD, KEY_FOR_MR, KEY_FOR_MPS, KEY_FOR_MPP, nil];
-    self.TotalDetailTitleArray = [NSArray arrayWithObjects:TITLE_FOR_DRIVE, TITLE_FOR_PULL_UP, TITLE_FOR_SPOT_UP, TITLE_FOR_SF, TITLE_FOR_LP, TITLE_FOR_HL, TITLE_FOR_PUT_BACK, TITLE_FOR_BD, TITLE_FOR_BD, TITLE_FOR_MPD, TITLE_FOR_MR, TITLE_FOR_MPS, TITLE_FOR_MPP, nil];
+    self.TotalShotModeKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, KEY_FOR_SF, KEY_FOR_LP, KEY_FOR_HL, KEY_FOR_PUT_BACK, KEY_FOR_BD, KEY_FOR_BD, KEY_FOR_MPD, KEY_FOR_MR, KEY_FOR_MPS, KEY_FOR_MPP, nil];
+    self.TotalShotModeTitleArray = [NSArray arrayWithObjects:TITLE_FOR_DRIVE, TITLE_FOR_PULL_UP, TITLE_FOR_SPOT_UP, TITLE_FOR_SF, TITLE_FOR_LP, TITLE_FOR_HL, TITLE_FOR_PUT_BACK, TITLE_FOR_BD, TITLE_FOR_BD, TITLE_FOR_MPD, TITLE_FOR_MR, TITLE_FOR_MPS, TITLE_FOR_MPP, nil];
     
     self.turnOverArray = [NSArray arrayWithObjects:KEY_FOR_STOLEN, KEY_FOR_BAD_PASS, KEY_FOR_CHARGING, KEY_FOR_DROP, KEY_FOR_LINE, KEY_FOR_3_SENCOND, KEY_FOR_TRAVELING, KEY_FOR_TEAM, nil];
     
@@ -525,13 +525,13 @@
     [self.bonusAlert addAction:cancelAction];
     
     
-    UIAlertController *turnoverDetailAlert = [UIAlertController alertControllerWithTitle:@"細節" message:nil preferredStyle:UIAlertControllerStyleAlert];
-    for(NSString* detailKey in self.turnOverArray)
+    UIAlertController *turnoverShotModeAlert = [UIAlertController alertControllerWithTitle:@"細節" message:nil preferredStyle:UIAlertControllerStyleAlert];
+    for(NSString* shotModeKey in self.turnOverArray)
     {
-        UIAlertAction *detailAction = [UIAlertAction actionWithTitle:detailKey style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+        UIAlertAction *shotModeAction = [UIAlertAction actionWithTitle:shotModeKey style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
             {
                 self.OldPlayerDataArray = [NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:self.playerDataArray]];
-                self.keyOfDetail = detailKey;
+                self.keyOfShotMode = shotModeKey;
                 int quarterNo[2] = {self.quarterNo, QUARTER_NO_FOR_ENTIRE_GAME};
                 int playerNo[2] = {self.playerSelectedIndex-1, self.playerCount};
                 
@@ -548,35 +548,35 @@
                 [self updateTmpPlist];
                 self.zoneNo = 0;
             }];
-        [turnoverDetailAlert addAction:detailAction];
+        [turnoverShotModeAlert addAction:shotModeAction];
     }
     
     cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action)
         {
             self.zoneNo = 0;
         }];
-    [turnoverDetailAlert addAction:cancelAction];
+    [turnoverShotModeAlert addAction:cancelAction];
     
-    NSArray* detailTitleArray = [NSArray arrayWithObjects:self.normalDetailTitleArray, self.secondDetailTitleArray, self.PUDetailTitleArray, self.PNRDetailTitleArray, self.hpShotModeTitleArray, nil];
-    NSArray* detailKeyArray = [NSArray arrayWithObjects:self.normalDetailItemKeyArray, self.secondDetailItemKeyArray, self.PUDetailItemKeyArray, self.PNRDetailItemKeyArray, self.hpShotModeKeyArray, nil];
+    NSArray* shotModeTitleArray = [NSArray arrayWithObjects:self.normalShotModeTitleArray, self.secondShotModeTitleArray, self.PUShotModeTitleArray, self.PNRShotModeTitleArray, self.hpShotModeTitleArray, nil];
+    NSArray* shotModeKeyArray = [NSArray arrayWithObjects:self.normalShotModeKeyArray, self.secondShotModeKeyArray, self.PUShotModeKeyArray, self.PNRShotModeKeyArray, self.hpShotModeKeyArray, nil];
     
     NSMutableArray* alertPtrArray = [[NSMutableArray alloc] init];
-    for(int i=0; i< detailTitleArray.count; i++)
+    for(int i=0; i< shotModeTitleArray.count; i++)
     {
-        NSArray* titleArray = [detailTitleArray objectAtIndex:i];
-        NSArray* keyArray = [detailKeyArray objectAtIndex:i];
-        UIAlertController *detailAlert = [UIAlertController alertControllerWithTitle:@"細節" message:nil preferredStyle:UIAlertControllerStyleAlert];
+        NSArray* titleArray = [shotModeTitleArray objectAtIndex:i];
+        NSArray* keyArray = [shotModeKeyArray objectAtIndex:i];
+        UIAlertController *shotModeAlert = [UIAlertController alertControllerWithTitle:@"細節" message:nil preferredStyle:UIAlertControllerStyleAlert];
     
         for(int j=0; j<titleArray.count; j++)
         {
             NSString* title = titleArray[j];
             NSString* key = keyArray[j];
-            UIAlertAction* detailAction = [UIAlertAction actionWithTitle:title style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+            UIAlertAction* shotModeAction = [UIAlertAction actionWithTitle:title style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
             {
-                self.keyOfDetail = key;
+                self.keyOfShotMode = key;
                 [self presentViewController:resultAlert animated:YES completion:nil];
             }];
-            [detailAlert addAction:detailAction];
+            [shotModeAlert addAction:shotModeAction];
         }
         
         cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action)
@@ -586,12 +586,12 @@
         
         UIAlertAction* turnoverAction = [UIAlertAction actionWithTitle:@"失誤(TO)" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
             {
-                [self presentViewController:turnoverDetailAlert animated:YES completion:nil];
+                [self presentViewController:turnoverShotModeAlert animated:YES completion:nil];
             }];
         
-        [detailAlert addAction:turnoverAction];
-        [detailAlert addAction:cancelAction];
-        [alertPtrArray addObject:detailAlert];
+        [shotModeAlert addAction:turnoverAction];
+        [shotModeAlert addAction:cancelAction];
+        [alertPtrArray addObject:shotModeAlert];
     }
     
     
@@ -1015,49 +1015,49 @@
         NSDictionary* playerGradeDic = [totalGradeArray objectAtIndex:i];
         for(NSString* keyForAttackWay in self.attackWayKeySet)
         {
-            NSArray* detailArray;
+            NSArray* shotModeArray;
             if([keyForAttackWay isEqualToString:KEY_FOR_SECOND])
-                detailArray = self.secondDetailItemKeyArray;
+                shotModeArray = self.secondShotModeKeyArray;
             else if([keyForAttackWay isEqualToString:KEY_FOR_PNR])
-                detailArray = self.PNRDetailItemKeyArray;
+                shotModeArray = self.PNRShotModeKeyArray;
             else if([keyForAttackWay isEqualToString:KEY_FOR_PU])
-                detailArray = self.PUDetailItemKeyArray;
+                shotModeArray = self.PUShotModeKeyArray;
             else if([keyForAttackWay isEqualToString:KEY_FOR_HP])
-                detailArray = self.hpShotModeKeyArray;
+                shotModeArray = self.hpShotModeKeyArray;
             else if([keyForAttackWay isEqualToString:KEY_FOR_TOTAL])
             {
                 NSDictionary* turnoverDic = [playerGradeDic objectForKey:KEY_FOR_TURNOVER];
-                for(NSString* keyForTurnoverDetail in self.turnOverArray)
+                for(NSString* keyForTurnoverShotMode in self.turnOverArray)
                 {
                     cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowIndex];
-                    NSInteger count = [[turnoverDic objectForKey:keyForTurnoverDetail] integerValue];
+                    NSInteger count = [[turnoverDic objectForKey:keyForTurnoverShotMode] integerValue];
                     [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:count];
                 }
-                detailArray = self.TotalDetailItemArray;
+                shotModeArray = self.TotalShotModeKeyArray;
             }
             else
-                detailArray = self.normalDetailItemKeyArray;
+                shotModeArray = self.normalShotModeKeyArray;
             
             NSDictionary* attackDic = [playerGradeDic objectForKey:keyForAttackWay];
             
-            for(NSString* keyForDetail in detailArray)
+            for(NSString* keyForShotMode in shotModeArray)
             {
-                NSDictionary* detailDic = [attackDic objectForKey:keyForDetail];
+                NSDictionary* shotModeDic = [attackDic objectForKey:keyForShotMode];
                 
                 cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowIndex];
-                NSInteger madeCount = [[detailDic objectForKey:KEY_FOR_MADE_COUNT] integerValue];
+                NSInteger madeCount = [[shotModeDic objectForKey:KEY_FOR_MADE_COUNT] integerValue];
                 [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:madeCount];
                 
                 cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowIndex];
-                NSInteger attemptCount = [[detailDic objectForKey:KEY_FOR_ATTEMPT_COUNT] integerValue];
+                NSInteger attemptCount = [[shotModeDic objectForKey:KEY_FOR_ATTEMPT_COUNT] integerValue];
                 [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:attemptCount];
                 
                 cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowIndex];
-                NSInteger foulCount = [[detailDic objectForKey:KEY_FOR_FOUL_COUNT] integerValue];
+                NSInteger foulCount = [[shotModeDic objectForKey:KEY_FOR_FOUL_COUNT] integerValue];
                 [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:foulCount];
                 
                 cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowIndex];
-                NSInteger pts = [[detailDic objectForKey:KEY_FOR_SCORE_GET] integerValue];
+                NSInteger pts = [[shotModeDic objectForKey:KEY_FOR_SCORE_GET] integerValue];
                 [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:pts];
             }
             if(![keyForAttackWay isEqualToString:KEY_FOR_TOTAL])
@@ -1406,7 +1406,6 @@
     int quarterNo = 1;
     for(NSMutableDictionary* quarterDic in self.timeLineReordeArray)
     {
-        int i=0;
         NSArray* timeLineRecordArray = [quarterDic objectForKey:KEY_FOR_TIME_LINE_DATA];
         for(NSDictionary* eventDic in timeLineRecordArray)
         {
@@ -1484,14 +1483,14 @@
             
             error = nil;
             NSURLResponse *response = nil;
- /*           NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+            NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
             
             if(responseData)  {
                 NSDictionary *results = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments  error:&error];
                 NSLog(@"res---%@", results);
             }
             else
-                NSLog(@"No responseData");*/
+                NSLog(@"No responseData");
         }
         quarterNo++;
     }
@@ -1605,7 +1604,7 @@
     [event setObject:[NSString stringWithFormat:@"%@", self.playerNoSet[self.playerSelectedIndex-1]] forKey:KEY_FOR_PLAYER_NO];
     [event setObject:SIGNAL_FOR_NORMAL forKey:KEY_FOR_TYPE];
     [event setObject:self.keyOfAttackWay forKey:KEY_FOR_OFF_MODE];
-    [event setObject:self.keyOfDetail forKey:KEY_FOR_SHOT_MODE];
+    [event setObject:self.keyOfShotMode forKey:KEY_FOR_SHOT_MODE];
     [event setObject:signalForResult forKey:KEY_FOR_RESULT];
     [event setObject:[NSString stringWithFormat:@"%d", pts] forKey:KEY_FOR_PTS];
     [event setObject:timeStr forKey:KEY_FOR_TIME];
@@ -1666,7 +1665,7 @@
     [turnoverEvent setObject:SIGNAL_FOR_NORMAL forKey:KEY_FOR_TYPE];
     [turnoverEvent setObject:self.keyOfAttackWay forKey:KEY_FOR_OFF_MODE];
     [turnoverEvent setObject:SIGNAL_FOR_TURNOVER forKey:KEY_FOR_SHOT_MODE];
-    [turnoverEvent setObject:self.keyOfDetail forKey:KEY_FOR_RESULT];
+    [turnoverEvent setObject:self.keyOfShotMode forKey:KEY_FOR_RESULT];
     [turnoverEvent setObject:timeStr forKey:KEY_FOR_TIME];
     [timeLineArray addObject:turnoverEvent];
     [self increaseHoldBallCountByOne];
@@ -1775,46 +1774,46 @@
             NSString* zoneKey = [NSString stringWithFormat:@"zone%d", k+1];
             [playerDataItem setObject:madeOrAttempt forKey:zoneKey];
         }
-        NSArray* detailItemKeyArray;
+        NSArray* shotModeKeyArray;
        
         for (NSString* attackKeyStr in self.attackWayKeySet)
         {
             if([attackKeyStr isEqualToString:KEY_FOR_SECOND])
-                detailItemKeyArray = self.secondDetailItemKeyArray;
+                shotModeKeyArray = self.secondShotModeKeyArray;
             else if([attackKeyStr isEqualToString:KEY_FOR_PNR])
-                detailItemKeyArray = self.PNRDetailItemKeyArray;
+                shotModeKeyArray = self.PNRShotModeKeyArray;
             else if([attackKeyStr isEqualToString:KEY_FOR_PU])
-                detailItemKeyArray = self.PUDetailItemKeyArray;
+                shotModeKeyArray = self.PUShotModeKeyArray;
             else if([attackKeyStr isEqualToString:KEY_FOR_HP])
-                detailItemKeyArray = self.hpShotModeKeyArray;
+                shotModeKeyArray = self.hpShotModeKeyArray;
             else if([attackKeyStr isEqualToString:KEY_FOR_TOTAL])
-                detailItemKeyArray = self.TotalDetailItemArray;
+                shotModeKeyArray = self.TotalShotModeKeyArray;
             else
-                detailItemKeyArray = self.normalDetailItemKeyArray;
+                shotModeKeyArray = self.normalShotModeKeyArray;
             
-            NSMutableDictionary* detailDic = [[NSMutableDictionary alloc] init];
-            for(NSString* detailItemKey in detailItemKeyArray)
+            NSMutableDictionary* shotModeDic = [[NSMutableDictionary alloc] init];
+            for(NSString* shotModeItemKey in shotModeKeyArray)
             {
-                NSMutableDictionary* detailItemDic = [[NSMutableDictionary alloc] init];
-                [detailItemDic setObject:@"0" forKey:KEY_FOR_MADE_COUNT];
-                [detailItemDic setObject:@"0" forKey:KEY_FOR_ATTEMPT_COUNT];
-                [detailItemDic setObject:@"0" forKey:KEY_FOR_FOUL_COUNT];
-                [detailItemDic setObject:@"0" forKey:KEY_FOR_SCORE_GET];
-                [detailDic setObject:detailItemDic forKey:detailItemKey];
+                NSMutableDictionary* shotModeItemDic = [[NSMutableDictionary alloc] init];
+                [shotModeItemDic setObject:@"0" forKey:KEY_FOR_MADE_COUNT];
+                [shotModeItemDic setObject:@"0" forKey:KEY_FOR_ATTEMPT_COUNT];
+                [shotModeItemDic setObject:@"0" forKey:KEY_FOR_FOUL_COUNT];
+                [shotModeItemDic setObject:@"0" forKey:KEY_FOR_SCORE_GET];
+                [shotModeDic setObject:shotModeItemDic forKey:shotModeItemKey];
             }
-            [detailDic setObject:@"0" forKey:KEY_FOR_TOTAL_TURNOVER_COUNT];
-            [detailDic setObject:@"0" forKey:KEY_FOR_TOTAL_SCORE_GET];
-            [detailDic setObject:@"0" forKey:KEY_FOR_TOTAL_MADE_COUNT];
-            [detailDic setObject:@"0" forKey:KEY_FOR_TOTAL_ATTEMPT_COUNT];
-            [detailDic setObject:@"0" forKey:KEY_FOR_TOTAL_FOUL_COUNT];
+            [shotModeDic setObject:@"0" forKey:KEY_FOR_TOTAL_TURNOVER_COUNT];
+            [shotModeDic setObject:@"0" forKey:KEY_FOR_TOTAL_SCORE_GET];
+            [shotModeDic setObject:@"0" forKey:KEY_FOR_TOTAL_MADE_COUNT];
+            [shotModeDic setObject:@"0" forKey:KEY_FOR_TOTAL_ATTEMPT_COUNT];
+            [shotModeDic setObject:@"0" forKey:KEY_FOR_TOTAL_FOUL_COUNT];
             if([attackKeyStr isEqualToString:KEY_FOR_TOTAL])
-                [detailDic setObject:@"0" forKey:KEY_FOR_HOLD_BALL_COUNT];
-            [playerDataItem setObject:detailDic forKey:attackKeyStr];
+                [shotModeDic setObject:@"0" forKey:KEY_FOR_HOLD_BALL_COUNT];
+            [playerDataItem setObject:shotModeDic forKey:attackKeyStr];
         }
         
         NSMutableDictionary* turnoverDic = [[NSMutableDictionary alloc] init];
-        for(NSString* turnOverDetailKey in self.turnOverArray)
-            [turnoverDic setObject:@"0" forKey:turnOverDetailKey];
+        for(NSString* turnOverShotModeKey in self.turnOverArray)
+            [turnoverDic setObject:@"0" forKey:turnOverShotModeKey];
         [playerDataItem setObject:turnoverDic forKey:KEY_FOR_TURNOVER];
         
         if(quarterNo < 2)
@@ -1876,9 +1875,9 @@
     }
     
     NSMutableDictionary* turnoverDic = [playerData objectForKey:KEY_FOR_TURNOVER];
-    turnoverCount = [[turnoverDic objectForKey:self.keyOfDetail] intValue];
+    turnoverCount = [[turnoverDic objectForKey:self.keyOfShotMode] intValue];
     turnoverStr = [NSString stringWithFormat:@"%d", turnoverCount+1];
-    [turnoverDic setObject:turnoverStr forKey:self.keyOfDetail];
+    [turnoverDic setObject:turnoverStr forKey:self.keyOfShotMode];
 }
 
 -(void)updateOffenseGradeForOneMadeToPlayerData:(NSMutableDictionary*) playerData
@@ -1901,13 +1900,13 @@
     
     for(NSMutableDictionary* attackDic in attackDicArray)
     {
-        NSMutableDictionary* detailDic = [attackDic objectForKey:self.keyOfDetail];
+        NSMutableDictionary* shotModeDic = [attackDic objectForKey:self.keyOfShotMode];
         
-        int attemptCount = [[detailDic objectForKey:KEY_FOR_ATTEMPT_COUNT] intValue];
-        [detailDic setObject:[NSString stringWithFormat:@"%d", attemptCount+1] forKey:KEY_FOR_ATTEMPT_COUNT];
+        int attemptCount = [[shotModeDic objectForKey:KEY_FOR_ATTEMPT_COUNT] intValue];
+        [shotModeDic setObject:[NSString stringWithFormat:@"%d", attemptCount+1] forKey:KEY_FOR_ATTEMPT_COUNT];
     
-        int madeCount = [[detailDic objectForKey:KEY_FOR_MADE_COUNT] intValue];
-        [detailDic setObject:[NSString stringWithFormat:@"%d", madeCount+1] forKey:KEY_FOR_MADE_COUNT];
+        int madeCount = [[shotModeDic objectForKey:KEY_FOR_MADE_COUNT] intValue];
+        [shotModeDic setObject:[NSString stringWithFormat:@"%d", madeCount+1] forKey:KEY_FOR_MADE_COUNT];
         
         int totalAttemptCount = [[attackDic objectForKey:KEY_FOR_TOTAL_ATTEMPT_COUNT] intValue];
         [attackDic setObject:[NSString stringWithFormat:@"%d", totalAttemptCount+1] forKey:KEY_FOR_TOTAL_ATTEMPT_COUNT];
@@ -1923,9 +1922,9 @@
     
     for(NSMutableDictionary* attackDic in attackDicArray)
     {
-        NSMutableDictionary* detailDic = [attackDic objectForKey:self.keyOfDetail];
-        int attemptCount = [[detailDic objectForKey:KEY_FOR_ATTEMPT_COUNT] intValue];
-        [detailDic setObject:[NSString stringWithFormat:@"%d", attemptCount+1] forKey:KEY_FOR_ATTEMPT_COUNT];
+        NSMutableDictionary* shotModeDic = [attackDic objectForKey:self.keyOfShotMode];
+        int attemptCount = [[shotModeDic objectForKey:KEY_FOR_ATTEMPT_COUNT] intValue];
+        [shotModeDic setObject:[NSString stringWithFormat:@"%d", attemptCount+1] forKey:KEY_FOR_ATTEMPT_COUNT];
         //[playerData setObject:attackData forKey:self.keyOfAttackWay];
         
         int totalAttemptCount = [[attackDic objectForKey:KEY_FOR_TOTAL_ATTEMPT_COUNT] intValue];
@@ -1939,9 +1938,9 @@
     
     for(NSMutableDictionary* attackDic in attackDicArray)
     {
-        NSMutableDictionary* detailDic = [attackDic objectForKey:self.keyOfDetail];
-        int foulCount = [[detailDic objectForKey:KEY_FOR_FOUL_COUNT] intValue];
-        [detailDic setObject:[NSString stringWithFormat:@"%d", foulCount+1] forKey:KEY_FOR_FOUL_COUNT];
+        NSMutableDictionary* shotModeDic = [attackDic objectForKey:self.keyOfShotMode];
+        int foulCount = [[shotModeDic objectForKey:KEY_FOR_FOUL_COUNT] intValue];
+        [shotModeDic setObject:[NSString stringWithFormat:@"%d", foulCount+1] forKey:KEY_FOR_FOUL_COUNT];
     
         int totalFoulCount = [[attackDic objectForKey:KEY_FOR_TOTAL_FOUL_COUNT] intValue];
         [attackDic setObject:[NSString stringWithFormat:@"%d", totalFoulCount+1] forKey:KEY_FOR_TOTAL_FOUL_COUNT];
@@ -1951,18 +1950,18 @@
 -(void) increaseOffenseScoreGetToPlayerData:(NSMutableDictionary*)playerData by:(int)offset
 {
     NSMutableDictionary* attackDic = [playerData objectForKey:self.keyOfAttackWay];
-    NSMutableDictionary* detailDic = [attackDic objectForKey:self.keyOfDetail];
-    int scoreGet = [[detailDic objectForKey:KEY_FOR_SCORE_GET] intValue];
-    [detailDic setObject:[NSString stringWithFormat:@"%d", scoreGet+offset] forKey:KEY_FOR_SCORE_GET];
+    NSMutableDictionary* shotModeDic = [attackDic objectForKey:self.keyOfShotMode];
+    int scoreGet = [[shotModeDic objectForKey:KEY_FOR_SCORE_GET] intValue];
+    [shotModeDic setObject:[NSString stringWithFormat:@"%d", scoreGet+offset] forKey:KEY_FOR_SCORE_GET];
     
     int totalScoreGet = [[attackDic objectForKey:KEY_FOR_TOTAL_SCORE_GET] intValue];
     NSString* totalScoreGetStr = [NSString stringWithFormat:@"%d", totalScoreGet+offset];
     [attackDic setObject:totalScoreGetStr forKey:KEY_FOR_TOTAL_SCORE_GET];
     
     NSMutableDictionary* totalDic = [playerData objectForKey:KEY_FOR_TOTAL];
-    detailDic = [totalDic objectForKey:self.keyOfDetail];
-    scoreGet = [[detailDic objectForKey:KEY_FOR_SCORE_GET] intValue];
-    [detailDic setObject:[NSString stringWithFormat:@"%d", scoreGet+offset] forKey:KEY_FOR_SCORE_GET];
+    shotModeDic = [totalDic objectForKey:self.keyOfShotMode];
+    scoreGet = [[shotModeDic objectForKey:KEY_FOR_SCORE_GET] intValue];
+    [shotModeDic setObject:[NSString stringWithFormat:@"%d", scoreGet+offset] forKey:KEY_FOR_SCORE_GET];
     
     totalScoreGet = [[totalDic objectForKey:KEY_FOR_TOTAL_SCORE_GET] intValue];
     totalScoreGetStr = [NSString stringWithFormat:@"%d", totalScoreGet+offset];
@@ -2026,7 +2025,7 @@
         [self updateZoneGradeView];
     else
     {
-        [self.detailTableView reloadData];
+        [self.shotModeTableView reloadData];
         [self.playerDataTableView  reloadData];
     }
 }
@@ -2582,11 +2581,11 @@
     self.playerDataTableView.hidden = YES;
     [self.view addSubview:self.playerDataTableView];
     
-    self.detailTableView = [[UITableView alloc] initWithFrame:self.playerDataTableView.frame];
-    self.detailTableView.delegate = self;
-    self.detailTableView.dataSource = self;
-    self.detailTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.detailTableView.tag = DETAIL_TABLE_VIEW;
+    self.shotModeTableView = [[UITableView alloc] initWithFrame:self.playerDataTableView.frame];
+    self.shotModeTableView.delegate = self;
+    self.shotModeTableView.dataSource = self;
+    self.shotModeTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.shotModeTableView.tag = SHOT_MODE_TABLE_VIEW;
 
     self.spinView = [[UIView alloc] initWithFrame:self.view.frame];
     self.spinView.backgroundColor = [UIColor grayColor];
@@ -2649,20 +2648,20 @@
 
 -(void) titleButtonInGradeTableClicked:(UIButton*) button
 {
-    if(!self.isDetailShowing)
+    if(!self.isShotModeShowing)
     {
         self.attackWayNo = (int)button.tag;
         [self.playerDataTableView removeFromSuperview];
-        [self.view addSubview:self.detailTableView];
-        [self.detailTableView reloadData];
-        self.isDetailShowing = YES;
+        [self.view addSubview:self.shotModeTableView];
+        [self.shotModeTableView reloadData];
+        self.isShotModeShowing = YES;
     }
     else
     {
         self.attackWayNo = 0;
         [self.view addSubview:self.playerDataTableView];
-        [self.detailTableView removeFromSuperview];
-        self.isDetailShowing = NO;
+        [self.shotModeTableView removeFromSuperview];
+        self.isShotModeShowing = NO;
     }
 }
 
@@ -2754,11 +2753,11 @@
     [self hideZone12orNot:NO];
     
     
-    if(self.isDetailShowing)
+    if(self.isShotModeShowing)
     {
-        self.isDetailShowing = NO;
+        self.isShotModeShowing = NO;
         [self.view addSubview:self.playerDataTableView];
-        [self.detailTableView removeFromSuperview];
+        [self.shotModeTableView removeFromSuperview];
     }
     self.playerDataTableView.hidden = YES;
 }
@@ -2813,10 +2812,10 @@
     }
     else
     {
-        if(self.isDetailShowing)
+        if(self.isShotModeShowing)
         {
-            self.isDetailShowing = NO;
-            [self.detailTableView removeFromSuperview];
+            self.isShotModeShowing = NO;
+            [self.shotModeTableView removeFromSuperview];
             [self.view addSubview:self.playerDataTableView];
         }
         
@@ -2878,19 +2877,19 @@
     
     switch (self.attackWayNo) {
         case 7:
-            return [self.PNRDetailItemKeyArray count] + 4;
+            return [self.PNRShotModeKeyArray count] + 4;
         case 8:
-            return [self.secondDetailItemKeyArray count] + 4;
+            return [self.secondShotModeKeyArray count] + 4;
         case 9:
-            return [self.PUDetailItemKeyArray count] + 4;
+            return [self.PUShotModeKeyArray count] + 4;
         case 10:
             return [self.hpShotModeKeyArray count] + 4;
         case 11:        // 失誤
             return [self.turnOverArray count] + 2;
         case 14:        // 總成績
-            return [self.TotalDetailItemArray count] + 5;
+            return [self.TotalShotModeKeyArray count] + 5;
          default:
-            return [self.normalDetailItemKeyArray count] + 4;
+            return [self.normalShotModeKeyArray count] + 4;
     }
 }
 
@@ -3146,7 +3145,7 @@
         
         return cell;
     }
-    // if(tableView.tag == DETAIL_TABLE_VIEW)
+    // if(tableView.tag == SHOT_MODE_TABLE_VIEW)
     if(indexPath.row == 0)
     {
         BBRTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"title"];
@@ -3226,16 +3225,16 @@
     switch (self.attackWayNo)
     {
         case 7:
-            keyArr = self.PNRDetailItemKeyArray;
-            titleArr = self.PNRDetailTitleArray;
+            keyArr = self.PNRShotModeKeyArray;
+            titleArr = self.PNRShotModeTitleArray;
             break;
         case 8:
-            keyArr = self.secondDetailItemKeyArray;
-            titleArr = self.secondDetailTitleArray;
+            keyArr = self.secondShotModeKeyArray;
+            titleArr = self.secondShotModeTitleArray;
             break;
         case 9:
-            keyArr = self.PUDetailItemKeyArray;
-            titleArr = self.PUDetailTitleArray;
+            keyArr = self.PUShotModeKeyArray;
+            titleArr = self.PUShotModeTitleArray;
             break;
         case 10:
             keyArr = self.hpShotModeKeyArray;
@@ -3245,12 +3244,12 @@
             keyArr = self.turnOverArray;
             break;
         case 14:        // 總成績
-            keyArr = self.TotalDetailItemArray;
-            titleArr = self.TotalDetailTitleArray;
+            keyArr = self.TotalShotModeKeyArray;
+            titleArr = self.TotalShotModeTitleArray;
             break;
         default:
-            keyArr = self.normalDetailItemKeyArray;
-            titleArr = self.normalDetailTitleArray;
+            keyArr = self.normalShotModeKeyArray;
+            titleArr = self.normalShotModeTitleArray;
             break;
     }
     if(self.attackWayNo == self.attackWayKeySet.count)  // 失誤
@@ -3275,8 +3274,8 @@
         {
             if(indexPath.row != keyArr.count+1)
             {
-                NSString* detailCount = [attackDic objectForKey:keyArr[indexPath.row-1]];
-                countLabel.text = detailCount;
+                NSString* ShotModeCount = [attackDic objectForKey:keyArr[indexPath.row-1]];
+                countLabel.text = ShotModeCount;
             }
             else
             {
@@ -3326,13 +3325,13 @@
             if((self.attackWayNo != totalAttackWayNo && (indexPath.row != keyArr.count+3)) ||
                (self.attackWayNo == totalAttackWayNo && (indexPath.row != keyArr.count+4))  )
             {
-                NSDictionary* detailDic = [attackDic objectForKey:keyArr[indexPath.row-2]];
-                NSString* madeCount = [detailDic objectForKey:KEY_FOR_MADE_COUNT];
-                NSString* attemptCount = [detailDic objectForKey:KEY_FOR_ATTEMPT_COUNT];
+                NSDictionary* shotModeDic = [attackDic objectForKey:keyArr[indexPath.row-2]];
+                NSString* madeCount = [shotModeDic objectForKey:KEY_FOR_MADE_COUNT];
+                NSString* attemptCount = [shotModeDic objectForKey:KEY_FOR_ATTEMPT_COUNT];
             
                 madeAndAttemptLabel.text = [NSString stringWithFormat:@"%@/%@", madeCount, attemptCount];
-                foulLabel.text = [detailDic objectForKey:KEY_FOR_FOUL_COUNT];
-                totalScoreGetLabel.text = [detailDic objectForKey:KEY_FOR_SCORE_GET];
+                foulLabel.text = [shotModeDic objectForKey:KEY_FOR_FOUL_COUNT];
+                totalScoreGetLabel.text = [shotModeDic objectForKey:KEY_FOR_SCORE_GET];
             }
             else if((self.attackWayNo != totalAttackWayNo && (indexPath.row == keyArr.count+3)) ||
                     (self.attackWayNo == totalAttackWayNo && (indexPath.row == keyArr.count+4)) )
@@ -3413,7 +3412,7 @@
             if(!self.isShowZoneGrade)
             {
                 [self.playerDataTableView reloadData];
-                [self.detailTableView reloadData];
+                [self.shotModeTableView reloadData];
             }
             else
                 [self updateZoneGradeView];
