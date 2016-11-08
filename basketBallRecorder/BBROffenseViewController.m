@@ -37,19 +37,27 @@
     
     self.normalDetailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, nil];
     self.normalDetailTitleArray = [NSArray arrayWithObjects:TITLE_FOR_DRIVE, TITLE_FOR_PULL_UP, TITLE_FOR_SPOT_UP, nil];
+    
     self.secondDetailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, KEY_FOR_PUT_BACK, nil];
     self.secondDetailTitleArray = [NSArray arrayWithObjects:TITLE_FOR_DRIVE, TITLE_FOR_PULL_UP, TITLE_FOR_SPOT_UP, TITLE_FOR_PUT_BACK, nil];
+    
+    self.hpShotModeTitleArray = [NSArray arrayWithObjects:TITLE_FOR_DRIVE, TITLE_FOR_PULL_UP, TITLE_FOR_SPOT_UP, TITLE_FOR_HL, nil];
+    self.hpShotModeKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, KEY_FOR_HL, nil];
+    
     self.PNRDetailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_BP, KEY_FOR_BD, KEY_FOR_MR, KEY_FOR_MPP, KEY_FOR_MPD, KEY_FOR_MPS, nil];
     self.PNRDetailTitleArray = [NSArray arrayWithObjects:TITLE_FOR_BP, TITLE_FOR_BD, TITLE_FOR_MR, TITLE_FOR_MPP, TITLE_FOR_MPD, TITLE_FOR_MPS, nil];
+    
     self.PUDetailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, KEY_FOR_SF, KEY_FOR_LP, nil];
     self.PUDetailTitleArray = [NSArray arrayWithObjects:TITLE_FOR_DRIVE, TITLE_FOR_PULL_UP, TITLE_FOR_SPOT_UP, TITLE_FOR_SF, TITLE_FOR_LP, nil];
-    self.TotalDetailItemArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, KEY_FOR_SF, KEY_FOR_LP, KEY_FOR_PUT_BACK, KEY_FOR_BD, KEY_FOR_BD, KEY_FOR_MPD, KEY_FOR_MR, KEY_FOR_MPS, KEY_FOR_MPP, nil];
-    self.TotalDetailTitleArray = [NSArray arrayWithObjects:TITLE_FOR_DRIVE, TITLE_FOR_PULL_UP, TITLE_FOR_SPOT_UP, TITLE_FOR_SF, TITLE_FOR_LP, TITLE_FOR_PUT_BACK, TITLE_FOR_BD, TITLE_FOR_BD, TITLE_FOR_MPD, TITLE_FOR_MR, TITLE_FOR_MPS, TITLE_FOR_MPP, nil];
+    
+    self.TotalDetailItemArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, KEY_FOR_SF, KEY_FOR_LP, KEY_FOR_HL, KEY_FOR_PUT_BACK, KEY_FOR_BD, KEY_FOR_BD, KEY_FOR_MPD, KEY_FOR_MR, KEY_FOR_MPS, KEY_FOR_MPP, nil];
+    self.TotalDetailTitleArray = [NSArray arrayWithObjects:TITLE_FOR_DRIVE, TITLE_FOR_PULL_UP, TITLE_FOR_SPOT_UP, TITLE_FOR_SF, TITLE_FOR_LP, TITLE_FOR_HL, TITLE_FOR_PUT_BACK, TITLE_FOR_BD, TITLE_FOR_BD, TITLE_FOR_MPD, TITLE_FOR_MR, TITLE_FOR_MPS, TITLE_FOR_MPP, nil];
+    
     self.turnOverArray = [NSArray arrayWithObjects:KEY_FOR_STOLEN, KEY_FOR_BAD_PASS, KEY_FOR_CHARGING, KEY_FOR_DROP, KEY_FOR_LINE, KEY_FOR_3_SENCOND, KEY_FOR_TRAVELING, KEY_FOR_TEAM, nil];
     
-    self.attackWaySet = [[NSArray alloc] initWithObjects:@"快攻(F)", @"拉開單打(I)", @"無球掩護(OS)", @"空切(C)", @"切傳(DK)", @"其他(O)", @"高位擋拆(PNR)", @"二波進攻(2)", @"低位(PU)", @"失誤(TO)", @"Bonus", @"Time", nil];
-    self.attackWayKeySet = [[NSArray alloc] initWithObjects:
-                            KEY_FOR_FASTBREAK, KEY_FOR_ISOLATION, KEY_FOR_OFF_SCREEN, KEY_FOR_DK, KEY_FOR_CUT, KEY_FOR_OTHERS, KEY_FOR_PNR, KEY_FOR_SECOND, KEY_FOR_PU, KEY_FOR_TOTAL, nil];
+    self.attackWaySet = [[NSArray alloc] initWithObjects:TITLE_FOR_FASTBREAK, TITLE_FOR_ISOLATION, TITLE_FOR_OFF_SCREEN, TITLE_FOR_DK, TITLE_FOR_CUT, TITLE_FOR_OTHERS, TITLE_FOR_PNR, TITLE_FOR_SECOND, TITLE_FOR_PU, TITLE_FOR_HP, TITLE_FOR_TURNOVER, TITLE_FOR_BONUS, TITLE_FOR_TIME, nil];
+    self.attackWayKeySet = [[NSArray alloc] initWithObjects: KEY_FOR_FASTBREAK, KEY_FOR_ISOLATION, KEY_FOR_OFF_SCREEN, KEY_FOR_DK, KEY_FOR_CUT, KEY_FOR_OTHERS, KEY_FOR_PNR, KEY_FOR_SECOND, KEY_FOR_PU, KEY_FOR_HP, KEY_FOR_TOTAL, nil];
+    
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] init];
     self.navigationItem.rightBarButtonItem.title = @"本節結束";
     self.navigationItem.rightBarButtonItem.target = self;
@@ -549,8 +557,8 @@
         }];
     [turnoverDetailAlert addAction:cancelAction];
     
-    NSArray* detailTitleArray = [NSArray arrayWithObjects:self.normalDetailTitleArray, self.secondDetailTitleArray, self.PUDetailTitleArray, self.PNRDetailTitleArray, nil];
-    NSArray* detailKeyArray = [NSArray arrayWithObjects:self.normalDetailItemKeyArray, self.secondDetailItemKeyArray, self.PUDetailItemKeyArray, self.PNRDetailItemKeyArray, nil];
+    NSArray* detailTitleArray = [NSArray arrayWithObjects:self.normalDetailTitleArray, self.secondDetailTitleArray, self.PUDetailTitleArray, self.PNRDetailTitleArray, self.hpShotModeTitleArray, nil];
+    NSArray* detailKeyArray = [NSArray arrayWithObjects:self.normalDetailItemKeyArray, self.secondDetailItemKeyArray, self.PUDetailItemKeyArray, self.PNRDetailItemKeyArray, self.hpShotModeKeyArray, nil];
     
     NSMutableArray* alertPtrArray = [[NSMutableArray alloc] init];
     for(int i=0; i< detailTitleArray.count; i++)
@@ -602,6 +610,8 @@
                     [self presentViewController:alertPtrArray[2] animated:YES completion:nil];
                 else if([self.attackWayKeySet[i] isEqualToString:KEY_FOR_PNR])
                     [self presentViewController:alertPtrArray[3] animated:YES completion:nil];
+                else if([self.attackWayKeySet[i] isEqualToString:KEY_FOR_HP])
+                    [self presentViewController:alertPtrArray[4] animated:YES completion:nil];
                 else
                     [self presentViewController:alertPtrArray[0] animated:YES completion:nil];
             }];
@@ -1012,6 +1022,8 @@
                 detailArray = self.PNRDetailItemKeyArray;
             else if([keyForAttackWay isEqualToString:KEY_FOR_PU])
                 detailArray = self.PUDetailItemKeyArray;
+            else if([keyForAttackWay isEqualToString:KEY_FOR_HP])
+                detailArray = self.hpShotModeKeyArray;
             else if([keyForAttackWay isEqualToString:KEY_FOR_TOTAL])
             {
                 NSDictionary* turnoverDic = [playerGradeDic objectForKey:KEY_FOR_TURNOVER];
@@ -1773,6 +1785,8 @@
                 detailItemKeyArray = self.PNRDetailItemKeyArray;
             else if([attackKeyStr isEqualToString:KEY_FOR_PU])
                 detailItemKeyArray = self.PUDetailItemKeyArray;
+            else if([attackKeyStr isEqualToString:KEY_FOR_HP])
+                detailItemKeyArray = self.hpShotModeKeyArray;
             else if([attackKeyStr isEqualToString:KEY_FOR_TOTAL])
                 detailItemKeyArray = self.TotalDetailItemArray;
             else
@@ -1887,7 +1901,6 @@
     
     for(NSMutableDictionary* attackDic in attackDicArray)
     {
-        NSLog(@"%@", attackDic);
         NSMutableDictionary* detailDic = [attackDic objectForKey:self.keyOfDetail];
         
         int attemptCount = [[detailDic objectForKey:KEY_FOR_ATTEMPT_COUNT] intValue];
@@ -2871,8 +2884,10 @@
         case 9:
             return [self.PUDetailItemKeyArray count] + 4;
         case 10:
+            return [self.hpShotModeKeyArray count] + 4;
+        case 11:        // 失誤
             return [self.turnOverArray count] + 2;
-        case 13:
+        case 14:        // 總成績
             return [self.TotalDetailItemArray count] + 5;
          default:
             return [self.normalDetailItemKeyArray count] + 4;
@@ -2965,7 +2980,7 @@
     }
     else if(tableView.tag == PLAYER_GRADE_TABLEVIEW_TAG)
     {
-        if(indexPath.row == 0)
+        if(indexPath.row == 0) //Title: 進球/出手, 犯規 , 失誤, 得分
         {
             BBRTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"title"];
             if(!cell)
@@ -3021,13 +3036,13 @@
         titleButton.titleLabel.adjustsFontSizeToFitWidth = YES;
         titleButton.titleLabel.textAlignment = NSTextAlignmentCenter;
         titleButton.tag = indexPath.row;
-        if(indexPath.row != 11 && indexPath.row != 12)
+        if(indexPath.row != self.attackWayKeySet.count+1 && indexPath.row != self.attackWayKeySet.count+2)
         {
             [titleButton setShowsTouchWhenHighlighted:YES];
             [titleButton addTarget:self action:@selector(titleButtonInGradeTableClicked:) forControlEvents:UIControlEventTouchUpInside];
         }
         
-        if(indexPath.row < [self.attackWaySet count]-2 || indexPath.row == [self.attackWaySet count]+1)
+        if(indexPath.row < [self.attackWaySet count]-2 || indexPath.row == [self.attackWaySet count]+1) //總時間 和 快攻～高位
         {
             UILabel* madeAndAttemptLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(titleButton.frame), titleButton.frame.origin.y, tableView.frame.size.width*0.28, PLAYER_GRADE_TABLECELL_HEIGHT)];
             madeAndAttemptLabel.textAlignment = NSTextAlignmentCenter;
@@ -3082,7 +3097,7 @@
             [cell addSubview:turnOverLabel];
             [cell addSubview:totalScoreGetLabel];
         }
-        else if(indexPath.row == [self.attackWaySet count]-2)
+        else if(indexPath.row == [self.attackWaySet count]-2)  // 失誤
         {
             [titleButton setTitle:@"失誤(TO)" forState:UIControlStateNormal];
             UILabel* turnOverLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(titleButton.frame), titleButton.frame.origin.y, tableView.frame.size.width*0.7, PLAYER_GRADE_TABLECELL_HEIGHT)];
@@ -3097,7 +3112,7 @@
             
             [cell addSubview:turnOverLabel];
         }
-        else if(indexPath.row == [self.attackWaySet count]-1)
+        else if(indexPath.row == [self.attackWaySet count]-1)  //罰球
         {
             NSDictionary* bonusData = [playerData objectForKey:@"zone12"];
             UILabel* madeAndAttemptLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(titleButton.frame), titleButton.frame.origin.y, tableView.frame.size.width*0.7, PLAYER_GRADE_TABLECELL_HEIGHT)];
@@ -3111,7 +3126,7 @@
                 madeAndAttemptLabel.text = [NSString stringWithFormat:@"%@/%@", [bonusData objectForKey:KEY_FOR_MADE_COUNT], [bonusData objectForKey:KEY_FOR_ATTEMPT_COUNT]];
             [cell addSubview:madeAndAttemptLabel];
         }
-        else if(indexPath.row == [self.attackWaySet count])
+        else if(indexPath.row == [self.attackWaySet count])  //上場時間
         {
             NSNumber* time = [playerData objectForKey:KEY_FOR_TOTAL_TIME_ON_FLOOR];
             int min = time.intValue/60;
@@ -3148,13 +3163,13 @@
             
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
         }
-        if(self.attackWayNo != 13)
+        if(self.attackWayNo != self.attackWayKeySet.count+3)
             [cell.titleButton setTitle:[self.attackWaySet objectAtIndex:self.attackWayNo-1] forState:UIControlStateNormal];
         else
             [cell.titleButton setTitle:@"總成績" forState:UIControlStateNormal];
         return cell;
     }
-    else if(indexPath.row == 1 && self.attackWayNo != 10)
+    else if(indexPath.row == 1 && self.attackWayNo != self.attackWayKeySet.count) // 不是顯示"失誤"
     {
         BBRTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"itemTitle"];
         if(!cell)
@@ -3198,16 +3213,14 @@
     {
         NSMutableArray* quarterData = [self.playerDataArray objectAtIndex:self.quarterNo];
         playerData = [quarterData objectAtIndex:self.playerSelectedIndex-1];
-        if(self.attackWayNo == 10)
+        if(self.attackWayNo == self.attackWayKeySet.count)
             attackDic = [playerData objectForKey:KEY_FOR_TURNOVER];
-        else if(self.attackWayNo == 13)
+        else if(self.attackWayNo == self.attackWayKeySet.count+3)
             attackDic = [playerData objectForKey:self.attackWayKeySet[self.attackWayNo-4]];
         else
             attackDic = [playerData objectForKey:self.attackWayKeySet[self.attackWayNo-1]];
-            
-   //     NSLog(@"%@", attackDic);
     }
-
+    
     NSArray* keyArr;
     NSArray* titleArr;
     switch (self.attackWayNo)
@@ -3225,9 +3238,13 @@
             titleArr = self.PUDetailTitleArray;
             break;
         case 10:
+            keyArr = self.hpShotModeKeyArray;
+            titleArr = self.hpShotModeTitleArray;
+            break;
+        case 11:        // 失誤
             keyArr = self.turnOverArray;
             break;
-        case 13:
+        case 14:        // 總成績
             keyArr = self.TotalDetailItemArray;
             titleArr = self.TotalDetailTitleArray;
             break;
@@ -3236,8 +3253,7 @@
             titleArr = self.normalDetailTitleArray;
             break;
     }
-    
-    if(self.attackWayNo == 10)
+    if(self.attackWayNo == self.attackWayKeySet.count)  // 失誤
     {
         UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width*0.45, PLAYER_GRADE_TABLECELL_HEIGHT)];
         label.adjustsFontSizeToFitWidth = YES;
@@ -3273,14 +3289,15 @@
         [cell addSubview:countLabel];
         return cell;
     }
-    //else if(self.attackWayNo != 10)
-    if((self.attackWayNo != 13 && (indexPath.row < keyArr.count+2 || indexPath.row == keyArr.count+3)) ||(self.attackWayNo == 13 && (indexPath.row < keyArr.count+2 || indexPath.row == keyArr.count+4)))
+    //else if(不是失誤)
+    int totalAttackWayNo = (int)self.attackWayKeySet.count + 3;
+    if((self.attackWayNo != totalAttackWayNo && (indexPath.row < keyArr.count+2 || indexPath.row == keyArr.count+3)) ||(self.attackWayNo == totalAttackWayNo && (indexPath.row < keyArr.count+2 || indexPath.row == keyArr.count+4)))
     {
         UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width*0.45, PLAYER_GRADE_TABLECELL_HEIGHT)];
         label.adjustsFontSizeToFitWidth = YES;
         label.textAlignment = NSTextAlignmentCenter;
-        if((self.attackWayNo != 13 && (indexPath.row != keyArr.count+3)) ||
-           (self.attackWayNo == 13 && (indexPath.row != keyArr.count+4))  )
+        if((self.attackWayNo != totalAttackWayNo && (indexPath.row != keyArr.count+3)) ||
+           (self.attackWayNo == totalAttackWayNo && (indexPath.row != keyArr.count+4))  )
             label.text = titleArr[indexPath.row - 2];
         else
             label.text = @"總計";
@@ -3306,8 +3323,8 @@
         }
         else
         {
-            if((self.attackWayNo != 13 && (indexPath.row != keyArr.count+3)) ||
-               (self.attackWayNo == 13 && (indexPath.row != keyArr.count+4))  )
+            if((self.attackWayNo != totalAttackWayNo && (indexPath.row != keyArr.count+3)) ||
+               (self.attackWayNo == totalAttackWayNo && (indexPath.row != keyArr.count+4))  )
             {
                 NSDictionary* detailDic = [attackDic objectForKey:keyArr[indexPath.row-2]];
                 NSString* madeCount = [detailDic objectForKey:KEY_FOR_MADE_COUNT];
@@ -3317,8 +3334,8 @@
                 foulLabel.text = [detailDic objectForKey:KEY_FOR_FOUL_COUNT];
                 totalScoreGetLabel.text = [detailDic objectForKey:KEY_FOR_SCORE_GET];
             }
-            else if((self.attackWayNo != 13 && (indexPath.row == keyArr.count+3)) ||
-                    (self.attackWayNo == 13 && (indexPath.row == keyArr.count+4)) )
+            else if((self.attackWayNo != totalAttackWayNo && (indexPath.row == keyArr.count+3)) ||
+                    (self.attackWayNo == totalAttackWayNo && (indexPath.row == keyArr.count+4)) )
             {
                 NSString* madeCount = [attackDic objectForKey:KEY_FOR_TOTAL_MADE_COUNT];
                 NSString* attemptCount = [attackDic objectForKey:KEY_FOR_TOTAL_ATTEMPT_COUNT];
@@ -3333,8 +3350,8 @@
         [cell addSubview:foulLabel];
         [cell addSubview:totalScoreGetLabel];
     }
-    else if((self.attackWayNo != 13 && (indexPath.row == keyArr.count+2)) ||
-            (self.attackWayNo == 13 && (indexPath.row == keyArr.count+2)) )
+    else if((self.attackWayNo != totalAttackWayNo && (indexPath.row == keyArr.count+2)) ||
+            (self.attackWayNo == totalAttackWayNo && (indexPath.row == keyArr.count+2)) )
     {
         UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width*0.45, PLAYER_GRADE_TABLECELL_HEIGHT)];
         label.textAlignment = NSTextAlignmentCenter;

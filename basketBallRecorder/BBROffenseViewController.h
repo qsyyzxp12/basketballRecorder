@@ -28,7 +28,9 @@
 @property NSArray* normalDetailTitleArray;
 @property NSArray* secondDetailItemKeyArray;
 @property NSArray* secondDetailTitleArray;
-@property NSArray* PNRDetailItemKeyArray;
+@property NSArray* hpShotModeTitleArray;
+@property NSArray<NSString*>* hpShotModeKeyArray;
+@property NSArray<NSString*>* PNRDetailItemKeyArray;
 @property NSArray* PNRDetailTitleArray;
 @property NSArray* PUDetailItemKeyArray;
 @property NSArray* PUDetailTitleArray;
