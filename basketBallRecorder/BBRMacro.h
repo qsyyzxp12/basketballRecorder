@@ -9,6 +9,7 @@
 #ifndef BBRMacro_h
 #define BBRMacro_h
 
+#define Dropbox
 
 #define TITLE_CELL_HEIGHT 30
 #define CELL_HEIGHT 40
@@ -210,7 +211,7 @@
 #define URL_FOR_GAME_SCORE_REQUEST @"http://basketball.beta.biji.co/api/updateSblGameScores"
 
 //Key For POST Request
-#define KEY_FOR_GAME_SESSION @"gameSession"
+#define KEY_FOR_GAME_SEASON @"gameSeason"
 #define KEY_FOR_GAME_TYPE @"gameType"
 #define KEY_FOR_GAME_NO @"gameNo"
 #define KEY_FOR_TEAM_NAME @"teamName"
@@ -245,6 +246,16 @@
 #define KEY_FOR_DOWN_THREE @"downPlayer3No"
 #define KEY_FOR_DOWN_FOUR @"downPlayer4No"
 #define KEY_FOR_DOWN_FIVE @"downPlayer5No"
+
+//Key For Post Request "updateSblGameScores"
+#define KEY_FOR_HOME_Q1_SCORE @"homeQ1Score"
+#define KEY_FOR_HOME_Q2_SCORE @"homeQ2Score"
+#define KEY_FOR_HOME_Q3_SCORE @"homeQ3Score"
+#define KEY_FOR_HOME_Q4_SCORE @"homeQ4Score"
+#define KEY_FOR_HOME_OT1_SCORE @"homeOt1Score"
+#define KEY_FOR_HOME_OT2_SCORE @"homeOt2Score"
+#define KEY_FOR_HOME_OT3_SCORE @"homeOt3Score"
+#define KEY_FOR_AWAY_TEAM_NAME @"awayTeamName"
 
 #define END -1
 #define QUARTER_NO_FOR_ENTIRE_GAME 0

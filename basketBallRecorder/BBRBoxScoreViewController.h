@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <DropboxSDK/DropboxSDK.h>
 
-@interface BBRBoxScoreViewController : UIViewController<UITableViewDataSource, UITableViewDelegate, DBRestClientDelegate>
+@interface BBRBoxScoreViewController : UIViewController<UITableViewDataSource, UITableViewDelegate, DBRestClientDelegate, NSURLConnectionDataDelegate>
 
 @property UITableView *playerListTableView;
 @property UITableView *playerOnFloorListTableView;
@@ -37,6 +37,7 @@
 @property UIAlertController* nextQuarterAlert;
 @property UIAlertController* finishOrNotAlert;
 @property UIAlertController* playoffOrNotAlert;
+@property NSMutableData* receiveData;
 @property NSString* tmpPlistPath;
 @property NSString* recordName;
 @property NSString* keyForSearch;

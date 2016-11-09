@@ -7,6 +7,7 @@
 //
 
 #import "BBRDropboxCheckViewController.h"
+#import "BBRMacro.h"
 #import <DropboxSDK/DropboxSDK.h>
 
 @interface BBRDropboxCheckViewController ()
@@ -30,10 +31,12 @@
 
 - (void)checkingDropboxAuthorization
 {
+#ifdef Dropbox
     if (![[DBSession sharedSession] isLinked])
         [[DBSession sharedSession] linkFromController:self];
     
     while (![[DBSession sharedSession] isLinked]);
+#endif
     [self performSelectorOnMainThread:@selector(showMenuSegue) withObject:nil waitUntilDone:NO];
 }
 

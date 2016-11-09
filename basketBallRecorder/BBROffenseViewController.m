@@ -81,6 +81,10 @@
     
     if(self.quarterNo == END)
         [self showConclusionAndGernateXlsxFile:NO];
+    
+    
+    NSArray* quarterArr = [self.playerDataArray objectAtIndex:0];
+    NSLog(@"%@", quarterArr);
 }
 
 - (void) constructAlertControllers
@@ -823,6 +827,14 @@
     [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
 }
 
+-(void)loadFolderMetaData:(NSDateFormatter*) dateFormatter
+{
+    NSString* path = [NSString stringWithFormat:@"/%@", [dateFormatter stringFromDate:[NSDate date]]];
+    [self.restClient loadMetadata:path];
+}
+
+#pragma mark - Xlsx Operation
+
 -(void) xlsxFilesGenerateAndUpload
 {
     //Dropbox
@@ -1103,7 +1115,7 @@
         [fm removeItemAtPath:sheetPath error:nil];
     
     [spreadsheet saveAs:sheetPath];
-
+    
     NSString* dropboxPath;
     if(![self.myTeamName isEqualToString:NAME_OF_NTU_MALE_BASKETBALL])
     {
@@ -1148,7 +1160,7 @@
             cellRef = [NSString stringWithFormat:@"%c%c%d", outIndex, interIndex, rowIndex];
             cellContent = [[worksheet cellForCellReference:cellRef] stringValue];
         }while(cellContent && ![cellContent isEqualToString:@""]);
-
+        
         [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:
          [dateFormatter stringFromDate:[NSDate date]]];
         
@@ -1179,7 +1191,7 @@
             [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:madeAndAttempt];
         }
     }
- 
+    
     if(!self.isShotChartXlsxFileExistInDropbox || ![self.myTeamName isEqualToString:NAME_OF_NTU_MALE_BASKETBALL])
         [spreadsheet.workbook removeWorksheetNamed:@"全隊"];
     
@@ -1202,7 +1214,7 @@
     }
     else
         dropboxPath = [NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_SHOT_CHART_XLSX_FILE];
-
+    
     NSArray* agus = [[NSArray alloc] initWithObjects:dropboxPath, localPath, nil];
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
 }
@@ -1277,12 +1289,6 @@
     }
     else
         [self.restClient uploadFile:[parameters objectAtIndex:0] toPath:@"/" withParentRev:nil fromPath:[parameters objectAtIndex:1]];
-}
-
--(void)loadFolderMetaData:(NSDateFormatter*) dateFormatter
-{
-    NSString* path = [NSString stringWithFormat:@"/%@", [dateFormatter stringFromDate:[NSDate date]]];
-    [self.restClient loadMetadata:path];
 }
 
 -(NSString*) addShotChartXlsxFileVersionNumber:(int)no
@@ -1391,11 +1397,66 @@
 {
     [self sendDataToBasketballBiji];
     [self sendTimeLineToBasketballBiji];
+    [self sendSblGameScoreToBasketballBiji];
 }
 
 -(void)sendSblGameScoreToBasketballBiji
 {
+    NSURL* url = [NSURL URLWithString:URL_FOR_GAME_SCORE_REQUEST];
     
+    NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:url];
+    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    [request setHTTPMethod:@"POST"];
+        
+    NSMutableDictionary* postDataDic = [[NSMutableDictionary alloc] init];
+    [postDataDic setObject:self.sessionNo forKey:KEY_FOR_GAME_SEASON];
+    [postDataDic setObject:self.gameType forKey:KEY_FOR_GAME_TYPE];
+    [postDataDic setObject:self.gameNo forKey:KEY_FOR_GAME_NO];
+    [postDataDic setObject:self.myTeamName forKey:KEY_FOR_TEAM_NAME];
+    
+    for(int quarterNo=1; quarterNo<5; quarterNo++)
+    {
+        NSArray* quarterDataArr = [self.playerDataArray objectAtIndex:quarterNo];
+        NSDictionary* teamGradeDic = [quarterDataArr objectAtIndex:self.playerCount];
+        NSDictionary* totalDic = [teamGradeDic objectForKey:KEY_FOR_TOTAL];
+        NSString* totalScoreGetInTheQuarter = [totalDic objectForKey:KEY_FOR_TOTAL_SCORE_GET];
+        NSString* key = [NSString stringWithFormat:@"homeQ%dScore", quarterNo];
+        [postDataDic setObject:totalScoreGetInTheQuarter forKey:key];
+    }
+    if(self.quarterNo > 4)
+    {
+        for(int quarterNo=1; quarterNo<self.quarterNo-3; quarterNo++)
+        {
+            NSArray* quarterDataArr = [self.playerDataArray objectAtIndex:quarterNo+4];
+            NSDictionary* teamGradeDic = [quarterDataArr objectAtIndex:self.playerCount];
+            NSDictionary* totalDic = [teamGradeDic objectForKey:KEY_FOR_TOTAL];
+            NSString* totalScoreGetInTheQuarter = [totalDic objectForKey:KEY_FOR_TOTAL_SCORE_GET];
+            NSString* key = [NSString stringWithFormat:@"homeOt%dScore", quarterNo];
+            [postDataDic setObject:totalScoreGetInTheQuarter forKey:key];
+        }
+    }
+        
+    NSError* error = nil;
+    NSData* data = [NSJSONSerialization dataWithJSONObject:postDataDic options:0 error:&error];
+    if(error)
+        NSLog(@"%@", error);
+        
+    NSString *postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[data length]];
+        
+    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+    [request setHTTPBody:data];
+        
+    error = nil;
+    NSURLResponse *response = nil;
+    NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+        
+    if(responseData)
+    {
+        NSDictionary *results = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments  error:&error];
+        NSLog(@"res---%@", results);
+    }
+    else
+        NSLog(@"No responseData");
 }
 
 - (void)sendTimeLineToBasketballBiji
@@ -1414,7 +1475,7 @@
             [request setHTTPMethod:@"POST"];
             
             NSMutableDictionary* postDataDic = [[NSMutableDictionary alloc] init];
-            [postDataDic setObject:self.sessionNo forKey:KEY_FOR_GAME_SESSION];
+            [postDataDic setObject:self.sessionNo forKey:KEY_FOR_GAME_SEASON];
             [postDataDic setObject:self.gameType forKey:KEY_FOR_GAME_TYPE];
             [postDataDic setObject:self.gameNo forKey:KEY_FOR_GAME_NO];
             [postDataDic setObject:[NSString stringWithFormat:@"%d", quarterNo] forKey:KEY_FOR_GAME_QUARTER];
@@ -1508,7 +1569,7 @@
         [request setHTTPMethod:@"POST"];
         
         NSMutableDictionary* postDataDic = [[NSMutableDictionary alloc] init];
-        [postDataDic setObject:self.sessionNo forKey:KEY_FOR_GAME_SESSION];
+        [postDataDic setObject:self.sessionNo forKey:KEY_FOR_GAME_SEASON];
         [postDataDic setObject:self.gameType forKey:KEY_FOR_GAME_TYPE];
         [postDataDic setObject:self.gameNo forKey:KEY_FOR_GAME_NO];
         [postDataDic setObject:self.myTeamName forKey:KEY_FOR_TEAM_NAME];

@@ -93,10 +93,6 @@
     
     if(self.quarterNo == END)
         [self showConclusionAndGernateXlsxFile:NO];
-    
-    NSArray* totalGradeOftheGameArr = [self.playerDataArray objectAtIndex:QUARTER_NO_FOR_ENTIRE_GAME];
-    NSDictionary* playerGradeDic = totalGradeOftheGameArr[0];
-    NSLog(@"%@", playerGradeDic);
 }
 
 - (void) constructAlertControllers
@@ -294,8 +290,9 @@
 
 -(void) xlsxFileGenerateAndUpload
 {
-    [self performSelectorInBackground:@selector(sendDataToBasketballBiji) withObject:nil];
-    
+    [self performSelectorOnMainThread:@selector(sendDataToBasketballBiji) withObject:nil waitUntilDone:NO];
+   // [self performSelectorOnMainThread:@selector(sendDataToBasketballBiji) withObject:nil];
+#ifdef Dropbox
     //Generate the xlsx file
     NSString *documentPath = [[NSBundle mainBundle] pathForResource:@"spreadsheet_for_boxScore" ofType:@"xlsx"];
     BRAOfficeDocumentPackage *spreadsheet = [BRAOfficeDocumentPackage open:documentPath];
@@ -429,83 +426,74 @@
     NSArray* agus = [[NSArray alloc] initWithObjects:dropBoxpath, localPath, nil];
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
     //  [self.restClient uploadFile:filename toPath:@"/" withParentRev:nil fromPath:sheetPath];
-    
+#endif
 }
 
 - (void)sendDataToBasketballBiji
 {
-    
     NSURL* url = [NSURL URLWithString:URL_FOR_GENERAL_REQUEST];
     
     NSArray* totalGradeOftheGameArr = [self.playerDataArray objectAtIndex:QUARTER_NO_FOR_ENTIRE_GAME];
-    for(NSDictionary* playerGradeDic in totalGradeOftheGameArr)
+    for(int i=0; i<self.playerCount; i++)
     {
-        NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:url];
-        [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-        [request setHTTPMethod:@"POST"];
+        NSDictionary* playerGradeDic = [totalGradeOftheGameArr objectAtIndex:i];
         
-        NSMutableDictionary* postDataDic = [[NSMutableDictionary alloc] init];
-        [postDataDic setObject:self.sessionNo forKey:KEY_FOR_GAME_SESSION];
-        [postDataDic setObject:self.gameType forKey:KEY_FOR_GAME_TYPE];
-        [postDataDic setObject:self.gameNo forKey:KEY_FOR_GAME_NO];
-        [postDataDic setObject:self.myTeamName forKey:KEY_FOR_TEAM_NAME];
-        [postDataDic setObject:[playerGradeDic objectForKey:KEY_FOR_PLAYER_NO] forKey:KEY_FOR_PLAYER_NO];
-   //     [postDataDic setObject:@"0" forKey:KEY_FOR_STARTING];
+        NSString* postDataStr = [NSString stringWithFormat:@"%@=%@", KEY_FOR_GAME_SEASON, self.sessionNo];
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_GAME_TYPE, self.gameType]];
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_GAME_NO, self.gameNo]];
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_TEAM_NAME, self.myTeamName]];
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_PLAYER_NO, [playerGradeDic objectForKey:KEY_FOR_PLAYER_NO]]];
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_STARTING, @"1"]];
         
         int point = 0;
         NSDictionary* twoPtsDic = [playerGradeDic objectForKey:KEY_FOR_2_PTS];
         NSString* madeCount = [twoPtsDic objectForKey:KEY_FOR_MADE_COUNT];
-        [postDataDic setObject:madeCount forKey:KEY_FOR_2PT_MADE];
-        [postDataDic setObject:[twoPtsDic objectForKey:KEY_FOR_ATTEMPT_COUNT] forKey:KEY_FOR_2PT_ATTEMPT];
+        
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_2PT_MADE, madeCount]];
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_2PT_ATTEMPT, [twoPtsDic objectForKey:KEY_FOR_ATTEMPT_COUNT]]];
         point += madeCount.intValue * 2;
         
         NSDictionary* threePtsDic = [playerGradeDic objectForKey:KEY_FOR_3_PTS];
         madeCount = [threePtsDic objectForKey:KEY_FOR_MADE_COUNT];
-        [postDataDic setObject:madeCount forKey:KEY_FOR_3PT_MADE];
-        [postDataDic setObject:[threePtsDic objectForKey:KEY_FOR_ATTEMPT_COUNT] forKey:KEY_FOR_3PT_ATTEMPT];
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_3PT_MADE, madeCount]];
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_3PT_ATTEMPT, [threePtsDic objectForKey:KEY_FOR_ATTEMPT_COUNT]]];
         point += madeCount.intValue * 3;
         
         NSDictionary* freeThrowDic = [playerGradeDic objectForKey:KEY_FOR_FREE_THROW];
         madeCount = [freeThrowDic objectForKey:KEY_FOR_MADE_COUNT];
-        [postDataDic setObject:madeCount forKey:KEY_FOR_FT_MADE];
-        [postDataDic setObject:[freeThrowDic objectForKey:KEY_FOR_ATTEMPT_COUNT] forKey:KEY_FOR_FT_ATTEMPT];
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_FT_MADE, madeCount]];
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_FT_ATTEMPT, [freeThrowDic objectForKey:KEY_FOR_ATTEMPT_COUNT]]];
         point += madeCount.intValue;
         
         for(int i=3; i<10; i++)
         {
             NSString* key = self.itemWayKeySet[i];
-            [postDataDic setObject:[playerGradeDic objectForKey:key] forKey:key];
+            postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", key, [playerGradeDic objectForKey:key]]];
         }
         
         int totalRef = [[playerGradeDic objectForKey:KEY_FOR_DEF_REB] intValue] + [[playerGradeDic objectForKey:KEY_FOR_OFF_REB] intValue];
-        [postDataDic setObject:[NSString stringWithFormat:@"%d", totalRef] forKey:KEY_FOR_TOTAL_REB];
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_TOTAL_REB, [NSString stringWithFormat:@"%d", totalRef]]];
         
-        [postDataDic setObject:[NSString stringWithFormat:@"%d", point] forKey:KEY_FOR_POINT];
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_POINT, [NSString stringWithFormat:@"%d", point]]];
         
         double playTime = [[playerGradeDic objectForKey:KEY_FOR_TOTAL_TIME_ON_FLOOR] doubleValue];
         NSString* playTimeStr = [NSString stringWithFormat:@"%.f", playTime/60];
-        [postDataDic setObject:playTimeStr forKey:KEY_FOR_PLAY_TIME];
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_PLAY_TIME, playTimeStr]];
         
-        NSError* error = nil;
-        NSData* data = [NSJSONSerialization dataWithJSONObject:postDataDic options:0 error:&error];
-        if(error)
-            NSLog(@"%@", error);
+//        NSLog(@"%@", postDataStr);
         
+        NSData* data = [postDataStr dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
         NSString *postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[data length]];
-        
+    
+        NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:url];
+        [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
+        [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+        [request setHTTPMethod:@"POST"];
+    
         [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
         [request setHTTPBody:data];
         
-        error = nil;
-        NSURLResponse *response = nil;
-        NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-        
-        if(responseData)  {
-            NSDictionary *results = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments  error:&error];
-            NSLog(@"res---%@", results);
-        }
-        else
-            NSLog(@"No responseData");
+        NSURLConnection *connection = [[NSURLConnection alloc]initWithRequest:request delegate:self];
     }
 }
 
@@ -534,6 +522,32 @@
             return [self addXlsxFileVersionNumber:no+1];
     }
     return fileName;
+}
+
+#pragma mark - NSURLConnectionDataDelegate
+
+-(void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
+{
+    NSHTTPURLResponse *res = (NSHTTPURLResponse *)response;
+    NSLog(@"xxxxx %@",[res allHeaderFields]);
+    self.receiveData = [NSMutableData data];
+}
+
+-(void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
+{
+    [self.receiveData appendData:data];
+}
+
+-(void)connectionDidFinishLoading:(NSURLConnection *)connection
+{
+    NSString *receiveStr = [[NSString alloc]initWithData:self.receiveData encoding:NSUTF8StringEncoding];
+    NSLog(@"%@",receiveStr);
+}
+
+-(void)connection:(NSURLConnection *)connection
+ didFailWithError:(NSError *)error
+{
+    NSLog(@"%@",[error localizedDescription]);
 }
 
 #pragma mark - DataStruct Updating
@@ -631,9 +645,9 @@
         NSMutableDictionary* playerDataItem = [[NSMutableDictionary alloc] init];
         
         if(i < [self.playerNoSet count])
-            [playerDataItem setObject:[self.playerNoSet objectAtIndex:i] forKey:@"no"];
+            [playerDataItem setObject:[self.playerNoSet objectAtIndex:i] forKey:KEY_FOR_PLAYER_NO];
         else
-            [playerDataItem setObject:@"Team" forKey:@"no"];
+            [playerDataItem setObject:@"Team" forKey:KEY_FOR_PLAYER_NO];
         
         [playerDataItem setObject:[NSString stringWithFormat:@"%d", quarterNo] forKey:@"QUARTER"];
         

@@ -405,7 +405,7 @@
         [request setHTTPMethod:@"POST"];
         
         NSMutableDictionary* postDataDic = [[NSMutableDictionary alloc] init];
-        [postDataDic setObject:self.sessionNo forKey:KEY_FOR_GAME_SESSION];
+        [postDataDic setObject:self.sessionNo forKey:KEY_FOR_GAME_SEASON];
         [postDataDic setObject:self.gameType forKey:KEY_FOR_GAME_TYPE];
         [postDataDic setObject:self.gameNo forKey:KEY_FOR_GAME_NO];
         [postDataDic setObject:self.myTeamName forKey:KEY_FOR_TEAM_NAME];
