@@ -158,7 +158,7 @@
     [youtTeamAlert addAction:NTUAction];
 #ifdef BIJI
     [youtTeamAlert addAction:SBLAction];
-#endif 
+#endif
     [youtTeamAlert addAction:otherAction];
     [youtTeamAlert addAction:cancelAction];
     [self presentViewController:youtTeamAlert animated:YES completion:nil];
