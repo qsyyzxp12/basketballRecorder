@@ -10,6 +10,7 @@
 #define BBRMacro_h
 
 #define Dropbox
+#define BIJI
 
 #define TITLE_CELL_HEIGHT 30
 #define CELL_HEIGHT 40

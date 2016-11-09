@@ -156,7 +156,9 @@
             [self.navigationController popToViewController:[self.navigationController.viewControllers objectAtIndex:1] animated:YES];
         }];
     [youtTeamAlert addAction:NTUAction];
+#ifdef BIJI
     [youtTeamAlert addAction:SBLAction];
+#endif 
     [youtTeamAlert addAction:otherAction];
     [youtTeamAlert addAction:cancelAction];
     [self presentViewController:youtTeamAlert animated:YES completion:nil];
