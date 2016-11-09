@@ -837,10 +837,9 @@
 
 -(void) xlsxFilesGenerateAndUpload
 {
-    //Dropbox
-    if (![[DBSession sharedSession] isLinked])
-        [[DBSession sharedSession] linkFromController:self];
-    
+    if(self.isSBLGame)
+        [self performSelectorOnMainThread:@selector(sendDataToBasketballBiji) withObject:nil waitUntilDone:NO];
+#ifdef Dropbox
     while(!self.isLoadMetaFinished);
     NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"YYYY_MM_dd"];
@@ -855,8 +854,7 @@
     [self performSelectorInBackground:@selector(generateShotChartXlsxAndUpload) withObject:nil];
     [self performSelectorInBackground:@selector(generateTimeLineXlsxAndUpload) withObject:nil];
     [self performSelectorInBackground:@selector(generateZoneGradeXlsxAndUpload) withObject:nil];
-    if(self.isSBLGame)
-        [self sendDataToBasketballBiji];
+#endif
 }
 
 -(void) generateTimeLineXlsxAndUpload
@@ -1402,17 +1400,10 @@
 
 -(void)sendSblGameScoreToBasketballBiji
 {
-    NSURL* url = [NSURL URLWithString:URL_FOR_GAME_SCORE_REQUEST];
-    
-    NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:url];
-    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-    [request setHTTPMethod:@"POST"];
-        
-    NSMutableDictionary* postDataDic = [[NSMutableDictionary alloc] init];
-    [postDataDic setObject:self.sessionNo forKey:KEY_FOR_GAME_SEASON];
-    [postDataDic setObject:self.gameType forKey:KEY_FOR_GAME_TYPE];
-    [postDataDic setObject:self.gameNo forKey:KEY_FOR_GAME_NO];
-    [postDataDic setObject:self.myTeamName forKey:KEY_FOR_TEAM_NAME];
+    NSString* postDataStr = [NSString stringWithFormat:@"%@=%@", KEY_FOR_GAME_SEASON, self.sessionNo];
+    postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_GAME_TYPE, self.gameType]];
+    postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_GAME_NO, self.gameNo]];
+    postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_TEAM_NAME, self.myTeamName]];
     
     for(int quarterNo=1; quarterNo<5; quarterNo++)
     {
@@ -1421,7 +1412,7 @@
         NSDictionary* totalDic = [teamGradeDic objectForKey:KEY_FOR_TOTAL];
         NSString* totalScoreGetInTheQuarter = [totalDic objectForKey:KEY_FOR_TOTAL_SCORE_GET];
         NSString* key = [NSString stringWithFormat:@"homeQ%dScore", quarterNo];
-        [postDataDic setObject:totalScoreGetInTheQuarter forKey:key];
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", key, totalScoreGetInTheQuarter]];
     }
     if(self.quarterNo > 4)
     {
@@ -1432,31 +1423,21 @@
             NSDictionary* totalDic = [teamGradeDic objectForKey:KEY_FOR_TOTAL];
             NSString* totalScoreGetInTheQuarter = [totalDic objectForKey:KEY_FOR_TOTAL_SCORE_GET];
             NSString* key = [NSString stringWithFormat:@"homeOt%dScore", quarterNo];
-            [postDataDic setObject:totalScoreGetInTheQuarter forKey:key];
+            postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", key, totalScoreGetInTheQuarter]];
         }
     }
         
-    NSError* error = nil;
-    NSData* data = [NSJSONSerialization dataWithJSONObject:postDataDic options:0 error:&error];
-    if(error)
-        NSLog(@"%@", error);
-        
+    NSData* data = [postDataStr dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
     NSString *postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[data length]];
-        
+    
+    NSURL* url = [NSURL URLWithString:URL_FOR_GAME_SCORE_REQUEST];
+    NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:url];
+    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    [request setHTTPMethod:@"POST"];
     [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
     [request setHTTPBody:data];
         
-    error = nil;
-    NSURLResponse *response = nil;
-    NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-        
-    if(responseData)
-    {
-        NSDictionary *results = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments  error:&error];
-        NSLog(@"res---%@", results);
-    }
-    else
-        NSLog(@"No responseData");
+    [[NSURLConnection alloc]initWithRequest:request delegate:self];
 }
 
 - (void)sendTimeLineToBasketballBiji
@@ -1471,87 +1452,74 @@
         for(NSDictionary* eventDic in timeLineRecordArray)
         {
             NSMutableURLRequest* request = [[NSMutableURLRequest alloc] init];
-            [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-            [request setHTTPMethod:@"POST"];
             
-            NSMutableDictionary* postDataDic = [[NSMutableDictionary alloc] init];
-            [postDataDic setObject:self.sessionNo forKey:KEY_FOR_GAME_SEASON];
-            [postDataDic setObject:self.gameType forKey:KEY_FOR_GAME_TYPE];
-            [postDataDic setObject:self.gameNo forKey:KEY_FOR_GAME_NO];
-            [postDataDic setObject:[NSString stringWithFormat:@"%d", quarterNo] forKey:KEY_FOR_GAME_QUARTER];
-            [postDataDic setObject:self.myTeamName forKey:KEY_FOR_TEAM_NAME];
+            NSString* postDataStr = [NSString stringWithFormat:@"%@=%@", KEY_FOR_GAME_SEASON, self.sessionNo];
+            postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_GAME_TYPE, self.gameType]];
+            postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_GAME_NO, self.gameNo]];
+            postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_GAME_QUARTER, [NSString stringWithFormat:@"%d", quarterNo]]];
+            postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_TEAM_NAME, self.myTeamName]];
             
             NSString* eventType = [eventDic objectForKey:KEY_FOR_TYPE];
             
             NSArray* timeStr = [[eventDic objectForKey:KEY_FOR_TIME] componentsSeparatedByString:@":"];
-            [postDataDic setObject:timeStr[0] forKey:KEY_FOR_QUARTER_MIN];
-            [postDataDic setObject:timeStr[1] forKey:KEY_FOR_QUARTER_SEC];
+            postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_QUARTER_MIN, timeStr[0]]];
+            postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_QUARTER_SEC, timeStr[1]]];
             
             if([eventType isEqualToString:SIGNAL_FOR_NORMAL])
             {
                 [request setURL:urlForNormal];
-                [postDataDic setObject:[eventDic objectForKey:KEY_FOR_PLAYER_NO] forKey:KEY_FOR_PLAYER_NO];
-                [postDataDic setObject:[eventDic objectForKey:KEY_FOR_OFF_MODE] forKey:KEY_FOR_OFF_MODE];
+                postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_PLAYER_NO, [eventDic objectForKey:KEY_FOR_PLAYER_NO]]];
+                postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_OFF_MODE, [eventDic objectForKey:KEY_FOR_OFF_MODE]]];
                 NSString* shotMode = [eventDic objectForKey:KEY_FOR_SHOT_MODE];
-                [postDataDic setObject:shotMode forKey:KEY_FOR_SHOT_MODE];
+                postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_SHOT_MODE, shotMode]];
                 
                 NSString* result = [eventDic objectForKey:KEY_FOR_RESULT];
-                [postDataDic setObject:result forKey:KEY_FOR_RESULT];
+                postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_RESULT, result]];
                 
                 if([result isEqualToString:SIGNAL_FOR_FOUL] || [result isEqualToString:SIGNAL_FOR_AND_ONE])
                 {
                     NSString* bonusStr = [eventDic objectForKey:KEY_FOR_BONUS];
                     NSArray* bonus = [bonusStr componentsSeparatedByString:@"-"];
-                    [postDataDic setObject:bonus[0] forKey:KEY_FOR_FT_MADE];
-                    [postDataDic setObject:bonus[1] forKey:KEY_FOR_FT_ATTEMPT];
+                    postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_FT_MADE, bonus[0]]];
+                    postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_FT_ATTEMPT, bonus[1]]];
                 }
                 if(![shotMode isEqualToString:SIGNAL_FOR_TURNOVER])
-                    [postDataDic setObject:[eventDic objectForKey:KEY_FOR_PTS] forKey:KEY_FOR_POINT];
+                    postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_POINT, [eventDic objectForKey:KEY_FOR_PTS]]];
             }
             else if([eventType isEqualToString:SIGNAL_FOR_BONUS])
             {
                 [request setURL:urlForNormal];
-                [postDataDic setObject:[eventDic objectForKey:KEY_FOR_PLAYER_NO] forKey:KEY_FOR_PLAYER_NO];
-                [postDataDic setObject:SIGNAL_FOR_BONUS forKey:KEY_FOR_OFF_MODE];
+                postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_PLAYER_NO, [eventDic objectForKey:KEY_FOR_PLAYER_NO]]];
+                postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_OFF_MODE, SIGNAL_FOR_BONUS]];
                 
                 NSString* bonusStr = [eventDic objectForKey:KEY_FOR_BONUS];
                 NSArray* bonus = [bonusStr componentsSeparatedByString:@"-"];
-                [postDataDic setObject:bonus[0] forKey:KEY_FOR_FT_MADE];
-                [postDataDic setObject:bonus[1] forKey:KEY_FOR_FT_ATTEMPT];
+                postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_FT_MADE, bonus[0]]];
+                postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_FT_ATTEMPT, bonus[1]]];
                 
-                [postDataDic setObject:[eventDic objectForKey:KEY_FOR_PTS] forKey:KEY_FOR_POINT];
+                postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_POINT, [eventDic objectForKey:KEY_FOR_PTS]]];
             }
             else// if([eventType isEqualToString:SIGNAL_FOR_EXCHANGE])
             {
                 [request setURL:urlForUpAndDown];
                 NSString* upAndDownStr = [eventDic objectForKey:KEY_FOR_RESULT];
                 NSArray* upAndDown = [upAndDownStr componentsSeparatedByString:@"↑"];
-                [postDataDic setObject:upAndDown[0] forKey:KEY_FOR_UP_ONE];
+                postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_UP_ONE, upAndDown[0]]];
                 
                 NSArray* down = [upAndDown[1] componentsSeparatedByString:@"↓"];
-                [postDataDic setObject:down[0] forKey:KEY_FOR_DOWN_ONE];
+                postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_DOWN_ONE, down[0]]];
             }
             
-            NSError* error = nil;
-            NSData* data = [NSJSONSerialization dataWithJSONObject:postDataDic options:0 error:&error];
-            if(error)
-                NSLog(@"%@", error);
             
+            NSData* data = [postDataStr dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
             NSString *postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[data length]];
             
+            [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+            [request setHTTPMethod:@"POST"];
             [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
             [request setHTTPBody:data];
             
-            error = nil;
-            NSURLResponse *response = nil;
-            NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-            
-            if(responseData)  {
-                NSDictionary *results = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments  error:&error];
-                NSLog(@"res---%@", results);
-            }
-            else
-                NSLog(@"No responseData");
+            [[NSURLConnection alloc]initWithRequest:request delegate:self];
         }
         quarterNo++;
     }
@@ -1564,16 +1532,12 @@
     NSArray* totalGradeOftheGameArr = [self.playerDataArray objectAtIndex:QUARTER_NO_FOR_ENTIRE_GAME];
     for(NSDictionary* playerGradeDic in totalGradeOftheGameArr)
     {
-        NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:url];
-        [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-        [request setHTTPMethod:@"POST"];
+        NSString* postDataStr = [NSString stringWithFormat:@"%@=%@", KEY_FOR_GAME_SEASON, self.sessionNo];
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_GAME_TYPE, self.gameType]];
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_GAME_NO, self.gameNo]];
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_PLAYER_NO, [playerGradeDic objectForKey:KEY_FOR_PLAYER_NO]]];
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_TEAM_NAME, self.myTeamName]];
         
-        NSMutableDictionary* postDataDic = [[NSMutableDictionary alloc] init];
-        [postDataDic setObject:self.sessionNo forKey:KEY_FOR_GAME_SEASON];
-        [postDataDic setObject:self.gameType forKey:KEY_FOR_GAME_TYPE];
-        [postDataDic setObject:self.gameNo forKey:KEY_FOR_GAME_NO];
-        [postDataDic setObject:self.myTeamName forKey:KEY_FOR_TEAM_NAME];
-        [postDataDic setObject:[playerGradeDic objectForKey:KEY_FOR_PLAYER_NO] forKey:KEY_FOR_PLAYER_NO];
         for(int i=1; i<12; i++)
         {
             NSString* key = [NSString stringWithFormat:@"zone%d", i];
@@ -1584,35 +1548,49 @@
             if(attemptCount != 0)
                 percent = madeCount/attemptCount*100;
             key = [NSString stringWithFormat:@"zone%dMade", i];
-            [postDataDic setObject:[NSString stringWithFormat:@"%.0f", madeCount] forKey:key];
+            postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", key, [NSString stringWithFormat:@"%.0f", madeCount]]];
             
             key = [NSString stringWithFormat:@"zone%dAtt", i];
-            [postDataDic setObject:[NSString stringWithFormat:@"%.0f", attemptCount] forKey:key];
+            postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", key, [NSString stringWithFormat:@"%.0f", attemptCount]]];
             
             key = [NSString stringWithFormat:@"zone%dPct", i];
-            [postDataDic setObject:[NSString stringWithFormat:@"%.0f", percent] forKey:key];
+            postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", key, [NSString stringWithFormat:@"%.0f", percent]]];
         }
-        NSError* error = nil;
-        NSData* data = [NSJSONSerialization dataWithJSONObject:postDataDic options:0 error:&error];
-        if(error)
-            NSLog(@"%@", error);
         
+        NSData* data = [postDataStr dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
         NSString *postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[data length]];
         
+        NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:url];
+        [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+        [request setHTTPMethod:@"POST"];
         [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
         [request setHTTPBody:data];
         
-        error = nil;
-        NSURLResponse *response = nil;
-        NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-        
-        if(responseData)  {
-            NSDictionary *results = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments  error:&error];
-            NSLog(@"res---%@", results);
-        }
-        else
-            NSLog(@"No responseData");
+        [[NSURLConnection alloc]initWithRequest:request delegate:self];
     }
+}
+
+#pragma mark - NSURLConnectionDataDelegate
+
+-(void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
+{
+    self.receiveData = [NSMutableData data];
+}
+
+-(void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
+{
+    [self.receiveData appendData:data];
+}
+
+-(void)connectionDidFinishLoading:(NSURLConnection *)connection
+{
+    NSString *receiveStr = [[NSString alloc]initWithData:self.receiveData encoding:NSUTF8StringEncoding];
+    NSLog(@"%@",receiveStr);
+}
+
+-(void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
+{
+    NSLog(@"%@",[error localizedDescription]);
 }
 
 #pragma mark - DataStruct Updating

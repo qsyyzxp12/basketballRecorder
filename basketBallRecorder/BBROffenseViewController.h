@@ -11,7 +11,7 @@
 #import "BBRMenuViewController.h"
 #import <DropboxSDK/DropboxSDK.h>
 
-@interface BBROffenseViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, DBRestClientDelegate>
+@interface BBROffenseViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, DBRestClientDelegate, NSURLConnectionDataDelegate>
 @property UITableView *playerListTableView;
 @property UITableView *playerOnFloorListTableView;
 @property UITableView *playerDataTableView;
@@ -21,6 +21,7 @@
 @property NSMutableArray* OldPlayerDataArray;
 @property NSMutableArray* timeLineReordeArray;
 @property NSMutableArray* fileNamesInDropbox;
+@property NSMutableData* receiveData;
 @property NSArray* attackWaySet;
 @property NSArray* attackWayKeySet;
 @property NSArray* playerNoSet;

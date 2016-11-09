@@ -275,9 +275,10 @@
 
 -(void) xlsxFileGenerateAndUpload: (NSNumber*) quarterNo
 {
-    [self performSelectorInBackground:@selector(sendDataToBasketballBiji) withObject:nil];
+    if(self.isSBLGame)
+        [self performSelectorOnMainThread:@selector(sendDataToBasketballBiji) withObject:nil waitUntilDone:NO];
     
-    
+#ifdef Dropbox
     //Generate the xlsx file
     NSString *documentPath = [[NSBundle mainBundle] pathForResource:@"spreadsheet_for_defense" ofType:@"xlsx"];
     BRAOfficeDocumentPackage *spreadsheet = [BRAOfficeDocumentPackage open:documentPath];
@@ -387,6 +388,7 @@
     NSArray* agus = [[NSArray alloc] initWithObjects:dropBoxpath, localPath, nil];
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
     //  [self.restClient uploadFile:filename toPath:@"/" withParentRev:nil fromPath:sheetPath];
+#endif
 }
 
 -(void)sendDataToBasketballBiji
@@ -400,57 +402,42 @@
         NSDictionary* badDic = [playerGradeDic objectForKey:KEY_FOR_BAD];
         NSDictionary* deflectionDic = [playerGradeDic objectForKey:KEY_FOR_DEFLECTION];
         
-        NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:url];
-        [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-        [request setHTTPMethod:@"POST"];
-        
-        NSMutableDictionary* postDataDic = [[NSMutableDictionary alloc] init];
-        [postDataDic setObject:self.sessionNo forKey:KEY_FOR_GAME_SEASON];
-        [postDataDic setObject:self.gameType forKey:KEY_FOR_GAME_TYPE];
-        [postDataDic setObject:self.gameNo forKey:KEY_FOR_GAME_NO];
-        [postDataDic setObject:self.myTeamName forKey:KEY_FOR_TEAM_NAME];
-        [postDataDic setObject:[playerGradeDic objectForKey:KEY_FOR_PLAYER_NO] forKey:KEY_FOR_PLAYER_NO];
+        NSString* postDataStr = [NSString stringWithFormat:@"%@=%@", KEY_FOR_GAME_SEASON, self.sessionNo];
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_GAME_TYPE, self.gameType]];
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_GAME_NO, self.gameNo]];
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_TEAM_NAME, self.myTeamName]];
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_PLAYER_NO, [playerGradeDic objectForKey:KEY_FOR_PLAYER_NO]]];
         
         for(int i=0; i<8; i++)
         {
             NSString* key = [self.defenseWayKeySet objectAtIndex:i];
-            [postDataDic setObject:[deflectionDic objectForKey:key] forKey:key];
+            postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", key, [deflectionDic objectForKey:key]]];
         }
         for(int i=8; i<12; i++)
         {
             NSString* key = [self.defenseWayKeySet objectAtIndex:i];
-            [postDataDic setObject:[goodDic objectForKey:key] forKey:key];
+            postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", key, [goodDic objectForKey:key]]];
         }
         for(int i=12; i<17; i++)
         {
             NSString* key = [self.defenseWayKeySet objectAtIndex:i];
-            [postDataDic setObject:[badDic objectForKey:key] forKey:key];
+            postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", key, [badDic objectForKey:key]]];
         }
         
-        [postDataDic setObject:[deflectionDic objectForKey:KEY_FOR_TOTAL_COUNT] forKey:KEY_FOR_DEFLECTION];
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_DEFLECTION, [deflectionDic objectForKey:KEY_FOR_TOTAL_COUNT]]];
         int total = [[deflectionDic objectForKey:KEY_FOR_TOTAL_COUNT] intValue] + [[goodDic objectForKey:KEY_FOR_TOTAL_COUNT] intValue] - [[badDic objectForKey:KEY_FOR_TOTAL_COUNT] intValue];
-        [postDataDic setObject:[NSString stringWithFormat:@"%d", total] forKey:KEY_FOR_TOTAL_COUNT];
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_TOTAL_COUNT, [NSString stringWithFormat:@"%d", total]]];
         
-        NSError* error = nil;
-        NSData* data = [NSJSONSerialization dataWithJSONObject:postDataDic options:0 error:&error];
-        if(error)
-            NSLog(@"%@", error);
-        
+        NSData* data = [postDataStr dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
         NSString *postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[data length]];
         
+        NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:url];
+        [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+        [request setHTTPMethod:@"POST"];
         [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
         [request setHTTPBody:data];
         
-        error = nil;
-        NSURLResponse *response = nil;
-        NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-        
-        if(responseData)  {
-            NSDictionary *results = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments  error:&error];
-            NSLog(@"res---%@", results);
-        }
-        else
-            NSLog(@"No responseData");
+        [[NSURLConnection alloc]initWithRequest:request delegate:self];
     }
 }
 
@@ -479,6 +466,29 @@
             return [self addDefenseXlsxFileVersionNumber:no+1];
     }
     return fileName;
+}
+
+#pragma mark - NSURLConnectionDataDelegate
+
+-(void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
+{
+    self.receiveData = [NSMutableData data];
+}
+
+-(void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
+{
+    [self.receiveData appendData:data];
+}
+
+-(void)connectionDidFinishLoading:(NSURLConnection *)connection
+{
+    NSString *receiveStr = [[NSString alloc]initWithData:self.receiveData encoding:NSUTF8StringEncoding];
+    NSLog(@"%@",receiveStr);
+}
+
+-(void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
+{
+    NSLog(@"%@",[error localizedDescription]);
 }
 
 #pragma mark - DataStruct Updating

@@ -290,8 +290,9 @@
 
 -(void) xlsxFileGenerateAndUpload
 {
-    [self performSelectorOnMainThread:@selector(sendDataToBasketballBiji) withObject:nil waitUntilDone:NO];
-   // [self performSelectorOnMainThread:@selector(sendDataToBasketballBiji) withObject:nil];
+    if(self.isSBLGame)
+        [self performSelectorOnMainThread:@selector(sendDataToBasketballBiji) withObject:nil waitUntilDone:NO];
+    
 #ifdef Dropbox
     //Generate the xlsx file
     NSString *documentPath = [[NSBundle mainBundle] pathForResource:@"spreadsheet_for_boxScore" ofType:@"xlsx"];
@@ -489,7 +490,6 @@
         [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
         [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
         [request setHTTPMethod:@"POST"];
-    
         [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
         [request setHTTPBody:data];
         
@@ -528,8 +528,6 @@
 
 -(void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
-    NSHTTPURLResponse *res = (NSHTTPURLResponse *)response;
-    NSLog(@"xxxxx %@",[res allHeaderFields]);
     self.receiveData = [NSMutableData data];
 }
 
@@ -544,8 +542,7 @@
     NSLog(@"%@",receiveStr);
 }
 
--(void)connection:(NSURLConnection *)connection
- didFailWithError:(NSError *)error
+-(void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
     NSLog(@"%@",[error localizedDescription]);
 }
