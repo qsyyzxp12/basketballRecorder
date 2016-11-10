@@ -39,6 +39,7 @@
 
 #define TITLE_FOR_PLAYER_NO_TABLEVIEW @"球員"
 #define NAME_OF_NTU_MALE_BASKETBALL @"台大校男籃"
+#define PASSWORD_FOR_BASKETBALL_BIJI @"ntumbteam"
 
 //Segue ID
 #define SEGUE_ID_FOR_DEFENSE @"showDefenseController"
@@ -59,6 +60,7 @@
 #define KEY_FOR_PLAYER_NO_SET @"PlayerNoSet"
 #define KEY_FOR_ON_FLOOR_PLAYER_DATA @"PlayersOnFloorData"
 #define KEY_FOR_DATE @"Date"
+#define KEY_FOR_IS_SBL_GAME @"isSBLGame"
 
 //Offense - OffMode
 #define TITLE_FOR_FASTBREAK @"快攻(F)"
@@ -163,7 +165,7 @@
 #define SIGNAL_FOR_NORMAL @"Normal"
 #define SIGNAL_FOR_BONUS @"bonus"
 #define SIGNAL_FOR_FOUL @"foul"
-#define SIGNAL_FOR_AND_ONE @"And 1"
+#define SIGNAL_FOR_AND_ONE @"and1"
 #define SIGNAL_FOR_ATTEMPT @"noMade"
 #define SIGNAL_FOR_MADE @"made"
 #define SIGNAL_FOR_TURNOVER @"turnover"
@@ -249,6 +251,7 @@
 #define KEY_FOR_DOWN_FIVE @"downPlayer5No"
 
 //Key For Post Request "updateSblGameScores"
+#define KEY_FOR_HOME_TEAM_NAME @"homeTeamName"
 #define KEY_FOR_HOME_Q1_SCORE @"homeQ1Score"
 #define KEY_FOR_HOME_Q2_SCORE @"homeQ2Score"
 #define KEY_FOR_HOME_Q3_SCORE @"homeQ3Score"

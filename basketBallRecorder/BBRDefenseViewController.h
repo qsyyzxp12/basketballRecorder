@@ -31,6 +31,8 @@
 @property BOOL isLoadingRootMeta;
 @property BOOL isFolderExistAlready;
 @property BOOL isSBLGame;
+@property BOOL isSenDataToBijiFinished;
+@property BOOL isUploadXlsxFilesFinished;
 @property int playerCount;
 @property int playerSelectedIndex;
 @property int quarterNo;
@@ -40,6 +42,7 @@
 @property UIAlertController* nextQuarterAlert;
 @property UIAlertController* finishOrNotAlert;
 @property UIAlertController* playoffOrNotAlert;
+@property UIAlertController* wrongPwAlert;
 @property NSString* myTeamName;
 @property NSString* tmpPlistPath;
 @property NSString* recordName;
@@ -54,6 +57,7 @@
 @property UIButton* timeButton;
 @property NSTimer* timer;
 @property UIView* spinView;
+@property UIView* pwView;
 @property UILabel* loadingLabel;
 @property UIActivityIndicatorView* spinner;
 @property UIBarButtonItem* rightBarButton;

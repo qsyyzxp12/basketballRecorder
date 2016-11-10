@@ -84,7 +84,61 @@
         self.isTmpPlistExist = YES;
         [self presentViewController:self.dirtyStatusAlert animated:YES completion:nil];
     }
+    
+   /* gameSeason=14&gameType=例行賽&gameNo=1&gameQuarter=1&teamName=富邦勇士&quarterMin=00&quarterSec=02&upPlayer1No=7&downPlayer1No=1
+    2016-11-10 15:37:18.400 basketBallRecorder[29747:1746396] gameSeason=14&gameType=例行賽&gameNo=1&gameQuarter=1&teamName=富邦勇士&quarterMin=00&quarterSec=06&upPlayer1No=1&downPlayer1No=7
+    2016-11-10 15:37:18.401 basketBallRecorder[29747:1746396] gameSeason=14&gameType=例行賽&gameNo=1&gameQuarter=1&teamName=富邦勇士&quarterMin=00&quarterSec=11&playerNo=1&offMode=fb&shotMode=drive&result=noMade&point=0
+    2016-11-10 15:37:18.401 basketBallRecorder[29747:1746396] gameSeason=14&gameType=例行賽&gameNo=1&gameQuarter=1&teamName=富邦勇士&quarterMin=00&quarterSec=21&playerNo=2&offMode=isolation&shotMode=drive&result=made&point=2
+    2016-11-10 15:37:18.402 basketBallRecorder[29747:1746396] gameSeason=14&gameType=例行賽&gameNo=1&gameQuarter=1&teamName=富邦勇士&quarterMin=00&quarterSec=27&playerNo=3&offMode=cut&shotMode=su&result=foul&ftMade=1&ftAtt=2&point=1
+    2016-11-10 15:37:18.403 basketBallRecorder[29747:1746396] gameSeason=14&gameType=例行賽&gameNo=1&gameQuarter=1&teamName=富邦勇士&quarterMin=00&quarterSec=34&playerNo=4&offMode=os&shotMode=pu&result=and1&ftMade=0&ftAtt=1&point=3
+    2016-11-10 15:37:18.407 basketBallRecorder[29747:1746396] gameSeason=14&gameType=例行賽&gameNo=1&gameQuarter=1&teamName=富邦勇士&quarterMin=00&quarterSec=41&playerNo=5&offMode=hp&shotMode=hl&result=made&point=2
+    
+    2016-11-10 15:37:18.407 basketBallRecorder[29747:1746396] gameSeason=14&gameType=例行賽&gameNo=1&gameQuarter=1&teamName=富邦勇士&quarterMin=00&quarterSec=47&playerNo=5&offMode=hp&shotMode=turnover&result=Line
+    
+    NSMutableURLRequest* request = [[NSMutableURLRequest alloc] init];
+    
+    NSURL* urlForNormal = [NSURL URLWithString:URL_FOR_TIME_LINE_REQUEST];
+    NSURL* urlForUpAndDown = [NSURL URLWithString:URL_FOR_TIME_LINE_UP_AND_DOWN_REQUEST];
+    [request setURL:urlForUpAndDown];
+    NSString* postDataStr = @"gameSeason=14&gameType=例行賽&gameNo=1&gameQuarter=1&teamName=富邦勇士&quarterMin=00&quarterSec=02&upPlayer1No=7&downPlayer1No=1";
+    NSData* data = [postDataStr dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
+    NSString *postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[data length]];
+    
+    NSLog(@"Post Request : %@", postDataStr);
+    
+    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    [request setHTTPMethod:@"POST"];
+    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+    [request setHTTPBody:data];
+    
+    [[NSURLConnection alloc]initWithRequest:request delegate:self];
+    */
 }
+
+/***********************************************************************************************/
+
+-(void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
+{
+    self.receiveData = [NSMutableData data];
+}
+
+-(void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
+{
+    [self.receiveData appendData:data];
+}
+
+-(void)connectionDidFinishLoading:(NSURLConnection *)connection
+{
+    NSString *receiveStr = [[NSString alloc]initWithData:self.receiveData encoding:NSUTF8StringEncoding];
+    NSLog(@"%@",receiveStr);
+}
+
+-(void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
+{
+    NSLog(@"%@",[error localizedDescription]);
+}
+
+/***********************************************************************************************/
 
 -(void) viewWillAppear:(BOOL)animated
 {

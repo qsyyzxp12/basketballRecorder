@@ -51,6 +51,8 @@
 @property BOOL isLoadingRootMeta;
 @property BOOL isFolderExistAlready;
 @property BOOL isSBLGame;
+@property BOOL isSenDataToBijiFinished;
+@property BOOL isUploadXlsxFilesFinished;
 @property int uploadFilesCount;
 @property int playerCount;
 @property int playerSelectedIndex;
@@ -65,6 +67,7 @@
 @property UIAlertController* playoffOrNotAlert;
 @property UIAlertController* finishOrNotAlert;
 @property UIAlertController* bonusAlert;
+@property UIAlertController* wrongPwAlert;
 @property UIImageView* backgroundImageView;
 @property NSString* tmpPlistPath;
 @property NSString* opponentName;
@@ -82,6 +85,7 @@
 @property UIButton* timeButton;
 @property NSTimer* timer;
 @property UIView* spinView;
+@property UIView* pwView;
 @property UILabel* loadingLabel;
 @property UIActivityIndicatorView* spinner;
 @property int bar_height;

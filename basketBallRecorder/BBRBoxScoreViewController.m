@@ -135,6 +135,10 @@
     noAction = [UIAlertAction actionWithTitle:@"否" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action){}];
     [self.finishOrNotAlert addAction:yesAction];
     [self.finishOrNotAlert addAction:noAction];
+    
+    self.wrongPwAlert = [UIAlertController alertControllerWithTitle:@"密碼錯誤" message:nil preferredStyle:UIAlertControllerStyleAlert];
+    yesAction = [UIAlertAction actionWithTitle:@"好" style:UIAlertActionStyleDefault handler:nil];
+    [self.wrongPwAlert addAction:yesAction];
 }
 
 -(void) goNextQuarter
@@ -216,6 +220,11 @@
         [self.view addSubview:self.spinView];
         [self.view addSubview:self.spinner];
         [self.view addSubview:self.loadingLabel];
+        if(self.isSBLGame)
+        {
+            self.isSenDataToBijiFinished = NO;
+            [self.view addSubview:self.pwView];
+        }
         
         [self performSelectorInBackground:@selector(xlsxFileGenerateAndUpload) withObject:[NSNumber numberWithInt:self.quarterNo]];
         self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] init];
@@ -260,6 +269,7 @@
     self.recordName = [tmpPlistDic objectForKey:KEY_FOR_NAME];
     self.timeCounter = [(NSNumber*)[tmpPlistDic objectForKey:KEY_FOR_TIME] intValue];
     self.playerCount = (int)[self.playerNoSet count];
+    self.isSBLGame = [(NSNumber*)[tmpPlistDic objectForKey:KEY_FOR_IS_SBL_GAME] boolValue];
     
     [self updateNavigationTitle];
     if(self.quarterNo > 3)
@@ -290,9 +300,6 @@
 
 -(void) xlsxFileGenerateAndUpload
 {
-    if(self.isSBLGame)
-        [self performSelectorOnMainThread:@selector(sendDataToBasketballBiji) withObject:nil waitUntilDone:NO];
-    
 #ifdef Dropbox
     //Generate the xlsx file
     NSString *documentPath = [[NSBundle mainBundle] pathForResource:@"spreadsheet_for_boxScore" ofType:@"xlsx"];
@@ -628,6 +635,7 @@
     [tmpPlistDic setObject:self.recordName forKey:KEY_FOR_NAME];
     [tmpPlistDic setObject:[NSNumber numberWithInt:0] forKey:KEY_FOR_TIME];
     [tmpPlistDic setObject:BOX_RECORD_TYPE_DATA forKey:KEY_FOR_DATA_TYPE];
+    [tmpPlistDic setObject:[NSNumber numberWithBool:self.isSBLGame] forKey:KEY_FOR_IS_SBL_GAME];
     
     [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
     
@@ -908,9 +916,73 @@
     self.spinner.frame = CGRectMake(CGRectGetMinX(self.loadingLabel.frame), CGRectGetMaxY(self.loadingLabel.frame), 100, 30);
     self.spinner.backgroundColor = [UIColor whiteColor];
     [self.spinner startAnimating];
+    
+    
+    self.pwView = [[UIView alloc] initWithFrame:CGRectMake(CGRectGetWidth(self.view.frame)*0.3, CGRectGetHeight(self.view.frame)*0.2, CGRectGetWidth(self.view.frame)*0.4, CGRectGetHeight(self.view.frame)*0.6)];
+    self.pwView.layer.cornerRadius = 10;
+    self.pwView.backgroundColor = [UIColor whiteColor];
+    
+    UILabel* titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, CGRectGetHeight(self.pwView.frame)*0.1, CGRectGetWidth(self.pwView.frame), CGRectGetHeight(self.pwView.frame)*0.1)];
+    titleLabel.text = @"密碼";
+    titleLabel.textAlignment = NSTextAlignmentCenter;
+    [titleLabel setFont:[UIFont systemFontOfSize:20]];
+    [self.pwView addSubview:titleLabel];
+    
+    UILabel* explainLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, CGRectGetHeight(self.pwView.frame)*0.3, CGRectGetWidth(self.pwView.frame), CGRectGetHeight(self.pwView.frame)*0.2)];
+    explainLabel.text = @"輸入密碼已傳送資料給籃球筆記\n，或按略過跳過此步驟。";
+    explainLabel.numberOfLines = 2;
+    explainLabel.textAlignment = NSTextAlignmentCenter;
+    [explainLabel setFont:[UIFont systemFontOfSize:15]];
+    [self.pwView addSubview:explainLabel];
+    
+    UITextField* pwTextField = [[UITextField alloc] initWithFrame:CGRectMake(CGRectGetWidth(self.pwView.frame)*0.15, CGRectGetHeight(self.pwView.frame)*0.6, CGRectGetWidth(self.pwView.frame)*0.7, CGRectGetHeight(self.pwView.frame)*0.1)];
+    pwTextField.layer.cornerRadius = 5;
+    pwTextField.layer.borderWidth = 1;
+    pwTextField.tag = 1;
+    pwTextField.textAlignment = NSTextAlignmentCenter;
+    pwTextField.secureTextEntry = YES;
+    [self.pwView addSubview:pwTextField];
+    
+    UIButton* okButton = [[UIButton alloc] initWithFrame:CGRectMake(0, CGRectGetHeight(self.pwView.frame)*0.8, CGRectGetWidth(self.pwView.frame)*0.5, CGRectGetHeight(self.pwView.frame)*0.1)];
+    [okButton addTarget:self action:@selector(pwViewOkButtonClicked) forControlEvents:UIControlEventTouchUpInside];
+    [okButton setTitle:@"確定" forState:UIControlStateNormal];
+    [okButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [okButton setTitleColor:[UIColor grayColor] forState:UIControlStateHighlighted];
+    [self.pwView addSubview:okButton];
+    
+    UIButton* skipButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetMaxX(okButton.frame), CGRectGetHeight(self.pwView.frame)*0.8, CGRectGetWidth(self.pwView.frame)*0.5, CGRectGetHeight(self.pwView.frame)*0.1)];
+    [skipButton addTarget:self action:@selector(pwViewSkipButtonClicked) forControlEvents:UIControlEventTouchUpInside];
+    [skipButton setTitle:@"略過" forState:UIControlStateNormal];
+    [skipButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [skipButton setTitleColor:[UIColor grayColor] forState:UIControlStateHighlighted];
+    [self.pwView addSubview:skipButton];
 }
 
 #pragma mark - Button Clicked
+
+- (void)pwViewOkButtonClicked
+{
+    UITextField* pwTextField = (UITextField*)[self.pwView viewWithTag:1];
+    if(![pwTextField.text isEqualToString:PASSWORD_FOR_BASKETBALL_BIJI])
+    {
+        [self presentViewController:self.wrongPwAlert animated:YES completion:nil];
+        return;
+    }
+    [self.pwView removeFromSuperview];
+    [self sendDataToBasketballBiji];
+    self.isSenDataToBijiFinished = YES;
+    if(self.isUploadXlsxFilesFinished)
+        [self removeSpinningView];
+}
+
+- (void)pwViewSkipButtonClicked
+{
+    [self.pwView removeFromSuperview];
+    self.isSenDataToBijiFinished = YES;
+    if(self.isUploadXlsxFilesFinished)
+        [self removeSpinningView];
+}
+
 
 -(void) buttonClicked:(UIButton*) button
 {
@@ -1400,7 +1472,10 @@
               from:(NSString *)srcPath metadata:(DBMetadata *)metadata
 {
     NSLog(@"File uploaded successfully to path: %@", metadata.path);
-    [self performSelectorOnMainThread:@selector(removeSpinningView) withObject:nil waitUntilDone:NO];
+    
+    self.isUploadXlsxFilesFinished = YES;
+    if((self.isSBLGame && self.isSenDataToBijiFinished) || !self.isSBLGame)
+        [self performSelectorOnMainThread:@selector(removeSpinningView) withObject:nil waitUntilDone:NO];
 }
 
 - (void)restClient:(DBRestClient *)client uploadFileFailedWithError:(NSError *)error {

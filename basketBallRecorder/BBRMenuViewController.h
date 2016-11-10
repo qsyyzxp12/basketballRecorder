@@ -12,7 +12,7 @@
 enum XlsxType{PPP, SHOT_CHART};
 enum LoadMetaType {PPP_AND_SHOT_CHART, FILE_NAMES, FOLDER_EXIST};
 
-@interface BBRMenuViewController : UIViewController <DBRestClientDelegate>
+@interface BBRMenuViewController : UIViewController <DBRestClientDelegate, NSURLConnectionDataDelegate>
 @property (weak, nonatomic) IBOutlet UIButton *addNewCompetitionButton;
 @property (weak, nonatomic) IBOutlet UIButton *lastCompetitionButton;
 @property (weak, nonatomic) IBOutlet UIButton *lastStatusButton;
@@ -48,6 +48,8 @@ enum LoadMetaType {PPP_AND_SHOT_CHART, FILE_NAMES, FOLDER_EXIST};
 @property int buttonClickedNo;
 @property int showOldRecordNo;
 @property int uploadFilesCount;
+
+@property NSMutableData* receiveData;
 
 @property (nonatomic, strong) DBRestClient *restClient;
 @end
