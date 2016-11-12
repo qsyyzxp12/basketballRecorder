@@ -20,7 +20,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+    /*
     self.playerOnFloorDataArray = [NSMutableArray arrayWithCapacity:5];
     for(int i=0; i<5; i++)
     {
@@ -28,7 +28,7 @@
         [dic setObject:[NSNumber numberWithInt:0] forKey:KEY_FOR_TIME_WHEN_GO_ON_FLOOR];
         [dic setObject:[NSNumber numberWithInt:i+1] forKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
         [self.playerOnFloorDataArray setObject:dic atIndexedSubscript:i];
-    }
+    }*/
     
     self.tmpPlistPath = [NSString stringWithFormat:@"%@/Documents/tmp.plist", NSHomeDirectory()];
     self.isRecordMode = YES;
@@ -56,14 +56,7 @@
         [self reloadPlayerGradeFromTmpPlist];
     else if(self.showOldRecordNo)
         [self reloadPlayerGradeFromRecordPlist];
-    else
-    {
-        [self newPlayerGradeDataStruct];
-        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] init];
-        self.navigationItem.leftBarButtonItem.title = @"＜球員登入";
-        self.navigationItem.leftBarButtonItem.target = self;
-        self.navigationItem.leftBarButtonItem.action = @selector(backButtonClicked);
-    }
+    
     int tableViewHeight = TITLE_CELL_HEIGHT + CELL_HEIGHT * (self.playerCount+1) + bar_height;
     if (tableViewHeight + 20 > self.view.frame.size.height)
         tableViewHeight = self.view.frame.size.height - 20;
@@ -90,6 +83,21 @@
     self.playerDataTableView.dataSource = self;
     self.playerDataTableView.hidden = YES;
     [self.view addSubview:self.playerDataTableView];
+    
+    if(self.isTmpPlistExist)
+    {
+        if(self.playerOnFloorDataArray.count < 5)
+            [self presentStartingLineUpView];
+    }
+    else if(!self.showOldRecordNo)
+    {
+        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] init];
+        self.navigationItem.leftBarButtonItem.title = @"＜球員登入";
+        self.navigationItem.leftBarButtonItem.target = self;
+        self.navigationItem.leftBarButtonItem.action = @selector(backButtonClicked);
+        [self presentStartingLineUpView];
+        [self newPlayerGradeDataStruct];
+    }
     
     if(self.quarterNo == END)
         [self showConclusionAndGernateXlsxFile:NO];
@@ -154,6 +162,10 @@
     [self updateNavigationTitle];
     if(self.quarterNo == 4)
         self.navigationItem.rightBarButtonItem.action = @selector(finishButtonClicked);
+    
+    [self presentStartingLineUpView];
+    UITableView* tableView = [self.startingLineUpView viewWithTag:TAG_FOR_STARTING_LINE_UP_TABLEVIEW];
+    [tableView reloadData];
 }
 
 -(void) showConclusionAndGernateXlsxFile:(BOOL)generateXlsxFile
@@ -179,7 +191,6 @@
     //Update Record.plist
     if(!self.showOldRecordNo)
     {
-        
         NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
         [dateFormatter setDateFormat:@"YYYY_MM_dd"];
         NSString* date = [dateFormatter stringFromDate:[NSDate date]];
@@ -217,7 +228,7 @@
         self.isLoadingRootMeta = YES;
         [self.restClient loadMetadata:@"/"];
         
-        [self.view addSubview:self.spinView];
+        [self.view addSubview:self.fogView];
         [self.view addSubview:self.spinner];
         [self.view addSubview:self.loadingLabel];
         if(self.isSBLGame)
@@ -450,8 +461,13 @@
         postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_GAME_TYPE, self.gameType]];
         postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_GAME_NO, self.gameNo]];
         postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_TEAM_NAME, self.myTeamName]];
-        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_PLAYER_NO, [playerGradeDic objectForKey:KEY_FOR_PLAYER_NO]]];
-        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_STARTING, @"1"]];
+        
+        NSNumber* playerNo = [NSNumber numberWithInt:((NSString*)[playerGradeDic objectForKey:KEY_FOR_PLAYER_NO]).intValue]; ;
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_PLAYER_NO, playerNo]];
+        if([self.startingPlayers containsObject:playerNo])
+            postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_STARTING, @"1"]];
+        else
+            postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_STARTING, @"0"]];
         
         int point = 0;
         NSDictionary* twoPtsDic = [playerGradeDic objectForKey:KEY_FOR_2_PTS];
@@ -617,7 +633,6 @@
 -(void) newPlayerGradeDataStruct
 {
     self.playerDataArray = [NSMutableArray arrayWithCapacity:2];
-    
     [self extendPlayerDataWithQuarter:0];
     [self extendPlayerDataWithQuarter:1];
     
@@ -664,7 +679,7 @@
             [playerDataItem setObject:madeOrAttemptDic forKey:self.itemWayKeySet[j]];
         }
         for(int j=3; j<self.itemWayKeySet.count-1; j++)
-                [playerDataItem setObject:@"0" forKey:self.itemWayKeySet[j]];
+            [playerDataItem setObject:@"0" forKey:self.itemWayKeySet[j]];
         
         if(quarterNo < 2)
             [playerDataItem setObject:@"0" forKey:KEY_FOR_TOTAL_TIME_ON_FLOOR];
@@ -685,9 +700,48 @@
 
 #pragma mark - UI Updating
 
+- (void) presentStartingLineUpView
+{
+    self.navigationItem.rightBarButtonItem.enabled = NO;
+    self.startingPlayerCount = 0;
+    self.startingLineUpPlayerArray = [[NSMutableArray alloc] init];
+    [self.view addSubview:self.fogView];
+    [self.view addSubview:self.startingLineUpView];
+}
+
+- (void)drawStartingLineUpView
+{
+    self.startingLineUpView = [[UIView alloc] initWithFrame:CGRectMake(CGRectGetWidth(self.view.frame)*0.3, CGRectGetHeight(self.view.frame)*0.15, CGRectGetWidth(self.view.frame)*0.4, CGRectGetHeight(self.view.frame)*0.7)];
+    self.startingLineUpView.layer.cornerRadius = 10;
+    self.startingLineUpView.backgroundColor = [UIColor whiteColor];
+    
+    UILabel* titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 10, CGRectGetWidth(self.startingLineUpView.frame), CGRectGetHeight(self.startingLineUpView.frame)*0.1)];
+    titleLabel.text = @"先發球員";
+    titleLabel.textAlignment = NSTextAlignmentCenter;
+    [self.startingLineUpView addSubview:titleLabel];
+    
+    UITableView* startingLineUpTableView = [[UITableView alloc] initWithFrame:CGRectMake(10, CGRectGetMaxY(titleLabel.frame)+10, CGRectGetWidth(self.startingLineUpView.frame)-20, CGRectGetHeight(self.startingLineUpView.frame)*0.65)];
+    startingLineUpTableView.layer.borderWidth = 1;
+    startingLineUpTableView.tag = TAG_FOR_STARTING_LINE_UP_TABLEVIEW;
+    startingLineUpTableView.delegate = self;
+    startingLineUpTableView.dataSource = self;
+    [self.startingLineUpView addSubview:startingLineUpTableView];
+    
+    CGFloat width = CGRectGetWidth(startingLineUpTableView.frame)*0.5;
+    CGFloat height = CGRectGetHeight(self.pwView.frame)*0.2;
+    CGFloat y = CGRectGetMaxY(startingLineUpTableView.frame);
+    CGFloat x = (CGRectGetWidth(self.startingLineUpView.frame)-width)/2;
+    UIButton* okButton = [[UIButton alloc] initWithFrame:CGRectMake(x, y, width, height)];
+    [okButton addTarget:self action:@selector(startingLineUpViewOkButtonClicked) forControlEvents:UIControlEventTouchUpInside];
+    [okButton setTitle:@"確定" forState:UIControlStateNormal];
+    [okButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [okButton setTitleColor:[UIColor grayColor] forState:UIControlStateHighlighted];
+    [self.startingLineUpView addSubview:okButton];
+}
+
 -(void) removeSpinningView
 {
-    [self.spinView removeFromSuperview];
+    [self.fogView removeFromSuperview];
     [self.loadingLabel removeFromSuperview];
     [self.spinner removeFromSuperview];
 }
@@ -903,11 +957,11 @@
     self.nextQuarterButton.hidden = YES;
     [self.view addSubview:self.nextQuarterButton];
     
-    self.spinView = [[UIView alloc] initWithFrame:self.view.frame];
-    self.spinView.backgroundColor = [UIColor grayColor];
-    self.spinView.alpha = 0.8;
+    self.fogView = [[UIView alloc] initWithFrame:self.view.frame];
+    self.fogView.backgroundColor = [UIColor grayColor];
+    self.fogView.alpha = 0.8;
     
-    self.loadingLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMidX(self.spinView.frame)-50, CGRectGetMidY(self.spinView.frame)-15, 100, 30)];
+    self.loadingLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMidX(self.fogView.frame)-50, CGRectGetMidY(self.fogView.frame)-15, 100, 30)];
     self.loadingLabel.backgroundColor = [UIColor whiteColor];
     self.loadingLabel.textAlignment = NSTextAlignmentCenter;
     self.loadingLabel.text = @"Loading";
@@ -956,15 +1010,54 @@
     [skipButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [skipButton setTitleColor:[UIColor grayColor] forState:UIControlStateHighlighted];
     [self.pwView addSubview:skipButton];
+    
+    [self drawStartingLineUpView];
 }
 
 #pragma mark - Button Clicked
+
+- (void)startingLineUpViewOkButtonClicked
+{
+    if(self.startingPlayerCount < 5)
+    {
+        [self.wrongPwAlert setTitle:@"先發球員須為五位"];
+        [self presentViewController:self.wrongPwAlert animated:YES completion:nil];
+        return;
+    }
+    
+    NSArray* startingLineUpPlayerArray = [self.startingLineUpPlayerArray sortedArrayUsingSelector:@selector(compare:)];
+    
+    self.playerOnFloorDataArray = [NSMutableArray arrayWithCapacity:5];
+    for(int i=0; i<MIN(5, self.playerNoSet.count); i++)
+    {
+        NSMutableDictionary* dic = [[NSMutableDictionary  alloc] init];
+        [dic setObject:[NSNumber numberWithInt:0] forKey:KEY_FOR_TIME_WHEN_GO_ON_FLOOR];
+        [dic setObject:startingLineUpPlayerArray[i] forKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
+        [self.playerOnFloorDataArray setObject:dic atIndexedSubscript:i];
+    }
+    [self.playerOnFloorListTableView reloadData];
+    
+    if(self.quarterNo == 1)
+        self.startingPlayers = startingLineUpPlayerArray;
+    
+    NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
+    [tmpPlistDic setObject:self.playerOnFloorDataArray forKey:KEY_FOR_ON_FLOOR_PLAYER_DATA];
+    
+    [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
+    
+    self.navigationItem.rightBarButtonItem.enabled = YES;
+    self.navigationItem.leftBarButtonItem.enabled = YES;
+    
+    [self.fogView removeFromSuperview];
+    [self.startingLineUpView removeFromSuperview];
+}
 
 - (void)pwViewOkButtonClicked
 {
     UITextField* pwTextField = (UITextField*)[self.pwView viewWithTag:1];
     if(![pwTextField.text isEqualToString:PASSWORD_FOR_BASKETBALL_BIJI])
     {
+        [self.wrongPwAlert setTitle:@"密碼錯誤"];
         [self presentViewController:self.wrongPwAlert animated:YES completion:nil];
         return;
     }
@@ -1162,6 +1255,8 @@
         return (self.playerCount + 2); //One for title, the other one for team grade
     else if(tableView.tag == PLAYER_ON_FLOOR_TABLEVIEW_TAG)
         return MIN(self.playerCount, 5)+1;
+    else if(tableView.tag == TAG_FOR_STARTING_LINE_UP_TABLEVIEW)
+        return self.playerCount;
     return [self.itemWayKeySet count] + 2;
 }
 
@@ -1239,11 +1334,37 @@
         cell.layer.borderWidth = 1;
         cell.NoLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, CELL_WIDTH, CELL_HEIGHT)];
         cell.NoLabel.textAlignment = NSTextAlignmentCenter;
-        cell.NoLabel.text = [NSString stringWithFormat:@"%@", [self.playerNoSet objectAtIndex:indexPath.row-1]];
-        [cell addSubview:cell.NoLabel];
+        if(self.playerOnFloorDataArray)
+        {
+            NSDictionary* playersOnFloorDataDic = self.playerOnFloorDataArray[indexPath.row-1];
+            NSNumber* playerIndexInPPPTableView = [playersOnFloorDataDic objectForKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
+            NSString* playerNo = self.playerNoSet[playerIndexInPPPTableView.intValue-1];
+            
+            cell.NoLabel.text = [NSString stringWithFormat:@"%@", playerNo];
+            [cell addSubview:cell.NoLabel];
+        }
         cell.selectionStyle = UITableViewCellSelectionStyleBlue;
         
         return cell;
+    }
+    else if(tableView.tag == TAG_FOR_STARTING_LINE_UP_TABLEVIEW)
+    {
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cellForStartingLineUp"];
+        if(!cell)
+        {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cellForStartingLineUp"];
+            cell.layer.borderWidth = 1;
+            //cell.textLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(cell.frame), CGRectGetHeight(cell.frame))];
+            cell.textLabel.textAlignment = NSTextAlignmentCenter;
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        }
+        cell.textLabel.text = self.playerNoSet[indexPath.row];
+        NSNumber* index = [NSNumber numberWithInteger:indexPath.row+1];
+        if([self.startingLineUpPlayerArray containsObject:index])
+            cell.backgroundColor = [UIColor lightGrayColor];
+        else
+            cell.backgroundColor = [UIColor whiteColor];
+        return  cell;
     }
     //if(tableview.tag == PLAYER_GRADE_TABLEVIEW_TAG)
     
@@ -1414,6 +1535,30 @@
         else if(indexPath.row == self.playerCount+1)
             [tableView deselectRowAtIndexPath:indexPath animated:NO];
     }
+    else if(tableView.tag == TAG_FOR_STARTING_LINE_UP_TABLEVIEW)
+    {
+        UITableViewCell* cellOfSelected = [tableView cellForRowAtIndexPath:indexPath];
+        if([cellOfSelected.backgroundColor isEqual:[UIColor lightGrayColor]])
+        {
+            cellOfSelected.backgroundColor = [UIColor whiteColor];
+            self.startingPlayerCount--;
+            NSNumber* playerIndex = [NSNumber numberWithInteger:indexPath.row+1];
+            for(int i=0; i<self.startingLineUpPlayerArray.count; i++)
+                if([self.startingLineUpPlayerArray[i] isEqualToNumber:playerIndex])
+                    [self.startingLineUpPlayerArray removeObjectAtIndex:i];
+        }
+        else
+        {
+            if(self.startingPlayerCount < 5)
+            {
+                cellOfSelected.backgroundColor = [UIColor lightGrayColor];
+                self.startingPlayerCount++;
+                NSNumber* playerIndex = [NSNumber numberWithInteger:indexPath.row+1];
+                [self.startingLineUpPlayerArray addObject:playerIndex];
+            }
+        }
+        NSLog(@"%@", self.startingLineUpPlayerArray);
+    }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -1424,6 +1569,8 @@
             return TITLE_CELL_HEIGHT;
         return CELL_HEIGHT;
     }
+    else if(tableView.tag == TAG_FOR_STARTING_LINE_UP_TABLEVIEW)
+        return CELL_HEIGHT_FOR_STARTING_LINE_UP_CELL;
     //if(tableview.tag == PLAYER_GRADE_TABLEVIEW_TAG)
     return PLAYER_GRADE_TABLECELL_HEIGHT;
 }

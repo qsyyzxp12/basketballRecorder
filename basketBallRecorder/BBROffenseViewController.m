@@ -2081,7 +2081,6 @@
     CGFloat x = (CGRectGetWidth(self.startingLineUpView.frame)-width)/2;
     UIButton* okButton = [[UIButton alloc] initWithFrame:CGRectMake(x, y, width, height)];
     [okButton addTarget:self action:@selector(startingLineUpViewOkButtonClicked) forControlEvents:UIControlEventTouchUpInside];
-    okButton.tag = 1;
     [okButton setTitle:@"確定" forState:UIControlStateNormal];
     [okButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [okButton setTitleColor:[UIColor grayColor] forState:UIControlStateHighlighted];
@@ -3719,7 +3718,7 @@
         {
             cellOfSelected.backgroundColor = [UIColor whiteColor];
             self.startingPlayerCount--;
-            NSNumber* playerIndex = [NSNumber numberWithInteger:indexPath.row];
+            NSNumber* playerIndex = [NSNumber numberWithInteger:indexPath.row+1];
             for(int i=0; i<self.startingLineUpPlayerArray.count; i++)
                 if([self.startingLineUpPlayerArray[i] isEqualToNumber:playerIndex])
                     [self.startingLineUpPlayerArray removeObjectAtIndex:i];
