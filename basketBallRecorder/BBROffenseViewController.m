@@ -75,25 +75,16 @@
     if(self.isTmpPlistExist)
     {
         if(self.playerOnFloorDataArray.count < 5)
-        {
-            self.startingPlayerCount = 0;
-            self.startingLineUpPlayerArray = [[NSMutableArray alloc] init];
-            [self.view addSubview:self.fogView];
-            [self.view addSubview:self.startingLineUpView];
-        }
+            [self presentStartingLineUpView];
     }
     else if(!self.showOldRecordNo)
     {
-        self.startingPlayerCount = 0;
-        self.startingLineUpPlayerArray = [[NSMutableArray alloc] init];
-        [self.view addSubview:self.fogView];
-        [self.view addSubview:self.startingLineUpView];
-        
-        [self newPlayerGradeDataStruct];
         self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] init];
         self.navigationItem.leftBarButtonItem.title = @"＜球員登入";
         self.navigationItem.leftBarButtonItem.target = self;
         self.navigationItem.leftBarButtonItem.action = @selector(backButtonClicked);
+        [self presentStartingLineUpView];
+        [self newPlayerGradeDataStruct];
     }
     
     if(self.quarterNo == END)
@@ -699,10 +690,7 @@
     if(self.quarterNo == 4)
         self.navigationItem.rightBarButtonItem.action = @selector(finishButtonClicked);
     
-    self.startingPlayerCount = 0;
-    self.startingLineUpPlayerArray = [[NSMutableArray alloc] init];
-    [self.view addSubview:self.fogView];
-    [self.view addSubview:self.startingLineUpView];
+    [self presentStartingLineUpView];
     UITableView* tableView = [self.startingLineUpView viewWithTag:TAG_FOR_STARTING_LINE_UP_TABLEVIEW];
     [tableView reloadData];
 }
@@ -2060,6 +2048,15 @@
 
 #pragma mark - UI Updating
 
+- (void) presentStartingLineUpView
+{
+    self.navigationItem.rightBarButtonItem.enabled = NO;
+    self.startingPlayerCount = 0;
+    self.startingLineUpPlayerArray = [[NSMutableArray alloc] init];
+    [self.view addSubview:self.fogView];
+    [self.view addSubview:self.startingLineUpView];
+}
+
 - (void)drawStartingLineUpView
 {
     self.startingLineUpView = [[UIView alloc] initWithFrame:CGRectMake(CGRectGetWidth(self.view.frame)*0.3, CGRectGetHeight(self.view.frame)*0.15, CGRectGetWidth(self.view.frame)*0.4, CGRectGetHeight(self.view.frame)*0.7)];
@@ -2078,19 +2075,17 @@
     startingLineUpTableView.dataSource = self;
     [self.startingLineUpView addSubview:startingLineUpTableView];
     
-    UIButton* okButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetMinX(startingLineUpTableView.frame), CGRectGetMaxY(startingLineUpTableView.frame), CGRectGetWidth(startingLineUpTableView.frame)*0.5, CGRectGetHeight(self.pwView.frame)*0.2)];
+    CGFloat width = CGRectGetWidth(startingLineUpTableView.frame)*0.5;
+    CGFloat height = CGRectGetHeight(self.pwView.frame)*0.2;
+    CGFloat y = CGRectGetMaxY(startingLineUpTableView.frame);
+    CGFloat x = (CGRectGetWidth(self.startingLineUpView.frame)-width)/2;
+    UIButton* okButton = [[UIButton alloc] initWithFrame:CGRectMake(x, y, width, height)];
     [okButton addTarget:self action:@selector(startingLineUpViewOkButtonClicked) forControlEvents:UIControlEventTouchUpInside];
+    okButton.tag = 1;
     [okButton setTitle:@"確定" forState:UIControlStateNormal];
     [okButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [okButton setTitleColor:[UIColor grayColor] forState:UIControlStateHighlighted];
     [self.startingLineUpView addSubview:okButton];
-    
-    UIButton* cancelButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetMaxX(okButton.frame), CGRectGetMinY(okButton.frame), CGRectGetWidth(okButton.frame), CGRectGetHeight(okButton.frame))];
-    [cancelButton addTarget:self action:@selector(startingLineUpViewCancelButtonClicked) forControlEvents:UIControlEventTouchUpInside];
-    [cancelButton setTitle:@"取消" forState:UIControlStateNormal];
-    [cancelButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    [cancelButton setTitleColor:[UIColor grayColor] forState:UIControlStateHighlighted];
-    [self.startingLineUpView addSubview:cancelButton];
 }
 
 -(void) removeSpinningView
@@ -2829,13 +2824,11 @@
     
     [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
     
+    self.navigationItem.rightBarButtonItem.enabled = YES;
+    self.navigationItem.leftBarButtonItem.enabled = YES;
+    
     [self.fogView removeFromSuperview];
     [self.startingLineUpView removeFromSuperview];
-}
-
--(void)startingLineUpViewCancelButtonClicked
-{
-   [self.navigationController popToViewController:[self.navigationController.viewControllers objectAtIndex:1] animated:YES];
 }
 
 - (void)pwViewOkButtonClicked

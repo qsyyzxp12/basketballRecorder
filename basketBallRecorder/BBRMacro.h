@@ -9,7 +9,7 @@
 #ifndef BBRMacro_h
 #define BBRMacro_h
 
-#define Dropbox
+//#define Dropbox
 #define BIJI
 
 #define TITLE_CELL_HEIGHT 30
@@ -37,6 +37,8 @@
 #define BACKGROUND_IMAGEVIEW_TAG -4
 #define SHOT_MODE_TABLE_VIEW_TAG -5
 #define TAG_FOR_STARTING_LINE_UP_TABLEVIEW -6
+#define TAG_FOR_CANCEL_BUTTON 2
+#define TAG_FOR_OK_BUTTON 1
 
 #define KEY_FOR_LAST_RECORD_QUARTER @"LastRecordQuarter"
 
