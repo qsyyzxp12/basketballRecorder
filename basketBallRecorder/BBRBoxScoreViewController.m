@@ -20,15 +20,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    /*
-    self.playerOnFloorDataArray = [NSMutableArray arrayWithCapacity:5];
-    for(int i=0; i<5; i++)
-    {
-        NSMutableDictionary* dic = [[NSMutableDictionary  alloc] init];
-        [dic setObject:[NSNumber numberWithInt:0] forKey:KEY_FOR_TIME_WHEN_GO_ON_FLOOR];
-        [dic setObject:[NSNumber numberWithInt:i+1] forKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
-        [self.playerOnFloorDataArray setObject:dic atIndexedSubscript:i];
-    }*/
     
     self.tmpPlistPath = [NSString stringWithFormat:@"%@/Documents/tmp.plist", NSHomeDirectory()];
     self.isRecordMode = YES;
@@ -1557,7 +1548,6 @@
                 [self.startingLineUpPlayerArray addObject:playerIndex];
             }
         }
-        NSLog(@"%@", self.startingLineUpPlayerArray);
     }
 }
 

@@ -21,6 +21,7 @@
 @property NSMutableArray* playerDataArray;
 @property NSMutableArray* OldPlayerDataArray;
 @property NSMutableArray* fileNamesInDropbox;
+@property NSMutableArray<NSNumber*>* startingLineUpPlayerArray;
 @property NSMutableData* receiveData;
 @property NSArray* defenseWayKeySet;
 @property NSArray* playerNoSet;
@@ -39,6 +40,7 @@
 @property int showOldRecordNo;
 @property int timeCounter;
 @property int defenseButtonNo;
+@property int startingPlayerCount;
 @property UIAlertController* nextQuarterAlert;
 @property UIAlertController* finishOrNotAlert;
 @property UIAlertController* playoffOrNotAlert;
@@ -56,8 +58,9 @@
 @property UIButton* lastQuarterButton;
 @property UIButton* timeButton;
 @property NSTimer* timer;
-@property UIView* spinView;
+@property UIView* fogView;
 @property UIView* pwView;
+@property UIView* startingLineUpView;
 @property UILabel* loadingLabel;
 @property UIActivityIndicatorView* spinner;
 @property UIBarButtonItem* rightBarButton;
