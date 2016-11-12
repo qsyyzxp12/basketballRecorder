@@ -899,8 +899,9 @@
     
     for(NSMutableDictionary* quarterDic in self.timeLineReordeArray)
     {
-        NSString* playersOnFloorStr = [quarterDic objectForKey:KEY_FOR_PLAYER_ON_FLOOR];
-        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:playersOnFloorStr];
+        NSArray* playersOnFloorNoArray = [quarterDic objectForKey:KEY_FOR_PLAYER_ON_FLOOR];
+        NSString* playersOnFloorNoStr = [NSString stringWithFormat:@"%@,%@,%@,%@,%@", playersOnFloorNoArray[0], playersOnFloorNoArray[1], playersOnFloorNoArray[2], playersOnFloorNoArray[3], playersOnFloorNoArray[4]];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:playersOnFloorNoStr];
         
         NSArray* timeLineRecordArray = [quarterDic objectForKey:KEY_FOR_TIME_LINE_DATA];
         
@@ -1478,6 +1479,31 @@
     int quarterNo = 1;
     for(NSMutableDictionary* quarterDic in self.timeLineReordeArray)
     {
+        NSArray* startingPlayer = [quarterDic objectForKey:KEY_FOR_PLAYER_ON_FLOOR];
+        NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:urlForUpAndDown];
+        
+        NSString* postDataStr = [NSString stringWithFormat:@"%@=%@", KEY_FOR_GAME_SEASON, self.sessionNo];
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_GAME_TYPE, self.gameType]];
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_GAME_NO, self.gameNo]];
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_GAME_QUARTER, [NSString stringWithFormat:@"%d", quarterNo]]];
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_TEAM_NAME, self.myTeamName]];
+        
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_UP_ONE, startingPlayer[0]]];
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_UP_TWO, startingPlayer[1]]];
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_UP_THREE, startingPlayer[2]]];
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_UP_FOUR, startingPlayer[3]]];
+        postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_UP_FIVE, startingPlayer[4]]];
+        
+        NSData* data = [postDataStr dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
+        NSString *postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[data length]];
+        
+        [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+        [request setHTTPMethod:@"POST"];
+        [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+        [request setHTTPBody:data];
+        
+        [[NSURLConnection alloc]initWithRequest:request delegate:self];
+        
         NSArray* timeLineRecordArray = [quarterDic objectForKey:KEY_FOR_TIME_LINE_DATA];
         for(NSDictionary* eventDic in timeLineRecordArray)
         {
@@ -1539,8 +1565,6 @@
                 NSArray* down = [upAndDown[1] componentsSeparatedByString:@"↓"];
                 postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_DOWN_ONE, down[0]]];
             }
-            
-            NSLog(@"%@", postDataStr);
             
             NSData* data = [postDataStr dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
             NSString *postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[data length]];
@@ -1794,7 +1818,6 @@
 {
     NSMutableDictionary* quarterDic = [[NSMutableDictionary alloc] init];
     
-    NSLog(@"%@", self.playerOnFloorDataArray);
     NSMutableArray* playersOnFloorNoArray = [[NSMutableArray alloc] init];
     for(NSDictionary* playersOnFloorDataDic in self.playerOnFloorDataArray)
     {
@@ -1802,8 +1825,8 @@
         NSString* playerNo = self.playerNoSet[playerIndexInPPPTableView.intValue-1];
         [playersOnFloorNoArray addObject:playerNo];
     }
-    NSString* playersOnFloorNoStr = [NSString stringWithFormat:@"%@,%@,%@,%@,%@", playersOnFloorNoArray[0], playersOnFloorNoArray[1], playersOnFloorNoArray[2], playersOnFloorNoArray[3], playersOnFloorNoArray[4]];
-    [quarterDic setObject:playersOnFloorNoStr forKey:KEY_FOR_PLAYER_ON_FLOOR];
+    
+    [quarterDic setObject:playersOnFloorNoArray forKey:KEY_FOR_PLAYER_ON_FLOOR];
     NSMutableArray* timeLineData = [[NSMutableArray alloc] init];
     [quarterDic setObject:timeLineData forKey:KEY_FOR_TIME_LINE_DATA];
     [quarterDic setObject:[NSString stringWithFormat:@"%d", quarterNo] forKey:@"Quarter No"];
@@ -2787,7 +2810,6 @@
     }
     
     NSArray* startingLineUpPlayerArray = [self.startingLineUpPlayerArray sortedArrayUsingSelector:@selector(compare:)];
-    NSLog(@"%@", startingLineUpPlayerArray);
     
     self.playerOnFloorDataArray = [NSMutableArray arrayWithCapacity:5];
     for(int i=0; i<MIN(5, self.playerNoSet.count); i++)
