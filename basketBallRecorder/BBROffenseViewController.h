@@ -16,7 +16,8 @@
 @property UITableView *playerOnFloorListTableView;
 @property UITableView *playerDataTableView;
 @property UITableView *shotModeTableView;
-@property NSMutableArray *playerOnFloorDataArray;
+@property NSMutableArray<NSMutableDictionary*> *playerOnFloorDataArray;
+@property NSMutableArray<NSNumber*>* startingLineUpPlayerArray;
 @property NSMutableArray* playerDataArray;
 @property NSMutableArray* OldPlayerDataArray;
 @property NSMutableArray* timeLineReordeArray;
@@ -53,6 +54,7 @@
 @property BOOL isSBLGame;
 @property BOOL isSenDataToBijiFinished;
 @property BOOL isUploadXlsxFilesFinished;
+@property int startingPlayerCount;
 @property int uploadFilesCount;
 @property int playerCount;
 @property int playerSelectedIndex;
@@ -84,8 +86,9 @@
 @property UIButton* lastQuarterButton;
 @property UIButton* timeButton;
 @property NSTimer* timer;
-@property UIView* spinView;
+@property UIView* fogView;
 @property UIView* pwView;
+@property UIView* startingLineUpView;
 @property UILabel* loadingLabel;
 @property UIActivityIndicatorView* spinner;
 @property int bar_height;

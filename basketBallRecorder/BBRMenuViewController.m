@@ -22,8 +22,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-  //  if (![[DBSession sharedSession] isLinked])
-    //    [[DBSession sharedSession] linkFromController:self];-
     
     [self constructAlertController];
     
@@ -100,7 +98,7 @@
     NSURL* urlForNormal = [NSURL URLWithString:URL_FOR_TIME_LINE_REQUEST];
     NSURL* urlForUpAndDown = [NSURL URLWithString:URL_FOR_TIME_LINE_UP_AND_DOWN_REQUEST];
     [request setURL:urlForUpAndDown];
-    NSString* postDataStr = @"gameSeason=14&gameType=例行賽&gameNo=1&gameQuarter=1&teamName=富邦勇士&quarterMin=00&quarterSec=02&upPlayer1No=7&downPlayer1No=1";
+    NSString* postDataStr = @"gameSeason=14&gameType=例行賽&gameNo=1&gameQuarter=1&teamName=富邦勇士&quarterMin=00&quarterSec=47&playerNo=5&offMode=hp&shotMode=turnover&result=Line";
     NSData* data = [postDataStr dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
     NSString *postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[data length]];
     
