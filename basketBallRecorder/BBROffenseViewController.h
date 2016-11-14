@@ -62,6 +62,7 @@
 @property int quarterNo;
 @property int showOldRecordNo;
 @property int timeCounter;
+@property int timeWhenShowingOffList;
 @property int attackWayNo;
 @property int ptr;
 @property UIAlertController* attackWayAlert;

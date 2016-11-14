@@ -1665,8 +1665,8 @@
     NSString* resultStr = [NSString stringWithFormat:@"%@↑%@↓", upNo, downNo];
     [event setObject:resultStr forKey:KEY_FOR_RESULT];
     
-    int min = self.timeCounter/60;
-    int sec = self.timeCounter%60;
+    int min = self.timeWhenShowingOffList/60;
+    int sec = self.timeWhenShowingOffList%60;
     NSString* timeStr = [NSString stringWithFormat:@"%02d:%02d", min, sec];
     [event setObject:timeStr forKey:KEY_FOR_TIME];
     
@@ -1679,8 +1679,8 @@
     NSMutableArray* timeLineArray = [quarterDic objectForKey:KEY_FOR_TIME_LINE_DATA];
     NSMutableDictionary* event = [[NSMutableDictionary alloc] init];
 
-    int min = self.timeCounter/60;
-    int sec = self.timeCounter%60;
+    int min = self.timeWhenShowingOffList/60;
+    int sec = self.timeWhenShowingOffList%60;
     NSString* timeStr = [NSString stringWithFormat:@"%02d:%02d", min, sec];
     
     [event setObject:[NSString stringWithFormat:@"%@", self.playerNoSet[self.playerSelectedIndex-1]] forKey:KEY_FOR_PLAYER_NO];
@@ -1720,8 +1720,8 @@
     NSMutableArray* timeLineArray = [quarterDic objectForKey:KEY_FOR_TIME_LINE_DATA];
     NSMutableDictionary* bonusEvent = [[NSMutableDictionary alloc] init];
     
-    int min = self.timeCounter/60;
-    int sec = self.timeCounter%60;
+    int min = self.timeWhenShowingOffList/60;
+    int sec = self.timeWhenShowingOffList%60;
     NSString* timeStr = [NSString stringWithFormat:@"%02d:%02d", min, sec];
     
     [bonusEvent setObject:SIGNAL_FOR_BONUS forKey:KEY_FOR_TYPE];
@@ -1739,8 +1739,8 @@
     NSMutableArray* timeLineArray = [quarterDic objectForKey:KEY_FOR_TIME_LINE_DATA];
     NSMutableDictionary* turnoverEvent = [[NSMutableDictionary alloc] init];
 
-    int min = self.timeCounter/60;
-    int sec = self.timeCounter%60;
+    int min = self.timeWhenShowingOffList/60;
+    int sec = self.timeWhenShowingOffList%60;
     NSString* timeStr = [NSString stringWithFormat:@"%02d:%02d", min, sec];
     
     [turnoverEvent setObject:[NSString stringWithFormat:@"%@", self.playerNoSet[self.playerSelectedIndex-1]] forKey:KEY_FOR_PLAYER_NO];
@@ -2754,6 +2754,7 @@
 
 - (void) showAttackList
 {
+    self.timeWhenShowingOffList = self.timeCounter;
     if(self.zoneNo != 12)
     {
         [self presentViewController:self.attackWayAlert animated:YES completion:^
@@ -3651,6 +3652,8 @@
         }
         else if(indexPath.row != 0 && indexPath.row != self.playerCount+1)
         {
+            self.timeWhenShowingOffList = self.timeCounter;
+            
             BBRTableViewCell* cellOfSelected = [tableView cellForRowAtIndexPath:indexPath];
             
             BOOL isPlayerOnFloorAlready = NO;
@@ -3722,7 +3725,6 @@
             for(int i=0; i<self.startingLineUpPlayerArray.count; i++)
                 if([self.startingLineUpPlayerArray[i] isEqualToNumber:playerIndex])
                     [self.startingLineUpPlayerArray removeObjectAtIndex:i];
-            
         }
         else
         {
