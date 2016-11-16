@@ -901,6 +901,7 @@
     [self.pwView addSubview:explainLabel];
     
     UITextField* pwTextField = [[UITextField alloc] initWithFrame:CGRectMake(CGRectGetWidth(self.pwView.frame)*0.15, CGRectGetHeight(self.pwView.frame)*0.6, CGRectGetWidth(self.pwView.frame)*0.7, CGRectGetHeight(self.pwView.frame)*0.1)];
+    pwTextField.delegate = self;
     pwTextField.layer.cornerRadius = 5;
     pwTextField.layer.borderWidth = 1;
     pwTextField.tag = 1;
@@ -1558,6 +1559,13 @@
 -(void)restClient:(DBRestClient *)client createFolderFailedWithError:(NSError *)error
 {
     NSLog(@"Folder created failed with error: %@", error);
+}
+
+#pragma mark - textField
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    return [textField resignFirstResponder];
 }
 
 /*

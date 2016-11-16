@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <DropboxSDK/DropboxSDK.h>
 
-@interface BBRBoxScoreViewController : UIViewController<UITableViewDataSource, UITableViewDelegate, DBRestClientDelegate, NSURLConnectionDataDelegate>
+@interface BBRBoxScoreViewController : UIViewController<UITableViewDataSource, UITableViewDelegate, DBRestClientDelegate, NSURLConnectionDataDelegate, UITextFieldDelegate>
 
 @property UITableView *playerListTableView;
 @property UITableView *playerOnFloorListTableView;
