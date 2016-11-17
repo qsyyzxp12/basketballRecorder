@@ -1636,25 +1636,7 @@
     NSLog(@"%@",[error localizedDescription]);
 }
 
-#pragma mark - DataStruct Updating
-
--(void)increaseHoldBallCountByOne
-{
-    int quarterNo[2] = {self.quarterNo, QUARTER_NO_FOR_ENTIRE_GAME};
-    int playerNo[2] = {self.playerSelectedIndex-1, self.playerCount};
-    
-    for(int i=0; i<2; i++)
-    {
-        NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:quarterNo[i]];
-        for(int j=0; j<2; j++)
-        {
-            NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
-            NSMutableDictionary* totalDic = [playerData objectForKey:KEY_FOR_TOTAL];
-            int holdBallCount = [[totalDic objectForKey:KEY_FOR_HOLD_BALL_COUNT] intValue];
-            [totalDic setObject:[NSString stringWithFormat:@"%d", holdBallCount+1] forKey:KEY_FOR_HOLD_BALL_COUNT];
-        }
-    }
-}
+#pragma mark - timeline event
 
 -(void) pushExchangeEventIntoTimeLineWithUpPlayerNo:(NSString*)upNo downPlayerNo:(NSString*)downNo
 {
@@ -1678,7 +1660,7 @@
     NSMutableDictionary* quarterDic = [self.timeLineReordeArray objectAtIndex:self.quarterNo-1];
     NSMutableArray* timeLineArray = [quarterDic objectForKey:KEY_FOR_TIME_LINE_DATA];
     NSMutableDictionary* event = [[NSMutableDictionary alloc] init];
-
+    
     int min = self.timeWhenShowingOffList/60;
     int sec = self.timeWhenShowingOffList%60;
     NSString* timeStr = [NSString stringWithFormat:@"%02d:%02d", min, sec];
@@ -1738,7 +1720,7 @@
     NSMutableDictionary* quarterDic = [self.timeLineReordeArray objectAtIndex:self.quarterNo-1];
     NSMutableArray* timeLineArray = [quarterDic objectForKey:KEY_FOR_TIME_LINE_DATA];
     NSMutableDictionary* turnoverEvent = [[NSMutableDictionary alloc] init];
-
+    
     int min = self.timeWhenShowingOffList/60;
     int sec = self.timeWhenShowingOffList%60;
     NSString* timeStr = [NSString stringWithFormat:@"%02d:%02d", min, sec];
@@ -1751,6 +1733,33 @@
     [turnoverEvent setObject:timeStr forKey:KEY_FOR_TIME];
     [timeLineArray addObject:turnoverEvent];
     [self increaseHoldBallCountByOne];
+}
+
+- (void)popEventInTimeLine
+{
+    NSMutableDictionary* quarterDic = [self.timeLineReordeArray objectAtIndex:self.quarterNo-1];
+    NSMutableArray* timeLineArray = [quarterDic objectForKey:KEY_FOR_TIME_LINE_DATA];
+    [timeLineArray removeLastObject];
+}
+
+#pragma mark - DataStruct Updating
+
+-(void)increaseHoldBallCountByOne
+{
+    int quarterNo[2] = {self.quarterNo, QUARTER_NO_FOR_ENTIRE_GAME};
+    int playerNo[2] = {self.playerSelectedIndex-1, self.playerCount};
+    
+    for(int i=0; i<2; i++)
+    {
+        NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:quarterNo[i]];
+        for(int j=0; j<2; j++)
+        {
+            NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
+            NSMutableDictionary* totalDic = [playerData objectForKey:KEY_FOR_TOTAL];
+            int holdBallCount = [[totalDic objectForKey:KEY_FOR_HOLD_BALL_COUNT] intValue];
+            [totalDic setObject:[NSString stringWithFormat:@"%d", holdBallCount+1] forKey:KEY_FOR_HOLD_BALL_COUNT];
+        }
+    }
 }
 
 -(void)updateTimeOnFloorOfPlayerWithIndexInOnFloorTableView:(int)index
@@ -3069,6 +3078,7 @@
     {
         self.playerDataArray = self.OldPlayerDataArray;
         
+        [self popEventInTimeLine];
         [self updateZoneGradeView];
         [self updateTmpPlist];
     }
