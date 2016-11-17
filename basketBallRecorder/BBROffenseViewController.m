@@ -2655,6 +2655,7 @@
     self.undoButton.layer.cornerRadius = 5;
     [self.undoButton setTitle:@"Undo" forState:UIControlStateNormal];
     [self.undoButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [self.undoButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateHighlighted];
     [self.undoButton addTarget:self action:@selector(undoButtonClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.undoButton setShowsTouchWhenHighlighted:YES];
     [self.view addSubview:self.undoButton];

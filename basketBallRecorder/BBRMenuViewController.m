@@ -319,6 +319,9 @@
         [self performSelectorInBackground:@selector(generateTimeLineXlsx:) withObject:dataDic];
         [self performSelectorInBackground:@selector(generateGradeXlsx:) withObject:dataDic];
         [self performSelectorInBackground:@selector(generateShotChartXlsxAndUpload:) withObject:dataDic];
+ //       [self generateTimeLineXlsx:dataDic];
+ //       [self generateGradeXlsx:dataDic];
+ //       [self generateShotChartXlsxAndUpload:dataDic];
         [self generateZoneGradeXlsxAndUpload:dataDic];
     }
     else if([[dataDic objectForKey:KEY_FOR_DATA_TYPE] isEqualToString:DEFENSE_TYPE_DATA])
@@ -338,6 +341,8 @@
     NSString* path = [NSString stringWithFormat:@"/%@", self.folderName];
     [self.restClient loadMetadata:path];
 }
+
+#pragma mark - Xlsx Files Operation
 
 -(void) uploadXlsxFile:(NSArray*) parameters
 {
@@ -443,9 +448,7 @@
     if(![myTeamName isEqualToString:NAME_OF_NTU_MALE_BASKETBALL])
     {
         NSString* fileName = [self addShotChartXlsxFileVersionNumber:1 recordName:recordName];
-        NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
-        [dateFormatter setDateFormat:@"YYYY_MM_dd"];
-        dropboxPath = [NSString stringWithFormat:@"%@/%@",[dateFormatter stringFromDate:[NSDate date]], fileName];
+        dropboxPath = [NSString stringWithFormat:@"%@/%@",self.folderName, fileName];
     }
     else
         dropboxPath = [NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_SHOT_CHART_XLSX_FILE];
@@ -504,7 +507,7 @@
     [dateFormatter setDateFormat:@"YYYY_MM_dd"];
     NSString* filename = [self addZoneGradeXlsxFileVersionNumber:1 recordName:recordName];
     
-    NSString* dropBoxpath = [NSString stringWithFormat:@"%@/%@",[dateFormatter stringFromDate:[NSDate date]], filename];
+    NSString* dropBoxpath = [NSString stringWithFormat:@"%@/%@",self.folderName, filename];
     NSArray* agus = [[NSArray alloc] initWithObjects:dropBoxpath, localPath, nil];
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
 }
@@ -743,7 +746,7 @@
         [[DBSession sharedSession] linkFromController:self];
     
     while(!self.isLoadMetaFinished);
-  //  NSLog(@"%@", self.fileNamesInDropbox);
+    //  NSLog(@"%@", self.fileNamesInDropbox);
     NSString* filename = [self addXlsxFileVersionNumber:1 recordName:recordName];
     NSString* dropBoxpath = [NSString stringWithFormat:@"%@/%@",self.folderName, filename];
     
@@ -767,11 +770,12 @@
     
     for(NSMutableDictionary* quarterDic in timeLineRecordArray)
     {
-        NSString* playersOnFloorStr = [quarterDic objectForKey:KEY_FOR_PLAYER_ON_FLOOR];
-        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:playersOnFloorStr];
+        NSArray* playersOnFloorNoArray = [quarterDic objectForKey:KEY_FOR_PLAYER_ON_FLOOR];
+        NSString* playersOnFloorNoStr = [NSString stringWithFormat:@"%@,%@,%@,%@,%@", playersOnFloorNoArray[0], playersOnFloorNoArray[1], playersOnFloorNoArray[2], playersOnFloorNoArray[3], playersOnFloorNoArray[4]];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:playersOnFloorNoStr];
         
         NSArray* timeLineRecordArray = [quarterDic objectForKey:KEY_FOR_TIME_LINE_DATA];
-        
+    
         int rowI = rowIndex+1;
         int holdBallCount = 0;
         char outI = outIndex;
@@ -895,7 +899,7 @@
     NSArray* TotalDetailItemArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_SPOT_UP, KEY_FOR_PULL_UP, KEY_FOR_SF, KEY_FOR_LP, KEY_FOR_PUT_BACK, KEY_FOR_BD, KEY_FOR_BD, KEY_FOR_MPD, KEY_FOR_MR, KEY_FOR_MPS, KEY_FOR_MPP, nil];
     NSArray* turnOverArray = [NSArray arrayWithObjects:KEY_FOR_STOLEN, KEY_FOR_BAD_PASS, KEY_FOR_CHARGING, KEY_FOR_DROP, KEY_FOR_3_SENCOND, KEY_FOR_TRAVELING, KEY_FOR_TEAM, nil];
     NSArray* attackWayKeySet = [[NSArray alloc] initWithObjects:
-                            KEY_FOR_FASTBREAK, KEY_FOR_ISOLATION, KEY_FOR_OFF_SCREEN, KEY_FOR_DK, KEY_FOR_CUT, KEY_FOR_OTHERS, KEY_FOR_PNR, KEY_FOR_SECOND, KEY_FOR_PU, KEY_FOR_TOTAL, nil];
+                                KEY_FOR_FASTBREAK, KEY_FOR_ISOLATION, KEY_FOR_OFF_SCREEN, KEY_FOR_DK, KEY_FOR_CUT, KEY_FOR_OTHERS, KEY_FOR_PNR, KEY_FOR_SECOND, KEY_FOR_PU, KEY_FOR_TOTAL, nil];
     
     BRAOfficeDocumentPackage *spreadsheet = [BRAOfficeDocumentPackage open:xlsxFilePath];
     for(int i=0; i<playerNoSet.count+1; i++)
@@ -1017,9 +1021,7 @@
     if(![myTeamName isEqualToString:NAME_OF_NTU_MALE_BASKETBALL])
     {
         NSString* fileName = [self addPPPXlsxFileVersionNumber:1 recordName:recordName];
-        NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
-        [dateFormatter setDateFormat:@"YYYY_MM_dd"];
-        dropboxPath = [NSString stringWithFormat:@"%@/%@",[dateFormatter stringFromDate:[NSDate date]], fileName];
+        dropboxPath = [NSString stringWithFormat:@"%@/%@",self.folderName, fileName];
     }
     else
         dropboxPath = [NSString stringWithFormat:@"%@.xlsx", NAME_OF_THE_FINAL_XLSX_FILE];
