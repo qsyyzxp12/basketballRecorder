@@ -27,6 +27,13 @@
     [super viewDidLoad];
     self.BBRtableView = [[UITableView alloc] initWithFrame:CGRectMake(self.view.frame.size.width*0.2, self.view.frame.size.height*0.1, self.view.frame.size.width*0.6, self.view.frame.size.height*0.85)];
     
+    UIDatePicker *datePicker = [[UIDatePicker alloc] init];
+    NSLocale *datelocale = [[NSLocale alloc] initWithLocaleIdentifier:@"zh_TW"];
+    datePicker.locale = datelocale;
+    datePicker.timeZone = [NSTimeZone timeZoneWithName:@"GMT"];
+    datePicker.datePickerMode = UIDatePickerModeDate;
+    [datePicker addTarget:self action:@selector(chooseDate:) forControlEvents:UIControlEventValueChanged];
+    
     self.BBRtableView.delegate = self;
     self.BBRtableView.dataSource = self;
     
@@ -47,15 +54,15 @@
     UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"完成" style:UIAlertActionStyleDefault
                                                      handler:^(UIAlertAction *action)
     {
-        UITextField *teamName = otherAlert.textFields.firstObject;
-        UITextField *anotherTeamName = otherAlert.textFields.lastObject;
+        NSArray<UITextField*>* textFields = otherAlert.textFields;
+        self.myTeamName = textFields[0].text;
+        self.opponentName = textFields[1].text;
+        self.gameDate = textFields[2].text;
      /* if([teamName.text isEqualToString:@""] || [anotherTeamName isEqual:@""])
         {
             [self presentViewController:nameUncompleteAlert animated:YES completion:nil];
         }
         else*/
-            self.myTeamName = teamName.text;
-            self.opponentName = anotherTeamName.text;
         }];
     UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action)
         {
@@ -72,6 +79,12 @@
          textField.delegate = self;
          textField.placeholder = @"對手隊伍名稱";
      }];
+    [otherAlert addTextFieldWithConfigurationHandler:^(UITextField* textField)
+     {
+         textField.delegate = self;
+         textField.placeholder = @"YYYY_MM_DD";
+         textField.inputView = datePicker;
+     }];
     [otherAlert addAction:okAction];
     [otherAlert addAction:cancelAction];
     
@@ -81,9 +94,17 @@
         textField.delegate = self;
         textField.placeholder = @"名稱";
     }];
+    [opponentAlert addTextFieldWithConfigurationHandler:^(UITextField* textField)
+    {
+        textField.delegate = self;
+        textField.placeholder = @"YYYY_MM_DD";
+        textField.inputView = datePicker;
+    }];
     okAction = [UIAlertAction actionWithTitle:@"確定" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action)
         {
-            self.opponentName = opponentAlert.textFields.firstObject.text;
+            NSArray<UITextField*>* textFields = opponentAlert.textFields;
+            self.opponentName = textFields[0].text;
+            self.gameDate = textFields[1].text;
         }];
     cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action)
         {
@@ -261,8 +282,6 @@
 -(void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     NSArray *resultArray = [self.playerNoSet sortedArrayUsingSelector:@selector(compare:)];
-    NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"YYYY_MM_dd"];
     NSString* recordName = [NSString stringWithFormat:@"%@_vs_%@", self.myTeamName, self.opponentName];
     
     if([segue.identifier isEqualToString:SEGUE_ID_FOR_OFFENSE])
@@ -276,7 +295,8 @@
         mainViewCntler.sessionNo = self.sessionNo;
         mainViewCntler.gameNo = self.gameNo;
         mainViewCntler.gameType = self.gameType;
-        NSString* filename = [NSString stringWithFormat:@"%@-%@", recordName, [dateFormatter stringFromDate:[NSDate date]]];
+        mainViewCntler.gameDate = self.gameDate;
+        NSString* filename = [NSString stringWithFormat:@"%@-%@", recordName, self.gameDate];
         mainViewCntler.recordName = filename;
     }
     else if([segue.identifier isEqualToString:SEGUE_ID_FOR_DEFENSE])
@@ -289,8 +309,9 @@
         mainViewCntler.sessionNo = self.sessionNo;
         mainViewCntler.gameNo = self.gameNo;
         mainViewCntler.gameType = self.gameType;
+        mainViewCntler.gameDate = self.gameDate;
         
-        NSString* filename = [NSString stringWithFormat:@"%@-%@_防守", recordName, [dateFormatter stringFromDate:[NSDate date]]];
+        NSString* filename = [NSString stringWithFormat:@"%@-%@_防守", recordName, self.gameDate];
         mainViewCntler.recordName = filename;
     }
     else if([segue.identifier isEqualToString:SEGUE_ID_FOR_BOX_SCORE])
@@ -304,13 +325,22 @@
         mainViewCntler.gameNo = self.gameNo;
         mainViewCntler.gameType = self.gameType;
         mainViewCntler.myTeamName = self.myTeamName;
+        mainViewCntler.gameDate = self.gameDate;
         
-        NSString* filename = [NSString stringWithFormat:@"%@-%@_技術", recordName, [dateFormatter stringFromDate:[NSDate date]]];
+        NSString* filename = [NSString stringWithFormat:@"%@-%@_技術", recordName, self.gameDate];
         mainViewCntler.recordName = filename;
     }
 }
 
 #pragma mark - action
+
+-(void)chooseDate:(UIDatePicker *)datePicker
+{
+    NSDate *date = datePicker.date;
+    NSDateFormatter *df = [[NSDateFormatter alloc] init];
+    [df setDateFormat:@"YYYY_MM_dd"];
+    self.editingTextField.text = [df stringFromDate:date];
+}
 
 - (void)cancelButtonClicked
 {

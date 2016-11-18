@@ -79,6 +79,7 @@
 @property NSString* keyOfAttackWay;
 @property NSString* keyOfShotMode;
 @property NSString* gameType;
+@property NSString* gameDate;
 @property NSString* sessionNo;
 @property NSString* gameNo;
 @property UIButton* undoButton;

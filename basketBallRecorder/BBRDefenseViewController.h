@@ -64,6 +64,7 @@
 @property UILabel* loadingLabel;
 @property UIActivityIndicatorView* spinner;
 @property UIBarButtonItem* rightBarButton;
+@property NSString* gameDate;
 @property (nonatomic, strong) DBRestClient *restClient;
 
 @end

@@ -155,6 +155,7 @@
         self.navigationItem.rightBarButtonItem.action = @selector(finishButtonClicked);
     
     [self presentStartingLineUpView];
+    
     UITableView* tableView = [self.startingLineUpView viewWithTag:TAG_FOR_STARTING_LINE_UP_TABLEVIEW];
     [tableView reloadData];
 }
@@ -182,10 +183,6 @@
     //Update Record.plist
     if(!self.showOldRecordNo)
     {
-        NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
-        [dateFormatter setDateFormat:@"YYYY_MM_dd"];
-        NSString* date = [dateFormatter stringFromDate:[NSDate date]];
-        
         NSString* recordPlistPath = [NSString stringWithFormat:@"%@/Documents/record.plist", NSHomeDirectory()];
         NSMutableArray* recordPlistArray = [NSMutableArray arrayWithContentsOfFile:recordPlistPath];
         
@@ -195,7 +192,7 @@
         [newItem setObject:self.playerNoSet forKey:KEY_FOR_PLAYER_NO_SET];
         [newItem setObject:self.recordName forKey:KEY_FOR_NAME];
         [newItem setObject:DEFENSE_TYPE_DATA forKey:KEY_FOR_DATA_TYPE];
-        [newItem setObject:date forKey:KEY_FOR_DATE];
+        [newItem setObject:self.gameDate forKey:KEY_FOR_DATE];
         
         if([recordPlistArray count] < 5)
             [recordPlistArray addObject:newItem];
@@ -273,6 +270,7 @@
     self.timeCounter = [(NSNumber*)[tmpPlistDic objectForKey:KEY_FOR_TIME] intValue];
     self.playerCount = (int)[self.playerNoSet count];
     self.isSBLGame = [(NSNumber*)[tmpPlistDic objectForKey:KEY_FOR_IS_SBL_GAME] boolValue];
+    self.gameDate = [tmpPlistDic objectForKey:KEY_FOR_DATE];
     
     [self updateNavigationTitle];
     if(self.quarterNo > 3)
@@ -384,17 +382,15 @@
         [[DBSession sharedSession] linkFromController:self];
     
     while(!self.isLoadMetaFinished);
-    NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"YYYY_MM_dd"];
     if(self.isFolderExistAlready)
     {
         self.isLoadMetaFinished = NO;
         self.isLoadingRootMeta = NO;
-        [self performSelectorOnMainThread:@selector(loadFolderMetaData:) withObject:dateFormatter waitUntilDone:NO];
+        [self performSelectorOnMainThread:@selector(loadFolderMetaData) withObject:nil waitUntilDone:NO];
         while(!self.isLoadMetaFinished);
     }
     NSString* filename = [self addDefenseXlsxFileVersionNumber:1];
-    NSString* dropBoxpath = [NSString stringWithFormat:@"%@/%@",[dateFormatter stringFromDate:[NSDate date]], filename];
+    NSString* dropBoxpath = [NSString stringWithFormat:@"%@/%@", self.gameDate, filename];
     
     NSArray* agus = [[NSArray alloc] initWithObjects:dropBoxpath, localPath, nil];
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
@@ -459,9 +455,9 @@
     
 }
 
--(void)loadFolderMetaData:(NSDateFormatter*) dateFormatter
+-(void)loadFolderMetaData
 {
-    NSString* path = [NSString stringWithFormat:@"/%@", [dateFormatter stringFromDate:[NSDate date]]];
+    NSString* path = [NSString stringWithFormat:@"/%@", self.gameDate];
     [self.restClient loadMetadata:path];
 }
 
@@ -584,6 +580,7 @@
     [tmpPlistDic setObject:[NSNumber numberWithInt:0] forKey:KEY_FOR_TIME];
     [tmpPlistDic setObject:DEFENSE_TYPE_DATA forKey:KEY_FOR_DATA_TYPE];
     [tmpPlistDic setObject:[NSNumber numberWithBool:self.isSBLGame] forKey:KEY_FOR_IS_SBL_GAME];
+    [tmpPlistDic setObject:self.gameDate forKey:KEY_FOR_DATE];
     
     [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
     
@@ -1501,9 +1498,7 @@
 {
     if(self.isLoadingRootMeta)
     {
-        NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
-        [dateFormatter setDateFormat:@"YYYY_MM_dd"];
-        NSString* folderName = [dateFormatter stringFromDate:[NSDate date]];
+        NSString* folderName = self.gameDate;
         self.isFolderExistAlready = NO;
         if(metadata.isDirectory)
         {
