@@ -188,18 +188,18 @@
     self.fogView.backgroundColor = [UIColor blackColor];
     self.fogView.alpha = 0.6;
     
-    self.teamNameView = [[UIView alloc] initWithFrame:CGRectMake(CGRectGetWidth(self.view.frame)*0.3, CGRectGetHeight(self.view.frame)*0.2, CGRectGetWidth(self.view.frame)*0.4, CGRectGetHeight(self.view.frame)*0.6)];
+    self.teamNameView = [[UIView alloc] initWithFrame:CGRectMake(CGRectGetWidth(self.view.frame)*0.3, CGRectGetHeight(self.view.frame)*0.1, CGRectGetWidth(self.view.frame)*0.4, CGRectGetHeight(self.view.frame)*0.8)];
     self.teamNameView.layer.cornerRadius = 10;
     self.teamNameView.backgroundColor = [UIColor whiteColor];
     
-    UILabel* title = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetWidth(self.teamNameView.frame)*0.3, 0, CGRectGetWidth(self.teamNameView.frame)*0.4, CGRectGetHeight(self.teamNameView.frame)*0.133)];
+    UILabel* title = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetWidth(self.teamNameView.frame)*0.3, CGRectGetWidth(self.teamNameView.frame)*0.03, CGRectGetWidth(self.teamNameView.frame)*0.4, CGRectGetHeight(self.teamNameView.frame)*0.1)];
     title.text = @"比賽資訊";
     title.textAlignment = NSTextAlignmentCenter;
     [title setFont:[UIFont systemFontOfSize:20]];
     [title setAdjustsFontSizeToFitWidth:YES];
     [self.teamNameView addSubview:title];
     
-    UILabel* homeTeamLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, CGRectGetMaxY(title.frame)+CGRectGetHeight(self.teamNameView.frame)*0.02, CGRectGetWidth(self.teamNameView.frame)*0.3, CGRectGetHeight(self.teamNameView.frame)*0.133)];
+    UILabel* homeTeamLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, CGRectGetMaxY(title.frame)+CGRectGetHeight(self.teamNameView.frame)*0.02, CGRectGetWidth(self.teamNameView.frame)*0.3, CGRectGetHeight(self.teamNameView.frame)*0.1)];
     homeTeamLabel.text = @"比賽類型：";
     homeTeamLabel.textAlignment = NSTextAlignmentCenter;
     [homeTeamLabel setFont:[UIFont systemFontOfSize:18]];
@@ -213,7 +213,7 @@
     [RegularCheckboxButton addTarget:self action:@selector(checkboxButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
     [self.teamNameView addSubview:RegularCheckboxButton];
     
-    UILabel* RegularTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(RegularCheckboxButton.frame)+5, CGRectGetMinY(homeTeamLabel.frame), CGRectGetWidth(self.teamNameView.frame)*0.5, CGRectGetHeight(self.teamNameView.frame)*0.133)];
+    UILabel* RegularTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(RegularCheckboxButton.frame)+5, CGRectGetMinY(homeTeamLabel.frame), CGRectGetWidth(self.teamNameView.frame)*0.5, CGRectGetHeight(self.teamNameView.frame)*0.1)];
     RegularTitleLabel.text = @"例行賽";
     RegularTitleLabel.textAlignment = NSTextAlignmentCenter;
     [RegularTitleLabel setFont:[UIFont systemFontOfSize:18]];
@@ -227,21 +227,21 @@
     [PlayoffCheckboxButton addTarget:self action:@selector(checkboxButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
     [self.teamNameView addSubview:PlayoffCheckboxButton];
     
-    UILabel* PlayoffTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(PlayoffCheckboxButton.frame)+5, CGRectGetMaxY(RegularTitleLabel.frame), CGRectGetWidth(self.teamNameView.frame)*0.5, CGRectGetHeight(self.teamNameView.frame)*0.133)];
+    UILabel* PlayoffTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(PlayoffCheckboxButton.frame)+5, CGRectGetMaxY(RegularTitleLabel.frame), CGRectGetWidth(self.teamNameView.frame)*0.5, CGRectGetHeight(self.teamNameView.frame)*0.1)];
     PlayoffTitleLabel.text = @"季後賽";
     PlayoffTitleLabel.textAlignment = NSTextAlignmentCenter;
     [PlayoffTitleLabel setFont:[UIFont systemFontOfSize:18]];
     [PlayoffTitleLabel setAdjustsFontSizeToFitWidth:YES];
     [self.teamNameView addSubview:PlayoffTitleLabel];
     
-    UILabel* sessionNoLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, CGRectGetMaxY(PlayoffTitleLabel.frame)+CGRectGetHeight(self.teamNameView.frame)*0.0667, CGRectGetWidth(self.teamNameView.frame)*0.3, CGRectGetHeight(self.teamNameView.frame)*0.133)];
+    UILabel* sessionNoLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, CGRectGetMaxY(PlayoffTitleLabel.frame)+CGRectGetHeight(self.teamNameView.frame)*0.05, CGRectGetWidth(self.teamNameView.frame)*0.3, CGRectGetHeight(self.teamNameView.frame)*0.1)];
     sessionNoLabel.text = @"球季編號：";
     sessionNoLabel.textAlignment = NSTextAlignmentCenter;
     [sessionNoLabel setFont:[UIFont systemFontOfSize:18]];
     [sessionNoLabel setAdjustsFontSizeToFitWidth:YES];
     [self.teamNameView addSubview:sessionNoLabel];
     
-    UITextField* sessionNoTextField = [[UITextField alloc] initWithFrame:CGRectMake(CGRectGetMaxX(sessionNoLabel.frame)+5, CGRectGetMinY(sessionNoLabel.frame), CGRectGetWidth(self.teamNameView.frame)*0.6, CGRectGetHeight(self.teamNameView.frame)*0.133)];
+    UITextField* sessionNoTextField = [[UITextField alloc] initWithFrame:CGRectMake(CGRectGetMaxX(sessionNoLabel.frame)+5, CGRectGetMinY(sessionNoLabel.frame), CGRectGetWidth(self.teamNameView.frame)*0.6, CGRectGetHeight(self.teamNameView.frame)*0.1)];
     sessionNoTextField.tag = 4;
     sessionNoTextField.delegate = self;
     sessionNoTextField.layer.cornerRadius = 5;
@@ -249,14 +249,14 @@
     sessionNoTextField.textAlignment = NSTextAlignmentCenter;
     [self.teamNameView addSubview:sessionNoTextField];
     
-    UILabel* gameNoLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, CGRectGetMaxY(sessionNoLabel.frame)+CGRectGetHeight(self.teamNameView.frame)*0.06, CGRectGetWidth(self.teamNameView.frame)*0.3, CGRectGetHeight(self.teamNameView.frame)*0.133)];
+    UILabel* gameNoLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, CGRectGetMaxY(sessionNoLabel.frame)+CGRectGetHeight(self.teamNameView.frame)*0.05, CGRectGetWidth(self.teamNameView.frame)*0.3, CGRectGetHeight(self.teamNameView.frame)*0.1)];
     gameNoLabel.text = @"比賽編號：";
     gameNoLabel.textAlignment = NSTextAlignmentCenter;
     [gameNoLabel setFont:[UIFont systemFontOfSize:18]];
     [gameNoLabel setAdjustsFontSizeToFitWidth:YES];
     [self.teamNameView addSubview:gameNoLabel];
     
-    UITextField* gameNoTextField = [[UITextField alloc] initWithFrame:CGRectMake(CGRectGetMaxX(gameNoLabel.frame)+5, CGRectGetMinY(gameNoLabel.frame), CGRectGetWidth(self.teamNameView.frame)*0.6, CGRectGetHeight(self.teamNameView.frame)*0.133)];
+    UITextField* gameNoTextField = [[UITextField alloc] initWithFrame:CGRectMake(CGRectGetMaxX(gameNoLabel.frame)+5, CGRectGetMinY(gameNoLabel.frame), CGRectGetWidth(self.teamNameView.frame)*0.6, CGRectGetHeight(self.teamNameView.frame)*0.1)];
     gameNoTextField.tag = 5;
     gameNoTextField.delegate = self;
     gameNoTextField.layer.cornerRadius = 5;
@@ -264,14 +264,30 @@
     gameNoTextField.textAlignment = NSTextAlignmentCenter;
     [self.teamNameView addSubview:gameNoTextField];
     
-    UIButton* okButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetWidth(self.teamNameView.frame)*0.1, CGRectGetMaxY(gameNoTextField.frame)+CGRectGetHeight(self.teamNameView.frame)*0.02, CGRectGetWidth(self.teamNameView.frame)*0.35, CGRectGetHeight(self.teamNameView.frame)*0.15)];
+    UILabel* dateLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, CGRectGetMaxY(gameNoLabel.frame)+CGRectGetHeight(self.teamNameView.frame)*0.05, CGRectGetWidth(self.teamNameView.frame)*0.3, CGRectGetHeight(self.teamNameView.frame)*0.1)];
+    dateLabel.text = @"比賽日期：";
+    dateLabel.textAlignment = NSTextAlignmentCenter;
+    [dateLabel setFont:[UIFont systemFontOfSize:18]];
+    [dateLabel setAdjustsFontSizeToFitWidth:YES];
+    [self.teamNameView addSubview:dateLabel];
+    
+    UITextField* dateTextField = [[UITextField alloc] initWithFrame:CGRectMake(CGRectGetMaxX(dateLabel.frame)+5, CGRectGetMinY(dateLabel.frame), CGRectGetWidth(self.teamNameView.frame)*0.6, CGRectGetHeight(self.teamNameView.frame)*0.1)];
+    dateTextField.tag = 6;
+    dateTextField.delegate = self;
+    dateTextField.layer.cornerRadius = 5;
+    dateTextField.layer.borderWidth = 1;
+    dateTextField.textAlignment = NSTextAlignmentCenter;
+    dateTextField.inputView = datePicker;
+    [self.teamNameView addSubview:dateTextField];
+    
+    UIButton* okButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetWidth(self.teamNameView.frame)*0.1, CGRectGetMaxY(dateTextField.frame)+CGRectGetHeight(self.teamNameView.frame)*0.04, CGRectGetWidth(self.teamNameView.frame)*0.35, CGRectGetHeight(self.teamNameView.frame)*0.1125)];
     [okButton addTarget:self action:@selector(okButtonClicked) forControlEvents:UIControlEventTouchUpInside];
     [okButton setTitle:@"確定" forState:UIControlStateNormal];
     [okButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateHighlighted];
     [okButton setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
     [self.teamNameView addSubview:okButton];
     
-    UIButton* cancelButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetMaxX(okButton.frame)+CGRectGetWidth(self.teamNameView.frame)*0.1, CGRectGetMinY(okButton.frame), CGRectGetWidth(self.teamNameView.frame)*0.35, CGRectGetHeight(self.teamNameView.frame)*0.15)];
+    UIButton* cancelButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetMaxX(okButton.frame)+CGRectGetWidth(self.teamNameView.frame)*0.1, CGRectGetMinY(okButton.frame), CGRectGetWidth(self.teamNameView.frame)*0.35, CGRectGetHeight(self.teamNameView.frame)*0.1125)];
     [cancelButton addTarget:self action:@selector(cancelButtonClicked) forControlEvents:UIControlEventTouchUpInside];
     [cancelButton setTitle:@"取消" forState:UIControlStateNormal];
     [cancelButton setTitleColor:[UIColor grayColor] forState:UIControlStateHighlighted];
@@ -296,7 +312,11 @@
         mainViewCntler.gameNo = self.gameNo;
         mainViewCntler.gameType = self.gameType;
         mainViewCntler.gameDate = self.gameDate;
-        NSString* filename = [NSString stringWithFormat:@"%@-%@", recordName, self.gameDate];
+        NSString* filename;
+        if(!self.isSBLGame)
+            filename = [NSString stringWithFormat:@"%@-%@", recordName, self.gameDate];
+        else
+            filename = [NSString stringWithFormat:@"%@%@-%@-%@", self.sessionNo, self.gameNo, recordName, self.gameDate];
         mainViewCntler.recordName = filename;
     }
     else if([segue.identifier isEqualToString:SEGUE_ID_FOR_DEFENSE])
@@ -367,9 +387,16 @@
     
     UITextField* sessionNoTextField = (UITextField*)[self.teamNameView viewWithTag:4];
     self.sessionNo = sessionNoTextField.text;
+    if(self.sessionNo.length < 2)
+        self.sessionNo = [NSString stringWithFormat:@"0%@", self.sessionNo];
     
     UITextField* gameNoTextField = (UITextField*)[self.teamNameView viewWithTag:5];
     self.gameNo = gameNoTextField.text;
+    if(self.gameNo.length < 2)
+        self.gameNo = [NSString stringWithFormat:@"0%@", self.gameNo];
+    
+    UITextField* gameDateTextField = (UITextField*)[self.teamNameView viewWithTag:6];
+    self.gameDate = gameDateTextField.text;
     
     [self.teamNameView removeFromSuperview];
     [self.fogView removeFromSuperview];
@@ -526,7 +553,7 @@
 
 - (BOOL)textFieldShouldEndEditing:(UITextField *)textField
 {
-    self.teamNameView.frame = CGRectMake(CGRectGetWidth(self.view.frame)*0.3, CGRectGetHeight(self.view.frame)*0.2, CGRectGetWidth(self.view.frame)*0.4, CGRectGetHeight(self.view.frame)*0.6);
+    self.teamNameView.frame = CGRectMake(CGRectGetWidth(self.view.frame)*0.3, CGRectGetHeight(self.view.frame)*0.1, CGRectGetWidth(self.view.frame)*0.4, CGRectGetHeight(self.view.frame)*0.8);
     
     if([textField isDescendantOfView:self.BBRtableView])
         [self.textFieldArray setObject:textField.text atIndexedSubscript:textField.tag-1];

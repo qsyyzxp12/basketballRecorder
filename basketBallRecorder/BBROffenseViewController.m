@@ -1151,15 +1151,13 @@
         xlsxFilePath = [[NSBundle mainBundle] pathForResource:NAME_OF_THE_SHOT_CHART_XLSX_FILE ofType:@"xlsx"];
     
     BRAOfficeDocumentPackage *spreadsheet = [BRAOfficeDocumentPackage open:xlsxFilePath];
-    for(int i=0; i<self.playerNoSet.count; i++)
+    for(int i=0; i<=self.playerNoSet.count; i++)
     {
         char outIndex = '\0';
         char interIndex = 'A';
         int rowIndex = 0;
         
         BRAWorksheet *worksheet = [self lookForWorkSheetWithPlayerIndex:i spreadSheet:spreadsheet type:SHOT_CHART];
-        NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
-        [dateFormatter setDateFormat:@"YYYY/MM/dd"];
         
         NSString* cellRef;
         NSString *cellContent;
@@ -1171,7 +1169,7 @@
         }while(cellContent && ![cellContent isEqualToString:@""]);
         
         [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:
-         [dateFormatter stringFromDate:[NSDate date]]];
+         self.gameDate];
         
         cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowIndex];
         [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:self.opponentName];
@@ -1200,9 +1198,6 @@
             [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:madeAndAttempt];
         }
     }
-    
-    if(!self.isShotChartXlsxFileExistInDropbox || ![self.myTeamName isEqualToString:NAME_OF_NTU_MALE_BASKETBALL])
-        [spreadsheet.workbook removeWorksheetNamed:@"全隊"];
     
     //Save the xlsx to the app space in the device
     NSString *localPath = [NSString stringWithFormat:@"%@/Documents/%@.xlsx", NSHomeDirectory(), NAME_OF_THE_SHOT_CHART_XLSX_FILE];

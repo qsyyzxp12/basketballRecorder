@@ -317,6 +317,7 @@
     NSArray* playerNoSet = [dataDic objectForKey:KEY_FOR_PLAYER_NO_SET];
     NSString* myTeamName = [dataDic objectForKey:KEY_FOR_MY_TEAM_NAME];
     NSString* opponentName = [dataDic objectForKey:KEY_FOR_OPPONENT_NAME];
+    NSString* gameDate = [dataDic objectForKey:KEY_FOR_DATE];
     NSString* xlsxFilePath;
     if(self.isShotChartXlsxFileExistInDropbox && [myTeamName isEqualToString:NAME_OF_NTU_MALE_BASKETBALL])
     {
@@ -327,15 +328,13 @@
         xlsxFilePath = [[NSBundle mainBundle] pathForResource:NAME_OF_THE_SHOT_CHART_XLSX_FILE ofType:@"xlsx"];
     
     BRAOfficeDocumentPackage *spreadsheet = [BRAOfficeDocumentPackage open:xlsxFilePath];
-    for(int i=0; i<playerNoSet.count; i++)
+    for(int i=0; i<=playerNoSet.count; i++)
     {
         char outIndex = '\0';
         char interIndex = 'A';
         int rowIndex = 0;
         
         BRAWorksheet *worksheet = [self lookForWorkSheetWithPlayerIndex:i spreadSheet:spreadsheet playerNoArray:playerNoSet type:SHOT_CHART];
-        NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
-        [dateFormatter setDateFormat:@"YYYY/MM/dd"];
         
         NSString* cellRef;
         NSString *cellContent;
@@ -346,15 +345,13 @@
             cellContent = [[worksheet cellForCellReference:cellRef] stringValue];
         }while(cellContent && ![cellContent isEqualToString:@""]);
         
-        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:
-         [dateFormatter stringFromDate:[NSDate date]]];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:gameDate];
         
         cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowIndex];
         [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:opponentName];
         
         NSArray* totalGradeArray = [playerDataArray objectAtIndex:0];
         NSDictionary* playerGradeDic = [totalGradeArray objectAtIndex:i];
-        
         
         for(int j=0; j<11; j++)
         {
@@ -376,9 +373,6 @@
             [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:madeAndAttempt];
         }
     }
-    
-    if(!self.isShotChartXlsxFileExistInDropbox)
-        [spreadsheet.workbook removeWorksheetNamed:@"全隊"];
     
     //Save the xlsx to the app space in the device
     NSString *localPath = [NSString stringWithFormat:@"%@/Documents/%@.xlsx", NSHomeDirectory(), NAME_OF_THE_SHOT_CHART_XLSX_FILE];
@@ -837,15 +831,17 @@
     NSString* opponentName = [dataDic objectForKey:KEY_FOR_OPPONENT_NAME];
     NSString* recordName = [dataDic objectForKey:KEY_FOR_NAME];
     NSArray* playerDataArray =[dataDic objectForKey:KEY_FOR_GRADE];
+    NSString* gameDate = [dataDic objectForKey:KEY_FOR_DATE];
     
     NSArray* normalDetailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, nil];
     NSArray* secondDetailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, KEY_FOR_PUT_BACK, nil];
+    NSArray* hpShotModeKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, KEY_FOR_HL, nil];
     NSArray* PNRDetailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_BP, KEY_FOR_BD, KEY_FOR_MR, KEY_FOR_MPP, KEY_FOR_MPD, KEY_FOR_MPS, nil];
     NSArray* PUDetailItemKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, KEY_FOR_SF, KEY_FOR_SF, nil];
-    NSArray* TotalDetailItemArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_SPOT_UP, KEY_FOR_PULL_UP, KEY_FOR_SF, KEY_FOR_LP, KEY_FOR_PUT_BACK, KEY_FOR_BD, KEY_FOR_BD, KEY_FOR_MPD, KEY_FOR_MR, KEY_FOR_MPS, KEY_FOR_MPP, nil];
-    NSArray* turnOverArray = [NSArray arrayWithObjects:KEY_FOR_STOLEN, KEY_FOR_BAD_PASS, KEY_FOR_CHARGING, KEY_FOR_DROP, KEY_FOR_3_SENCOND, KEY_FOR_TRAVELING, KEY_FOR_TEAM, nil];
+    NSArray* TotalDetailItemArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_SPOT_UP, KEY_FOR_PULL_UP, KEY_FOR_SF, KEY_FOR_LP, KEY_FOR_HL, KEY_FOR_PUT_BACK, KEY_FOR_BD, KEY_FOR_BD, KEY_FOR_MPD, KEY_FOR_MR, KEY_FOR_MPS, KEY_FOR_MPP, nil];
+    NSArray* turnOverArray = [NSArray arrayWithObjects:KEY_FOR_STOLEN, KEY_FOR_BAD_PASS, KEY_FOR_CHARGING, KEY_FOR_DROP, KEY_FOR_LINE, KEY_FOR_3_SENCOND, KEY_FOR_TRAVELING, KEY_FOR_TEAM, nil];
     NSArray* attackWayKeySet = [[NSArray alloc] initWithObjects:
-                                KEY_FOR_FASTBREAK, KEY_FOR_ISOLATION, KEY_FOR_OFF_SCREEN, KEY_FOR_DK, KEY_FOR_CUT, KEY_FOR_OTHERS, KEY_FOR_PNR, KEY_FOR_SECOND, KEY_FOR_PU, KEY_FOR_TOTAL, nil];
+                                KEY_FOR_FASTBREAK, KEY_FOR_ISOLATION, KEY_FOR_OFF_SCREEN, KEY_FOR_DK, KEY_FOR_CUT, KEY_FOR_OTHERS, KEY_FOR_PNR, KEY_FOR_SECOND, KEY_FOR_PU, KEY_FOR_HP, KEY_FOR_TOTAL, nil];
     
     BRAOfficeDocumentPackage *spreadsheet = [BRAOfficeDocumentPackage open:xlsxFilePath];
     for(int i=0; i<playerNoSet.count+1; i++)
@@ -855,8 +851,6 @@
         int rowIndex = 3;
         
         BRAWorksheet *worksheet = [self lookForWorkSheetWithPlayerIndex:i spreadSheet:spreadsheet playerNoArray:playerNoSet type:PPP];
-        NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
-        [dateFormatter setDateFormat:@"YYYY/MM/dd"];
         
         NSString* cellRef;
         NSString *cellContent;
@@ -867,8 +861,7 @@
             cellContent = [[worksheet cellForCellReference:cellRef] stringValue];
         }while(cellContent && ![cellContent isEqualToString:@""]);
         
-        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:
-         [dateFormatter stringFromDate:[NSDate date]]];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:gameDate];
         
         cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowIndex];
         [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:opponentName];
@@ -884,6 +877,8 @@
                 detailArray = PNRDetailItemKeyArray;
             else if([keyForAttackWay isEqualToString:KEY_FOR_PU])
                 detailArray = PUDetailItemKeyArray;
+            else if([keyForAttackWay isEqualToString:KEY_FOR_HP])
+                detailArray = hpShotModeKeyArray;
             else if([keyForAttackWay isEqualToString:KEY_FOR_TOTAL])
             {
                 NSDictionary* turnoverDic = [playerGradeDic objectForKey:KEY_FOR_TURNOVER];
@@ -1134,7 +1129,6 @@
             [self.restClient createFolder:[NSString stringWithFormat:@"/%@", self.folderName]];
         else
             self.isLoadMetaFinished = YES;
-        
     }
     else
     {
