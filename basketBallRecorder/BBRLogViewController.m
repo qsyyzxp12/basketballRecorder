@@ -43,26 +43,25 @@
     for (int i=0; i<20; i++)
         [self.textFieldArray setObject:@"" atIndexedSubscript:i];
     
-//    UIAlertController* nameUncompleteAlert = [UIAlertController alertControllerWithTitle:@"" message:@"隊伍名稱輸入不完全" preferredStyle:UIAlertControllerStyleAlert];
-//    UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
-//                                              handler:^(UIAlertAction *action){}];
-
-//    [nameUncompleteAlert addAction:okAction];
+    UIAlertController* nameUncompleteAlert = [UIAlertController alertControllerWithTitle:@"" message:@"資訊輸入不完全" preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"好" style:UIAlertActionStyleDefault
+    handler:^(UIAlertAction *action)
+    {
+        [self.navigationController popToViewController:[self.navigationController.viewControllers objectAtIndex:1] animated:YES];
+    }];
+    [nameUncompleteAlert addAction:okAction];
     
     UIAlertController* otherAlert = [UIAlertController alertControllerWithTitle:@"比賽隊伍" message:@"" preferredStyle:UIAlertControllerStyleAlert];
     
-    UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"完成" style:UIAlertActionStyleDefault
+    okAction = [UIAlertAction actionWithTitle:@"完成" style:UIAlertActionStyleDefault
                                                      handler:^(UIAlertAction *action)
     {
         NSArray<UITextField*>* textFields = otherAlert.textFields;
         self.myTeamName = textFields[0].text;
         self.opponentName = textFields[1].text;
         self.gameDate = textFields[2].text;
-     /* if([teamName.text isEqualToString:@""] || [anotherTeamName isEqual:@""])
-        {
+        if([self.myTeamName isEqualToString:@""] || [self.opponentName isEqual:@""] || [self.gameDate isEqualToString:@""])
             [self presentViewController:nameUncompleteAlert animated:YES completion:nil];
-        }
-        else*/
         }];
     UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action)
         {
@@ -105,6 +104,8 @@
             NSArray<UITextField*>* textFields = opponentAlert.textFields;
             self.opponentName = textFields[0].text;
             self.gameDate = textFields[1].text;
+            if([self.opponentName isEqualToString:@""] || [self.gameDate isEqualToString:@""])
+                [self presentViewController:nameUncompleteAlert animated:YES completion:nil];
         }];
     cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action)
         {
@@ -371,15 +372,9 @@
 {
     UIButton* regularCheckboxButton = (UIButton*)[self.teamNameView viewWithTag:1];
     UIButton* playoffCheckboxButton = (UIButton*)[self.teamNameView viewWithTag:2];
-    
+    BOOL checkBoxCHeckOut = YES;
     if(!regularCheckboxButton.isSelected && !playoffCheckboxButton.isSelected)
-    {
-        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"請選擇比賽類型" message:@"" preferredStyle:UIAlertControllerStyleAlert];
-        UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"好" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){}];
-        [alert addAction:okAction];
-        [self presentViewController:alert animated:YES completion:nil];
-        return;
-    }
+        checkBoxCHeckOut = NO;
     else if(regularCheckboxButton.isSelected)
         self.gameType = REGULAR_GAME;
     else
@@ -387,16 +382,26 @@
     
     UITextField* sessionNoTextField = (UITextField*)[self.teamNameView viewWithTag:4];
     self.sessionNo = sessionNoTextField.text;
-    if(self.sessionNo.length < 2)
-        self.sessionNo = [NSString stringWithFormat:@"0%@", self.sessionNo];
     
     UITextField* gameNoTextField = (UITextField*)[self.teamNameView viewWithTag:5];
     self.gameNo = gameNoTextField.text;
-    if(self.gameNo.length < 2)
-        self.gameNo = [NSString stringWithFormat:@"0%@", self.gameNo];
     
     UITextField* gameDateTextField = (UITextField*)[self.teamNameView viewWithTag:6];
     self.gameDate = gameDateTextField.text;
+    
+    if([self.gameDate isEqualToString:@""] || [self.sessionNo isEqualToString:@""] || [self.gameNo isEqualToString:@""] || !checkBoxCHeckOut)
+    {
+        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"比賽資訊不完全" message:@"" preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"好" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){}];
+        [alert addAction:okAction];
+        [self presentViewController:alert animated:YES completion:nil];
+        return;
+    }
+    
+    if(self.sessionNo.length < 2)
+        self.sessionNo = [NSString stringWithFormat:@"0%@", self.sessionNo];
+    if(self.gameNo.length < 2)
+        self.gameNo = [NSString stringWithFormat:@"0%@", self.gameNo];
     
     [self.teamNameView removeFromSuperview];
     [self.fogView removeFromSuperview];
