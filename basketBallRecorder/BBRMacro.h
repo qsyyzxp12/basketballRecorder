@@ -9,7 +9,7 @@
 #ifndef BBRMacro_h
 #define BBRMacro_h
 
-//#define Dropbox
+#define Dropbox
 #define BIJI
 
 #define TITLE_CELL_HEIGHT 30

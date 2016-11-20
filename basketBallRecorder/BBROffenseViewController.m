@@ -843,9 +843,9 @@
     [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
 }
 
--(void)loadFolderMetaData:(NSDateFormatter*) dateFormatter
+-(void)loadFolderMetaData
 {
-    NSString* path = [NSString stringWithFormat:@"/%@", [dateFormatter stringFromDate:[NSDate date]]];
+    NSString* path = [NSString stringWithFormat:@"/%@", self.gameDate];
     [self.restClient loadMetadata:path];
 }
 
@@ -855,13 +855,11 @@
 {
 #ifdef Dropbox
     while(!self.isLoadMetaFinished);
-    NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"YYYY_MM_dd"];
     if(self.isFolderExistAlready)
     {
         self.isLoadMetaFinished = NO;
         self.isLoadingRootMeta = NO;
-        [self performSelectorOnMainThread:@selector(loadFolderMetaData:) withObject:dateFormatter waitUntilDone:NO];
+        [self performSelectorOnMainThread:@selector(loadFolderMetaData) withObject:nil waitUntilDone:NO];
     }
     
     [self performSelectorInBackground:@selector(generatePPPXlsxAndUpload) withObject:nil];
@@ -1016,8 +1014,6 @@
         int rowIndex = 3;
         
         BRAWorksheet *worksheet = [self lookForWorkSheetWithPlayerIndex:i spreadSheet:spreadsheet type:PPP];
-        NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
-        [dateFormatter setDateFormat:@"YYYY/MM/dd"];
         
         NSString* cellRef;
         NSString *cellContent;
@@ -1028,8 +1024,7 @@
             cellContent = [[worksheet cellForCellReference:cellRef] stringValue];
         }while(cellContent && ![cellContent isEqualToString:@""]);
         
-        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:
-         [dateFormatter stringFromDate:[NSDate date]]];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue: self.gameDate];
         
         cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowIndex];
         [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:self.opponentName];
@@ -1088,6 +1083,10 @@
                 cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowIndex];
                 NSInteger toCount = [[attackDic objectForKey:KEY_FOR_TOTAL_TURNOVER_COUNT] integerValue];
                 [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:toCount];
+                
+                cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowIndex];
+                NSInteger holdCount = [[attackDic objectForKey:KEY_FOR_HOLD_BALL_COUNT] integerValue];
+                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:holdCount];
             }
             else
             {
@@ -1739,8 +1738,13 @@
         for(int j=0; j<2; j++)
         {
             NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
+            
+            NSMutableDictionary* offModeDic = [playerData objectForKey:self.keyOfAttackWay];
+            int holdBallCount = [[offModeDic objectForKey:KEY_FOR_HOLD_BALL_COUNT] intValue];
+            [offModeDic setObject:[NSString stringWithFormat:@"%d", holdBallCount+1] forKey:KEY_FOR_HOLD_BALL_COUNT];
+            
             NSMutableDictionary* totalDic = [playerData objectForKey:KEY_FOR_TOTAL];
-            int holdBallCount = [[totalDic objectForKey:KEY_FOR_HOLD_BALL_COUNT] intValue];
+            holdBallCount = [[totalDic objectForKey:KEY_FOR_HOLD_BALL_COUNT] intValue];
             [totalDic setObject:[NSString stringWithFormat:@"%d", holdBallCount+1] forKey:KEY_FOR_HOLD_BALL_COUNT];
         }
     }
@@ -1870,8 +1874,7 @@
             [shotModeDic setObject:@"0" forKey:KEY_FOR_TOTAL_MADE_COUNT];
             [shotModeDic setObject:@"0" forKey:KEY_FOR_TOTAL_ATTEMPT_COUNT];
             [shotModeDic setObject:@"0" forKey:KEY_FOR_TOTAL_FOUL_COUNT];
-            if([attackKeyStr isEqualToString:KEY_FOR_TOTAL])
-                [shotModeDic setObject:@"0" forKey:KEY_FOR_HOLD_BALL_COUNT];
+            [shotModeDic setObject:@"0" forKey:KEY_FOR_HOLD_BALL_COUNT];
             [playerDataItem setObject:shotModeDic forKey:attackKeyStr];
         }
         

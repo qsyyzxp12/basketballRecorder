@@ -919,6 +919,10 @@
                 cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowIndex];
                 NSInteger toCount = [[attackDic objectForKey:KEY_FOR_TOTAL_TURNOVER_COUNT] integerValue];
                 [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:toCount];
+                
+                cellRef = [self cellRefGoRightWithOutIndex:&outIndex interIndex:&interIndex rowIndex:rowIndex];
+                NSInteger holdCount = [[attackDic objectForKey:KEY_FOR_HOLD_BALL_COUNT] integerValue];
+                [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:holdCount];
             }
             else
             {
