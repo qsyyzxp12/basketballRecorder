@@ -18,6 +18,7 @@
 @property UITableView *shotModeTableView;
 @property NSMutableArray<NSMutableDictionary*> *playerOnFloorDataArray;
 @property NSMutableArray<NSNumber*>* startingLineUpPlayerArray;
+@property NSMutableArray<NSMutableDictionary*>* plusMinusArray;
 @property NSMutableArray* playerDataArray;
 @property NSMutableArray* OldPlayerDataArray;
 @property NSMutableArray* timeLineReordeArray;
@@ -65,6 +66,7 @@
 @property int timeWhenShowingOffList;
 @property int attackWayNo;
 @property int ptr;
+@property int plusMinusPts;
 @property UIAlertController* attackWayAlert;
 @property UIAlertController* nextQuarterAlert;
 @property UIAlertController* playoffOrNotAlert;

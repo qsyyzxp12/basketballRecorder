@@ -31,7 +31,9 @@
     self.timeCounter = 0;
     self.attackWayNo = 0;
     self.uploadFilesCount = 0;
+    self.plusMinusPts = 0;
     self.timeLineReordeArray = [[NSMutableArray alloc] init];
+    self.plusMinusArray = [[NSMutableArray alloc] init];
     
     self.restClient = [[DBRestClient alloc] initWithSession:[DBSession sharedSession]];
     self.restClient.delegate = self;
@@ -697,6 +699,8 @@
 
 -(void) showConclusionAndGernateXlsxFile:(BOOL)generateXlsxFile
 {
+    [self closePlusMinusArray];
+    
     self.isRecordMode = NO;
     if(!self.isShowZoneGrade)
         self.playerDataTableView.hidden = NO;
@@ -735,6 +739,7 @@
         [newItem setObject:self.timeLineReordeArray forKey:KEY_FOR_TIMELINE];
         [newItem setObject:OFFENSE_TYPE_DATA forKey:KEY_FOR_DATA_TYPE];
         [newItem setObject:self.gameDate forKey:KEY_FOR_DATE];
+        [newItem setObject:self.plusMinusArray forKey:KEY_FOR_PLUS_MINUS];
         
         if([recordPlistArray count] < 5)
             [recordPlistArray addObject:newItem];
@@ -826,6 +831,7 @@
     self.playerOnFloorDataArray = [tmpPlistDic objectForKey:KEY_FOR_ON_FLOOR_PLAYER_DATA];
     self.timeLineReordeArray = [tmpPlistDic objectForKey:KEY_FOR_TIMELINE];
     self.gameDate = [tmpPlistDic objectForKey:KEY_FOR_DATE];
+    self.plusMinusArray = [tmpPlistDic objectForKey:KEY_FOR_PLUS_MINUS];
     
     [self updateNavigationTitle];
     if(self.quarterNo > 3)
@@ -866,7 +872,58 @@
     [self performSelectorInBackground:@selector(generateShotChartXlsxAndUpload) withObject:nil];
     [self performSelectorInBackground:@selector(generateTimeLineXlsxAndUpload) withObject:nil];
     [self performSelectorInBackground:@selector(generateZoneGradeXlsxAndUpload) withObject:nil];
+    [self generatePlusMinusXlsxAndUpload];
 #endif
+}
+
+- (void)generatePlusMinusXlsxAndUpload
+{
+    NSString* orgDocumentPath = [[NSBundle mainBundle] pathForResource:NAME_OF_THE_PLUS_MINUS_XLSX_FILE ofType:@"xlsx"];
+    BRAOfficeDocumentPackage *spreadsheet = [BRAOfficeDocumentPackage open:orgDocumentPath];
+    BRAWorksheet *worksheet = spreadsheet.workbook.worksheets[0];
+    char outIndex = '\0';
+    char interIndex = 'A';
+    int rowIndex = 2;
+    
+    for(NSMutableDictionary* eventDic in self.plusMinusArray)
+    {
+        char outI = outIndex;
+        char interI = interIndex;
+        NSString* cellRef = [NSString stringWithFormat:@"%c%c%d", outI, interI, rowIndex];
+        NSArray* playerNoArray = [eventDic objectForKey:KEY_FOR_PLAYER_ON_FLOOR];
+        for(NSString* playerNo in playerNoArray)
+        {
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:playerNo];
+            cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowIndex];
+        }
+        NSNumber* startTime = [eventDic objectForKey:KEY_FOR_START_TIME];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:startTime.integerValue];
+        cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowIndex];
+        
+        NSNumber* endTime = [eventDic objectForKey:KEY_FOR_END_TIME];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:endTime.integerValue];
+        cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:rowIndex];
+        
+        NSNumber* pts = [eventDic objectForKey:KEY_FOR_PTS];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:pts.integerValue];
+        rowIndex++;
+    }
+    
+    //Save the xlsx to the app space in the device
+    NSString *localPath = [NSString stringWithFormat:@"%@/Documents/%@.xlsx", NSHomeDirectory(), NAME_OF_THE_PLUS_MINUS_XLSX_FILE];
+    NSFileManager* fm = [[NSFileManager alloc] init];
+    
+    if([fm fileExistsAtPath:localPath])
+        [fm removeItemAtPath:localPath error:nil];
+    
+    [spreadsheet saveAs:localPath];
+    
+    while(!self.isLoadMetaFinished);
+    NSString* filename = [self addXlsxVersionNumber:1 type:NAME_OF_THE_PLUS_MINUS_XLSX_FILE];
+    
+    NSString* dropBoxpath = [NSString stringWithFormat:@"%@/%@",self.gameDate, filename];
+    NSArray* agus = [[NSArray alloc] initWithObjects:dropBoxpath, localPath, nil];
+    [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
 }
 
 -(void) generateTimeLineXlsxAndUpload
@@ -981,14 +1038,7 @@
     [spreadsheet saveAs:localPath];
     
     while(!self.isLoadMetaFinished);
-    /*    if(self.isFolderExistAlready)
-     {
-     self.isLoadMetaFinished = NO;
-     self.isLoadingRootMeta = NO;
-     [self performSelectorOnMainThread:@selector(loadFolderMetaData:) withObject:dateFormatter waitUntilDone:NO];
-     while(!self.isLoadMetaFinished);
-     }*/
-    NSString* filename = [self addTimeLineXlsxFileVersionNumber:1];
+    NSString* filename = [self addXlsxVersionNumber:1 type:@"時間軸"];
     
     NSString* dropBoxpath = [NSString stringWithFormat:@"%@/%@",self.gameDate, filename];
     NSArray* agus = [[NSArray alloc] initWithObjects:dropBoxpath, localPath, nil];
@@ -1129,7 +1179,7 @@
     NSString* dropboxPath;
     if(![self.myTeamName isEqualToString:NAME_OF_NTU_MALE_BASKETBALL])
     {
-        NSString* fileName = [self addPPPXlsxFileVersionNumber:1];
+        NSString* fileName = [self addXlsxVersionNumber:1 type:NAME_OF_THE_FINAL_XLSX_FILE];
         dropboxPath = [NSString stringWithFormat:@"%@/%@", self.gameDate, fileName];
     }
     else
@@ -1210,7 +1260,7 @@
     NSString* dropboxPath;
     if(![self.myTeamName isEqualToString:NAME_OF_NTU_MALE_BASKETBALL])
     {
-        NSString* fileName = [self addShotChartXlsxFileVersionNumber:1];
+        NSString* fileName = [self addXlsxVersionNumber:1 type:NAME_OF_THE_SHOT_CHART_XLSX_FILE];
         dropboxPath = [NSString stringWithFormat:@"%@/%@", self.gameDate, fileName];
     }
     else
@@ -1263,7 +1313,7 @@
     [spreadsheet saveAs:localPath];
     
     while(!self.isLoadMetaFinished);
-    NSString* filename = [self addZoneGradeXlsxFileVersionNumber:1];
+    NSString* filename = [self addXlsxVersionNumber:1 type:@"投籃分佈圖"];
     
     NSString* dropBoxpath = [NSString stringWithFormat:@"%@/%@", self.gameDate, filename];
     NSArray* agus = [[NSArray alloc] initWithObjects:dropBoxpath, localPath, nil];
@@ -1290,66 +1340,18 @@
         [self.restClient uploadFile:[parameters objectAtIndex:0] toPath:@"/" withParentRev:nil fromPath:[parameters objectAtIndex:1]];
 }
 
--(NSString*) addShotChartXlsxFileVersionNumber:(int)no
+- (NSString*) addXlsxVersionNumber:(int)no type:(NSString*)xlsxType
 {
     NSString* fileName;
     if(no == 1)
-        fileName = [NSString stringWithFormat:@"%@_%@.xlsx", self.recordName, NAME_OF_THE_SHOT_CHART_XLSX_FILE];
+        fileName = [NSString stringWithFormat:@"%@_%@.xlsx", self.recordName, xlsxType];
     else
-        fileName = [NSString stringWithFormat:@"%@_%@(%d).xlsx", self.recordName, NAME_OF_THE_SHOT_CHART_XLSX_FILE, no];
+        fileName = [NSString stringWithFormat:@"%@_%@(%d).xlsx", self.recordName, xlsxType, no];
     
     for(NSString* fileNameInDropbox in self.fileNamesInDropbox)
     {
         if([fileName isEqualToString:fileNameInDropbox])
-            return [self addShotChartXlsxFileVersionNumber:no+1];
-    }
-    return fileName;
-}
-
--(NSString*) addPPPXlsxFileVersionNumber:(int)no
-{
-    NSString* fileName;
-    if(no == 1)
-        fileName = [NSString stringWithFormat:@"%@_%@.xlsx", self.recordName, NAME_OF_THE_FINAL_XLSX_FILE];
-    else
-        fileName = [NSString stringWithFormat:@"%@_%@(%d).xlsx", self.recordName, NAME_OF_THE_FINAL_XLSX_FILE, no];
-    
-    for(NSString* fileNameInDropbox in self.fileNamesInDropbox)
-    {
-        if([fileName isEqualToString:fileNameInDropbox])
-            return [self addPPPXlsxFileVersionNumber:no+1];
-    }
-    return fileName;
-}
-
--(NSString*) addTimeLineXlsxFileVersionNumber:(int)no
-{
-    NSString* fileName;
-    if(no == 1)
-        fileName = [NSString stringWithFormat:@"%@_時間軸.xlsx", self.recordName];
-    else
-        fileName = [NSString stringWithFormat:@"%@_時間軸(%d).xlsx", self.recordName, no];
-    
-    for(NSString* fileNameInDropbox in self.fileNamesInDropbox)
-    {
-        if([fileName isEqualToString:fileNameInDropbox])
-            return [self addTimeLineXlsxFileVersionNumber:no+1];
-    }
-    return fileName;
-}
-
--(NSString*) addZoneGradeXlsxFileVersionNumber:(int)no
-{
-    NSString* fileName;
-    if(no == 1)
-        fileName = [NSString stringWithFormat:@"%@_投籃分佈圖.xlsx", self.recordName];
-    else
-        fileName = [NSString stringWithFormat:@"%@_投籃分佈圖(%d).xlsx", self.recordName, no];
-    
-    for(NSString* fileNameInDropbox in self.fileNamesInDropbox)
-    {
-        if([fileName isEqualToString:fileNameInDropbox])
-            return [self addZoneGradeXlsxFileVersionNumber:no+1];
+            return [self addXlsxVersionNumber:no+1 type:xlsxType];
     }
     return fileName;
 }
@@ -1677,6 +1679,8 @@
     }
     [timeLineArray addObject:event];
     [self increaseHoldBallCountByOne];
+    
+    self.plusMinusPts += pts;
 }
 
 -(void) pushBonusEventIntoTimeLineWithMadeCount:(int)madeCount attemptCount:(int)attempCount
@@ -1696,6 +1700,8 @@
     [bonusEvent setObject:timeStr forKey:KEY_FOR_TIME];
     [timeLineArray addObject:bonusEvent];
     [self increaseHoldBallCountByOne];
+    
+    self.plusMinusPts += madeCount;
 }
 
 -(void)pushTurnoverIntoTimeLine
@@ -1794,6 +1800,7 @@
     [tmpPlistDic setObject:[NSNumber numberWithInt:0] forKey:KEY_FOR_TIME];
     [tmpPlistDic setObject:OFFENSE_TYPE_DATA forKey:KEY_FOR_DATA_TYPE];
     [tmpPlistDic setObject:self.gameDate forKey:KEY_FOR_DATE];
+    [tmpPlistDic setObject:self.plusMinusArray forKey:KEY_FOR_PLUS_MINUS];
     
     [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
     
@@ -2792,6 +2799,35 @@
     }
 }
 
+#pragma mark - Plus Minus Data
+
+- (void)pushEventIntoPlusMinusArray
+{
+    NSMutableDictionary* plusMinusEventDic = [[NSMutableDictionary alloc] init];
+    NSMutableArray* playerNoOnFloor = [[NSMutableArray alloc] init];
+    for(NSDictionary* dic in self.playerOnFloorDataArray)
+    {
+        NSNumber* indexInPPP = [dic objectForKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
+        NSString* playerNo = [self.playerNoSet objectAtIndex:indexInPPP.integerValue-1];
+        [playerNoOnFloor addObject:playerNo];
+    }
+    [plusMinusEventDic setObject:playerNoOnFloor forKey:KEY_FOR_PLAYER_ON_FLOOR];
+    if(self.plusMinusArray.count)
+        [self closePlusMinusArray];
+    [plusMinusEventDic setObject:[NSNumber numberWithInt:self.timeCounter] forKey:KEY_FOR_START_TIME];
+    [self.plusMinusArray addObject:plusMinusEventDic];
+    
+    NSLog(@"%@", self.plusMinusArray);
+}
+
+- (void) closePlusMinusArray
+{
+    NSMutableDictionary* lastEventDic = self.plusMinusArray.lastObject;
+    [lastEventDic setObject:[NSNumber numberWithInt:self.timeCounter] forKey:KEY_FOR_END_TIME];
+    [lastEventDic setObject:[NSNumber numberWithInt:self.plusMinusPts] forKey:KEY_FOR_PTS];
+    self.plusMinusPts = 0;
+}
+
 #pragma mark - Button Clicked
 
 - (void)startingLineUpViewOkButtonClicked
@@ -2814,7 +2850,7 @@
         [self.playerOnFloorDataArray setObject:dic atIndexedSubscript:i];
     }
     [self.playerOnFloorListTableView reloadData];
-
+    [self pushEventIntoPlusMinusArray];
     [self extendTimeLineRecordeWithQuarter:self.quarterNo];
 
     NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
@@ -3682,7 +3718,7 @@
                 UIAlertAction* playerOnFloorNoAction = [UIAlertAction actionWithTitle:cellOfChanged.NoLabel.text style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
                     {
                         [self pushExchangeEventIntoTimeLineWithUpPlayerNo:cellOfSelected.NoLabel.text downPlayerNo:cellOfChanged.NoLabel.text];
-                                                            
+                        
                         //caculate the player being placed's time on floor
                         [self updateTimeOnFloorOfPlayerWithIndexInOnFloorTableView:i-1];
                         
@@ -3699,7 +3735,9 @@
                         cellOfChanged.NoLabel.text = cellOfSelected.NoLabel.text;
                         [dic setObject:[NSNumber numberWithInteger:indexPath.row] forKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
                         [dic setObject:[NSNumber numberWithInt:self.timeCounter] forKey:KEY_FOR_TIME_WHEN_GO_ON_FLOOR];
-                                                            
+                        
+                        [self pushEventIntoPlusMinusArray];
+                        
                         [self updateTmpPlist];
                     }];
                 [changePlayerAlert addAction:playerOnFloorNoAction];
@@ -3817,7 +3855,7 @@
     NSLog(@"File uploaded successfully to path: %@", metadata.path);
     self.uploadFilesCount++;
     
-    if(self.uploadFilesCount == 4)
+    if(self.uploadFilesCount == 5)
     {
         self.isUploadXlsxFilesFinished = YES;
         if((self.isSBLGame && self.isSenDataToBijiFinished) || !self.isSBLGame)

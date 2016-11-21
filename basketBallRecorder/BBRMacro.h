@@ -64,6 +64,7 @@
 #define KEY_FOR_ON_FLOOR_PLAYER_DATA @"PlayersOnFloorData"
 #define KEY_FOR_DATE @"Date"
 #define KEY_FOR_IS_SBL_GAME @"isSBLGame"
+#define KEY_FOR_PLUS_MINUS @"plusMinus"
 
 //Offense - OffMode
 #define TITLE_FOR_FASTBREAK @"快攻(F)"
@@ -121,7 +122,6 @@
 #define TITLE_FOR_LP @"低位單打(LP)"
 #define KEY_FOR_LP @"lp"
 
-
 #define KEY_FOR_STOLEN @"Stolen"
 #define KEY_FOR_BAD_PASS @"Bad Pass"
 #define KEY_FOR_CHARGING @"Charging"
@@ -152,6 +152,10 @@
 #define KEY_FOR_GOOD @"good"
 #define KEY_FOR_BAD @"bad"
 #define KEY_FOR_TOTAL_COUNT @"total"
+
+//Key for Plus Minus
+#define KEY_FOR_START_TIME @"Start"
+#define KEY_FOR_END_TIME @"End"
 
 //Key for timeLine event
 #define KEY_FOR_PLAYER_ON_FLOOR @"playerOnFloor"
@@ -203,6 +207,7 @@
 #define NAME_OF_THE_FINAL_XLSX_FILE @"PPP數據"
 #define NAME_OF_THE_SHOT_CHART_XLSX_FILE @"Shot Chart"
 #define NAME_OF_THE_ZONE_GRADE_XLSX_FILE @"投籃分佈圖"
+#define NAME_OF_THE_PLUS_MINUS_XLSX_FILE @"Plus Minus"
 
 //Signal For Game Type
 #define REGULAR_GAME @"例行賽"

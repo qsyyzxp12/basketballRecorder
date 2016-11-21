@@ -9,21 +9,22 @@
 /* Begin PBXBuildFile section */
 		C7350D291DC3578700AFEEEE /* checkbox_unselected.png in Resources */ = {isa = PBXBuildFile; fileRef = C7350D271DC3578700AFEEEE /* checkbox_unselected.png */; };
 		C7350D2A1DC3578700AFEEEE /* checkbox_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = C7350D281DC3578700AFEEEE /* checkbox_selected.png */; };
-		C74CEDD41D797D4D00B5E704 /* spreadsheet_for_timeLine.xlsx in Resources */ = {isa = PBXBuildFile; fileRef = C74CEDD31D797D4D00B5E704 /* spreadsheet_for_timeLine.xlsx */; };
 		C74D79881D6EF18400624286 /* BBRDefenseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C74D79871D6EF18400624286 /* BBRDefenseViewController.m */; };
-		C74E944F1D7AF4B00056DC4E /* PPP數據.xlsx in Resources */ = {isa = PBXBuildFile; fileRef = C74E944E1D7AF4B00056DC4E /* PPP數據.xlsx */; };
 		C74F48421C9D0A7000EB3BB0 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C74F48411C9D0A7000EB3BB0 /* libz.tbd */; };
-		C75BA2AD1D70AB8600DEC1BF /* spreadsheet_for_defense.xlsx in Resources */ = {isa = PBXBuildFile; fileRef = C75BA2AC1D70AB8600DEC1BF /* spreadsheet_for_defense.xlsx */; };
 		C75EA4E11D85328400480B35 /* BBRBoxScoreViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C75EA4E01D85328400480B35 /* BBRBoxScoreViewController.m */; };
-		C75EA4E71D857D8F00480B35 /* spreadsheet_for_boxScore.xlsx in Resources */ = {isa = PBXBuildFile; fileRef = C75EA4E61D857D8F00480B35 /* spreadsheet_for_boxScore.xlsx */; };
-		C75EA4EA1D8A907A00480B35 /* 投籃分佈圖.xlsx in Resources */ = {isa = PBXBuildFile; fileRef = C75EA4E91D8A907A00480B35 /* 投籃分佈圖.xlsx */; };
-		C75EA4EC1D8A92BC00480B35 /* Shot Chart.xlsx in Resources */ = {isa = PBXBuildFile; fileRef = C75EA4EB1D8A92BC00480B35 /* Shot Chart.xlsx */; };
 		C768630D1CBCA730005074F3 /* BBRDropboxCheckViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C768630C1CBCA730005074F3 /* BBRDropboxCheckViewController.m */; };
 		C7AB3CE81C7F5E2600DA23A6 /* leftArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = C7AB3CE41C7F5E2600DA23A6 /* leftArrow.png */; };
 		C7AB3CEA1C7F5E2600DA23A6 /* rightArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = C7AB3CE61C7F5E2600DA23A6 /* rightArrow.png */; };
 		C7AB3CEC1C82B10D00DA23A6 /* tmp.plist in Resources */ = {isa = PBXBuildFile; fileRef = C7AB3CEB1C82B10D00DA23A6 /* tmp.plist */; };
 		C7AB3D4B1C84835600DA23A6 /* BBRMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C7AB3D4A1C84835600DA23A6 /* BBRMenuViewController.m */; };
 		C7AB3D4D1C85909D00DA23A6 /* record.plist in Resources */ = {isa = PBXBuildFile; fileRef = C7AB3D4C1C85909D00DA23A6 /* record.plist */; };
+		C7AF94981DE2DB6400EA1E63 /* PPP數據.xlsx in Resources */ = {isa = PBXBuildFile; fileRef = C7AF94921DE2DB6400EA1E63 /* PPP數據.xlsx */; };
+		C7AF94991DE2DB6400EA1E63 /* Shot Chart.xlsx in Resources */ = {isa = PBXBuildFile; fileRef = C7AF94931DE2DB6400EA1E63 /* Shot Chart.xlsx */; };
+		C7AF949A1DE2DB6400EA1E63 /* spreadsheet_for_boxScore.xlsx in Resources */ = {isa = PBXBuildFile; fileRef = C7AF94941DE2DB6400EA1E63 /* spreadsheet_for_boxScore.xlsx */; };
+		C7AF949B1DE2DB6400EA1E63 /* spreadsheet_for_defense.xlsx in Resources */ = {isa = PBXBuildFile; fileRef = C7AF94951DE2DB6400EA1E63 /* spreadsheet_for_defense.xlsx */; };
+		C7AF949C1DE2DB6400EA1E63 /* spreadsheet_for_timeLine.xlsx in Resources */ = {isa = PBXBuildFile; fileRef = C7AF94961DE2DB6400EA1E63 /* spreadsheet_for_timeLine.xlsx */; };
+		C7AF949D1DE2DB6400EA1E63 /* 投籃分佈圖.xlsx in Resources */ = {isa = PBXBuildFile; fileRef = C7AF94971DE2DB6400EA1E63 /* 投籃分佈圖.xlsx */; };
+		C7AF94A11DE2DBC800EA1E63 /* Plus Minus.xlsx in Resources */ = {isa = PBXBuildFile; fileRef = C7AF94A01DE2DBC800EA1E63 /* Plus Minus.xlsx */; };
 		C7CC36EA1C7AF17900B97149 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C7CC36E91C7AF17900B97149 /* main.m */; };
 		C7CC36ED1C7AF17900B97149 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C7CC36EC1C7AF17900B97149 /* AppDelegate.m */; };
 		C7CC36F01C7AF17900B97149 /* BBRLogViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C7CC36EF1C7AF17900B97149 /* BBRLogViewController.m */; };
@@ -111,18 +112,12 @@
 /* Begin PBXFileReference section */
 		C7350D271DC3578700AFEEEE /* checkbox_unselected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_unselected.png; sourceTree = "<group>"; };
 		C7350D281DC3578700AFEEEE /* checkbox_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_selected.png; sourceTree = "<group>"; };
-		C74CEDD31D797D4D00B5E704 /* spreadsheet_for_timeLine.xlsx */ = {isa = PBXFileReference; lastKnownFileType = file; path = spreadsheet_for_timeLine.xlsx; sourceTree = "<group>"; };
 		C74D79861D6EF18400624286 /* BBRDefenseViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BBRDefenseViewController.h; sourceTree = "<group>"; };
 		C74D79871D6EF18400624286 /* BBRDefenseViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BBRDefenseViewController.m; sourceTree = "<group>"; };
 		C74D79891D6EF32400624286 /* BBRMacro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BBRMacro.h; sourceTree = "<group>"; };
-		C74E944E1D7AF4B00056DC4E /* PPP數據.xlsx */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PPP數據.xlsx"; sourceTree = "<group>"; };
 		C74F48411C9D0A7000EB3BB0 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
-		C75BA2AC1D70AB8600DEC1BF /* spreadsheet_for_defense.xlsx */ = {isa = PBXFileReference; lastKnownFileType = file; path = spreadsheet_for_defense.xlsx; sourceTree = "<group>"; };
 		C75EA4DF1D85328400480B35 /* BBRBoxScoreViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BBRBoxScoreViewController.h; sourceTree = "<group>"; };
 		C75EA4E01D85328400480B35 /* BBRBoxScoreViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BBRBoxScoreViewController.m; sourceTree = "<group>"; };
-		C75EA4E61D857D8F00480B35 /* spreadsheet_for_boxScore.xlsx */ = {isa = PBXFileReference; lastKnownFileType = file; path = spreadsheet_for_boxScore.xlsx; sourceTree = "<group>"; };
-		C75EA4E91D8A907A00480B35 /* 投籃分佈圖.xlsx */ = {isa = PBXFileReference; lastKnownFileType = file; path = "投籃分佈圖.xlsx"; sourceTree = "<group>"; };
-		C75EA4EB1D8A92BC00480B35 /* Shot Chart.xlsx */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Shot Chart.xlsx"; sourceTree = "<group>"; };
 		C768630B1CBCA730005074F3 /* BBRDropboxCheckViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BBRDropboxCheckViewController.h; sourceTree = "<group>"; };
 		C768630C1CBCA730005074F3 /* BBRDropboxCheckViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BBRDropboxCheckViewController.m; sourceTree = "<group>"; };
 		C7AB3CE41C7F5E2600DA23A6 /* leftArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = leftArrow.png; sourceTree = "<group>"; };
@@ -131,6 +126,13 @@
 		C7AB3D491C84835600DA23A6 /* BBRMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BBRMenuViewController.h; sourceTree = "<group>"; };
 		C7AB3D4A1C84835600DA23A6 /* BBRMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BBRMenuViewController.m; sourceTree = "<group>"; };
 		C7AB3D4C1C85909D00DA23A6 /* record.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = record.plist; sourceTree = "<group>"; };
+		C7AF94921DE2DB6400EA1E63 /* PPP數據.xlsx */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PPP數據.xlsx"; sourceTree = "<group>"; };
+		C7AF94931DE2DB6400EA1E63 /* Shot Chart.xlsx */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Shot Chart.xlsx"; sourceTree = "<group>"; };
+		C7AF94941DE2DB6400EA1E63 /* spreadsheet_for_boxScore.xlsx */ = {isa = PBXFileReference; lastKnownFileType = file; path = spreadsheet_for_boxScore.xlsx; sourceTree = "<group>"; };
+		C7AF94951DE2DB6400EA1E63 /* spreadsheet_for_defense.xlsx */ = {isa = PBXFileReference; lastKnownFileType = file; path = spreadsheet_for_defense.xlsx; sourceTree = "<group>"; };
+		C7AF94961DE2DB6400EA1E63 /* spreadsheet_for_timeLine.xlsx */ = {isa = PBXFileReference; lastKnownFileType = file; path = spreadsheet_for_timeLine.xlsx; sourceTree = "<group>"; };
+		C7AF94971DE2DB6400EA1E63 /* 投籃分佈圖.xlsx */ = {isa = PBXFileReference; lastKnownFileType = file; path = "投籃分佈圖.xlsx"; sourceTree = "<group>"; };
+		C7AF94A01DE2DBC800EA1E63 /* Plus Minus.xlsx */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Plus Minus.xlsx"; sourceTree = "<group>"; };
 		C7CC36E51C7AF17900B97149 /* basketBallRecorder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = basketBallRecorder.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C7CC36E91C7AF17900B97149 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		C7CC36EB1C7AF17900B97149 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -210,18 +212,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		C75EA4E81D86D3A700480B35 /* spreadsheet */ = {
+		C7AF94911DE2DB6400EA1E63 /* Xlsx */ = {
 			isa = PBXGroup;
 			children = (
-				C75EA4EB1D8A92BC00480B35 /* Shot Chart.xlsx */,
-				C75EA4E91D8A907A00480B35 /* 投籃分佈圖.xlsx */,
-				C75EA4E61D857D8F00480B35 /* spreadsheet_for_boxScore.xlsx */,
-				C74E944E1D7AF4B00056DC4E /* PPP數據.xlsx */,
-				C74CEDD31D797D4D00B5E704 /* spreadsheet_for_timeLine.xlsx */,
-				C75BA2AC1D70AB8600DEC1BF /* spreadsheet_for_defense.xlsx */,
+				C7AF94A01DE2DBC800EA1E63 /* Plus Minus.xlsx */,
+				C7AF94921DE2DB6400EA1E63 /* PPP數據.xlsx */,
+				C7AF94931DE2DB6400EA1E63 /* Shot Chart.xlsx */,
+				C7AF94941DE2DB6400EA1E63 /* spreadsheet_for_boxScore.xlsx */,
+				C7AF94951DE2DB6400EA1E63 /* spreadsheet_for_defense.xlsx */,
+				C7AF94961DE2DB6400EA1E63 /* spreadsheet_for_timeLine.xlsx */,
+				C7AF94971DE2DB6400EA1E63 /* 投籃分佈圖.xlsx */,
 			);
-			name = spreadsheet;
-			path = basketBallRecorder;
+			name = Xlsx;
+			path = basketBallRecorder/Xlsx;
 			sourceTree = "<group>";
 		};
 		C7CC36DC1C7AF17900B97149 = {
@@ -229,7 +232,7 @@
 			children = (
 				C7CC36E71C7AF17900B97149 /* basketBallRecorder */,
 				C7CFDA131C9E496200DA7157 /* framework */,
-				C75EA4E81D86D3A700480B35 /* spreadsheet */,
+				C7AF94911DE2DB6400EA1E63 /* Xlsx */,
 				C7CC37261C7B7F1600B97149 /* image */,
 				C7CC37011C7AF17900B97149 /* basketBallRecorderTests */,
 				C7CC370C1C7AF17900B97149 /* basketBallRecorderUITests */,
@@ -496,25 +499,27 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C7AF94A11DE2DBC800EA1E63 /* Plus Minus.xlsx in Resources */,
 				C7F5525A1C7C5066005CB9EC /* zone4-2.png in Resources */,
 				C7F552591C7C5066005CB9EC /* zone3-2.png in Resources */,
 				C7AB3CEC1C82B10D00DA23A6 /* tmp.plist in Resources */,
 				C7F5525B1C7C5066005CB9EC /* zone5-2.png in Resources */,
 				C7CC37391C7B7F1600B97149 /* zone6.png in Resources */,
+				C7AF94981DE2DB6400EA1E63 /* PPP數據.xlsx in Resources */,
 				C7F552611C7C5066005CB9EC /* zone11-2.png in Resources */,
+				C7AF949C1DE2DB6400EA1E63 /* spreadsheet_for_timeLine.xlsx in Resources */,
 				C7F5525E1C7C5066005CB9EC /* zone8-2.png in Resources */,
 				C7CC36F81C7AF17900B97149 /* LaunchScreen.storyboard in Resources */,
 				C7CC37381C7B7F1600B97149 /* zone5.png in Resources */,
 				C7CC373C1C7B7F1600B97149 /* zone9.png in Resources */,
 				C7CC37321C7B7F1600B97149 /* zone1.png in Resources */,
+				C7AF94991DE2DB6400EA1E63 /* Shot Chart.xlsx in Resources */,
 				C7F5524F1C7C48BD005CB9EC /* zone2-2.png in Resources */,
+				C7AF949B1DE2DB6400EA1E63 /* spreadsheet_for_defense.xlsx in Resources */,
 				C7CC36F51C7AF17900B97149 /* Assets.xcassets in Resources */,
 				C7F5525D1C7C5066005CB9EC /* zone7-2.png in Resources */,
 				C7F5524B1C7B8320005CB9EC /* background.jpg in Resources */,
 				C7CC37361C7B7F1600B97149 /* zone3.png in Resources */,
-				C75EA4EA1D8A907A00480B35 /* 投籃分佈圖.xlsx in Resources */,
-				C75EA4E71D857D8F00480B35 /* spreadsheet_for_boxScore.xlsx in Resources */,
-				C75BA2AD1D70AB8600DEC1BF /* spreadsheet_for_defense.xlsx in Resources */,
 				C7CC37351C7B7F1600B97149 /* zone2.png in Resources */,
 				C7CC373A1C7B7F1600B97149 /* zone7.png in Resources */,
 				C7F5524E1C7C48BD005CB9EC /* zone1-2.png in Resources */,
@@ -522,16 +527,15 @@
 				C7CC37331C7B7F1600B97149 /* zone10.png in Resources */,
 				C7F5525F1C7C5066005CB9EC /* zone9-2.png in Resources */,
 				C7CC373B1C7B7F1600B97149 /* zone8.png in Resources */,
+				C7AF949A1DE2DB6400EA1E63 /* spreadsheet_for_boxScore.xlsx in Resources */,
+				C7AF949D1DE2DB6400EA1E63 /* 投籃分佈圖.xlsx in Resources */,
 				C7AB3CEA1C7F5E2600DA23A6 /* rightArrow.png in Resources */,
 				C7F552601C7C5066005CB9EC /* zone10-2.png in Resources */,
 				C7CC36F31C7AF17900B97149 /* Main.storyboard in Resources */,
-				C74CEDD41D797D4D00B5E704 /* spreadsheet_for_timeLine.xlsx in Resources */,
 				C7F5525C1C7C5066005CB9EC /* zone6-2.png in Resources */,
 				C7350D291DC3578700AFEEEE /* checkbox_unselected.png in Resources */,
-				C74E944F1D7AF4B00056DC4E /* PPP數據.xlsx in Resources */,
 				C7350D2A1DC3578700AFEEEE /* checkbox_selected.png in Resources */,
 				C7CC37371C7B7F1600B97149 /* zone4.png in Resources */,
-				C75EA4EC1D8A92BC00480B35 /* Shot Chart.xlsx in Resources */,
 				C7CC37341C7B7F1600B97149 /* zone11.png in Resources */,
 				C7AB3D4D1C85909D00DA23A6 /* record.plist in Resources */,
 			);
