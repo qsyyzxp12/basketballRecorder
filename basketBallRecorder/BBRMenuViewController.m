@@ -313,6 +313,7 @@
     NSArray* plusMinusArray = [dataDic objectForKey:KEY_FOR_PLUS_MINUS];
     NSString* gameDate = [dataDic objectForKey:KEY_FOR_DATE];
     NSString* recordName = [dataDic objectForKey:KEY_FOR_NAME];
+    NSArray* playerNoSet = [dataDic objectForKey:KEY_FOR_PLAYER_NO_SET];
     
     NSString* orgDocumentPath = [[NSBundle mainBundle] pathForResource:NAME_OF_THE_PLUS_MINUS_XLSX_FILE ofType:@"xlsx"];
     BRAOfficeDocumentPackage *spreadsheet = [BRAOfficeDocumentPackage open:orgDocumentPath];
@@ -320,12 +321,13 @@
     char outIndex = '\0';
     char interIndex = 'A';
     int rowIndex = 2;
+    NSString* cellRef;
     
     for(NSMutableDictionary* eventDic in plusMinusArray)
     {
         char outI = outIndex;
         char interI = interIndex;
-        NSString* cellRef = [NSString stringWithFormat:@"%c%c%d", outI, interI, rowIndex];
+        cellRef = [NSString stringWithFormat:@"%c%c%d", outI, interI, rowIndex];
         NSArray* playerNoArray = [eventDic objectForKey:KEY_FOR_PLAYER_ON_FLOOR];
 
         for(NSString* playerNo in playerNoArray)
@@ -343,6 +345,15 @@
         
         NSNumber* pts = [eventDic objectForKey:KEY_FOR_PTS];
         [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:pts.integerValue];
+        rowIndex++;
+    }
+    
+    interIndex = 'P';
+    rowIndex = 2;
+    for(NSString* playerNo in playerNoSet)
+    {
+        cellRef = [NSString stringWithFormat:@"%c%c%d", outIndex, interIndex, rowIndex];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:playerNo];
         rowIndex++;
     }
     

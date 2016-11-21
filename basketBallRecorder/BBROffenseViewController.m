@@ -884,12 +884,13 @@
     char outIndex = '\0';
     char interIndex = 'A';
     int rowIndex = 2;
+    NSString* cellRef;
     
     for(NSMutableDictionary* eventDic in self.plusMinusArray)
     {
         char outI = outIndex;
         char interI = interIndex;
-        NSString* cellRef = [NSString stringWithFormat:@"%c%c%d", outI, interI, rowIndex];
+        cellRef = [NSString stringWithFormat:@"%c%c%d", outI, interI, rowIndex];
         NSArray* playerNoArray = [eventDic objectForKey:KEY_FOR_PLAYER_ON_FLOOR];
         for(NSString* playerNo in playerNoArray)
         {
@@ -906,6 +907,15 @@
         
         NSNumber* pts = [eventDic objectForKey:KEY_FOR_PTS];
         [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:pts.integerValue];
+        rowIndex++;
+    }
+    
+    interIndex = 'P';
+    rowIndex = 2;
+    for(NSString* playerNo in self.playerNoSet)
+    {
+        cellRef = [NSString stringWithFormat:@"%c%c%d", outIndex, interIndex, rowIndex];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setStringValue:playerNo];
         rowIndex++;
     }
     
