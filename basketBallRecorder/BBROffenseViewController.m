@@ -47,8 +47,8 @@
     self.hpShotModeTitleArray = [NSArray arrayWithObjects:TITLE_FOR_DRIVE, TITLE_FOR_PULL_UP, TITLE_FOR_SPOT_UP, TITLE_FOR_HL, nil];
     self.hpShotModeKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, KEY_FOR_HL, nil];
     
-    self.PNRShotModeKeyArray = [NSArray arrayWithObjects:KEY_FOR_BP, KEY_FOR_BD, KEY_FOR_MR, KEY_FOR_MPP, KEY_FOR_MPD, KEY_FOR_MPS, nil];
-    self.PNRShotModeTitleArray = [NSArray arrayWithObjects:TITLE_FOR_BP, TITLE_FOR_BD, TITLE_FOR_MR, TITLE_FOR_MPP, TITLE_FOR_MPD, TITLE_FOR_MPS, nil];
+    self.PNRShotModeKeyArray = [NSArray arrayWithObjects:KEY_FOR_BD, KEY_FOR_BP, KEY_FOR_MPD, KEY_FOR_MR, KEY_FOR_MPS, KEY_FOR_MPP, nil];
+    self.PNRShotModeTitleArray = [NSArray arrayWithObjects:TITLE_FOR_BD, TITLE_FOR_BP, TITLE_FOR_MPD, TITLE_FOR_MR, TITLE_FOR_MPS, TITLE_FOR_MPP, nil];
     
     self.PUShotModeKeyArray = [NSArray arrayWithObjects:KEY_FOR_DRIVE, KEY_FOR_PULL_UP, KEY_FOR_SPOT_UP, KEY_FOR_SF, KEY_FOR_LP, nil];
     self.PUShotModeTitleArray = [NSArray arrayWithObjects:TITLE_FOR_DRIVE, TITLE_FOR_PULL_UP, TITLE_FOR_SPOT_UP, TITLE_FOR_SF, TITLE_FOR_LP, nil];
