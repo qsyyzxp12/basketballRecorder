@@ -331,7 +331,7 @@
     
     self.isPlusMinusXlsxFileExistInDropbox = NO;
     NSString* xlsxFilePath;
-    NSLog(@"%@", recordName);
+
     if([self.fileNamesInDropbox containsObject:recordName])
     {
         self.isPlusMinusXlsxFileExistInDropbox = YES;
