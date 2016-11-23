@@ -740,6 +740,11 @@
         [newItem setObject:OFFENSE_TYPE_DATA forKey:KEY_FOR_DATA_TYPE];
         [newItem setObject:self.gameDate forKey:KEY_FOR_DATE];
         [newItem setObject:self.plusMinusArray forKey:KEY_FOR_PLUS_MINUS];
+        if(self.isSBLGame)
+        {
+            [newItem setObject:self.gameSeason forKey:KEY_FOR_GAME_SEASON];
+            [newItem setObject:self.gameNo forKey:KEY_FOR_GAME_NO];
+        }
         
         if([recordPlistArray count] < 5)
             [recordPlistArray addObject:newItem];
@@ -832,6 +837,11 @@
     self.timeLineReordeArray = [tmpPlistDic objectForKey:KEY_FOR_TIMELINE];
     self.gameDate = [tmpPlistDic objectForKey:KEY_FOR_DATE];
     self.plusMinusArray = [tmpPlistDic objectForKey:KEY_FOR_PLUS_MINUS];
+    if(self.isSBLGame)
+    {
+        self.gameSeason = [tmpPlistDic objectForKey:KEY_FOR_GAME_SEASON];
+        self.gameNo = [tmpPlistDic objectForKey:KEY_FOR_GAME_NO];
+    }
     
     [self updateNavigationTitle];
     if(self.quarterNo > 3)
@@ -1413,7 +1423,7 @@
 
 -(void)sendSblGameScoreToBasketballBiji
 {
-    NSString* postDataStr = [NSString stringWithFormat:@"%@=%@", KEY_FOR_GAME_SEASON, self.sessionNo];
+    NSString* postDataStr = [NSString stringWithFormat:@"%@=%@", KEY_FOR_GAME_SEASON, self.gameSeason];
     postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_GAME_TYPE, self.gameType]];
     postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_GAME_NO, self.gameNo]];
     postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_HOME_TEAM_NAME, self.myTeamName]];
@@ -1465,7 +1475,7 @@
         NSArray* startingPlayer = [quarterDic objectForKey:KEY_FOR_PLAYER_ON_FLOOR];
         NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:urlForUpAndDown];
         
-        NSString* postDataStr = [NSString stringWithFormat:@"%@=%@", KEY_FOR_GAME_SEASON, self.sessionNo];
+        NSString* postDataStr = [NSString stringWithFormat:@"%@=%@", KEY_FOR_GAME_SEASON, self.gameSeason];
         postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_GAME_TYPE, self.gameType]];
         postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_GAME_NO, self.gameNo]];
         postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_GAME_QUARTER, [NSString stringWithFormat:@"%d", quarterNo]]];
@@ -1492,7 +1502,7 @@
         {
             NSMutableURLRequest* request = [[NSMutableURLRequest alloc] init];
             
-            NSString* postDataStr = [NSString stringWithFormat:@"%@=%@", KEY_FOR_GAME_SEASON, self.sessionNo];
+            NSString* postDataStr = [NSString stringWithFormat:@"%@=%@", KEY_FOR_GAME_SEASON, self.gameSeason];
             postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_GAME_TYPE, self.gameType]];
             postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_GAME_NO, self.gameNo]];
             postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_GAME_QUARTER, [NSString stringWithFormat:@"%d", quarterNo]]];
@@ -1570,7 +1580,7 @@
     NSArray* totalGradeOftheGameArr = [self.playerDataArray objectAtIndex:QUARTER_NO_FOR_ENTIRE_GAME];
     for(NSDictionary* playerGradeDic in totalGradeOftheGameArr)
     {
-        NSString* postDataStr = [NSString stringWithFormat:@"%@=%@", KEY_FOR_GAME_SEASON, self.sessionNo];
+        NSString* postDataStr = [NSString stringWithFormat:@"%@=%@", KEY_FOR_GAME_SEASON, self.gameSeason];
         postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_GAME_TYPE, self.gameType]];
         postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_GAME_NO, self.gameNo]];
         postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_PLAYER_NO, [playerGradeDic objectForKey:KEY_FOR_PLAYER_NO]]];
@@ -1632,6 +1642,26 @@
 }
 
 #pragma mark - timeline event
+
+-(void) extendTimeLineRecordeWithQuarter:(int) quarterNo
+{
+    NSMutableDictionary* quarterDic = [[NSMutableDictionary alloc] init];
+    
+    NSMutableArray* playersOnFloorNoArray = [[NSMutableArray alloc] init];
+    for(NSDictionary* playersOnFloorDataDic in self.playerOnFloorDataArray)
+    {
+        NSNumber* playerIndexInPPPTableView = [playersOnFloorDataDic objectForKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
+        NSString* playerNo = self.playerNoSet[playerIndexInPPPTableView.intValue-1];
+        [playersOnFloorNoArray addObject:playerNo];
+    }
+    
+    [quarterDic setObject:playersOnFloorNoArray forKey:KEY_FOR_PLAYER_ON_FLOOR];
+    NSMutableArray* timeLineData = [[NSMutableArray alloc] init];
+    [quarterDic setObject:timeLineData forKey:KEY_FOR_TIME_LINE_DATA];
+    [quarterDic setObject:[NSString stringWithFormat:@"%d", quarterNo] forKey:@"Quarter No"];
+    
+    [self.timeLineReordeArray addObject:quarterDic];
+}
 
 -(void) pushExchangeEventIntoTimeLineWithUpPlayerNo:(NSString*)upNo downPlayerNo:(NSString*)downNo
 {
@@ -1811,30 +1841,15 @@
     [tmpPlistDic setObject:OFFENSE_TYPE_DATA forKey:KEY_FOR_DATA_TYPE];
     [tmpPlistDic setObject:self.gameDate forKey:KEY_FOR_DATE];
     [tmpPlistDic setObject:self.plusMinusArray forKey:KEY_FOR_PLUS_MINUS];
+    if(self.isSBLGame)
+    {
+        [tmpPlistDic setObject:self.gameSeason forKey:KEY_FOR_GAME_SEASON];
+        [tmpPlistDic setObject:self.gameNo forKey:KEY_FOR_GAME_NO];
+    }
     
     [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
     
     self.navigationItem.title = @"第一節";
-}
-
--(void) extendTimeLineRecordeWithQuarter:(int) quarterNo
-{
-    NSMutableDictionary* quarterDic = [[NSMutableDictionary alloc] init];
-    
-    NSMutableArray* playersOnFloorNoArray = [[NSMutableArray alloc] init];
-    for(NSDictionary* playersOnFloorDataDic in self.playerOnFloorDataArray)
-    {
-        NSNumber* playerIndexInPPPTableView = [playersOnFloorDataDic objectForKey:KEY_FOR_INDEX_IN_PPP_TABLEVIEW];
-        NSString* playerNo = self.playerNoSet[playerIndexInPPPTableView.intValue-1];
-        [playersOnFloorNoArray addObject:playerNo];
-    }
-    
-    [quarterDic setObject:playersOnFloorNoArray forKey:KEY_FOR_PLAYER_ON_FLOOR];
-    NSMutableArray* timeLineData = [[NSMutableArray alloc] init];
-    [quarterDic setObject:timeLineData forKey:KEY_FOR_TIME_LINE_DATA];
-    [quarterDic setObject:[NSString stringWithFormat:@"%d", quarterNo] forKey:@"Quarter No"];
-    
-    [self.timeLineReordeArray addObject:quarterDic];
 }
 
 -(void) extendPlayerDataWithQuarter:(int) quarterNo

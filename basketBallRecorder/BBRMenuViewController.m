@@ -254,6 +254,17 @@
     [self.restClient loadMetadata:path];
 }
 
+- (void)downloadXlsxFile: (NSArray<NSString*>*) param
+{
+    NSString* pathInDropbox = [NSString stringWithFormat:@"/%@/%@", param[0], param[1]];
+    NSString* sheetPath = [NSString stringWithFormat:@"%@/Documents/%@", NSHomeDirectory(), param[1]];
+    [self.restClient loadFile:pathInDropbox intoPath:sheetPath];
+}
+- (void)deleteXlsxFile: (NSString*)path
+{
+    [self.restClient deletePath:path];
+}
+
 #pragma mark - Xlsx Files Operation
 
 -(void) xlsxFileGenerateAndUpload:(NSDictionary*) dataDic
@@ -273,8 +284,11 @@
         [self performSelectorInBackground:@selector(generateTimeLineXlsx:) withObject:dataDic];
         [self performSelectorInBackground:@selector(generateGradeXlsx:) withObject:dataDic];
         [self performSelectorInBackground:@selector(generateShotChartXlsxAndUpload:) withObject:dataDic];
-        [self performSelectorInBackground:@selector(generatePlusMinusXlsxAndUpload:) withObject:dataDic];
-        [self generateZoneGradeXlsxAndUpload:dataDic];
+        [self performSelectorInBackground:@selector(generateZoneGradeXlsxAndUpload:) withObject:dataDic];
+        self.isFstPlusMinusGenerateAndUploadFinished = NO;
+        [self generatePlusMinusXlsxAndUpload:dataDic];
+        self.isFstPlusMinusGenerateAndUploadFinished = YES;
+        [self generateSecPlusMinusXlsxAndUpload:dataDic];
     }
     else if([[dataDic objectForKey:KEY_FOR_DATA_TYPE] isEqualToString:DEFENSE_TYPE_DATA])
     {
@@ -312,16 +326,34 @@
 {
     NSArray* plusMinusArray = [dataDic objectForKey:KEY_FOR_PLUS_MINUS];
     NSString* gameDate = [dataDic objectForKey:KEY_FOR_DATE];
-    NSString* recordName = [dataDic objectForKey:KEY_FOR_NAME];
+    NSString* recordName = [NSString stringWithFormat:@"%@_%@.xlsx", [dataDic objectForKey:KEY_FOR_NAME], NAME_OF_THE_PLUS_MINUS_XLSX_FILE];
     NSArray* playerNoSet = [dataDic objectForKey:KEY_FOR_PLAYER_NO_SET];
     
-    NSString* orgDocumentPath = [[NSBundle mainBundle] pathForResource:NAME_OF_THE_PLUS_MINUS_XLSX_FILE ofType:@"xlsx"];
-    BRAOfficeDocumentPackage *spreadsheet = [BRAOfficeDocumentPackage open:orgDocumentPath];
+    self.isPlusMinusXlsxFileExistInDropbox = NO;
+    NSString* xlsxFilePath;
+    NSLog(@"%@", recordName);
+    if([self.fileNamesInDropbox containsObject:recordName])
+    {
+        self.isPlusMinusXlsxFileExistInDropbox = YES;
+        self.isDownloadPlusMinusXlsxFileFinished = NO;
+        NSArray* param = [NSArray arrayWithObjects:gameDate, recordName, nil];
+        [self performSelectorOnMainThread:@selector(downloadXlsxFile:) withObject:param waitUntilDone:NO];
+        while (!self.isDownloadPlusMinusXlsxFileFinished);
+        self.isDeletePlusMinusXlsxFileFinished = NO;
+        [self performSelectorOnMainThread:@selector(deleteXlsxFile:) withObject:[NSString stringWithFormat:@"/%@/%@", gameDate, recordName] waitUntilDone:NO];
+        xlsxFilePath = [NSString stringWithFormat:@"%@/Documents/%@", NSHomeDirectory(), recordName];
+    }
+    else
+        xlsxFilePath = [[NSBundle mainBundle] pathForResource:NAME_OF_THE_PLUS_MINUS_XLSX_FILE ofType:@"xlsx"];
+    
+    BRAOfficeDocumentPackage *spreadsheet = [BRAOfficeDocumentPackage open:xlsxFilePath];
     BRAWorksheet *worksheet = spreadsheet.workbook.worksheets[0];
     char outIndex = '\0';
     char interIndex = 'A';
     int rowIndex = 2;
     NSString* cellRef;
+    
+  //  NSLog(@"%@", plusMinusArray);
     
     for(NSMutableDictionary* eventDic in plusMinusArray)
     {
@@ -357,6 +389,9 @@
         rowIndex++;
     }
     
+    if(self.isPlusMinusXlsxFileExistInDropbox)
+        [self analyzePlusMinusXlsxFile:worksheet];
+    
     //Save the xlsx to the app space in the device
     NSString *localPath = [NSString stringWithFormat:@"%@/Documents/%@.xlsx", NSHomeDirectory(), NAME_OF_THE_PLUS_MINUS_XLSX_FILE];
     NSFileManager* fm = [[NSFileManager alloc] init];
@@ -366,15 +401,97 @@
     
     [spreadsheet saveAs:localPath];
     
-    while(!self.isLoadMetaFinished);
-    NSString* filename = [self addXlsxVersionNumber:1 type:NAME_OF_THE_PLUS_MINUS_XLSX_FILE recordName:recordName];
+  //  NSString* filename = [self addXlsxVersionNumber:1 type:NAME_OF_THE_PLUS_MINUS_XLSX_FILE recordName:recordName];
     
-    NSString* dropBoxpath = [NSString stringWithFormat:@"%@/%@", gameDate, filename];
+    NSString* dropBoxpath = [NSString stringWithFormat:@"%@/%@", self.folderName, recordName];
     NSArray* agus = [[NSArray alloc] initWithObjects:dropBoxpath, localPath, nil];
+    if(self.isPlusMinusXlsxFileExistInDropbox)
+        while(!self.isDeletePlusMinusXlsxFileFinished);
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
 }
 
--(void) generateShotChartXlsxAndUpload:(NSDictionary*)dataDic
+- (void)generateSecPlusMinusXlsxAndUpload:(NSDictionary*)dataDic
+{
+    NSString* gameDate = [dataDic objectForKey:KEY_FOR_DATE];
+    NSString* myTeamName = [dataDic objectForKey:KEY_FOR_MY_TEAM_NAME];
+    NSString* opponentName = [dataDic objectForKey:KEY_FOR_OPPONENT_NAME];
+    NSNumber* isSBLGame = [dataDic objectForKey:KEY_FOR_IS_SBL_GAME];
+    NSArray* timeLineRecordArray = [dataDic objectForKey:KEY_FOR_TIMELINE];
+    NSString* recordName;
+    if(!isSBLGame.intValue)
+        recordName = [NSString stringWithFormat:@"%@_vs_%@-%@_%@.xlsx", opponentName, myTeamName, gameDate, NAME_OF_THE_PLUS_MINUS_XLSX_FILE];
+    else
+    {
+        NSString* gameSeason = [dataDic objectForKey:KEY_FOR_GAME_SEASON];
+        NSString* gameNo = [dataDic objectForKey:KEY_FOR_GAME_NO];
+        recordName = [NSString stringWithFormat:@"%@%@-%@_vs_%@-%@_%@.xlsx", gameSeason, gameNo, opponentName , myTeamName, gameDate, NAME_OF_THE_PLUS_MINUS_XLSX_FILE];
+    }
+    
+    self.isSecPlusMinusXlsxFileExistInDropbox = NO;
+    NSString* xlsxFilePath;
+    if([self.fileNamesInDropbox containsObject:recordName])
+    {
+        self.isSecPlusMinusXlsxFileExistInDropbox = YES;
+        self.isDownloadSecPlusMinusXlsxFileFinished = NO;
+        NSArray* param = [NSArray arrayWithObjects:gameDate, recordName, nil];
+        [self performSelectorOnMainThread:@selector(downloadXlsxFile:) withObject:param waitUntilDone:NO];
+        while (!self.isDownloadSecPlusMinusXlsxFileFinished);
+        self.isDeleteSecPlusMinusXlsxFileFinished = NO;
+        [self performSelectorOnMainThread:@selector(deleteXlsxFile:) withObject:[NSString stringWithFormat:@"/%@/%@", gameDate, recordName] waitUntilDone:NO];
+        xlsxFilePath = [NSString stringWithFormat:@"%@/Documents/%@", NSHomeDirectory(), recordName];
+    }
+    else
+        xlsxFilePath = [[NSBundle mainBundle] pathForResource:NAME_OF_THE_PLUS_MINUS_XLSX_FILE ofType:@"xlsx"];
+    
+    BRAOfficeDocumentPackage *spreadsheet = [BRAOfficeDocumentPackage open:xlsxFilePath];
+    BRAWorksheet *worksheet = spreadsheet.workbook.worksheets[0];
+    
+    int rowIndex = 2;
+    NSString* cellRef;
+    for(NSDictionary* quarterTimeLineDic in timeLineRecordArray)
+    {
+        NSArray* timeLineArray = [quarterTimeLineDic objectForKey:KEY_FOR_TIME_LINE_DATA];
+        for(NSDictionary* eventDic in timeLineArray)
+        {
+            NSString* type = [eventDic objectForKey:KEY_FOR_TYPE];
+            if(![type isEqualToString:SIGNAL_FOR_NORMAL] && ![type isEqualToString:SIGNAL_FOR_BONUS])
+                continue;
+            NSInteger pts = [[eventDic objectForKey:KEY_FOR_PTS] integerValue];
+            if(!pts)
+                continue;
+            NSString* time = [eventDic objectForKey:KEY_FOR_TIME];
+            NSArray* timeArr = [time componentsSeparatedByString:@":"];
+            int timeInSec = [timeArr[0] intValue]*60 + [timeArr[1] intValue];
+            cellRef = [NSString stringWithFormat:@"M%d", rowIndex];
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:timeInSec];
+            
+            cellRef = [NSString stringWithFormat:@"N%d", rowIndex];
+            [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:pts];
+            
+            rowIndex++;
+        }
+    }
+    
+    if(self.isSecPlusMinusXlsxFileExistInDropbox)
+        [self analyzePlusMinusXlsxFile:worksheet];
+    
+    //Save the xlsx to the app space in the device
+    NSString *localPath = [NSString stringWithFormat:@"%@/Documents/%@", NSHomeDirectory(), recordName];
+    NSFileManager* fm = [[NSFileManager alloc] init];
+    
+    if([fm fileExistsAtPath:localPath])
+        [fm removeItemAtPath:localPath error:nil];
+    
+    [spreadsheet saveAs:localPath];
+    
+    NSString* dropboxPath = [NSString stringWithFormat:@"%@/%@", self.folderName, recordName];
+    NSArray* agus = [[NSArray alloc] initWithObjects:dropboxPath, localPath, nil];
+    if(self.isSecPlusMinusXlsxFileExistInDropbox)
+        while(!self.isDeleteSecPlusMinusXlsxFileFinished);
+    [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
+}
+
+- (void)generateShotChartXlsxAndUpload:(NSDictionary*)dataDic
 {
     NSArray* playerDataArray = [dataDic objectForKey:KEY_FOR_GRADE];
     NSArray* playerNoSet = [dataDic objectForKey:KEY_FOR_PLAYER_NO_SET];
@@ -1038,6 +1155,45 @@
     [self performSelectorOnMainThread:@selector(uploadXlsxFile:) withObject:agus waitUntilDone:0];
 }
 
+- (void)analyzePlusMinusXlsxFile:(BRAWorksheet*)worksheet
+{
+    
+    int rowIndex = 2, rowI = 2;
+    NSString* cellRef;
+    NSInteger score = 1, time, endTime, plusVal;
+    while(1)
+    {
+        cellRef = [NSString stringWithFormat:@"G%d", rowIndex];
+        endTime = [[worksheet cellForCellReference:cellRef] integerValue];
+        if(!endTime)
+            break;
+        int minusVal = 0;
+        while(score)
+        {
+            cellRef = [NSString stringWithFormat:@"M%d", rowI];
+            time = [[worksheet cellForCellReference:cellRef] integerValue];
+            if(time > endTime)
+                break;
+            
+            cellRef = [NSString stringWithFormat:@"N%d", rowI];
+            score = [[worksheet cellForCellReference:cellRef] integerValue];
+            minusVal += score;
+            rowI++;
+        }
+        
+        cellRef = [NSString stringWithFormat:@"I%d", rowIndex];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:minusVal];
+        
+        cellRef = [NSString stringWithFormat:@"H%d", rowIndex];
+        plusVal = [[worksheet cellForCellReference:cellRef] integerValue];
+        
+        cellRef = [NSString stringWithFormat:@"J%d", rowIndex];
+        [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue: plusVal - minusVal];
+        
+        rowIndex++;
+    }
+}
+
 - (NSString*) addXlsxVersionNumber:(int)no type:(NSString*)xlsxType recordName:(NSString*) recordName
 {
     NSString* fileName;
@@ -1170,7 +1326,7 @@
 {
     NSLog(@"File uploaded successfully to path: %@", metadata.path);
     self.uploadFilesCount++;
-    if((self.isUploadingOffenseXlsx && self.uploadFilesCount == 5) ||
+    if((self.isUploadingOffenseXlsx && self.uploadFilesCount == 6) ||
        (!self.isUploadingOffenseXlsx && self.uploadFilesCount == 1)   )
     {
         [self.spinView removeFromSuperview];
@@ -1194,6 +1350,13 @@
         self.isDownloadPPPXlsxFileFinished = YES;
     else if([metadata.filename isEqualToString:shotchartName])
         self.isDownloadShotChartXlsxFileFinished = YES;
+    else
+    {
+        if(!self.isFstPlusMinusGenerateAndUploadFinished)
+            self.isDownloadPlusMinusXlsxFileFinished = YES;
+        else
+            self.isDownloadSecPlusMinusXlsxFileFinished = YES;
+    }
   //  NSLog(@"File loaded into path: %@", localPath);
 }
 
@@ -1216,6 +1379,13 @@
     {
         NSString *localPath = [NSString stringWithFormat:@"%@/Documents/%@.xlsx", NSHomeDirectory(), NAME_OF_THE_SHOT_CHART_XLSX_FILE];
         [self.restClient uploadFile:shotCharPath toPath:@"/" withParentRev:nil fromPath:localPath];
+    }
+    else
+    {
+        if(!self.isFstPlusMinusGenerateAndUploadFinished)
+            self.isDeletePlusMinusXlsxFileFinished = YES;
+        else
+            self.isDeleteSecPlusMinusXlsxFileFinished = YES;
     }
 }
 

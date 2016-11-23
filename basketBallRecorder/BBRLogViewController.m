@@ -309,7 +309,7 @@
         mainViewCntler.myTeamName = self.myTeamName;
         mainViewCntler.opponentName = self.opponentName;
         mainViewCntler.isSBLGame = self.isSBLGame;
-        mainViewCntler.sessionNo = self.sessionNo;
+        mainViewCntler.gameSeason = self.sessionNo;
         mainViewCntler.gameNo = self.gameNo;
         mainViewCntler.gameType = self.gameType;
         mainViewCntler.gameDate = self.gameDate;

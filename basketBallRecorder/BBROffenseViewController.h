@@ -82,7 +82,7 @@
 @property NSString* keyOfShotMode;
 @property NSString* gameType;
 @property NSString* gameDate;
-@property NSString* sessionNo;
+@property NSString* gameSeason;
 @property NSString* gameNo;
 @property UIButton* undoButton;
 @property UIButton* switchModeButton;
