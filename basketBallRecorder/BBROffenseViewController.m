@@ -877,7 +877,7 @@
     [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
 }
 
--(void)loadFolderMetaData
+- (void)loadFolderMetaData
 {
     NSString* path = [NSString stringWithFormat:@"/%@", self.gameDate];
     [self.restClient loadMetadata:path];
@@ -889,6 +889,7 @@
     NSString* sheetPath = [NSString stringWithFormat:@"%@/Documents/%@", NSHomeDirectory(), param[1]];
     [self.restClient loadFile:pathInDropbox intoPath:sheetPath];
 }
+
 - (void)deleteXlsxFile: (NSString*)path
 {
     [self.restClient deletePath:path];
@@ -1959,13 +1960,16 @@
         {
             NSMutableDictionary* playerData = [quarterGrade objectAtIndex:playerNo[j]];
             
-            NSMutableDictionary* offModeDic = [playerData objectForKey:self.keyOfAttackWay];
-            int holdBallCount = [[offModeDic objectForKey:KEY_FOR_HOLD_BALL_COUNT] intValue];
-            [offModeDic setObject:[NSString stringWithFormat:@"%d", holdBallCount+1] forKey:KEY_FOR_HOLD_BALL_COUNT];
-            
             NSMutableDictionary* totalDic = [playerData objectForKey:KEY_FOR_TOTAL];
-            holdBallCount = [[totalDic objectForKey:KEY_FOR_HOLD_BALL_COUNT] intValue];
+            int holdBallCount = [[totalDic objectForKey:KEY_FOR_HOLD_BALL_COUNT] intValue];
             [totalDic setObject:[NSString stringWithFormat:@"%d", holdBallCount+1] forKey:KEY_FOR_HOLD_BALL_COUNT];
+            
+            if(![self.keyOfAttackWay isEqualToString:KEY_FOR_BONUS])
+            {
+                NSMutableDictionary* offModeDic = [playerData objectForKey:self.keyOfAttackWay];
+                holdBallCount = [[offModeDic objectForKey:KEY_FOR_HOLD_BALL_COUNT] intValue];
+                [offModeDic setObject:[NSString stringWithFormat:@"%d", holdBallCount+1] forKey:KEY_FOR_HOLD_BALL_COUNT];
+            }
         }
     }
 }
@@ -2971,6 +2975,7 @@
     {
         [self presentViewController:self.bonusAlert animated:YES completion:^
          {
+             self.keyOfAttackWay = KEY_FOR_BONUS;
              [(UIImageView*)[self.view viewWithTag:self.zoneNo] setHighlighted:NO];
          }];
     }
