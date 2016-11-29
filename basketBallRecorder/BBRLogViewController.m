@@ -51,6 +51,9 @@
     }];
     [nameUncompleteAlert addAction:okAction];
     
+    NSDateFormatter *dateFormatter=[[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"YYYY_MM_dd"];
+    
     UIAlertController* otherAlert = [UIAlertController alertControllerWithTitle:@"比賽隊伍" message:@"" preferredStyle:UIAlertControllerStyleAlert];
     
     okAction = [UIAlertAction actionWithTitle:@"完成" style:UIAlertActionStyleDefault
@@ -82,6 +85,7 @@
      {
          textField.delegate = self;
          textField.placeholder = @"YYYY_MM_DD";
+         textField.text = [dateFormatter stringFromDate:[NSDate date]];
          textField.inputView = datePicker;
      }];
     [otherAlert addAction:okAction];
@@ -97,6 +101,7 @@
     {
         textField.delegate = self;
         textField.placeholder = @"YYYY_MM_DD";
+        textField.text = [dateFormatter stringFromDate:[NSDate date]];
         textField.inputView = datePicker;
     }];
     okAction = [UIAlertAction actionWithTitle:@"確定" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action)

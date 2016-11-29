@@ -143,6 +143,17 @@
 -(void) goNextQuarter
 {
     self.quarterNo++;
+    
+    [self.timeButton setTitle:@"00:00" forState:UIControlStateNormal];
+    self.timeCounter = 0;
+    if(self.isTimerRunning)
+    {
+        [self.timeButton setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+        [self.timer invalidate];
+        self.timer = nil;
+        self.isTimerRunning = NO;
+    }
+    
     [self extendPlayerDataWithQuarter:self.quarterNo];
     
     NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
