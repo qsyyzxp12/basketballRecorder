@@ -448,8 +448,9 @@
     
     int rowIndex = 2;
     NSString* cellRef;
-    for(NSDictionary* quarterTimeLineDic in timeLineRecordArray)
+    for(int quarterNo = 0; quarterNo < timeLineRecordArray.count; quarterNo++)
     {
+        NSDictionary* quarterTimeLineDic = [timeLineRecordArray objectAtIndex:quarterNo];
         NSArray* timeLineArray = [quarterTimeLineDic objectForKey:KEY_FOR_TIME_LINE_DATA];
         for(NSDictionary* eventDic in timeLineArray)
         {
@@ -462,6 +463,10 @@
             NSString* time = [eventDic objectForKey:KEY_FOR_TIME];
             NSArray* timeArr = [time componentsSeparatedByString:@":"];
             int timeInSec = [timeArr[0] intValue]*60 + [timeArr[1] intValue];
+            if(quarterNo < 4)
+                timeInSec += quarterNo*600;
+            else
+                timeInSec += 600*4 + (quarterNo-4)*300;
             cellRef = [NSString stringWithFormat:@"M%d", rowIndex];
             [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:timeInSec];
             

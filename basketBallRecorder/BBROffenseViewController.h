@@ -21,7 +21,7 @@
 @property NSMutableArray<NSMutableDictionary*>* plusMinusArray;
 @property NSMutableArray* playerDataArray;
 @property NSMutableArray* OldPlayerDataArray;
-@property NSMutableArray* timeLineReordeArray;
+@property NSMutableArray* timeLineRecordArray;
 @property NSMutableArray* fileNamesInDropbox;
 @property NSMutableData* receiveData;
 @property NSArray* attackWaySet;

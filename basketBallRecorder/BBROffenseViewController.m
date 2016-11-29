@@ -32,7 +32,7 @@
     self.attackWayNo = 0;
     self.uploadFilesCount = 0;
     self.plusMinusPts = 0;
-    self.timeLineReordeArray = [[NSMutableArray alloc] init];
+    self.timeLineRecordArray = [[NSMutableArray alloc] init];
     self.plusMinusArray = [[NSMutableArray alloc] init];
     
     self.restClient = [[DBRestClient alloc] initWithSession:[DBSession sharedSession]];
@@ -679,7 +679,20 @@
 
 -(void) goNextQuarter
 {
+    for(int i=0; i<5; i++)
+        [self updateTimeOnFloorOfPlayerWithIndexInOnFloorTableView:i];
+
     self.quarterNo++;
+    [self.timeButton setTitle:@"00:00" forState:UIControlStateNormal];
+    self.timeCounter = 0;
+    if(self.isTimerRunning)
+    {
+        [self.timeButton setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+        [self.timer invalidate];
+        self.timer = nil;
+        self.isTimerRunning = NO;
+    }
+    
     [self extendPlayerDataWithQuarter:self.quarterNo];
     [self updateZoneGradeView];
     
@@ -692,6 +705,7 @@
     if(self.quarterNo == 4)
         self.navigationItem.rightBarButtonItem.action = @selector(finishButtonClicked);
     
+    self.playerSelectedIndex = 0;
     [self presentStartingLineUpView];
     UITableView* tableView = [self.startingLineUpView viewWithTag:TAG_FOR_STARTING_LINE_UP_TABLEVIEW];
     [tableView reloadData];
@@ -699,6 +713,10 @@
 
 -(void) showConclusionAndGernateXlsxFile:(BOOL)generateXlsxFile
 {
+    if(self.quarterNo < 5)
+        self.timeCounter = 600;
+    else
+        self.timeCounter = 300;
     [self closePlusMinusArray];
     
     self.isRecordMode = NO;
@@ -736,7 +754,7 @@
         [newItem setObject:self.recordName forKey:KEY_FOR_NAME];
         [newItem setObject:self.myTeamName forKey:KEY_FOR_MY_TEAM_NAME];
         [newItem setObject:self.opponentName forKey:KEY_FOR_OPPONENT_NAME];
-        [newItem setObject:self.timeLineReordeArray forKey:KEY_FOR_TIMELINE];
+        [newItem setObject:self.timeLineRecordArray forKey:KEY_FOR_TIMELINE];
         [newItem setObject:OFFENSE_TYPE_DATA forKey:KEY_FOR_DATA_TYPE];
         [newItem setObject:self.gameDate forKey:KEY_FOR_DATE];
         [newItem setObject:self.plusMinusArray forKey:KEY_FOR_PLUS_MINUS];
@@ -834,7 +852,7 @@
     self.isSBLGame = [(NSNumber*)[tmpPlistDic objectForKey:KEY_FOR_IS_SBL_GAME] boolValue];
     self.playerCount = (int)[self.playerNoSet count];
     self.playerOnFloorDataArray = [tmpPlistDic objectForKey:KEY_FOR_ON_FLOOR_PLAYER_DATA];
-    self.timeLineReordeArray = [tmpPlistDic objectForKey:KEY_FOR_TIMELINE];
+    self.timeLineRecordArray = [tmpPlistDic objectForKey:KEY_FOR_TIMELINE];
     self.gameDate = [tmpPlistDic objectForKey:KEY_FOR_DATE];
     self.plusMinusArray = [tmpPlistDic objectForKey:KEY_FOR_PLUS_MINUS];
     if(self.isSBLGame)
@@ -852,7 +870,7 @@
 {
     NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
     [tmpPlistDic setObject:self.playerDataArray forKey:KEY_FOR_GRADE];
-    [tmpPlistDic setObject:self.timeLineReordeArray forKey:KEY_FOR_TIMELINE];
+    [tmpPlistDic setObject:self.timeLineRecordArray forKey:KEY_FOR_TIMELINE];
     if(self.playerOnFloorDataArray)
         [tmpPlistDic setObject:self.playerOnFloorDataArray forKey:KEY_FOR_ON_FLOOR_PLAYER_DATA];
     
@@ -908,8 +926,6 @@
     NSString* xlsxFilePath;
     
     while(!self.isLoadMetaFinished);
-    NSLog(@"xxxxx %@", self.fileNamesInDropbox);
-    NSLog(@"yyyy %@", recordName);
     if([self.fileNamesInDropbox containsObject:recordName])
     {
         self.isPlusMinusXlsxFileExistInDropbox = YES;
@@ -930,8 +946,6 @@
     char interIndex = 'A';
     int rowIndex = 2;
     NSString* cellRef;
-    
-    //  NSLog(@"%@", plusMinusArray);
     
     for(NSMutableDictionary* eventDic in self.plusMinusArray)
     {
@@ -1019,8 +1033,9 @@
     
     int rowIndex = 2;
     NSString* cellRef;
-    for(NSDictionary* quarterTimeLineDic in self.timeLineReordeArray)
+    for(int quarterNo = 0; quarterNo < self.timeLineRecordArray.count; quarterNo++)
     {
+        NSDictionary* quarterTimeLineDic = [self.timeLineRecordArray objectAtIndex:quarterNo];
         NSArray* timeLineArray = [quarterTimeLineDic objectForKey:KEY_FOR_TIME_LINE_DATA];
         for(NSDictionary* eventDic in timeLineArray)
         {
@@ -1033,6 +1048,10 @@
             NSString* time = [eventDic objectForKey:KEY_FOR_TIME];
             NSArray* timeArr = [time componentsSeparatedByString:@":"];
             int timeInSec = [timeArr[0] intValue]*60 + [timeArr[1] intValue];
+            if(quarterNo < 4)
+                timeInSec += quarterNo*600;
+            else
+                timeInSec += 600*4 + (quarterNo-4)*300;
             cellRef = [NSString stringWithFormat:@"M%d", rowIndex];
             [[worksheet cellForCellReference:cellRef shouldCreate:YES] setIntegerValue:timeInSec];
             
@@ -1073,7 +1092,7 @@
     int rowIndex = 2;
     NSString* cellRef = [NSString stringWithFormat:@"%c%c%d", outIndex, interIndex, rowIndex];
     
-    for(NSMutableDictionary* quarterDic in self.timeLineReordeArray)
+    for(NSMutableDictionary* quarterDic in self.timeLineRecordArray)
     {
         NSArray* playersOnFloorNoArray = [quarterDic objectForKey:KEY_FOR_PLAYER_ON_FLOOR];
         NSString* playersOnFloorNoStr = [NSString stringWithFormat:@"%@,%@,%@,%@,%@", playersOnFloorNoArray[0], playersOnFloorNoArray[1], playersOnFloorNoArray[2], playersOnFloorNoArray[3], playersOnFloorNoArray[4]];
@@ -1625,7 +1644,7 @@
     NSURL* urlForUpAndDown = [NSURL URLWithString:URL_FOR_TIME_LINE_UP_AND_DOWN_REQUEST];
     
     int quarterNo = 1;
-    for(NSMutableDictionary* quarterDic in self.timeLineReordeArray)
+    for(NSMutableDictionary* quarterDic in self.timeLineRecordArray)
     {
         NSArray* startingPlayer = [quarterDic objectForKey:KEY_FOR_PLAYER_ON_FLOOR];
         NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:urlForUpAndDown];
@@ -1815,12 +1834,12 @@
     [quarterDic setObject:timeLineData forKey:KEY_FOR_TIME_LINE_DATA];
     [quarterDic setObject:[NSString stringWithFormat:@"%d", quarterNo] forKey:@"Quarter No"];
     
-    [self.timeLineReordeArray addObject:quarterDic];
+    [self.timeLineRecordArray addObject:quarterDic];
 }
 
 -(void) pushExchangeEventIntoTimeLineWithUpPlayerNo:(NSString*)upNo downPlayerNo:(NSString*)downNo
 {
-    NSMutableDictionary* quarterDic = [self.timeLineReordeArray objectAtIndex:self.quarterNo-1];
+    NSMutableDictionary* quarterDic = [self.timeLineRecordArray objectAtIndex:self.quarterNo-1];
     NSMutableArray* timeLineArray = [quarterDic objectForKey:KEY_FOR_TIME_LINE_DATA];
     NSMutableDictionary* event = [[NSMutableDictionary alloc] init];
     [event setObject:SIGNAL_FOR_EXCHANGE forKey:KEY_FOR_TYPE];
@@ -1837,7 +1856,7 @@
 
 -(void)pushEventIntoTimeLineWithResultKey:(NSString*)signalForResult pts:(int)pts
 {
-    NSMutableDictionary* quarterDic = [self.timeLineReordeArray objectAtIndex:self.quarterNo-1];
+    NSMutableDictionary* quarterDic = [self.timeLineRecordArray objectAtIndex:self.quarterNo-1];
     NSMutableArray* timeLineArray = [quarterDic objectForKey:KEY_FOR_TIME_LINE_DATA];
     NSMutableDictionary* event = [[NSMutableDictionary alloc] init];
     
@@ -1880,7 +1899,7 @@
 
 -(void) pushBonusEventIntoTimeLineWithMadeCount:(int)madeCount attemptCount:(int)attempCount
 {
-    NSMutableDictionary* quarterDic = [self.timeLineReordeArray objectAtIndex:self.quarterNo-1];
+    NSMutableDictionary* quarterDic = [self.timeLineRecordArray objectAtIndex:self.quarterNo-1];
     NSMutableArray* timeLineArray = [quarterDic objectForKey:KEY_FOR_TIME_LINE_DATA];
     NSMutableDictionary* bonusEvent = [[NSMutableDictionary alloc] init];
     
@@ -1901,7 +1920,7 @@
 
 -(void)pushTurnoverIntoTimeLine
 {
-    NSMutableDictionary* quarterDic = [self.timeLineReordeArray objectAtIndex:self.quarterNo-1];
+    NSMutableDictionary* quarterDic = [self.timeLineRecordArray objectAtIndex:self.quarterNo-1];
     NSMutableArray* timeLineArray = [quarterDic objectForKey:KEY_FOR_TIME_LINE_DATA];
     NSMutableDictionary* turnoverEvent = [[NSMutableDictionary alloc] init];
     
@@ -1921,7 +1940,7 @@
 
 - (void)popEventInTimeLine
 {
-    NSMutableDictionary* quarterDic = [self.timeLineReordeArray objectAtIndex:self.quarterNo-1];
+    NSMutableDictionary* quarterDic = [self.timeLineRecordArray objectAtIndex:self.quarterNo-1];
     NSMutableArray* timeLineArray = [quarterDic objectForKey:KEY_FOR_TIME_LINE_DATA];
     [timeLineArray removeLastObject];
 }
@@ -1990,7 +2009,7 @@
     [tmpPlistDic setObject:self.myTeamName forKey:KEY_FOR_MY_TEAM_NAME];
     [tmpPlistDic setObject:self.opponentName forKey:KEY_FOR_OPPONENT_NAME];
     [tmpPlistDic setObject:self.recordName forKey:KEY_FOR_NAME];
-    [tmpPlistDic setObject:self.timeLineReordeArray forKey:KEY_FOR_TIMELINE];
+    [tmpPlistDic setObject:self.timeLineRecordArray forKey:KEY_FOR_TIMELINE];
     [tmpPlistDic setObject:[NSNumber numberWithBool:self.isSBLGame] forKey:KEY_FOR_IS_SBL_GAME];
     [tmpPlistDic setObject:[NSNumber numberWithInt:0] forKey:KEY_FOR_TIME];
     [tmpPlistDic setObject:OFFENSE_TYPE_DATA forKey:KEY_FOR_DATA_TYPE];
@@ -2994,14 +3013,24 @@
     [plusMinusEventDic setObject:playerNoOnFloor forKey:KEY_FOR_PLAYER_ON_FLOOR];
     if(self.plusMinusArray.count)
         [self closePlusMinusArray];
-    [plusMinusEventDic setObject:[NSNumber numberWithInt:self.timeCounter] forKey:KEY_FOR_START_TIME];
+    int time = 0;
+    if(self.quarterNo < 5)
+        time = (self.quarterNo-1)*600 + self.timeCounter;
+    else
+        time += 600 * 4 + (self.quarterNo-5)*300 + self.timeCounter;
+    [plusMinusEventDic setObject:[NSNumber numberWithInt:time] forKey:KEY_FOR_START_TIME];
     [self.plusMinusArray addObject:plusMinusEventDic];
 }
 
 - (void) closePlusMinusArray
 {
     NSMutableDictionary* lastEventDic = self.plusMinusArray.lastObject;
-    [lastEventDic setObject:[NSNumber numberWithInt:self.timeCounter] forKey:KEY_FOR_END_TIME];
+    int time = 0;
+    if(self.quarterNo < 5)
+        time = (self.quarterNo-1)*600 + self.timeCounter;
+    else
+        time += 600 * 4 + (self.quarterNo-5)*300 + self.timeCounter;
+    [lastEventDic setObject:[NSNumber numberWithInt:time] forKey:KEY_FOR_END_TIME];
     [lastEventDic setObject:[NSNumber numberWithInt:self.plusMinusPts] forKey:KEY_FOR_PTS];
     self.plusMinusPts = 0;
 }
@@ -3032,7 +3061,7 @@
     [self extendTimeLineRecordeWithQuarter:self.quarterNo];
 
     NSMutableDictionary* tmpPlistDic = [NSMutableDictionary dictionaryWithContentsOfFile:self.tmpPlistPath];
-    [tmpPlistDic setObject:self.timeLineReordeArray forKey:KEY_FOR_TIMELINE];
+    [tmpPlistDic setObject:self.timeLineRecordArray forKey:KEY_FOR_TIMELINE];
     [tmpPlistDic setObject:self.playerOnFloorDataArray forKey:KEY_FOR_ON_FLOOR_PLAYER_DATA];
     
     [tmpPlistDic writeToFile:self.tmpPlistPath atomically:YES];
@@ -4033,7 +4062,7 @@
     NSLog(@"File uploaded successfully to path: %@", metadata.path);
     self.uploadFilesCount++;
     
-    if(self.uploadFilesCount == 5)
+    if(self.uploadFilesCount == 6)
     {
         self.isUploadXlsxFilesFinished = YES;
         if((self.isSBLGame && self.isSenDataToBijiFinished) || !self.isSBLGame)
