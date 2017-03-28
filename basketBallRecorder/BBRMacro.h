@@ -142,7 +142,7 @@
 #define KEY_FOR_TOTAL_FOUL_COUNT @"totalFoulCount"
 #define KEY_FOR_TOTAL_TURNOVER_COUNT @"totalTurnoverCount"
 #define KEY_FOR_TOTAL_SCORE_GET @"totalScoreGet"
-#define KEY_FOR_TOTAL_TIME_ON_FLOOR @"timeOnFloor"
+#define KEY_FOR_TOTAL_TIME_ON_FLOOR @"totalTimeOnFloor"
 
 #define KEY_FOR_TIME_WHEN_GO_ON_FLOOR @"timeWhenGoOnFloor"
 #define KEY_FOR_INDEX_IN_PPP_TABLEVIEW @"indexInPPPTableview"
@@ -202,6 +202,7 @@
 #define KEY_FOR_STEAL @"steal"
 #define KEY_FOR_BLOCK @"block"
 #define KEY_FOR_FOUL @"foul"
+#define KEY_FOR_TIME_ON_FLOOR @"timeOnFloor"
 
 //Dropbox
 #define NAME_OF_THE_FINAL_XLSX_FILE @"PPP數據"

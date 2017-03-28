@@ -777,7 +777,7 @@
         cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:i+2];
         if(i != playerNoSet.count)
         {
-            int time = [[playerDataDic objectForKey:KEY_FOR_TOTAL_TIME_ON_FLOOR] intValue];
+            int time = [[playerDataDic objectForKey:KEY_FOR_TIME_ON_FLOOR] intValue];
             int min = time/60;
             int sec = time%60;
             NSString* timeStr = [NSString stringWithFormat:@"%02d:%02d", min, sec];

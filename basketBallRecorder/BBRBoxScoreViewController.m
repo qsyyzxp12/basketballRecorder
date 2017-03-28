@@ -32,7 +32,7 @@
     self.restClient = [[DBRestClient alloc] initWithSession:[DBSession sharedSession]];
     self.restClient.delegate = self;
     
-    self.itemWayKeySet = [[NSArray alloc] initWithObjects:KEY_FOR_2_PTS, KEY_FOR_3_PTS, KEY_FOR_FREE_THROW, KEY_FOR_OFF_REB, KEY_FOR_DEF_REB, KEY_FOR_ASSIST, KEY_FOR_STEAL, KEY_FOR_BLOCK, KEY_FOR_TURNOVER, KEY_FOR_FOUL, KEY_FOR_TOTAL_TIME_ON_FLOOR, nil];
+    self.itemWayKeySet = [[NSArray alloc] initWithObjects:KEY_FOR_2_PTS, KEY_FOR_3_PTS, KEY_FOR_FREE_THROW, KEY_FOR_OFF_REB, KEY_FOR_DEF_REB, KEY_FOR_ASSIST, KEY_FOR_STEAL, KEY_FOR_BLOCK, KEY_FOR_TURNOVER, KEY_FOR_FOUL, KEY_FOR_TIME_ON_FLOOR, nil];
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] init];
     self.navigationItem.rightBarButtonItem.title = @"本節結束";
@@ -335,7 +335,7 @@
         cellRef = [self cellRefGoRightWithOutIndex:&outI interIndex:&interI rowIndex:i+2];
         if(i != self.playerCount)
         {
-            int time = [[playerDataDic objectForKey:KEY_FOR_TOTAL_TIME_ON_FLOOR] intValue];
+            int time = [[playerDataDic objectForKey:KEY_FOR_TIME_ON_FLOOR] intValue];
             int min = time/60;
             int sec = time%60;
             NSString* timeStr = [NSString stringWithFormat:@"%02d:%02d", min, sec];
@@ -497,7 +497,7 @@
         
         postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_POINT, [NSString stringWithFormat:@"%d", point]]];
         
-        double playTime = [[playerGradeDic objectForKey:KEY_FOR_TOTAL_TIME_ON_FLOOR] doubleValue];
+        double playTime = [[playerGradeDic objectForKey:KEY_FOR_TIME_ON_FLOOR] doubleValue];
         NSString* playTimeStr = [NSString stringWithFormat:@"%.f", playTime/60];
         postDataStr = [postDataStr stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", KEY_FOR_PLAY_TIME, playTimeStr]];
         
@@ -616,14 +616,14 @@
     
     NSMutableArray* quarterGrade = [self.playerDataArray objectAtIndex:self.quarterNo];
     NSMutableDictionary* playerData = [quarterGrade objectAtIndex:indexInPPPTableviewNo.intValue - 1];
-    int time = timeOnFloor + ((NSNumber*)[playerData objectForKey:KEY_FOR_TOTAL_TIME_ON_FLOOR]).intValue;
-    [playerData setObject:[NSNumber numberWithInt:time] forKey:KEY_FOR_TOTAL_TIME_ON_FLOOR];
+    int time = timeOnFloor + ((NSNumber*)[playerData objectForKey:KEY_FOR_TIME_ON_FLOOR]).intValue;
+    [playerData setObject:[NSNumber numberWithInt:time] forKey:KEY_FOR_TIME_ON_FLOOR];
     
     NSMutableArray* playerAllGameGrade = [self.playerDataArray objectAtIndex:0];
     playerData = [playerAllGameGrade objectAtIndex:indexInPPPTableviewNo.intValue-1];
-    time = timeOnFloor + ((NSNumber*)[playerData objectForKey:KEY_FOR_TOTAL_TIME_ON_FLOOR]).intValue;
+    time = timeOnFloor + ((NSNumber*)[playerData objectForKey:KEY_FOR_TIME_ON_FLOOR]).intValue;
     
-    [playerData setObject:[NSNumber numberWithInt:time] forKey:KEY_FOR_TOTAL_TIME_ON_FLOOR];
+    [playerData setObject:[NSNumber numberWithInt:time] forKey:KEY_FOR_TIME_ON_FLOOR];
     [self updateTmpPlist];
 }
 
@@ -679,15 +679,15 @@
         for(int j=3; j<self.itemWayKeySet.count-1; j++)
             [playerDataItem setObject:@"0" forKey:self.itemWayKeySet[j]];
         
-        if(quarterNo < 2)
-            [playerDataItem setObject:@"0" forKey:KEY_FOR_TOTAL_TIME_ON_FLOOR];
-        else
+//        if(quarterNo < 2)
+            [playerDataItem setObject:@"0" forKey:KEY_FOR_TIME_ON_FLOOR];
+  /*      else
         {
             NSMutableArray* lastQuarterData = [self.playerDataArray objectAtIndex:quarterNo-1];
             NSNumber* lastQuarterTimeOnFloor = [[lastQuarterData objectAtIndex:i] objectForKey:KEY_FOR_TOTAL_TIME_ON_FLOOR];
             [playerDataItem setObject:lastQuarterTimeOnFloor forKey:KEY_FOR_TOTAL_TIME_ON_FLOOR];
         }
-        
+    */
         [playerDataItem setObject:@"0" forKey:KEY_FOR_TOTAL_SCORE_GET];
         [quarterData addObject:playerDataItem];
     }
@@ -1422,7 +1422,7 @@
         {
             if(self.playerSelectedIndex != self.playerCount+1)
             {
-                int time = [[playerData objectForKey:KEY_FOR_TOTAL_TIME_ON_FLOOR] intValue];
+                int time = [[playerData objectForKey:KEY_FOR_TIME_ON_FLOOR] intValue];
                 int min = time/60;
                 int sec = time%60;
                 gradeValueLabel.text = [NSString stringWithFormat:@"%02d:%02d", min, sec];
