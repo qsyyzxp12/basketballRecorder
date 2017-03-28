@@ -1235,8 +1235,11 @@
     if(index == playerNoSet.count)
         return spreadSheet.workbook.worksheets[0];
     
+    int i = 0;
     for(BRAWorksheet* worksheet in spreadSheet.workbook.worksheets)
     {
+        if(!i++)
+            continue;
         NSInteger playerNo = [[worksheet cellForCellReference:@"A1"] integerValue];
         if([playerNoSet[index] integerValue] == playerNo)
             return worksheet;
