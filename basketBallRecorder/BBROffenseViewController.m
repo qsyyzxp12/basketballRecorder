@@ -1556,8 +1556,11 @@
     if(index == self.playerNoSet.count)
         return spreadSheet.workbook.worksheets[0];
     
+    int i=0;
     for(BRAWorksheet* worksheet in spreadSheet.workbook.worksheets)
     {
+        if(!i++)
+            continue;
         NSInteger playerNo = [[worksheet cellForCellReference:@"A1"] integerValue];
         if([self.playerNoSet[index] integerValue] == playerNo)
             return worksheet;
@@ -1565,7 +1568,7 @@
     NSString* orgXlsxFilePath;
     if(xlsxType == PPP)
         orgXlsxFilePath = [[NSBundle mainBundle] pathForResource:NAME_OF_THE_FINAL_XLSX_FILE ofType:@"xlsx"];
-    else
+    else //shot chart
         orgXlsxFilePath = [[NSBundle mainBundle] pathForResource:NAME_OF_THE_SHOT_CHART_XLSX_FILE ofType:@"xlsx"];
     BRAOfficeDocumentPackage *orgSpreadsheet = [BRAOfficeDocumentPackage open:orgXlsxFilePath];
     BRAWorksheet* newWorkSheet = [spreadSheet.workbook createWorksheetNamed:self.playerNoSet[index] byCopyingWorksheet:orgSpreadsheet.workbook.worksheets[0]];

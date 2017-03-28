@@ -432,6 +432,7 @@
 				TargetAttributes = {
 					C7CC36E41C7AF17900B97149 = {
 						CreatedOnToolsVersion = 7.2;
+						DevelopmentTeam = 3U5926BU7W;
 						ProvisioningStyle = Manual;
 					};
 					C7CC36FD1C7AF17900B97149 = {
@@ -725,7 +726,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Chih-An Lin (3U5926BU7W)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Chih-An Lin (3U5926BU7W)";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 3U5926BU7W;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -753,7 +754,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Chih-An Lin (3U5926BU7W)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Chih-An Lin (3U5926BU7W)";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 3U5926BU7W;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -870,7 +871,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Chih-An Lin (3U5926BU7W)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Chih-An Lin (3U5926BU7W)";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 3U5926BU7W;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
