@@ -683,7 +683,10 @@
         [self updateTimeOnFloorOfPlayerWithIndexInOnFloorTableView:i];
 
     self.quarterNo++;
-    [self.timeButton setTitle:@"00:00" forState:UIControlStateNormal];
+    if(self.quarterNo < 5)
+        [self.timeButton setTitle:@"10:00" forState:UIControlStateNormal];
+    else
+        [self.timeButton setTitle:@"05:00" forState:UIControlStateNormal];
     self.timeCounter = 0;
     if(self.isTimerRunning)
     {
@@ -2307,8 +2310,13 @@
 -(void)timeCounterChange
 {
     self.timeCounter++;
-    int min = self.timeCounter/60;
-    int sec = self.timeCounter%60;
+    int time;
+    if(self.quarterNo < 5)
+        time = 600 - self.timeCounter;
+    else
+        time = 300 -self.timeCounter;
+    int min = time/60;
+    int sec = time%60;
     [self.timeButton setTitle:[NSString stringWithFormat:@"%02d:%02d", min, sec] forState:UIControlStateNormal];
     
     if(self.timeCounter%3 == 0)
@@ -2866,12 +2874,22 @@
     [self.timeButton setFrame:CGRectMake(CGRectGetMinX(self.undoButton.frame), CGRectGetMaxY(self.undoButton.frame)+15, bonusZone.frame.size.width, bonusZone.frame.size.height)];
     if(self.timeCounter)
     {
-        int min = self.timeCounter/60;
-        int sec = self.timeCounter%60;
+        int time;
+        if(self.quarterNo < 5)
+            time = 600 - self.timeCounter;
+        else
+            time = 300 - self.timeCounter;
+        int min = time/60;
+        int sec = time%60;
         [self.timeButton setTitle:[NSString stringWithFormat:@"%02d:%02d", min, sec] forState:UIControlStateNormal];
     }
     else
-        [self.timeButton setTitle:@"00:00" forState:UIControlStateNormal];
+    {
+        if(self.quarterNo < 5)
+            [self.timeButton setTitle:@"10:00" forState:UIControlStateNormal];
+        else
+            [self.timeButton setTitle:@"05:00" forState:UIControlStateNormal];
+    }
     [self.timeButton setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
     [self.timeButton addTarget:self action:@selector(timeButtonClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.timeButton];
